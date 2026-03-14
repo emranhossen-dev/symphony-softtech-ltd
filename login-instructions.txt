@@ -1,0 +1,27 @@
+// Test login as admin user
+const adminCredentials = {
+  email: 'admin@example.com',
+  password: 'admin123' // or whatever the password is
+};
+
+console.log('🔧 To fix the 401 Unauthorized error:');
+console.log('\n1. Go to http://localhost:3000/login');
+console.log(`2. Login with admin credentials:`);
+console.log(`   Email: ${adminCredentials.email}`);
+console.log(`   Password: [your admin password]`);
+console.log('\n3. After successful login, go to:');
+console.log('   http://localhost:3000/admin/users');
+console.log('\n4. Try creating a user again');
+
+console.log('\n🔍 Alternative admin user:');
+console.log('   Email: faiyaz.sumon@gmail.com');
+console.log('   Password: [your password]');
+
+console.log('\n📋 Troubleshooting steps:');
+console.log('1. Make sure you are logged in as ADMIN user');
+console.log('2. Check browser console for any auth errors');
+console.log('3. Clear browser cookies and login again');
+console.log('4. Check that auth-token cookie exists after login');
+
+console.log('\n🔐 If you forgot the password, run:');
+console.log('node update-admin-password.js');

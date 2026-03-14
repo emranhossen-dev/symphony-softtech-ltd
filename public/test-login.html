@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        button { padding: 10px 20px; margin: 10px; cursor: pointer; }
+        .output { background: #f5f5f5; padding: 10px; margin: 10px 0; white-space: pre-wrap; }
+    </style>
+</head>
+<body>
+    <h1>Login Test</h1>
+    <button onclick="testLogin()">Test Login Process</button>
+    <button onclick="checkCookies()">Check Current Cookies</button>
+    <button onclick="testAuthVerify()">Test Auth Verify</button>
+    <div id="output" class="output">Click a button to test...</div>
+    
+    <script>
+        async function testLogin() {
+            const output = document.getElementById('output');
+            output.innerHTML = 'Testing login...';
+            
+            try {
+                const testCredentials = {
+                    email: 'admin@example.com',
+                    password: 'admin123'
+                };
+                
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(testCredentials),
+                });
+                
+                let result = `Login Response Status: ${response.status}\n`;
+                result += `Login Headers: ${JSON.stringify(Object.fromEntries(response.headers.entries()), null, 2)}\n\n`;
+                
+                const data = await response.json();
+                result += `Login Response Body:\n${JSON.stringify(data, null, 2)}\n\n`;
+                
+                if (response.ok) {
+                    result += '✅ Login successful!\n\n';
+                    
+                    // Check cookies after login
+                    const cookies = document.cookie;
+                    result += `All cookies: ${cookies}\n\n`;
+                    
+                    const authTokenCookie = cookies.split(';').find(c => c.trim().startsWith('auth-token='));
+                    result += `Auth token cookie found: ${!!authTokenCookie}\n`;
+                    if (authTokenCookie) {
+                        result += `Auth token value: ${authTokenCookie.split('=')[1]?.substring(0, 50)}...\n`;
+                    }
+                } else {
+                    result += `❌ Login failed: ${data.error}\n`;
+                }
+                
+                output.innerHTML = result;
+                
+            } catch (error) {
+                output.innerHTML = `❌ Error: ${error.message}`;
+            }
+        }
+        
+        function checkCookies() {
+            const output = document.getElementById('output');
+            const cookies = document.cookie;
+            let result = `Current Cookies:\n${cookies}\n\n`;
+            
+            const authTokenCookie = cookies.split(';').find(c => c.trim().startsWith('auth-token='));
+            result += `Auth token cookie found: ${!!authTokenCookie}\n`;
+            if (authTokenCookie) {
+                const token = authTokenCookie.split('=')[1];
+                result += `Auth token length: ${token.length}\n`;
+                result += `Auth token preview: ${token.substring(0, 50)}...\n`;
+                
+                // Check JWT format
+                const parts = token.split('.');
+                result += `JWT parts count: ${parts.length}\n`;
+                result += `Valid JWT format: ${parts.length === 3}\n`;
+            }
+            
+            output.innerHTML = result;
+        }
+        
+        async function testAuthVerify() {
+            const output = document.getElementById('output');
+            output.innerHTML = 'Testing auth verification...';
+            
+            const cookies = document.cookie;
+            const authTokenCookie = cookies.split(';').find(c => c.trim().startsWith('auth-token='));
+            
+            if (!authTokenCookie) {
+                output.innerHTML = '❌ No auth token cookie found';
+                return;
+            }
+            
+            try {
+                const token = authTokenCookie.split('=')[1];
+                const response = await fetch('/api/auth/verify', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                let result = `Verify Response Status: ${response.status}\n\n`;
+                
+                const data = await response.json();
+                result += `Verify Response Body:\n${JSON.stringify(data, null, 2)}\n\n`;
+                
+                if (response.ok) {
+                    result += '✅ Token verification successful!';
+                } else {
+                    result += '❌ Token verification failed';
+                }
+                
+                output.innerHTML = result;
+                
+            } catch (error) {
+                output.innerHTML = `❌ Error: ${error.message}`;
+            }
+        }
+    </script>
+</body>
+</html>

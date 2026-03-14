@@ -1,0 +1,38 @@
+// Call Record Model for Admin Panel
+model CallRecord {
+  id            String   @id @default(cuid())
+  type          String   // incoming, outgoing
+  status        String   // completed, missed, ongoing
+  callerName    String
+  calleeName    String
+  phoneNumber   String
+  duration      Int      // in seconds
+  recordingUrl  String?  // URL to audio file
+  transcript    String?  // Call transcript
+  notes         String?  // Admin notes
+  cost          Float    @default(0.00) // Call cost
+  revenue       Float    @default(0.00) // Call revenue
+  userId        String?  // Who handled the call
+  user          User?    @relation(fields: [userId], references: [id])
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("call_records")
+}
+
+// Add this relation to existing User model
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  role          String    @default("USER")
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  // Relations
+  callRecords   CallRecord[]
+  
+  @@map("users")
+}

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Enrollments</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .category { margin: 20px 0; padding: 20px; border: 1px solid #ccc; }
+        .student { margin: 10px 0; padding: 10px; background: #f5f5f5; }
+        .status { padding: 4px 8px; border-radius: 4px; font-size: 12px; }
+        .PENDING_REVIEW { background: #fff3cd; color: #856404; }
+        .APPROVED { background: #d4edda; color: #155724; }
+        .PAYMENT_PENDING { background: #fff3cd; color: #856404; }
+        .REJECTED { background: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+    <h1>Enrollment Debug</h1>
+    <div id="loading">Loading...</div>
+    <div id="results"></div>
+    
+    <script>
+        console.log('Starting enrollment debug...');
+        
+        fetch('/api/debug/enrollments')
+            .then(response => response.json())
+            .then(data => {
+                console.log('Debug Response:', data);
+                
+                document.getElementById('loading').style.display = 'none';
+                
+                if (data.success) {
+                    let html = `<h2>Total Enrollments: ${data.totalEnrollments}</h2>`;
+                    
+                    Object.keys(data.byCategory).forEach(categoryName => {
+                        html += `<div class="category">`;
+                        html += `<h3>${categoryName} (${data.byCategory[categoryName].length} students)</h3>`;
+                        
+                        data.byCategory[categoryName].forEach(student => {
+                            html += `<div class="student">`;
+                            html += `<strong>${student.name}</strong> - ${student.courseName}`;
+                            html += `<br><small>${student.email} | ${student.phone}</small>`;
+                            html += `<span class="status ${student.status}">${student.status}</span>`;
+                            html += `</div>`;
+                        });
+                        
+                        html += `</div>`;
+                    });
+                    
+                    document.getElementById('results').innerHTML = html;
+                } else {
+                    document.getElementById('results').innerHTML = `<h2>Error: ${data.error}</h2>`;
+                }
+            })
+            .catch(error => {
+                console.error('Debug Error:', error);
+                document.getElementById('loading').innerHTML = `<h2>Network Error: ${error.message}</h2>`;
+            });
+    </script>
+</body>
+</html>
