@@ -1,36 +1,142 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Symphony Institute of Technology
 
-## Getting Started
+A comprehensive training centre management system built with Next.js 14, TypeScript, and Tailwind CSS.
 
-First, run the development server:
+## Features
 
+### 🎓 Training Management
+- Category-based training programs (Government, Online, Offline, Recorded)
+- Course management and enrollment system
+- Student progress tracking
+- Certificate generation
+
+### 👥 User Management
+- Multi-role authentication system (Admin, Employee, Mentor, Student)
+- User registration and profile management
+- Role-based access control (RBAC)
+
+### 📊 Dashboard & Analytics
+- Admin dashboard with comprehensive statistics
+- Student enrollment tracking
+- Revenue and performance analytics
+- Real-time data updates
+
+### 💬 Communication
+- WhatsApp integration for notifications
+- In-app messaging system
+- Email notifications
+
+### 🏗️ Technical Features
+- Next.js 14 with App Router
+- TypeScript for type safety
+- Tailwind CSS for responsive design
+- Prisma ORM for database management
+- JWT-based authentication
+- RESTful API architecture
+
+## Installation
+
+1. Clone the repository:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/faiyazsumon786/Symphony-Institute-of-Technology.git
+cd Symphony-Institute-of-Technology
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Install dependencies:
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Set up environment variables:
+```bash
+cp .env.example .env
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. Set up the database:
+```bash
+npx prisma migrate dev
+npx prisma generate
+```
 
-## Learn More
+5. Run the development server:
+```bash
+npm run dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+Open [http://localhost:3000](http://localhost:3000) to view the application.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Project Structure
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+src/
+├── app/                    # Next.js App Router pages
+│   ├── admin/             # Admin dashboard and management
+│   ├── employee/          # Employee portal
+│   ├── mentor/            # Mentor dashboard
+│   ├── student/           # Student portal
+│   └── api/               # API routes
+├── components/            # Reusable React components
+│   ├── admin/            # Admin-specific components
+│   ├── employee/         # Employee-specific components
+│   ├── mentor/           # Mentor-specific components
+│   ├── student/          # Student-specific components
+│   └── ui/               # General UI components
+├── contexts/              # React contexts
+├── hooks/                 # Custom React hooks
+├── lib/                   # Utility libraries
+└── prisma/               # Database schema and migrations
+```
 
-## Deploy on Vercel
+## User Roles
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Admin
+- Full system access
+- User management
+- Course and category management
+- Analytics and reporting
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Employee
+- Student enrollment management
+- Follow-up management
+- Course assignment
+
+### Mentor
+- Course management
+- Student progress tracking
+- Homework assignment
+
+### Student
+- Course enrollment
+- Progress tracking
+- Certificate access
+
+## Technologies Used
+
+- **Frontend**: Next.js 14, React 18, TypeScript, Tailwind CSS
+- **Backend**: Next.js API routes, Prisma ORM
+- **Database**: PostgreSQL (configurable)
+- **Authentication**: JWT with refresh tokens
+- **Styling**: Tailwind CSS with custom components
+- **Icons**: Lucide React
+- **Notifications**: WhatsApp API integration
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Contact
+
+For any inquiries or support, please contact:
+- GitHub: [@faiyazsumon786](https://github.com/faiyazsumon786)
+
+---
+
+**Built with ❤️ for Symphony Institute of Technology**
