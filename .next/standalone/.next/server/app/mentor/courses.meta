@@ -1,0 +1,16 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/mentor/layout,_N_T_/mentor/courses/layout,_N_T_/mentor/courses/page,_N_T_/mentor/courses"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/mentor/courses/__PAGE__",
+    "/mentor/courses",
+    "/mentor",
+    "/_index",
+    "/_head"
+  ]
+}

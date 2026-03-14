@@ -1,0 +1,312 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                  String               @id @default(cuid())
+  email               String               @unique
+  password            String
+  name                String
+  phone               String?
+  role                UserRole             @default(STUDENT)
+  isActive            Boolean              @default(true)
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  activityLogs        ActivityLog[]
+  attendanceSessions  AttendanceSession[]  @relation("AttendanceSessionCreator")
+  attendances         Attendance[]
+  certificates        Certificate[]
+  createdCourses      Course[]             @relation("CourseCreator")
+  mentoredCourses     Course[]             @relation("CourseMentor")
+  enrollments         Enrollment[]
+  reviewedHomework    HomeworkSubmission[] @relation("HomeworkReviewer")
+  homeworkSubmissions HomeworkSubmission[]
+  moduleProgress      ModuleProgress[]
+  notifications       Notification[]
+
+  @@map("users")
+}
+
+model Category {
+  id          String       @id @default(cuid())
+  name        String       @unique
+  slug        String       @unique
+  description String?
+  icon        String?
+  color       String?
+  isActive    Boolean      @default(true)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  courses     Course[]     @relation("CourseCategory")
+  enrollments Enrollment[] @relation("EnrollmentCategory")
+
+  @@map("categories")
+}
+
+model Course {
+  id                  String               @id @default(cuid())
+  title               String
+  slug                String               @unique
+  description         String
+  shortDescription    String?
+  thumbnail           String?
+  price               Float                @default(0)
+  duration            String
+  isActive            Boolean              @default(true)
+  mentorId            String?
+  createdBy           String
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  categoryId          String?
+  category            String
+  attendanceSessions  AttendanceSession[]
+  certificates        Certificate[]
+  categoryRelation    Category?            @relation("CourseCategory", fields: [categoryId], references: [id])
+  creator             User                 @relation("CourseCreator", fields: [createdBy], references: [id])
+  mentor              User?                @relation("CourseMentor", fields: [mentorId], references: [id])
+  enrollments         Enrollment[]
+  homeworkSubmissions HomeworkSubmission[]
+  moduleProgress      ModuleProgress[]
+  modules             Module[]
+
+  @@map("courses")
+}
+
+model Module {
+  id                  String               @id @default(cuid())
+  courseId            String
+  title               String
+  videoUrl            String?
+  homework            String?
+  order               Int
+  isLocked            Boolean              @default(true)
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  homeworkSubmissions HomeworkSubmission[]
+  moduleProgress      ModuleProgress[]
+  course              Course               @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@map("modules")
+}
+
+model Enrollment {
+  id                 String           @id @default(cuid())
+  fullName           String
+  phoneNumber        String
+  email              String
+  address            String
+  courseName         String
+  educationLevel     String?
+  whyJoin            String?
+  preferredBatchTime String?
+  enrollmentStatus   EnrollmentStatus @default(PENDING_REVIEW)
+  paymentStatus      PaymentStatus    @default(PENDING)
+  transactionId      String?
+  metadata           Json?
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+  courseId           String?
+  userId             String?
+  categoryId         String?
+  category           Category?        @relation("EnrollmentCategory", fields: [categoryId], references: [id])
+  course             Course?          @relation(fields: [courseId], references: [id])
+  user               User?            @relation(fields: [userId], references: [id])
+  payments           Payment[]
+
+  @@map("enrollments")
+}
+
+model Payment {
+  id            String        @id @default(cuid())
+  enrollmentId  String
+  paymentMethod String?
+  transactionId String?
+  amount        Float?
+  paymentStatus PaymentStatus @default(PENDING)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  enrollment    Enrollment    @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+
+  @@map("payments")
+}
+
+model ModuleProgress {
+  id          String    @id @default(cuid())
+  userId      String
+  moduleId    String
+  courseId    String
+  completed   Boolean   @default(false)
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  course      Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  module      Module    @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, moduleId])
+  @@map("module_progress")
+}
+
+model AttendanceSession {
+  id          String       @id @default(cuid())
+  courseId    String
+  mentorId    String
+  sessionDate DateTime     @default(now())
+  title       String?
+  description String?
+  isActive    Boolean      @default(true)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  course      Course       @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  mentor      User         @relation("AttendanceSessionCreator", fields: [mentorId], references: [id])
+  attendances Attendance[]
+
+  @@map("attendance_sessions")
+}
+
+model Attendance {
+  id        String            @id @default(cuid())
+  sessionId String
+  studentId String
+  status    AttendanceStatus
+  markedAt  DateTime          @default(now())
+  markedBy  String
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+  session   AttendanceSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  student   User              @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([sessionId, studentId])
+  @@map("attendances")
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  type      NotificationType
+  title     String
+  message   String
+  isRead    Boolean          @default(false)
+  metadata  Json?
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
+}
+
+model Certificate {
+  id             String   @id @default(cuid())
+  userId         String
+  courseId       String
+  certificateUrl String
+  verificationId String   @unique
+  issuedAt       DateTime @default(now())
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  course         Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, courseId])
+  @@map("certificates")
+}
+
+model HomeworkSubmission {
+  id         String         @id @default(cuid())
+  userId     String
+  moduleId   String
+  courseId   String
+  code       String?
+  fileUrl    String?
+  status     HomeworkStatus @default(PENDING)
+  feedback   String?
+  mentorId   String?
+  reviewedAt DateTime?
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
+  course     Course         @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  mentor     User?          @relation("HomeworkReviewer", fields: [mentorId], references: [id])
+  module     Module         @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  user       User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, moduleId])
+  @@map("homework_submissions")
+}
+
+model ActivityLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  type      String
+  action    String
+  metadata  Json?
+  ipAddress String?
+  userAgent String?
+  sessionId String?
+  timestamp DateTime @default(now())
+  user      User?    @relation(fields: [userId], references: [id])
+
+  @@map("activity_logs")
+}
+
+model WhatsAppMessage {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  phone     String
+  message   String
+  isRead    Boolean  @default(false)
+  timestamp DateTime @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("whatsapp_messages")
+}
+
+enum EnrollmentStatus {
+  PENDING_REVIEW
+  PAYMENT_PENDING
+  APPROVED
+  REJECTED
+  PAYMENT_CANCELLED
+}
+
+enum PaymentStatus {
+  NOT_REQUIRED
+  PENDING
+  PAID
+  FAILED
+  CANCELLED
+}
+
+enum UserRole {
+  STUDENT
+  MENTOR
+  EMPLOYEE
+  ADMIN
+}
+
+enum HomeworkStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+}
+
+enum NotificationType {
+  ENROLLMENT_APPROVED
+  HOMEWORK_APPROVED
+  HOMEWORK_REJECTED
+  MODULE_UNLOCKED
+  ATTENDANCE_MARKED
+  COURSE_COMPLETED
+  CERTIFICATE_AVAILABLE
+}

@@ -1,0 +1,3 @@
+{
+  "/api/admin/courses/[courseId]/modules/reorder/route": "app/api/admin/courses/[courseId]/modules/reorder/route.js"
+}

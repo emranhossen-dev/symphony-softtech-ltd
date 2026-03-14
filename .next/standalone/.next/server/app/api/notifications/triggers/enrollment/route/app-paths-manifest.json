@@ -1,0 +1,3 @@
+{
+  "/api/notifications/triggers/enrollment/route": "app/api/notifications/triggers/enrollment/route.js"
+}

@@ -1,0 +1,3 @@
+{
+  "/api/admin/courses/[courseId]/modules/bulk/route": "app/api/admin/courses/[courseId]/modules/bulk/route.js"
+}

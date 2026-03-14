@@ -1,0 +1,3 @@
+{
+  "/api/admin/enrollments/[enrollmentId]/status/route": "app/api/admin/enrollments/[enrollmentId]/status/route.js"
+}

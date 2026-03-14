@@ -1,0 +1,3 @@
+{
+  "/api/notifications/triggers/homework/route": "app/api/notifications/triggers/homework/route.js"
+}

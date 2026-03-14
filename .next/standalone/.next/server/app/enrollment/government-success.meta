@@ -1,0 +1,16 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/enrollment/layout,_N_T_/enrollment/government-success/layout,_N_T_/enrollment/government-success/page,_N_T_/enrollment/government-success"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/enrollment/government-success/__PAGE__",
+    "/enrollment/government-success",
+    "/enrollment",
+    "/_index",
+    "/_head"
+  ]
+}

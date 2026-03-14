@@ -1,0 +1,3 @@
+{
+  "/api/admin/categories/[slug]/mentors/route": "app/api/admin/categories/[slug]/mentors/route.js"
+}
