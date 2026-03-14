@@ -65,7 +65,7 @@ export async function GET(request: NextRequest) {
         // Check if all modules are completed
         const isCompleted = totalModules > 0 && completedModules === totalModules;
         const completedAt = isCompleted && completedModules > 0 
-          ? new Date(Math.max(...courseModules.filter(mp => mp.completed).map(mp => mp.completedAt || new Date()))).toISOString()
+          ? new Date(Math.max(...courseModules.filter(mp => mp.completed && mp.completedAt).map(mp => mp.completedAt!.getTime()))).toISOString()
           : null;
         
         return {

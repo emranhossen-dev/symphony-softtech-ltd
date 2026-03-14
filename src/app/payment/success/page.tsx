@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { CheckCircle, ArrowRight, Calendar, BookOpen, Users, Star } from 'lucide-react';
 
-const PaymentSuccessPage = () => {
+function PaymentSuccessPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [loading, setLoading] = useState(true);
@@ -184,6 +184,12 @@ const PaymentSuccessPage = () => {
       </div>
     </div>
   );
-};
+}
 
-export default PaymentSuccessPage;
+export default function PaymentSuccessPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-gradient-to-br from-green-900 to-emerald-900 text-white flex items-center justify-center">Loading...</div>}>
+      <PaymentSuccessPageContent />
+    </Suspense>
+  );
+}

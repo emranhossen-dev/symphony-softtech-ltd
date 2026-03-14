@@ -3,10 +3,10 @@ import { prisma } from '@/lib/prisma';
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { enrollmentId: string } }
+  { params }: { params: Promise<{ enrollmentId: string }> }
 ) {
   try {
-    const { enrollmentId } = params;
+    const { enrollmentId } = await params;
     const { transactionId, amount, paymentMethod, cardType, cardBrand, bankTransactionId } = await request.json();
 
     // First check if payment record exists

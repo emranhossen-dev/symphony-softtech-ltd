@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
     console.log(`Debug: Found ${enrollments.length} enrollments`);
 
     // Group by category
-    const byCategory = {};
+    const byCategory: { [key: string]: any[] } = {};
     enrollments.forEach(enrollment => {
       const category = enrollment.course?.categoryRelation;
       const categoryName = category?.name || 'Unknown';
@@ -49,7 +49,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Debug: Error:', error);
     return NextResponse.json(
-      { success: false, error: error.message },
+      { success: false, error: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }

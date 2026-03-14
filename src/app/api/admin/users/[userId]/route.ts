@@ -28,7 +28,7 @@ async function verifyAdminToken(request: NextRequest) {
 // PATCH /api/admin/users/[userId] - Update user status or details
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { userId: string } }
+  { params }: { params: Promise<{ userId: string }> }
 ) {
   try {
     const admin = await verifyAdminToken(request);
@@ -40,7 +40,7 @@ export async function PATCH(
       );
     }
 
-    const userId = params.userId;
+    const { userId } = await params;
     const updateData = await request.json();
 
     // Check if user exists
@@ -96,7 +96,7 @@ export async function PATCH(
 // DELETE /api/admin/users/[userId] - Delete user
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { userId: string } }
+  { params }: { params: Promise<{ userId: string }> }
 ) {
   try {
     const admin = await verifyAdminToken(request);
@@ -108,7 +108,7 @@ export async function DELETE(
       );
     }
 
-    const userId = params.userId;
+    const { userId } = await params;
 
     // Check if user exists
     const existingUser = await prisma.user.findUnique({

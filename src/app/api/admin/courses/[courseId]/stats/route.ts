@@ -4,10 +4,10 @@ import { prisma } from '@/lib/prisma';
 // GET /api/admin/courses/[courseId]/stats - Get course statistics
 export async function GET(
   request: NextRequest,
-  { params }: { params: { courseId: string } }
+  { params }: { params: Promise<{ courseId: string }> }
 ) {
   try {
-    const courseId = params.courseId;
+    const { courseId } = await params;
 
     // Get course enrollments count
     const totalEnrollments = await prisma?.enrollment.count({

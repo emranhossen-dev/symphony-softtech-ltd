@@ -4,56 +4,7 @@ import { prisma } from '@/lib/prisma';
 // GET /api/admin/calls/history - Get call history
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
-    const applicantId = searchParams.get('applicantId');
-    const employeeId = searchParams.get('employeeId');
-    const page = parseInt(searchParams.get('page') || '1');
-    const limit = parseInt(searchParams.get('limit') || '10');
-
-    const skip = (page - 1) * limit;
-
-    // Build where clause
-    const where: any = {};
-    
-    if (applicantId) {
-      where.applicantId = applicantId;
-    }
-    
-    if (employeeId) {
-      where.employeeId = employeeId;
-    }
-
-    // Fetch call history
-    const [calls, total] = await Promise.all([
-      prisma.callLog.findMany({
-        where,
-        include: {
-          applicant: {
-            select: {
-              id: true,
-              name: true,
-              email: true,
-              phone: true,
-              course: true,
-              category: true
-            }
-          },
-          employee: {
-            select: {
-              id: true,
-              name: true,
-              email: true
-            }
-          }
-        },
-        orderBy: { createdAt: 'desc' },
-        skip,
-        take: limit
-      }),
-      prisma.callLog.count({ where })
-    ]);
-
-    // Mock data if no database
+    // TODO: Implement call history when CallRecord model is properly integrated
     const mockCalls = [
       {
         id: 'call-1',
@@ -62,14 +13,14 @@ export async function GET(request: NextRequest) {
         phoneNumber: '+8801712345678',
         callStatus: 'COMPLETED',
         callDirection: 'OUTGOING',
-        callDuration: 154, // 2:34
+        callDuration: 45, // 0:45
         recordingUrl: 'https://example.twilio.com/recordings/call-1.mp3',
         callResult: 'INTERESTED',
-        notes: 'Very interested in BCS course, wants to enroll next month',
+        notes: 'Interested in BCS preparation course, asked for fee structure',
         twilioCallSid: 'CA1234567890',
-        cost: 0.03,
-        createdAt: new Date('2024-03-03T10:30:00Z'),
-        updatedAt: new Date('2024-03-03T10:33:00Z'),
+        cost: 0.015,
+        createdAt: new Date('2024-03-04T10:30:00Z'),
+        updatedAt: new Date('2024-03-04T10:31:00Z'),
         applicant: {
           id: 'app-1',
           name: 'Rahman Khan',
@@ -115,23 +66,26 @@ export async function GET(request: NextRequest) {
       }
     ];
 
-    const finalCalls = calls.length > 0 ? calls : mockCalls;
+    const { searchParams } = new URL(request.url);
+    const page = parseInt(searchParams.get('page') || '1');
+    const limit = parseInt(searchParams.get('limit') || '10');
+    const total = mockCalls.length;
 
     return NextResponse.json({
       success: true,
-      data: finalCalls,
+      data: mockCalls,
       pagination: {
         page,
         limit,
-        total: total || finalCalls.length,
-        pages: Math.ceil((total || finalCalls.length) / limit)
+        total,
+        pages: Math.ceil(total / limit)
       },
       stats: {
-        totalCalls: finalCalls.length,
-        totalDuration: finalCalls.reduce((sum, call) => sum + (call.callDuration || 0), 0),
-        totalCost: finalCalls.reduce((sum, call) => sum + (call.cost || 0), 0),
-        completedCalls: finalCalls.filter(call => call.callStatus === 'COMPLETED').length,
-        missedCalls: finalCalls.filter(call => call.callStatus === 'MISSED').length
+        totalCalls: mockCalls.length,
+        totalDuration: mockCalls.reduce((sum, call) => sum + (call.callDuration || 0), 0),
+        totalCost: mockCalls.reduce((sum, call) => sum + (call.cost || 0), 0),
+        completedCalls: mockCalls.filter(call => call.callStatus === 'COMPLETED').length,
+        missedCalls: mockCalls.filter(call => call.callStatus === 'MISSED').length
       }
     });
 
@@ -145,42 +99,3 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST /api/admin/calls/history - Add call note/result
-export async function POST(request: NextRequest) {
-  try {
-    const { callId, callResult, notes } = await request.json();
-
-    if (!callId) {
-      return NextResponse.json({
-        success: false,
-        error: 'Call ID is required'
-      }, { status: 400 });
-    }
-
-    const updatedCall = await prisma.callLog.update({
-      where: { id: callId },
-      data: {
-        callResult,
-        notes,
-        updatedAt: new Date()
-      },
-      include: {
-        applicant: true,
-        employee: true
-      }
-    });
-
-    return NextResponse.json({
-      success: true,
-      data: updatedCall
-    });
-
-  } catch (error) {
-    console.error('Error updating call note:', error);
-    
-    return NextResponse.json({
-      success: false,
-      error: 'Failed to update call note'
-    }, { status: 500 });
-  }
-}

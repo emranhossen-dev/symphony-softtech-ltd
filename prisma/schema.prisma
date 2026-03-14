@@ -105,6 +105,9 @@ model Enrollment {
   whyJoin            String?
   preferredBatchTime String?
   enrollmentStatus   EnrollmentStatus @default(PENDING_REVIEW)
+  paymentStatus      PaymentStatus    @default(PENDING)
+  transactionId      String?
+  metadata           Json?
   createdAt          DateTime         @default(now())
   updatedAt          DateTime         @updatedAt
   courseId           String?
@@ -269,6 +272,7 @@ enum EnrollmentStatus {
   PAYMENT_PENDING
   APPROVED
   REJECTED
+  PAYMENT_CANCELLED
 }
 
 enum PaymentStatus {
@@ -276,6 +280,7 @@ enum PaymentStatus {
   PENDING
   PAID
   FAILED
+  CANCELLED
 }
 
 enum UserRole {

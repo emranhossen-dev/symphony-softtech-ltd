@@ -3,10 +3,10 @@ import { prisma } from '@/lib/prisma';
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { enrollmentId: string } }
+  { params }: { params: Promise<{ enrollmentId: string }> }
 ) {
   try {
-    const { enrollmentId } = params;
+    const { enrollmentId } = await params;
     const { transactionId, error, status } = await request.json();
 
     // Update enrollment payment status to failed
@@ -14,7 +14,7 @@ export async function POST(
       where: { id: enrollmentId },
       data: {
         paymentStatus: 'FAILED',
-        enrollmentStatus: 'PAYMENT_FAILED',
+        enrollmentStatus: 'REJECTED',
         transactionId,
         metadata: {
           error,

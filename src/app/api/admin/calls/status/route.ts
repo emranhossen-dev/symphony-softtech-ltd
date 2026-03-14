@@ -16,42 +16,21 @@ export async function POST(request: NextRequest) {
     const callDuration = formData.get('CallDuration') as string;
     const recordingUrl = formData.get('RecordingUrl') as string;
 
-    // Find the call log by Twilio SID
-    const callLog = await prisma.callLog.findFirst({
-      where: { twilioCallSid: callSid }
-    });
-
-    if (!callLog) {
-      console.log('Call log not found for SID:', callSid);
-      return NextResponse.json({ success: true });
-    }
-
-    // Update call log with status and duration
-    const updateData: any = {
+    // Mock status update (TODO: Implement when CallRecord model exists)
+    console.log(`Call ${callSid} status update: ${callStatus}, duration: ${callDuration}, recording: ${recordingUrl}`);
+    
+    // Mock finding and updating call log
+    const mockCallLog = {
+      id: `call-${Date.now()}`,
+      twilioCallSid: callSid,
       callStatus: mapTwilioStatus(callStatus),
+      callDuration: callDuration ? parseInt(callDuration) : null,
+      recordingUrl: recordingUrl || null,
+      cost: callDuration ? (parseInt(callDuration) / 60) * 0.01 : 0,
       updatedAt: new Date()
     };
 
-    if (callDuration) {
-      updateData.callDuration = parseInt(callDuration);
-    }
-
-    if (recordingUrl) {
-      updateData.recordingUrl = recordingUrl;
-    }
-
-    // Calculate call cost (example: $0.01 per minute)
-    if (callDuration) {
-      const minutes = parseInt(callDuration) / 60;
-      updateData.cost = minutes * 0.01;
-    }
-
-    await prisma.callLog.update({
-      where: { id: callLog.id },
-      data: updateData
-    });
-
-    console.log(`Call ${callSid} updated with status: ${callStatus}`);
+    console.log('Would update call log with:', mockCallLog);
 
     return NextResponse.json({ success: true });
 

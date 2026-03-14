@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { CheckCircle, Mail, Clock, ArrowRight, Sparkles } from 'lucide-react';
 
-export default function EnrollmentSuccess() {
+function EnrollmentSuccessContent() {
   const [loading, setLoading] = useState(true);
   const [enrollmentData, setEnrollmentData] = useState<any>(null);
   const [error, setError] = useState('');
@@ -221,5 +221,13 @@ export default function EnrollmentSuccess() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function EnrollmentSuccess() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-gradient-to-br from-green-900 to-emerald-900 text-white flex items-center justify-center">Loading...</div>}>
+      <EnrollmentSuccessContent />
+    </Suspense>
   );
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { 
   Search, 
@@ -104,7 +104,7 @@ const availableCourses = [
   { name: 'Classroom Python Training', category: 'OFFLINE' }
 ];
 
-export default function EmployeeEnrollments() {
+function EmployeeEnrollmentsContent() {
   const searchParams = useSearchParams();
   const action = searchParams.get('action');
   const [showNewForm, setShowNewForm] = useState(action === 'new');
@@ -937,5 +937,13 @@ export default function EmployeeEnrollments() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function EmployeeEnrollments() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-gradient-to-br from-gray-900 to-black text-white flex items-center justify-center">Loading...</div>}>
+      <EmployeeEnrollmentsContent />
+    </Suspense>
   );
 }

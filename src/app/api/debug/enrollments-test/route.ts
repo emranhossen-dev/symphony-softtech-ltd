@@ -26,8 +26,9 @@ export async function GET(request: NextRequest) {
       where: { slug: 'offline-courses' }
     });
     
+    let offlineEnrollmentsById = 0;
     if (categories.length > 0) {
-      const offlineEnrollmentsById = await prisma.enrollment.count({
+      offlineEnrollmentsById = await prisma.enrollment.count({
         where: { categoryId: categories[0].id }
       });
       console.log(`Debug: Offline enrollments by ID: ${offlineEnrollmentsById}`);
@@ -46,7 +47,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Debug error:', error);
     return NextResponse.json(
-      { success: false, error: error.message },
+      { success: false, error: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }

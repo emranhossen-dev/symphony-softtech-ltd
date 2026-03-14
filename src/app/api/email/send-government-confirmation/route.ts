@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
       subject: `Government Course Registration Confirmation - ${courseName}`,
       fullName,
       courseName,
-      subject: subject || 'Interested in this course'
+      customSubject: subject || 'Interested in this course'
     });
 
     // Mock email sending success

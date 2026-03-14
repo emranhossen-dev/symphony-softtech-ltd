@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { CheckCircle, Mail, Phone, Clock, ArrowRight, Award, Users } from 'lucide-react';
 
-export default function GovernmentEnrollmentSuccess() {
+function GovernmentEnrollmentSuccessContent() {
   const [loading, setLoading] = useState(true);
   const [enrollmentData, setEnrollmentData] = useState<any>(null);
   const [error, setError] = useState('');
@@ -215,5 +215,13 @@ export default function GovernmentEnrollmentSuccess() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function GovernmentEnrollmentSuccess() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-gradient-to-br from-blue-900 to-indigo-900 text-white flex items-center justify-center">Loading...</div>}>
+      <GovernmentEnrollmentSuccessContent />
+    </Suspense>
   );
 }
