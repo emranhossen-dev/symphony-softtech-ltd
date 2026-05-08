@@ -65,8 +65,14 @@ export default function CategoryManagement() {
       const data = await response.json();
       
       if (data.success) {
-        setCategories(data.categories);
-        setStats(data.stats);
+        setCategories(data.data || []);
+        // Stats not provided by API, set defaults
+        setStats({
+          totalCategories: data.data?.length || 0,
+          activeCategories: data.data?.filter((c: any) => c.isActive).length || 0,
+          totalCourses: 0,
+          totalEnrollments: 0
+        });
       } else {
         toast.error('Failed to fetch categories');
       }
@@ -145,7 +151,7 @@ export default function CategoryManagement() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600">Total Categories</p>
-                  <p className="text-2xl font-bold text-gray-900 mt-1">{stats.totalCategories}</p>
+                  <p className="text-2xl font-bold text-gray-900 mt-1">{stats?.totalCategories || 0}</p>
                 </div>
                 <div className="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center">
                   <BookOpen className="w-6 h-6 text-green-600" />
@@ -159,7 +165,7 @@ export default function CategoryManagement() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600">Active Categories</p>
-                  <p className="text-2xl font-bold text-gray-900 mt-1">{stats.activeCategories}</p>
+                  <p className="text-2xl font-bold text-gray-900 mt-1">{stats?.activeCategories || 0}</p>
                 </div>
                 <div className="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center">
                   <TrendingUp className="w-6 h-6 text-green-600" />
@@ -173,7 +179,7 @@ export default function CategoryManagement() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600">Total Courses</p>
-                  <p className="text-2xl font-bold text-gray-900 mt-1">{stats.totalCourses}</p>
+                  <p className="text-2xl font-bold text-gray-900 mt-1">{stats?.totalCourses || 0}</p>
                 </div>
                 <div className="w-12 h-12 bg-orange-50 rounded-xl flex items-center justify-center">
                   <BookOpen className="w-6 h-6 text-orange-600" />
@@ -187,7 +193,7 @@ export default function CategoryManagement() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600">Total Enrollments</p>
-                  <p className="text-2xl font-bold text-gray-900 mt-1">{stats.totalEnrollments}</p>
+                  <p className="text-2xl font-bold text-gray-900 mt-1">{stats?.totalEnrollments || 0}</p>
                 </div>
                 <div className="w-12 h-12 bg-orange-50 rounded-xl flex items-center justify-center">
                   <Users className="w-6 h-6 text-orange-600" />
