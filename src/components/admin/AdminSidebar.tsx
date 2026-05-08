@@ -313,6 +313,11 @@ const AdminSidebar = ({ isOpen, onClose, isMobile }: AdminSidebarProps) => {
       icon: <GraduationCap className="w-4 h-4" />
     },
     {
+      title: 'Seminars',
+      href: '/admin/seminars',
+      icon: <Calendar className="w-4 h-4" />
+    },
+    {
       title: 'Enrollments',
       href: '/admin/enrollments',
       icon: <FileText className="w-4 h-4" />

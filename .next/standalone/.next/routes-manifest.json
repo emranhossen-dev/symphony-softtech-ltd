@@ -599,6 +599,18 @@
       "namedRegex": "^/admin/payments(?:/)?$"
     },
     {
+      "page": "/admin/seminars",
+      "regex": "^/admin/seminars(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/seminars(?:/)?$"
+    },
+    {
+      "page": "/admin/seminars/create",
+      "regex": "^/admin/seminars/create(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/seminars/create(?:/)?$"
+    },
+    {
       "page": "/admin/settings",
       "regex": "^/admin/settings(?:/)?$",
       "routeKeys": {},
@@ -855,6 +867,12 @@
       "regex": "^/api/admin/security(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/api/admin/security(?:/)?$"
+    },
+    {
+      "page": "/api/admin/seminars.bak",
+      "regex": "^/api/admin/seminars\\.bak(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/admin/seminars\\.bak(?:/)?$"
     },
     {
       "page": "/api/admin/settings",
