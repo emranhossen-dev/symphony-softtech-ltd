@@ -166,43 +166,59 @@ export default function CreateSeminarPage() {
   }
 
   return (
-    <div className="p-6">
-      <div className="mb-6">
-        <Button
-          onClick={() => router.push('/admin/seminars')}
-          variant="outline"
-          className="mb-4"
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to Seminars
-        </Button>
-        <h1 className="text-3xl font-bold">Create New Seminar</h1>
-        <p className="text-gray-600 mt-1">Fill in the details to create a new seminar</p>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6">
+      {/* Header with gradient background */}
+      <div className="bg-white rounded-2xl shadow-xl p-8 mb-8 border border-gray-200">
+        <div className="flex items-center justify-between">
+          <div>
+            <Button
+              onClick={() => router.push('/admin/seminars')}
+              variant="outline"
+              className="mb-4 border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-all duration-200"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back to Seminars
+            </Button>
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              Create New Seminar
+            </h1>
+            <p className="text-gray-600 mt-2 text-lg">Organize an amazing learning experience for your audience</p>
+          </div>
+          <div className="hidden lg:block">
+            <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
+              <Calendar className="w-12 h-12 text-white" />
+            </div>
+          </div>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Form */}
         <div className="lg:col-span-2">
-          <Card>
-            <CardHeader>
-              <CardTitle>Seminar Details</CardTitle>
+          <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
+            <CardHeader className="bg-gradient-to-r from-blue-50 to-purple-50 border-b border-gray-200">
+              <CardTitle className="text-xl font-semibold text-gray-800 flex items-center gap-2">
+                <div className="w-2 h-6 bg-gradient-to-b from-blue-500 to-purple-600 rounded-full"></div>
+                Seminar Details
+              </CardTitle>
             </CardHeader>
-            <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div>
-                  <Label htmlFor="title">Seminar Title *</Label>
+            <CardContent className="p-8">
+              <form onSubmit={handleSubmit} className="space-y-8">
+                <div className="space-y-2">
+                  <Label htmlFor="title" className="text-gray-700 font-medium">Seminar Title *</Label>
                   <Input
                     id="title"
                     name="title"
                     value={formData.title}
                     onChange={handleChange}
-                    placeholder="Enter seminar title"
+                    placeholder="Enter an engaging seminar title"
                     required
+                    className="border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg shadow-sm transition-all duration-200"
                   />
                 </div>
 
-                <div>
-                  <Label htmlFor="description">Description *</Label>
+                <div className="space-y-2">
+                  <Label htmlFor="description" className="text-gray-700 font-medium">Description *</Label>
                   <Textarea
                     id="description"
                     name="description"
@@ -211,12 +227,16 @@ export default function CreateSeminarPage() {
                     placeholder="Describe the seminar content, objectives, and what participants will learn"
                     rows={4}
                     required
+                    className="border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg shadow-sm transition-all duration-200 resize-none"
                   />
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="date">Date *</Label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="date" className="text-gray-700 font-medium flex items-center gap-2">
+                      <Calendar className="w-4 h-4 text-blue-500" />
+                      Date *
+                    </Label>
                     <Input
                       id="date"
                       name="date"
@@ -224,10 +244,14 @@ export default function CreateSeminarPage() {
                       value={formData.date}
                       onChange={handleChange}
                       required
+                      className="border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg shadow-sm transition-all duration-200"
                     />
                   </div>
-                  <div>
-                    <Label htmlFor="time">Time *</Label>
+                  <div className="space-y-2">
+                    <Label htmlFor="time" className="text-gray-700 font-medium flex items-center gap-2">
+                      <Clock className="w-4 h-4 text-purple-500" />
+                      Time *
+                    </Label>
                     <Input
                       id="time"
                       name="time"
@@ -235,12 +259,16 @@ export default function CreateSeminarPage() {
                       value={formData.time}
                       onChange={handleChange}
                       required
+                      className="border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg shadow-sm transition-all duration-200"
                     />
                   </div>
                 </div>
 
-                <div>
-                  <Label htmlFor="location">Location *</Label>
+                <div className="space-y-2">
+                  <Label htmlFor="location" className="text-gray-700 font-medium flex items-center gap-2">
+                    <MapPin className="w-4 h-4 text-red-500" />
+                    Location *
+                  </Label>
                   <Input
                     id="location"
                     name="location"
@@ -248,11 +276,15 @@ export default function CreateSeminarPage() {
                     onChange={handleChange}
                     placeholder="e.g., Room 101, Main Building"
                     required
+                    className="border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg shadow-sm transition-all duration-200"
                   />
                 </div>
 
-                <div>
-                  <Label htmlFor="maxParticipants">Max Participants *</Label>
+                <div className="space-y-2">
+                  <Label htmlFor="maxParticipants" className="text-gray-700 font-medium flex items-center gap-2">
+                    <Users className="w-4 h-4 text-green-500" />
+                    Max Participants *
+                  </Label>
                   <Input
                     id="maxParticipants"
                     name="maxParticipants"
@@ -262,6 +294,7 @@ export default function CreateSeminarPage() {
                     placeholder="Maximum number of participants"
                     min="1"
                     required
+                    className="border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg shadow-sm transition-all duration-200"
                   />
                 </div>
 
@@ -317,22 +350,22 @@ export default function CreateSeminarPage() {
                   </select>
                 </div>
 
-                <div className="flex gap-3 pt-4">
+                <div className="flex gap-4 pt-8 border-t border-gray-200">
                   <Button
                     type="submit"
                     disabled={loading}
-                    className="flex items-center gap-2"
+                    className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium px-8 py-3 rounded-lg shadow-lg transform hover:scale-105 transition-all duration-200"
                   >
-                    <Save className="w-4 h-4" />
+                    <Save className="w-5 h-5" />
                     {loading ? 'Creating...' : 'Create Seminar'}
                   </Button>
                   <Button
                     type="button"
                     variant="outline"
                     onClick={() => setPreviewMode(true)}
-                    className="flex items-center gap-2"
+                    className="flex items-center gap-2 border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 font-medium px-6 py-3 rounded-lg transition-all duration-200"
                   >
-                    <Eye className="w-4 h-4" />
+                    <Eye className="w-5 h-5" />
                     Preview
                   </Button>
                 </div>
@@ -343,61 +376,79 @@ export default function CreateSeminarPage() {
 
         {/* Quick Tips */}
         <div className="lg:col-span-1">
-          <Card>
-            <CardHeader>
-              <CardTitle>Quick Tips</CardTitle>
+          <Card className="shadow-xl border-0 bg-gradient-to-br from-blue-50 to-purple-50">
+            <CardHeader className="bg-white/80 backdrop-blur-sm border-b border-gray-200">
+              <CardTitle className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+                <div className="w-2 h-5 bg-gradient-to-b from-yellow-400 to-orange-500 rounded-full"></div>
+                Quick Tips
+              </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <h4 className="font-semibold mb-2">📝 Title Guidelines</h4>
-                <p className="text-sm text-gray-600">
+            <CardContent className="space-y-6 p-6">
+              <div className="bg-white/60 backdrop-blur-sm rounded-lg p-4 border border-gray-200">
+                <h4 className="font-semibold mb-2 text-gray-800 flex items-center gap-2">
+                  <span className="text-lg">📝</span>
+                  Title Guidelines
+                </h4>
+                <p className="text-sm text-gray-700 leading-relaxed">
                   Make it clear and descriptive. Include the main topic and target audience.
                 </p>
               </div>
               
-              <div>
-                <h4 className="font-semibold mb-2">🎯 Description Tips</h4>
-                <p className="text-sm text-gray-600">
+              <div className="bg-white/60 backdrop-blur-sm rounded-lg p-4 border border-gray-200">
+                <h4 className="font-semibold mb-2 text-gray-800 flex items-center gap-2">
+                  <span className="text-lg">🎯</span>
+                  Description Tips
+                </h4>
+                <p className="text-sm text-gray-700 leading-relaxed">
                   Include learning objectives, prerequisites, and what participants will gain.
                 </p>
               </div>
 
-              <div>
-                <h4 className="font-semibold mb-2">🔗 Registration URL</h4>
-                <p className="text-sm text-gray-600">
+              <div className="bg-white/60 backdrop-blur-sm rounded-lg p-4 border border-gray-200">
+                <h4 className="font-semibold mb-2 text-gray-800 flex items-center gap-2">
+                  <span className="text-lg">🔗</span>
+                  Registration URL
+                </h4>
+                <p className="text-sm text-gray-700 leading-relaxed">
                   Use the "Generate" button to create a clean URL automatically.
                 </p>
               </div>
 
-              <div>
-                <h4 className="font-semibold mb-2">👥 Participant Limit</h4>
-                <p className="text-sm text-gray-600">
+              <div className="bg-white/60 backdrop-blur-sm rounded-lg p-4 border border-gray-200">
+                <h4 className="font-semibold mb-2 text-gray-800 flex items-center gap-2">
+                  <span className="text-lg">👥</span>
+                  Participant Limit
+                </h4>
+                <p className="text-sm text-gray-700 leading-relaxed">
                   Set a realistic limit based on venue capacity and interaction quality.
                 </p>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="mt-4">
-            <CardHeader>
-              <CardTitle>Registration Flow</CardTitle>
+          <Card className="mt-6 shadow-xl border-0 bg-gradient-to-br from-green-50 to-emerald-50">
+            <CardHeader className="bg-white/80 backdrop-blur-sm border-b border-gray-200">
+              <CardTitle className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+                <div className="w-2 h-5 bg-gradient-to-b from-green-400 to-emerald-500 rounded-full"></div>
+                Registration Flow
+              </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-sm font-semibold">1</div>
-                <span className="text-sm">User visits registration URL</span>
+            <CardContent className="space-y-4 p-6">
+              <div className="flex items-center gap-4 bg-white/60 backdrop-blur-sm rounded-lg p-3 border border-gray-200">
+                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold shadow-lg">1</div>
+                <span className="text-gray-800 font-medium">User visits registration URL</span>
               </div>
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-sm font-semibold">2</div>
-                <span className="text-sm">Fills out registration form</span>
+              <div className="flex items-center gap-4 bg-white/60 backdrop-blur-sm rounded-lg p-3 border border-gray-200">
+                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold shadow-lg">2</div>
+                <span className="text-gray-800 font-medium">Fills out registration form</span>
               </div>
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-sm font-semibold">3</div>
-                <span className="text-sm">Receives confirmation</span>
+              <div className="flex items-center gap-4 bg-white/60 backdrop-blur-sm rounded-lg p-3 border border-gray-200">
+                <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center text-white font-bold shadow-lg">3</div>
+                <span className="text-gray-800 font-medium">Receives confirmation</span>
               </div>
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-sm font-semibold">4</div>
-                <span className="text-sm">Appears in admin dashboard</span>
+              <div className="flex items-center gap-4 bg-white/60 backdrop-blur-sm rounded-lg p-3 border border-gray-200">
+                <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center text-white font-bold shadow-lg">4</div>
+                <span className="text-gray-800 font-medium">Appears in admin dashboard</span>
               </div>
             </CardContent>
           </Card>

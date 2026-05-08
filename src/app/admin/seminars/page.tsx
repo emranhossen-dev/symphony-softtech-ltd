@@ -174,6 +174,10 @@ export default function SeminarsPage() {
         {seminars.map((seminar) => {
           const stats = getRegistrationStats(seminar);
           
+          function setEditingSeminar(seminar: Seminar): void {
+            throw new Error("Function not implemented.");
+          }
+
           return (
             <Card key={seminar.id} className="hover:shadow-lg transition-shadow">
               <CardHeader className="pb-3">
