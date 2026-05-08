@@ -111,10 +111,10 @@ export default function CategoryManagement() {
     }
   };
 
-  const filteredCategories = categories.filter(category =>
+  const filteredCategories = categories?.filter(category =>
     category.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     category.description.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  ) || [];
 
   return (
     <div className="min-h-screen bg-gray-50">

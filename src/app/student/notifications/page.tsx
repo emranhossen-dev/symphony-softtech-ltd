@@ -136,7 +136,7 @@ export default function StudentNotifications() {
     );
   };
 
-  const unreadCount = notifications.filter(n => !n.isRead).length;
+  const unreadCount = notifications?.filter(n => !n.isRead).length || 0;
 
   return (
     <div className="space-y-6">
@@ -182,7 +182,7 @@ export default function StudentNotifications() {
             <div>
               <p className="text-sm font-medium text-gray-600">Course Updates</p>
               <p className="text-2xl font-bold text-green-600 mt-1">
-                {notifications.filter(n => n.title.toLowerCase().includes('course')).length}
+                {notifications?.filter(n => n.title.toLowerCase().includes('course')).length || 0}
               </p>
             </div>
             <BookOpen className="w-6 h-6 text-green-600" />
@@ -193,7 +193,7 @@ export default function StudentNotifications() {
             <div>
               <p className="text-sm font-medium text-gray-600">Achievements</p>
               <p className="text-2xl font-bold text-purple-600 mt-1">
-                {notifications.filter(n => n.type === 'success').length}
+                {notifications?.filter(n => n.type === 'success').length || 0}
               </p>
             </div>
             <Award className="w-6 h-6 text-purple-600" />

@@ -84,7 +84,7 @@ export default function CoursesPage() {
   };
 
   const filterAndSortCourses = () => {
-    let filtered = [...courses];
+    let filtered = [...courses || []];
 
     // Filter by search term
     if (searchTerm) {
