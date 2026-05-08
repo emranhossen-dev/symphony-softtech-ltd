@@ -30,7 +30,7 @@ export default function CreateSeminarPage() {
     maxParticipants: "",
     imageUrl: "",
     registrationUrl: "",
-    status: "upcoming" as const
+    status: "UPCOMING" as const
   });
 
   const [previewMode, setPreviewMode] = useState(false);
@@ -89,76 +89,180 @@ export default function CreateSeminarPage() {
 
   if (previewMode) {
     return (
-      <div className="p-6">
-        <div className="mb-6">
-          <Button
-            onClick={() => setPreviewMode(false)}
-            variant="outline"
-            className="mb-4"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Edit
-          </Button>
-          <h1 className="text-3xl font-bold">Seminar Preview</h1>
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6">
+        {/* Header */}
+        <div className="bg-white rounded-2xl shadow-xl p-8 mb-8 border border-gray-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <Button
+                onClick={() => setPreviewMode(false)}
+                variant="outline"
+                className="mb-4 border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-all duration-200"
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back to Edit
+              </Button>
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                Seminar Preview
+              </h1>
+              <p className="text-gray-600 mt-2 text-lg">See how your seminar will appear to participants</p>
+            </div>
+            <div className="hidden lg:block">
+              <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
+                <Eye className="w-12 h-12 text-white" />
+              </div>
+            </div>
+          </div>
         </div>
 
-        <Card className="max-w-2xl mx-auto">
-          <CardHeader>
-            <div className="flex justify-between items-start">
-              <div>
-                <h2 className="text-2xl font-bold">{formData.title || "Seminar Title"}</h2>
-                <span className={`inline-block px-3 py-1 rounded-full text-sm mt-2 ${
-                  formData.status === 'upcoming' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'
-                }`}>
-                  {formData.status}
-                </span>
-              </div>
-              {formData.imageUrl && (
-                <img 
-                  src={formData.imageUrl} 
-                  alt={formData.title}
-                  className="w-24 h-24 rounded-lg object-cover"
-                />
-              )}
-            </div>
-          </CardHeader>
-          
-          <CardContent className="space-y-4">
-            <p className="text-gray-600">{formData.description || "Seminar description will appear here..."}</p>
+        {/* Seminar Card Preview */}
+        <Card className="max-w-4xl mx-auto shadow-2xl border-0 overflow-hidden">
+          {/* Header with gradient */}
+          <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-8 text-white relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-32 -mt-32"></div>
+            <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/10 rounded-full -ml-24 -mb-24"></div>
             
-            <div className="space-y-3">
-              <div className="flex items-center gap-3">
-                <Calendar className="w-5 h-5 text-gray-500" />
-                <span>{formData.date || "Date not set"}</span>
+            <div className="relative z-10">
+              <div className="flex justify-between items-start">
+                <div className="flex-1">
+                  <div className="flex items-center gap-3 mb-4">
+                    <span className={`inline-block px-4 py-2 rounded-full text-sm font-semibold bg-white/20 backdrop-blur-sm border border-white/30 ${
+                      formData.status === 'UPCOMING' ? 'bg-white/20' : 'bg-gray-500/20'
+                    }`}>
+                      {formData.status || 'UPCOMING'}
+                    </span>
+                    <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full border border-white/30">
+                      <Users className="w-4 h-4" />
+                      <span className="text-sm">Max {formData.maxParticipants || "0"} participants</span>
+                    </div>
+                  </div>
+                  <h2 className="text-3xl font-bold mb-3 text-white drop-shadow-lg">
+                    {formData.title || "Seminar Title"}
+                  </h2>
+                  <p className="text-white/90 text-lg leading-relaxed max-w-2xl">
+                    {formData.description || "Seminar description will appear here..."}
+                  </p>
+                </div>
+                {formData.imageUrl && (
+                  <div className="ml-8">
+                    <img 
+                      src={formData.imageUrl} 
+                      alt={formData.title}
+                      className="w-32 h-32 rounded-2xl object-cover shadow-xl border-4 border-white/30"
+                    />
+                  </div>
+                )}
               </div>
-              <div className="flex items-center gap-3">
-                <Clock className="w-5 h-5 text-gray-500" />
-                <span>{formData.time || "Time not set"}</span>
+            </div>
+          </div>
+          
+          <CardContent className="p-8 space-y-8">
+            {/* Event Details */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6 border border-blue-200">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center shadow-lg">
+                    <Calendar className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-800 mb-1">Date</h3>
+                    <p className="text-gray-700 font-medium">
+                      {formData.date ? new Date(formData.date).toLocaleDateString('en-US', { 
+                        weekday: 'long', 
+                        year: 'numeric', 
+                        month: 'long', 
+                        day: 'numeric' 
+                      }) : "Date not set"}
+                    </p>
+                  </div>
+                </div>
               </div>
-              <div className="flex items-center gap-3">
-                <MapPin className="w-5 h-5 text-gray-500" />
-                <span>{formData.location || "Location not set"}</span>
+
+              <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-6 border border-purple-200">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-purple-500 rounded-xl flex items-center justify-center shadow-lg">
+                    <Clock className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-800 mb-1">Time</h3>
+                    <p className="text-gray-700 font-medium">
+                      {formData.time || "Time not set"}
+                    </p>
+                  </div>
+                </div>
               </div>
-              <div className="flex items-center gap-3">
-                <Users className="w-5 h-5 text-gray-500" />
-                <span>Max {formData.maxParticipants || "0"} participants</span>
+
+              <div className="bg-gradient-to-br from-red-50 to-red-100 rounded-xl p-6 border border-red-200">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-red-500 rounded-xl flex items-center justify-center shadow-lg">
+                    <MapPin className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-800 mb-1">Location</h3>
+                    <p className="text-gray-700 font-medium">
+                      {formData.location || "Location not set"}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-6 border border-green-200">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center shadow-lg">
+                    <Users className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-800 mb-1">Capacity</h3>
+                    <p className="text-gray-700 font-medium">
+                      {formData.maxParticipants || "0"} Participants Max
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
 
+            {/* Registration URL */}
             {formData.registrationUrl && (
-              <div className="border-t pt-4">
-                <h3 className="font-semibold mb-2">Registration Link:</h3>
-                <div className="bg-gray-100 p-3 rounded-lg flex items-center justify-between">
-                  <span className="text-sm truncate flex-1">{formData.registrationUrl}</span>
+              <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-6 border border-gray-200">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="font-semibold text-gray-800 text-lg flex items-center gap-2">
+                    <LinkIcon className="w-5 h-5 text-blue-500" />
+                    Registration Link
+                  </h3>
+                  <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-medium">
+                    Active
+                  </span>
+                </div>
+                <div className="bg-white rounded-lg p-4 border border-gray-300 flex items-center justify-between">
+                  <span className="text-gray-700 font-mono text-sm truncate flex-1 mr-4">
+                    {formData.registrationUrl}
+                  </span>
                   <Button
                     size="sm"
                     onClick={() => navigator.clipboard.writeText(formData.registrationUrl)}
+                    className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors duration-200"
                   >
-                    Copy
+                    Copy Link
                   </Button>
                 </div>
               </div>
             )}
+
+            {/* Action Buttons */}
+            <div className="flex gap-4 pt-6 border-t border-gray-200">
+              <Button
+                onClick={() => setPreviewMode(false)}
+                className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium py-3 rounded-lg shadow-lg transform hover:scale-105 transition-all duration-200"
+              >
+                Continue Editing
+              </Button>
+              <Button
+                variant="outline"
+                className="flex-1 border-gray-300 text-gray-700 hover:bg-gray-50 font-medium py-3 rounded-lg transition-all duration-200"
+              >
+                Save as Draft
+              </Button>
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -343,10 +447,10 @@ export default function CreateSeminarPage() {
                     onChange={handleChange}
                     className="w-full p-2 border border-gray-300 rounded-md"
                   >
-                    <option value="upcoming">Upcoming</option>
-                    <option value="ongoing">Ongoing</option>
-                    <option value="completed">Completed</option>
-                    <option value="cancelled">Cancelled</option>
+                    <option value="UPCOMING">Upcoming</option>
+                    <option value="ONGOING">Ongoing</option>
+                    <option value="COMPLETED">Completed</option>
+                    <option value="CANCELLED">Cancelled</option>
                   </select>
                 </div>
 

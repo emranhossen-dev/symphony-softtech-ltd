@@ -42,9 +42,22 @@ export async function GET() {
 // POST - Create new seminar
 export async function POST(request: NextRequest) {
   try {
-    const user = await getAuthenticatedUser();
+    // Check authentication
+    let user;
+    try {
+      user = await getAuthenticatedUser();
+      console.log('Authenticated user:', user);
+    } catch (authError) {
+      console.error('Authentication failed:', authError);
+      return NextResponse.json({
+        success: false,
+        error: 'Authentication required'
+      }, { status: 401 });
+    }
     
     const body = await request.json();
+    console.log('Received seminar data:', body);
+    
     const {
       title,
       description,
@@ -59,6 +72,7 @@ export async function POST(request: NextRequest) {
 
     // Validation
     if (!title || !description || !date || !time || !location || !maxParticipants) {
+      console.log('Validation failed - missing fields:', { title, description, date, time, location, maxParticipants });
       return NextResponse.json({
         success: false,
         error: 'Missing required fields'
@@ -72,20 +86,26 @@ export async function POST(request: NextRequest) {
         .replace(/[^a-z0-9]+/g, '-')
         .replace(/(^-|-$)/g, '')}`;
 
+    const seminarData = {
+      title,
+      description,
+      date: new Date(date),
+      time,
+      location,
+      maxParticipants: parseInt(maxParticipants),
+      imageUrl,
+      registrationUrl: slug,
+      status: status.toUpperCase(),
+      createdBy: user.id
+    };
+    
+    console.log('Creating seminar with data:', seminarData);
+    
     const seminar = await prisma.seminar.create({
-      data: {
-        title,
-        description,
-        date: new Date(date),
-        time,
-        location,
-        maxParticipants: parseInt(maxParticipants),
-        imageUrl,
-        registrationUrl: slug,
-        status,
-        createdBy: user.id
-      }
+      data: seminarData
     });
+    
+    console.log('Seminar created successfully:', seminar);
 
     return NextResponse.json({
       success: true,
