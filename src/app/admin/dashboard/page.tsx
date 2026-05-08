@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useOptimizedFetch } from '@/hooks/useOptimizedFetch';
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
@@ -38,6 +39,11 @@ interface DashboardStats {
   completionRate: number;
 }
 
+interface DashboardResponse {
+  stats: DashboardStats;
+  recentActivities: RecentActivity[];
+}
+
 interface RecentActivity {
   id: string;
   type: "enrollment" | "payment" | "approval" | "rejection" | "course_created" | "module_added";
@@ -59,7 +65,18 @@ interface QuickAction {
 export default function AdminDashboard() {
   const router = useRouter();
   
-  const [stats, setStats] = useState<DashboardStats>({
+  const [searchQuery, setSearchQuery] = useState("");
+
+  // Use optimized fetch for dashboard data
+  const { data: dashboardData, loading: dataLoading, error, refetch } = useOptimizedFetch<DashboardResponse>("/api/admin/dashboard", {
+    showLoading: true,
+    loadingMessage: 'Loading dashboard...',
+    cacheTime: 3 * 60 * 1000, // 3 minutes cache
+    retryCount: 2
+  });
+
+  // Extract data from the fetch response
+  const stats: DashboardStats = dashboardData?.stats || {
     totalEnrollments: 0,
     pendingApprovals: 0,
     paymentPending: 0,
@@ -71,11 +88,9 @@ export default function AdminDashboard() {
     totalCourses: 0,
     totalModules: 0,
     completionRate: 0,
-  });
+  };
 
-  const [recentActivities, setRecentActivities] = useState<RecentActivity[]>([]);
-  const [dataLoading, setDataLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState("");
+  const recentActivities: RecentActivity[] = dashboardData?.recentActivities || [];
 
   const quickActions: QuickAction[] = [
     {
@@ -107,29 +122,6 @@ export default function AdminDashboard() {
       color: "from-orange-500 to-orange-600",
     },
   ];
-
-  const fetchDashboardData = async () => {
-    try {
-      setDataLoading(true);
-      const res = await fetch("/api/admin/dashboard");
-      const data = await res.json();
-
-      if (data.success) {
-        setStats(data.stats);
-        setRecentActivities(data.recentActivities || []);
-      } else {
-        console.error("Failed to load dashboard data");
-      }
-    } catch (error) {
-      console.error("Network error:", error);
-    } finally {
-      setDataLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchDashboardData();
-  }, []);
 
   const filteredActivities = recentActivities.filter((activity) =>
     activity.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -206,7 +198,7 @@ export default function AdminDashboard() {
                 />
               </div>
               <Button
-                onClick={fetchDashboardData}
+                onClick={refetch}
                 disabled={dataLoading}
                 className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white border-0 shadow-lg shadow-blue-500/25 px-4 py-2 text-sm"
               >

@@ -1,3 +1,0 @@
-module.exports=[63021,(r,e,i)=>{e.exports=r.x("@prisma/client-2c3a283f134fdcb6",()=>require("@prisma/client-2c3a283f134fdcb6"))},98043,r=>{"use strict";let e;var i=r.i(63021);let o=globalThis;try{console.log("DATABASE_URL:",process.env.DATABASE_URL),o.prisma?e=o.prisma:o.prisma=e=new i.PrismaClient({log:["error"]})}catch(r){throw console.error("Failed to initialize Prisma client:",r),Error("Database connection failed. Please check your DATABASE_URL configuration.")}r.s(["prisma",()=>e])},24361,(r,e,i)=>{e.exports=r.x("util",()=>require("util"))},88947,(r,e,i)=>{e.exports=r.x("stream",()=>require("stream"))}];
-
-//# sourceMappingURL=%5Broot-of-the-server%5D__5fd8618e._.js.map

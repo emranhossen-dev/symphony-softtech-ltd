@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Star, Users, Clock, TrendingUp, Award, Play, Zap, Heart, ArrowRight } from "lucide-react";
 import { formatBDT } from '@/lib/currency';
 
@@ -22,6 +23,7 @@ interface Course {
 }
 
 const FeaturedCoursesSection = () => {
+  const router = useRouter();
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -59,7 +61,7 @@ const FeaturedCoursesSection = () => {
   };
 
   const handleCourseClick = (courseId: string) => {
-    window.location.href = `/course/${courseId}`;
+    router.push(`/course/${courseId}`);
   };
 
   if (loading) {
@@ -131,12 +133,12 @@ const FeaturedCoursesSection = () => {
           {courses.map((course, index) => (
             <div
               key={course.id}
-              className="group relative"
+              className="group relative cursor-pointer pointer-events-auto"
               style={{ animationDelay: `${index * 100}ms` }}
+              onClick={() => handleCourseClick(course.id)}
             >
               <div 
-                className="relative bg-gradient-to-br from-indigo-950 via-purple-950 to-black backdrop-blur-2xl rounded-3xl border border-purple-500/20 overflow-hidden hover:scale-[1.03] transition-all duration-700 cursor-pointer shadow-2xl hover:shadow-purple-500/30"
-                onClick={() => handleCourseClick(course.id)}
+                className="relative bg-gradient-to-br from-indigo-950 via-purple-950 to-black backdrop-blur-2xl rounded-3xl border border-purple-500/20 overflow-hidden hover:scale-[1.03] transition-all duration-700 shadow-2xl hover:shadow-purple-500/30 pointer-events-none"
               >
                 {/* Animated Gradient Border */}
                 <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 opacity-0 group-hover:opacity-20 transition-opacity duration-500"></div>
@@ -181,7 +183,7 @@ const FeaturedCoursesSection = () => {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent rounded-2xl"></div>
                 </div>
 
-                <div className="p-6 relative z-10">
+                <div className="p-6 relative z-10 pointer-events-auto">
                   {/* Rating with Stars */}
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2">
@@ -246,7 +248,13 @@ const FeaturedCoursesSection = () => {
                     </div>
                     <div className="relative">
                       <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 blur-lg rounded-full"></div>
-                      <div className="relative flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full hover:from-purple-500 hover:to-pink-500 transition-all duration-300 cursor-pointer">
+                      <div 
+                        className="relative flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full hover:from-purple-500 hover:to-pink-500 transition-all duration-300 cursor-pointer"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleCourseClick(course.id);
+                        }}
+                      >
                         <Play className="w-4 h-4 text-white" />
                         <span className="text-white font-bold">ENROLL NOW</span>
                       </div>
@@ -259,7 +267,7 @@ const FeaturedCoursesSection = () => {
         </div>
         <div className="text-center">
                 <div className="inline-flex items-center gap-4 px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full text-white font-semibold shadow-2xl hover:shadow-blue-500/25 transition-all duration-300 hover:scale-105 cursor-pointer"
-                  onClick={() => window.location.href = '/courses'}>
+                  onClick={() => router.push('/courses')}>
                   <Award className="w-5 h-5" />
                   <span>View All Courses</span>
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />

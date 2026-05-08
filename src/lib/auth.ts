@@ -1,7 +1,10 @@
 import * as bcrypt from "bcryptjs";
 import * as jwt from "jsonwebtoken";
-import { prisma } from "@/lib/prisma";
+import { createClient } from "@/utils/supabase/server";
 import { cookies } from "next/headers";
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
 
 const JWT_SECRET = process.env.JWT_SECRET as string;
 

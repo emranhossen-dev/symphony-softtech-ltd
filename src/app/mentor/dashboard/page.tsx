@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useOptimizedParallelFetch } from '@/hooks/useOptimizedFetch';
 import { BookOpen, Users, FileText, Calendar, Video, VideoOff, Clock, CheckCircle, XCircle, AlertCircle, TrendingUp, Award, MessageSquare, Eye, Edit, Trash2, Download, Play, Pause, BarChart3, UserCheck, UserX } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -67,6 +68,14 @@ interface LiveClass {
   meetingLink?: string;
 }
 
+interface DashboardData {
+  courses: Course[];
+  students: Student[];
+  submissions: HomeworkSubmission[];
+  classes: LiveClass[];
+  records: AttendanceRecord[];
+}
+
 interface AttendanceRecord {
   id: string;
   studentId: string;
@@ -80,12 +89,6 @@ interface AttendanceRecord {
 }
 
 export default function MentorDashboard() {
-  const [courses, setCourses] = useState<Course[]>([]);
-  const [students, setStudents] = useState<Student[]>([]);
-  const [homeworkSubmissions, setHomeworkSubmissions] = useState<HomeworkSubmission[]>([]);
-  const [liveClasses, setLiveClasses] = useState<LiveClass[]>([]);
-  const [attendanceRecords, setAttendanceRecords] = useState<AttendanceRecord[]>([]);
-  const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'overview' | 'courses' | 'students' | 'homework' | 'attendance' | 'live-classes'>('overview');
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
   const [showReviewModal, setShowReviewModal] = useState(false);
@@ -98,53 +101,33 @@ export default function MentorDashboard() {
   });
   const [attendanceData, setAttendanceData] = useState<{[key: string]: 'PRESENT' | 'ABSENT' | 'LATE'}>({});
 
+  // Use optimized parallel fetch for dashboard data
+  const { data: dashboardData, loading, error, refetch } = useOptimizedParallelFetch<DashboardData>([
+    '/api/mentor/courses',
+    '/api/mentor/students',
+    '/api/mentor/homework',
+    '/api/mentor/live-classes',
+    '/api/mentor/attendance'
+  ], {
+    showLoading: true,
+    loadingMessage: 'Loading dashboard data...',
+    cacheTime: 2 * 60 * 1000, // 2 minutes cache
+    retryCount: 2
+  });
+
+  // Extract data from the parallel fetch response
+  const courses = dashboardData?.[0]?.courses || [];
+  const students = dashboardData?.[1]?.students || [];
+  const homeworkSubmissions = dashboardData?.[2]?.submissions || [];
+  const liveClasses = dashboardData?.[3]?.classes || [];
+  const attendanceRecords = dashboardData?.[4]?.records || [];
+
+  // Show error toast if there's an error
   useEffect(() => {
-    fetchDashboardData();
-  }, []);
-
-  const fetchDashboardData = async () => {
-    try {
-      // Fetch all data in parallel
-      const [
-        coursesResponse,
-        studentsResponse,
-        homeworkResponse,
-        liveClassesResponse,
-        attendanceResponse
-      ] = await Promise.all([
-        fetch('/api/mentor/courses'),
-        fetch('/api/mentor/students'),
-        fetch('/api/mentor/homework'),
-        fetch('/api/mentor/live-classes'),
-        fetch('/api/mentor/attendance')
-      ]);
-
-      const [
-        coursesData,
-        studentsData,
-        homeworkData,
-        liveClassesData,
-        attendanceData
-      ] = await Promise.all([
-        coursesResponse.json(),
-        studentsResponse.json(),
-        homeworkResponse.json(),
-        liveClassesResponse.json(),
-        attendanceResponse.json()
-      ]);
-
-      setCourses(coursesData.courses || []);
-      setStudents(studentsData.students || []);
-      setHomeworkSubmissions(homeworkData.submissions || []);
-      setLiveClasses(liveClassesData.classes || []);
-      setAttendanceRecords(attendanceData.records || []);
-    } catch (error) {
-      console.error('Error fetching dashboard data:', error);
+    if (error) {
       toast.error('Failed to load dashboard data');
-    } finally {
-      setLoading(false);
     }
-  };
+  }, [error]);
 
   const handleReviewSubmission = async () => {
     if (!selectedSubmission) return;
@@ -164,7 +147,7 @@ export default function MentorDashboard() {
         setShowReviewModal(false);
         setSelectedSubmission(null);
         setReviewData({ status: 'APPROVED', grade: 0, feedback: '' });
-        fetchDashboardData();
+        refetch();
       } else {
         const error = await response.json();
         toast.error(error.error || 'Failed to review homework');
@@ -195,7 +178,7 @@ export default function MentorDashboard() {
         toast.success('Attendance marked successfully!');
         setShowAttendanceModal(false);
         setAttendanceData({});
-        fetchDashboardData();
+        refetch();
       } else {
         const error = await response.json();
         toast.error(error.error || 'Failed to mark attendance');
@@ -216,7 +199,7 @@ export default function MentorDashboard() {
 
       if (response.ok) {
         toast.success('Live class started successfully!');
-        fetchDashboardData();
+        refetch();
       } else {
         const error = await response.json();
         toast.error(error.error || 'Failed to start class');
@@ -237,7 +220,7 @@ export default function MentorDashboard() {
 
       if (response.ok) {
         toast.success('Live class ended successfully!');
-        fetchDashboardData();
+        refetch();
       } else {
         const error = await response.json();
         toast.error(error.error || 'Failed to end class');

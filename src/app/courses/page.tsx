@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Search, Filter, Star, Users, Clock, DollarSign, BookOpen, Grid, List } from 'lucide-react';
 import { formatBDT } from '@/lib/currency';
 
@@ -23,6 +24,7 @@ interface Course {
 }
 
 export default function CoursesPage() {
+  const router = useRouter();
   const [courses, setCourses] = useState<Course[]>([]);
   const [filteredCourses, setFilteredCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
@@ -377,7 +379,7 @@ export default function CoursesPage() {
                           </span>
                         </div>
                         <button 
-                          onClick={() => window.location.href = `/course/${course.id}`}
+                          onClick={() => router.push(`/course/${course.id}`)}
                           className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
                         >
                           View Course

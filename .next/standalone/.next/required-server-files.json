@@ -212,9 +212,6 @@
       "turbopackFileSystemCacheForDev": true,
       "turbopackFileSystemCacheForBuild": false,
       "turbopackInferModuleSideEffects": false,
-      "serverComponentsExternalPackages": [
-        "pg"
-      ],
       "optimizePackageImports": [
         "lucide-react",
         "date-fns",

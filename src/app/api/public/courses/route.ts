@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { createClient } from '@/utils/supabase/server';
+import { cookies } from 'next/headers';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -8,60 +9,55 @@ export async function GET(request: NextRequest) {
   const category = searchParams.get('category');
 
   try {
-    // Build where clause
-    const whereClause: any = {
-      isActive: true
-    };
-
-    if (featured) {
-      // Remove this check since 'featured' field doesn't exist in schema
-    }
+    const cookieStore = await cookies()
+    const supabase = createClient(cookieStore)
+    
+    // Build query
+    let query = supabase
+      .from('courses')
+      .select(`
+        *,
+        mentor:users (
+          name
+        ),
+        category:categories (
+          name,
+          slug
+        )
+      `)
+      .eq('isActive', true)
+      .limit(limit)
 
     if (category) {
-      whereClause.category = category;
+      query = query.eq('category', category)
     }
 
-    // Fetch courses with related data
-    const courses = await prisma.course.findMany({
-      where: whereClause,
-      include: {
-        mentor: {
-          select: {
-            name: true
-          }
-        },
-        _count: {
-          select: {
-            modules: true,
-            enrollments: true
-          }
-        }
-      },
-      orderBy: {
-        createdAt: 'desc'
-      },
-      take: limit
-    });
+    const { data: courses, error } = await query
 
-    // Transform the data
-    const transformedCourses = courses.map(course => ({
+    if (error) {
+      console.error('Error fetching courses:', error)
+      return NextResponse.json(
+        { error: 'Failed to fetch courses' },
+        { status: 500 }
+      )
+    }
+
+    // Transform data to match expected interface
+    const transformedCourses = courses?.map(course => ({
       id: course.id,
       title: course.title,
+      slug: course.slug,
       description: course.description || '',
-      shortDescription: course.shortDescription || '',
       thumbnail: course.thumbnail || '',
-      category: course.category,
       price: course.price || 0,
       duration: course.duration || '',
-      level: 'beginner', // Default value since field doesn't exist in schema
+      mentor: course.mentor?.name || 'Unknown',
+      category: course.category?.name || 'Uncategorized',
+      categorySlug: course.category?.slug || 'uncategorized',
       isActive: course.isActive,
-      featured: false, // Default value since field doesn't exist in schema
-      rating: 0, // Default value since field doesn't exist in schema
-      reviewCount: 0, // Default value since field doesn't exist in schema
-      enrollmentCount: course._count.enrollments,
-      moduleCount: course._count.modules,
-      mentor: course.mentor?.name || 'Unknown'
-    }));
+      moduleCount: 0, // Will be calculated later
+      enrollmentCount: 0 // Will be calculated later
+    })) || []
 
     return NextResponse.json({
       success: true,
@@ -76,71 +72,38 @@ export async function GET(request: NextRequest) {
       {
         id: 'course-1',
         title: 'BCS Preparation',
+        slug: 'bcs-preparation',
         description: 'Complete BCS exam preparation course',
-        shortDescription: 'Prepare for BCS exams',
         thumbnail: '',
-        category: 'government',
         price: 5000,
         duration: '6 months',
-        level: 'beginner',
+        mentor: 'Dr. Ahmed',
+        category: 'Government Courses',
+        categorySlug: 'government',
         isActive: true,
-        featured: true,
-        rating: 4.5,
-        reviewCount: 120,
-        enrollmentCount: 450,
         moduleCount: 10,
-        mentor: 'Dr. Ahmed'
+        enrollmentCount: 150
       },
       {
         id: 'course-2',
         title: 'Web Development',
+        slug: 'web-development',
         description: 'Learn modern web development',
-        shortDescription: 'Full-stack web development',
         thumbnail: '',
-        category: 'programming',
         price: 8000,
         duration: '3 months',
-        level: 'intermediate',
+        mentor: 'John Doe',
+        category: 'Programming',
+        categorySlug: 'programming',
         isActive: true,
-        featured: true,
-        rating: 4.8,
-        reviewCount: 89,
-        enrollmentCount: 320,
         moduleCount: 15,
-        mentor: 'John Doe'
-      },
-      {
-        id: 'course-3',
-        title: 'Data Science',
-        description: 'Master data science and machine learning',
-        shortDescription: 'Data science fundamentals',
-        thumbnail: '',
-        category: 'programming',
-        price: 12000,
-        duration: '4 months',
-        level: 'advanced',
-        isActive: true,
-        featured: false,
-        rating: 4.7,
-        reviewCount: 67,
-        enrollmentCount: 180,
-        moduleCount: 20,
-        mentor: 'Dr. Smith'
+        enrollmentCount: 75
       }
     ];
 
-    // Filter based on query parameters
-    let filteredCourses = mockCourses;
-    
-    if (featured) {
-      filteredCourses = filteredCourses.filter(course => course.featured);
-    }
-    
-    filteredCourses = filteredCourses.slice(0, limit);
-
     return NextResponse.json({
       success: true,
-      courses: filteredCourses
+      courses: mockCourses
     });
   }
 }

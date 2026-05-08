@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { formatBDT } from '@/lib/currency';
 import GovtRegistrationForm from "@/components/ui/GovtRegistrationForm";
 import EnrollmentForm from "@/components/enrollment/EnrollmentForm";
@@ -25,6 +26,7 @@ interface Course {
 }
 
 const GovernmentCategoryPage = () => {
+  const router = useRouter();
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
@@ -42,6 +44,10 @@ const GovernmentCategoryPage = () => {
   const handleCloseModal = () => {
     setShowEnrollModal(false);
     setSelectedCourse(null);
+  };
+
+  const handleCourseClick = (courseId: string) => {
+    router.push(`/course/${courseId}`);
   };
 
   const fetchGovernmentCourses = async () => {
@@ -259,207 +265,88 @@ const GovernmentCategoryPage = () => {
             <p className="text-gray-600">Check back later for new government course offerings.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Main Content */}
-            <div className="lg:col-span-2">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {courses.map((course) => (
-                  <div key={course.id} className="group relative">
-                    {/* Glass Card */}
-                    <div className="relative bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-lg rounded-3xl border border-white/20 overflow-hidden hover:scale-105 transition-all duration-500">
-                      {/* Hover Gradient Overlay */}
-                      <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-purple-500/10 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                      
-                      {/* Course Image */}
-                      <div className="relative h-56 bg-gradient-to-br from-blue-600/20 to-purple-600/20 flex items-center justify-center overflow-hidden">
-                        {course.thumbnail ? (
-                          <img 
-                            src={course.thumbnail} 
-                            alt={course.title}
-                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                          />
-                        ) : (
-                          <div className="text-center">
-                            <Award className="w-16 h-16 text-blue-400 mx-auto mb-3" />
-                            <p className="text-sm text-white/70">Course Image</p>
-                          </div>
-                        )}
-                        {course.featured && (
-                          <div className="absolute top-4 right-4 px-4 py-2 bg-gradient-to-r from-yellow-500 to-orange-500 text-white text-sm font-bold rounded-full shadow-lg">
-                            ⭐ Featured
-                          </div>
-                        )}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {courses.map((course) => (
+              <div 
+              key={course.id} 
+              className="group relative cursor-pointer"
+              onClick={() => handleCourseClick(course.id)}
+            >
+                {/* Glass Card */}
+                <div className="relative bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-lg rounded-3xl border border-white/20 overflow-hidden hover:scale-105 transition-all duration-500">
+                  {/* Hover Gradient Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-purple-500/10 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  
+                  {/* Course Image */}
+                  <div className="relative h-56 bg-gradient-to-br from-blue-600/20 to-purple-600/20 flex items-center justify-center overflow-hidden">
+                    {course.thumbnail ? (
+                      <img 
+                        src={course.thumbnail} 
+                        alt={course.title}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                      />
+                    ) : (
+                      <div className="text-center">
+                        <Award className="w-16 h-16 text-blue-400 mx-auto mb-3" />
+                        <p className="text-sm text-white/70">Course Image</p>
                       </div>
-
-                      {/* Course Content */}
-                      <div className="relative p-8">
-                        <div className="flex items-center justify-between mb-6">
-                          <span className="text-sm font-bold text-blue-300 bg-blue-500/20 px-4 py-2 rounded-full border border-blue-400/30">
-                            {course.level}
-                          </span>
-                          <div className="flex items-center gap-2">
-                            <Star className="w-5 h-5 text-yellow-400 fill-yellow-400" />
-                            <span className="text-sm text-white font-semibold">{course.rating}</span>
-                          </div>
-                        </div>
-
-                        <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-blue-400 group-hover:to-purple-400 transition-all duration-300">
-                          {course.title}
-                        </h3>
-                        
-                        <p className="text-white/70 mb-6 line-clamp-3 leading-relaxed">
-                          {course.shortDescription || course.description}
-                        </p>
-
-                        <div className="flex items-center gap-6 text-sm text-white/60 mb-6">
-                          <div className="flex items-center gap-2">
-                            <Clock className="w-5 h-5 text-blue-400" />
-                            <span>{course.duration}</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Users className="w-5 h-5 text-purple-400" />
-                            <span>{course.enrollmentCount} Students</span>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center justify-between pt-6 border-t border-white/10">
-                          <div className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-blue-400">
-                            {formatBDT(course.price)}
-                          </div>
-                          <button 
-                            onClick={() => handleEnrollClick(course)}
-                            className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold rounded-xl hover:shadow-lg hover:shadow-blue-500/25 transition-all duration-300 hover:scale-105"
-                          >
-                            Enroll Now
-                          </button>
-                        </div>
+                    )}
+                    {course.featured && (
+                      <div className="absolute top-4 right-4 px-4 py-2 bg-gradient-to-r from-yellow-500 to-orange-500 text-white text-sm font-bold rounded-full shadow-lg">
+                        ⭐ Featured
                       </div>
-                    </div>
+                    )}
                   </div>
-                ))}
-              </div>
-            </div>
 
-            {/* Enhanced Sidebar - Desktop Only */}
-            <div className="hidden lg:block">
-              <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20 sticky top-6">
-                {/* Category Info */}
-                <div className="mb-6">
-                  <h3 className="text-xl font-bold text-white mb-4">
-                    Why Choose Us?
-                  </h3>
-                  <div className="space-y-4">
-                    <div className="flex items-start gap-3">
-                      <div className="w-8 h-8 bg-blue-500/20 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
-                        <BookOpen className="w-4 h-4 text-blue-400" />
-                      </div>
-                      <div>
-                        <div className="font-semibold text-white mb-1">Comprehensive Study Material</div>
-                        <div className="text-sm text-white/70">Updated syllabus with latest exam patterns</div>
+                  {/* Course Content */}
+                  <div className="relative p-8">
+                    <div className="flex items-center justify-between mb-6">
+                      <span className="text-sm font-bold text-blue-300 bg-blue-500/20 px-4 py-2 rounded-full border border-blue-400/30">
+                        {course.level}
+                      </span>
+                      <div className="flex items-center gap-2">
+                        <Star className="w-5 h-5 text-yellow-400 fill-yellow-400" />
+                        <span className="text-sm text-white font-semibold">{course.rating}</span>
                       </div>
                     </div>
-                    <div className="flex items-start gap-3">
-                      <div className="w-8 h-8 bg-purple-500/20 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
-                        <Users className="w-4 h-4 text-purple-400" />
-                      </div>
-                      <div>
-                        <div className="font-semibold text-white mb-1">Expert Faculty</div>
-                        <div className="text-sm text-white/70">Experienced government exam trainers</div>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <div className="w-8 h-8 bg-blue-500/20 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
-                        <Target className="w-4 h-4 text-blue-400" />
-                      </div>
-                      <div>
-                        <div className="font-semibold text-white mb-1">Mock Tests</div>
-                        <div className="text-sm text-white/70">Regular practice with real exam patterns</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
 
-                {/* Contact Info */}
-                <div className="mb-6">
-                  <h3 className="text-xl font-bold text-white mb-4">
-                    Get in Touch
-                  </h3>
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-3 text-sm">
-                      <div className="w-8 h-8 bg-blue-500/20 rounded-full flex items-center justify-center">
-                        <span className="text-xs">📞</span>
-                      </div>
-                      <div>
-                        <div className="font-semibold text-white">+1 (555) 123-4567</div>
-                        <div className="text-white/70">Mon-Fri, 9AM-6PM</div>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3 text-sm">
-                      <div className="w-8 h-8 bg-blue-500/20 rounded-full flex items-center justify-center">
-                        <span className="text-xs">✉️</span>
-                      </div>
-                      <div>
-                        <div className="font-semibold text-white">info@symphonyinstitute.com</div>
-                        <div className="text-white/70">24/7 Support</div>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3 text-sm">
-                      <div className="w-8 h-8 bg-blue-500/20 rounded-full flex items-center justify-center">
-                        <span className="text-xs">📍</span>
-                      </div>
-                      <div>
-                        <div className="font-semibold text-white">Delhi, Mumbai, Bangalore</div>
-                        <div className="text-white/70">Offline Centers</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                    <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-blue-400 group-hover:to-purple-400 transition-all duration-300">
+                      {course.title}
+                    </h3>
+                    
+                    <p className="text-white/70 mb-6 line-clamp-3 leading-relaxed">
+                      {course.shortDescription || course.description}
+                    </p>
 
-                {/* Quick Enroll Button */}
-                <button className="w-full bg-gradient-to-r from-blue-500 to-purple-500 text-white font-semibold rounded-xl hover:from-blue-600 hover:to-purple-600 transition-all duration-300 group mb-4">
-                  Quick Enroll
-                  <Target className="inline-block ml-2 h-4 w-4 group-hover:scale-110 transition-transform" />
-                </button>
-
-                {/* Download Brochure */}
-                <button className="w-full bg-white/10 backdrop-blur-sm text-white font-semibold rounded-xl border border-white/20 hover:bg-white/20 transition-all duration-300 group">
-                  Download Brochure
-                  <BookOpen className="inline-block ml-2 h-4 w-4 group-hover:scale-110 transition-transform" />
-                </button>
-
-                {/* Registration Form */}
-                <div className="mt-6 pt-6 border-t border-white/20">
-                  <h3 className="text-xl font-bold text-white mb-4">
-                    Quick Registration
-                  </h3>
-                  <p className="text-sm text-white/70 mb-4">
-                    Fill out the form below to register instantly
-                  </p>
-                  <GovtRegistrationForm 
-                    courseName="Government Job Preparation"
-                    onSuccess={(data) => console.log("Government registration successful:", data)}
-                  />
-                </div>
-
-                {/* Trust Indicators */}
-                <div className="mt-6 pt-6 border-t border-white/20">
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2 text-xs text-white/70">
-                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                      <span>Government Approved</span>
+                    <div className="flex items-center gap-6 text-sm text-white/60 mb-6">
+                      <div className="flex items-center gap-2">
+                        <Clock className="w-5 h-5 text-blue-400" />
+                        <span>{course.duration}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Users className="w-5 h-5 text-purple-400" />
+                        <span>{course.enrollmentCount} Students</span>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2 text-xs text-white/70">
-                      <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                      <span>ISO Certified</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-xs text-white/70">
-                      <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
-                      <span>Placement Assured</span>
+
+                    <div className="flex items-center justify-between pt-6 border-t border-white/10">
+                      <div className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-blue-400">
+                        {formatBDT(course.price)}
+                      </div>
+                      <button 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleEnrollClick(course);
+                        }}
+                        className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold rounded-xl hover:shadow-lg hover:shadow-blue-500/25 transition-all duration-300 hover:scale-105"
+                      >
+                        Enroll Now
+                      </button>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
+            ))}
           </div>
         )}
         </div>

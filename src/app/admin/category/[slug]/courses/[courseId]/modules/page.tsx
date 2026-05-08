@@ -32,6 +32,8 @@ interface Module {
   title: string;
   videoUrl?: string;
   homework?: string;
+  topics?: string[];
+  description?: string;
   order: number;
   isLocked: boolean;
   createdAt: string;
@@ -397,6 +399,28 @@ const ModulesPage = () => {
                         </div>
                       )}
                       
+                      {/* Topics */}
+                      {module.topics && module.topics.length > 0 && (
+                        <div className="text-sm text-gray-600 p-4 bg-blue-50 rounded-xl border border-blue-200 mb-4">
+                          <div className="flex items-start gap-3">
+                            <BookOpen className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                            <div className="flex-1">
+                              <p className="font-medium text-blue-900 mb-2">Topics ({module.topics.length})</p>
+                              <div className="space-y-1">
+                                {module.topics.map((topic, index) => (
+                                  <div key={index} className="flex items-center gap-2">
+                                    <span className="w-5 h-5 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs font-medium">
+                                      {index + 1}
+                                    </span>
+                                    <span className="text-gray-700">{topic}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
                       {/* Homework */}
                       {module.homework && (
                         <div className="text-sm text-gray-600 p-4 bg-purple-50 rounded-xl border border-purple-200">

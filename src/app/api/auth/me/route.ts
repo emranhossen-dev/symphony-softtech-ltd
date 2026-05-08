@@ -7,14 +7,12 @@ export const runtime = 'nodejs';
 export async function GET(request: NextRequest) {
   try {
     // Try to get token from cookie first, then from header
-    const cookieToken = request.cookies.get('auth_token')?.value;
-    const oldCookieToken = request.cookies.get('auth-token')?.value;
+    const cookieToken = request.cookies.get('auth-token')?.value;
     const headerToken = request.headers.get('Authorization')?.replace('Bearer ', '');
-    const token = cookieToken || oldCookieToken || headerToken;
+    const token = cookieToken || headerToken;
 
     console.log('🔐 /api/auth/me - Token sources:');
-    console.log('  - Cookie (auth_token):', !!cookieToken);
-    console.log('  - Cookie (auth-token):', !!oldCookieToken);
+    console.log('  - Cookie (auth-token):', !!cookieToken);
     console.log('  - Header:', !!headerToken);
 
     if (!token) {

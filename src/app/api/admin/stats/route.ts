@@ -1,6 +1,63 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
+// Helper function to return zero stats
+function getZeroStatsResponse() {
+  const zeroStats = {
+    quickStats: {
+      totalStudents: 0,
+      totalRevenue: 0,
+      activeCourses: 0,
+      pendingApplications: 0,
+      totalEnrollments: 0,
+      totalMentors: 0,
+      recentEnrollments: 0,
+      monthlyRevenue: 0
+    },
+    categoryStats: [
+      {
+        name: 'Government',
+        slug: 'government',
+        _count: {
+          courses: 0,
+          enrollments: 0
+        }
+      },
+      {
+        name: 'Online',
+        slug: 'online',
+        _count: {
+          courses: 0,
+          enrollments: 0
+        }
+      },
+      {
+        name: 'Offline',
+        slug: 'offline',
+        _count: {
+          courses: 0,
+          enrollments: 0
+        }
+      },
+      {
+        name: 'Recorded',
+        slug: 'recorded',
+        _count: {
+          courses: 0,
+          enrollments: 0
+        }
+      }
+    ],
+    courseStats: [],
+    recentActivities: []
+  };
+
+  return NextResponse.json({
+    success: true,
+    stats: zeroStats
+  });
+}
+
 // GET /api/admin/stats - Get dynamic admin stats
 export async function GET(request: NextRequest) {
   console.log('Stats API called');
@@ -9,60 +66,15 @@ export async function GET(request: NextRequest) {
     // Check if database is available
     if (!prisma) {
       console.log('Database not available, returning zero stats');
-      // Return zero stats when database is not available
-      const zeroStats = {
-        quickStats: {
-          totalStudents: 0,
-          totalRevenue: 0,
-          activeCourses: 0,
-          pendingApplications: 0,
-          totalEnrollments: 0,
-          totalMentors: 0,
-          recentEnrollments: 0,
-          monthlyRevenue: 0
-        },
-        categoryStats: [
-          {
-            name: 'Government',
-            slug: 'government',
-            _count: {
-              courses: 0,
-              enrollments: 0
-            }
-          },
-          {
-            name: 'Online',
-            slug: 'online',
-            _count: {
-              courses: 0,
-              enrollments: 0
-            }
-          },
-          {
-            name: 'Offline',
-            slug: 'offline',
-            _count: {
-              courses: 0,
-              enrollments: 0
-            }
-          },
-          {
-            name: 'Recorded',
-            slug: 'recorded',
-            _count: {
-              courses: 0,
-              enrollments: 0
-            }
-          }
-        ],
-        courseStats: [],
-        recentActivities: []
-      };
+      return getZeroStatsResponse();
+    }
 
-      return NextResponse.json({
-        success: true,
-        stats: zeroStats
-      });
+    // Test database connection first
+    try {
+      await prisma.$queryRaw`SELECT 1`;
+    } catch (connectionError) {
+      console.error('Database connection test failed:', connectionError);
+      return getZeroStatsResponse();
     }
     // Get real-time stats from database
     const [
@@ -227,58 +239,6 @@ export async function GET(request: NextRequest) {
     console.log('Database error, returning zero stats');
     
     // Always return zero stats when there's any error
-    const zeroStats = {
-      quickStats: {
-        totalStudents: 0,
-        totalRevenue: 0,
-        activeCourses: 0,
-        pendingApplications: 0,
-        totalEnrollments: 0,
-        totalMentors: 0,
-        recentEnrollments: 0,
-        monthlyRevenue: 0
-      },
-      categoryStats: [
-        {
-          name: 'Government',
-          slug: 'government',
-          _count: {
-            courses: 0,
-            enrollments: 0
-          }
-        },
-        {
-          name: 'Online',
-          slug: 'online',
-          _count: {
-            courses: 0,
-            enrollments: 0
-          }
-        },
-        {
-          name: 'Offline',
-          slug: 'offline',
-          _count: {
-            courses: 0,
-            enrollments: 0
-          }
-        },
-        {
-          name: 'Recorded',
-          slug: 'recorded',
-          _count: {
-            courses: 0,
-            enrollments: 0
-          }
-        }
-      ],
-      courseStats: [],
-      recentActivities: []
-    };
-
-    return NextResponse.json({
-      success: true,
-      stats: zeroStats
-    });
+    return getZeroStatsResponse();
   }
 }

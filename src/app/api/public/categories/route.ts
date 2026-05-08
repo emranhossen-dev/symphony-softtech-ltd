@@ -1,47 +1,36 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { createClient } from '@/utils/supabase/server';
+import { cookies } from 'next/headers';
 
 export async function GET(request: NextRequest) {
   try {
-    // Check if database is available
-    if (!prisma) {
-      throw new Error('Database not available');
-    }
+    const cookieStore = await cookies()
+    const supabase = createClient(cookieStore)
     
     // Fetch all active categories with their active courses
-    const categories = await prisma.category.findMany({
-      where: {
-        isActive: true
-      },
-      include: {
-        courses: {
-          where: {
-            isActive: true
-          },
-          include: {
-            mentor: {
-              select: {
-                name: true
-              }
-            },
-            _count: {
-              select: {
-                modules: true
-              }
-            }
-          },
-          orderBy: {
-            createdAt: 'desc'
-          }
-        }
-      },
-      orderBy: {
-        name: 'asc'
-      }
-    });
-
-    // Transform the data to match the expected interface
-    const transformedCategories = categories.map(category => ({
+    const { data: categories, error } = await supabase
+      .from('categories')
+      .select(`
+        *,
+        courses (
+          *,
+          mentor:users (
+            name
+          )
+        )
+      `)
+      .eq('isActive', true)
+    
+    if (error) {
+      console.error('Error fetching categories:', error)
+      return NextResponse.json(
+        { error: 'Failed to fetch categories' },
+        { status: 500 }
+      )
+    }
+    
+    // Filter active courses and transform data
+    const categoriesWithActiveCourses = categories?.map(category => ({
       id: category.id,
       name: category.name,
       slug: category.slug,
@@ -49,19 +38,19 @@ export async function GET(request: NextRequest) {
       icon: category.icon || 'government',
       color: category.color || 'green',
       isActive: category.isActive,
-      courses: category.courses.map(course => ({
+      courses: category.courses?.filter((course: { isActive: any; }) => course.isActive).map((course: { id: any; title: any; thumbnail: any; mentor: { name: any; }; price: any; isActive: any; }) => ({
         id: course.id,
         title: course.title,
         thumbnail: course.thumbnail || '',
         mentor: course.mentor?.name || 'Unknown',
-        moduleCount: course._count.modules,
+        moduleCount: 0, // Will be calculated later
         price: course.price || 0,
         isActive: course.isActive
-      }))
-    }));
+      })) || []
+    })) || []
 
     // Filter out categories that have no active courses
-    const categoriesWithCourses = transformedCategories.filter(
+    const categoriesWithCourses = categoriesWithActiveCourses.filter(
       category => category.courses.length > 0
     );
 

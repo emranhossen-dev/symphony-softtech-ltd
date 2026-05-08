@@ -4,9 +4,7 @@ const nextConfig = {
     JWT_SECRET: process.env.JWT_SECRET,
   },
   output: 'standalone',
-  experimental: {
-    serverComponentsExternalPackages: ['pg'],
-  },
+  serverExternalPackages: ['pg'],
 };
 
 module.exports = nextConfig;

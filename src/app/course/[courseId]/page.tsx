@@ -356,10 +356,33 @@ const CourseDetailPage = () => {
   const fetchCourse = async () => {
     try {
       const response = await fetch(`/api/courses/${courseId}`);
-      const data = await response.json();
+      
+      if (!response.ok) {
+        console.error('Response not OK:', response.status, response.statusText);
+        return;
+      }
+      
+      const text = await response.text();
+      console.log('Raw response:', text);
+      
+      if (!text) {
+        console.error('Empty response received');
+        return;
+      }
+      
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch (parseError) {
+        console.error('JSON parse error:', parseError);
+        console.error('Response text was:', text);
+        return;
+      }
       
       if (data.success) {
         setCourse(data.course);
+      } else {
+        console.error('API returned error:', data.error);
       }
     } catch (error) {
       console.error('Error fetching course:', error);

@@ -1,6 +1,6 @@
 var R=require("../../../../../chunks/[turbopack]_runtime.js")("server/app/api/student/certificate/generate/route.js")
-R.c("server/chunks/[root-of-the-server]__b55c3b79._.js")
-R.c("server/chunks/_3adbf0dd._.js")
+R.c("server/chunks/[root-of-the-server]__5de65ea2._.js")
+R.c("server/chunks/node_modules_next_f5199d09._.js")
 R.c("server/chunks/node_modules_bcryptjs_index_42ebb250.js")
 R.c("server/chunks/[root-of-the-server]__09c3bdaf._.js")
 R.c("server/chunks/node_modules_next_f2da0d3e._.js")
