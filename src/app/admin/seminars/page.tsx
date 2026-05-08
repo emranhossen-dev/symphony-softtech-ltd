@@ -47,15 +47,11 @@ export default function SeminarsPage() {
 
   const fetchSeminars = async () => {
     try {
-      // TODO: Uncomment when API is ready
-      // const response = await fetch('/api/admin/seminars');
-      // const data = await response.json();
-      // if (data.success) {
-      //   setSeminars(data.data);
-      // }
-      
-      // Mock data for now
-      setSeminars([]);
+      const response = await fetch('/api/admin/seminars');
+      const data = await response.json();
+      if (data.success) {
+        setSeminars(data.data);
+      }
     } catch (error) {
       console.error('Error fetching seminars:', error);
     } finally {

@@ -401,6 +401,22 @@
       "namedRegex": "^/api/public/categories/(?<nxtPslug>[^/]+?)/mentors(?:/)?$"
     },
     {
+      "page": "/api/public/seminars/[slug]",
+      "regex": "^/api/public/seminars/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPslug": "nxtPslug"
+      },
+      "namedRegex": "^/api/public/seminars/(?<nxtPslug>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/api/seminars/[id]/register",
+      "regex": "^/api/seminars/([^/]+?)/register(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/seminars/(?<nxtPid>[^/]+?)/register(?:/)?$"
+    },
+    {
       "page": "/api/student/certificates/[certificateId]/download",
       "regex": "^/api/student/certificates/([^/]+?)/download(?:/)?$",
       "routeKeys": {
@@ -869,10 +885,10 @@
       "namedRegex": "^/api/admin/security(?:/)?$"
     },
     {
-      "page": "/api/admin/seminars.bak",
-      "regex": "^/api/admin/seminars\\.bak(?:/)?$",
+      "page": "/api/admin/seminars",
+      "regex": "^/api/admin/seminars(?:/)?$",
       "routeKeys": {},
-      "namedRegex": "^/api/admin/seminars\\.bak(?:/)?$"
+      "namedRegex": "^/api/admin/seminars(?:/)?$"
     },
     {
       "page": "/api/admin/settings",

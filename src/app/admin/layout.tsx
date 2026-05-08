@@ -53,8 +53,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     );
   }
 
-  // Show sidebar only for category detail pages
-  const shouldShowSidebar = pathname.includes('/admin/category/') && !pathname.endsWith('/admin/category');
+  // Show sidebar for all admin pages except main dashboard
+  const shouldShowSidebar = pathname !== '/admin' && pathname.startsWith('/admin/');
   
   return (
     <div className="admin-main-container min-h-screen bg-gray-50 h-screen overflow-hidden">
