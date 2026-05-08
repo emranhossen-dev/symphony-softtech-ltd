@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -36,10 +37,9 @@ interface Seminar {
 }
 
 export default function SeminarsPage() {
+  const router = useRouter();
   const [seminars, setSeminars] = useState<Seminar[]>([]);
   const [loading, setLoading] = useState(true);
-  const [showCreateForm, setShowCreateForm] = useState(false);
-  const [editingSeminar, setEditingSeminar] = useState<Seminar | null>(null);
 
   useEffect(() => {
     fetchSeminars();
@@ -107,7 +107,7 @@ export default function SeminarsPage() {
           <p className="text-gray-600 mt-1">Manage seminars and track registrations</p>
         </div>
         <Button
-          onClick={() => setShowCreateForm(true)}
+          onClick={() => router.push('/admin/seminars/create')}
           className="flex items-center gap-2"
         >
           <Plus className="w-4 h-4" />
@@ -302,28 +302,13 @@ export default function SeminarsPage() {
           <Calendar className="w-16 h-16 text-gray-400 mx-auto mb-4" />
           <h3 className="text-lg font-medium text-gray-900 mb-2">No seminars yet</h3>
           <p className="text-gray-600 mb-4">Create your first seminar to get started</p>
-          <Button onClick={() => setShowCreateForm(true)}>
+          <Button onClick={() => router.push('/admin/seminars/create')}>
             <Plus className="w-4 h-4 mr-2" />
             Create Seminar
           </Button>
         </div>
       )}
 
-      {/* Create/Edit Modal (to be implemented) */}
-      {showCreateForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-            <h2 className="text-xl font-bold mb-4">Create New Seminar</h2>
-            <p className="text-gray-600 mb-4">Seminar creation form will be implemented here</p>
-            <Button 
-              onClick={() => setShowCreateForm(false)}
-              variant="outline"
-            >
-              Close
-            </Button>
-          </div>
-        </div>
-      )}
-    </div>
+      </div>
   );
 }
