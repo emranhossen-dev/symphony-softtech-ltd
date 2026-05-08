@@ -2,7 +2,6 @@
   "/_global-error/page": "/_global-error",
   "/_not-found/page": "/_not-found",
   "/about/page": "/about",
-  "/add-category/page": "/add-category",
   "/admin/analytics/page": "/admin/analytics",
   "/admin/batches/page": "/admin/batches",
   "/admin/categories/[slug]/page": "/admin/categories/[slug]",
@@ -193,12 +192,9 @@
   "/category/recorded/page": "/category/recorded",
   "/certificate/[id]/page": "/certificate/[id]",
   "/certificates/verify/[verificationId]/route": "/certificates/verify/[verificationId]",
-  "/check-admin/page": "/check-admin",
-  "/check-users/page": "/check-users",
   "/contact/page": "/contact",
   "/course/[courseId]/page": "/course/[courseId]",
   "/courses/page": "/courses",
-  "/create-admin/page": "/create-admin",
   "/employee/category/[slug]/enrollments/page": "/employee/category/[slug]/enrollments",
   "/employee/category/[slug]/page": "/employee/category/[slug]",
   "/employee/enrollments/page": "/employee/enrollments",
@@ -230,10 +226,6 @@
   "/student/notifications/page": "/student/notifications",
   "/student/page": "/student",
   "/student/profile/page": "/student/profile",
-  "/test-api/page": "/test-api",
-  "/test-dashboard/page": "/test-dashboard",
   "/test-icons/page": "/test-icons",
-  "/test-supabase/page": "/test-supabase",
-  "/unauthorized/page": "/unauthorized",
-  "/verify-migration/page": "/verify-migration"
+  "/unauthorized/page": "/unauthorized"
 }

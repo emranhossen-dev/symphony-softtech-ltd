@@ -515,12 +515,6 @@
       "namedRegex": "^/about(?:/)?$"
     },
     {
-      "page": "/add-category",
-      "regex": "^/add\\-category(?:/)?$",
-      "routeKeys": {},
-      "namedRegex": "^/add\\-category(?:/)?$"
-    },
-    {
       "page": "/admin",
       "regex": "^/admin(?:/)?$",
       "routeKeys": {},
@@ -1361,18 +1355,6 @@
       "namedRegex": "^/category/recorded(?:/)?$"
     },
     {
-      "page": "/check-admin",
-      "regex": "^/check\\-admin(?:/)?$",
-      "routeKeys": {},
-      "namedRegex": "^/check\\-admin(?:/)?$"
-    },
-    {
-      "page": "/check-users",
-      "regex": "^/check\\-users(?:/)?$",
-      "routeKeys": {},
-      "namedRegex": "^/check\\-users(?:/)?$"
-    },
-    {
       "page": "/contact",
       "regex": "^/contact(?:/)?$",
       "routeKeys": {},
@@ -1383,12 +1365,6 @@
       "regex": "^/courses(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/courses(?:/)?$"
-    },
-    {
-      "page": "/create-admin",
-      "regex": "^/create\\-admin(?:/)?$",
-      "routeKeys": {},
-      "namedRegex": "^/create\\-admin(?:/)?$"
     },
     {
       "page": "/employee",
@@ -1535,40 +1511,16 @@
       "namedRegex": "^/student/profile(?:/)?$"
     },
     {
-      "page": "/test-api",
-      "regex": "^/test\\-api(?:/)?$",
-      "routeKeys": {},
-      "namedRegex": "^/test\\-api(?:/)?$"
-    },
-    {
-      "page": "/test-dashboard",
-      "regex": "^/test\\-dashboard(?:/)?$",
-      "routeKeys": {},
-      "namedRegex": "^/test\\-dashboard(?:/)?$"
-    },
-    {
       "page": "/test-icons",
       "regex": "^/test\\-icons(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/test\\-icons(?:/)?$"
     },
     {
-      "page": "/test-supabase",
-      "regex": "^/test\\-supabase(?:/)?$",
-      "routeKeys": {},
-      "namedRegex": "^/test\\-supabase(?:/)?$"
-    },
-    {
       "page": "/unauthorized",
       "regex": "^/unauthorized(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/unauthorized(?:/)?$"
-    },
-    {
-      "page": "/verify-migration",
-      "regex": "^/verify\\-migration(?:/)?$",
-      "routeKeys": {},
-      "namedRegex": "^/verify\\-migration(?:/)?$"
     }
   ],
   "dataRoutes": [],

@@ -2,7 +2,6 @@
   "/_global-error/page": "app/_global-error/page.js",
   "/_not-found/page": "app/_not-found/page.js",
   "/about/page": "app/about/page.js",
-  "/add-category/page": "app/add-category/page.js",
   "/admin/analytics/page": "app/admin/analytics/page.js",
   "/admin/batches/page": "app/admin/batches/page.js",
   "/admin/categories/[slug]/page": "app/admin/categories/[slug]/page.js",
@@ -193,12 +192,9 @@
   "/category/recorded/page": "app/category/recorded/page.js",
   "/certificate/[id]/page": "app/certificate/[id]/page.js",
   "/certificates/verify/[verificationId]/route": "app/certificates/verify/[verificationId]/route.js",
-  "/check-admin/page": "app/check-admin/page.js",
-  "/check-users/page": "app/check-users/page.js",
   "/contact/page": "app/contact/page.js",
   "/course/[courseId]/page": "app/course/[courseId]/page.js",
   "/courses/page": "app/courses/page.js",
-  "/create-admin/page": "app/create-admin/page.js",
   "/employee/category/[slug]/enrollments/page": "app/employee/category/[slug]/enrollments/page.js",
   "/employee/category/[slug]/page": "app/employee/category/[slug]/page.js",
   "/employee/enrollments/page": "app/employee/enrollments/page.js",
@@ -230,10 +226,6 @@
   "/student/notifications/page": "app/student/notifications/page.js",
   "/student/page": "app/student/page.js",
   "/student/profile/page": "app/student/profile/page.js",
-  "/test-api/page": "app/test-api/page.js",
-  "/test-dashboard/page": "app/test-dashboard/page.js",
   "/test-icons/page": "app/test-icons/page.js",
-  "/test-supabase/page": "app/test-supabase/page.js",
-  "/unauthorized/page": "app/unauthorized/page.js",
-  "/verify-migration/page": "app/verify-migration/page.js"
+  "/unauthorized/page": "app/unauthorized/page.js"
 }
