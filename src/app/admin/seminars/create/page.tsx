@@ -270,46 +270,56 @@ export default function CreateSeminarPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6">
-      {/* Header with gradient background */}
-      <div className="bg-white rounded-2xl shadow-xl p-8 mb-8 border border-gray-200">
-        <div className="flex items-center justify-between">
-          <div>
-            <Button
-              onClick={() => router.push('/admin/seminars')}
-              variant="outline"
-              className="mb-4 border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-all duration-200"
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Seminars
-            </Button>
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Create New Seminar
-            </h1>
-            <p className="text-gray-600 mt-2 text-lg">Organize an amazing learning experience for your audience</p>
-          </div>
-          <div className="hidden lg:block">
-            <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
-              <Calendar className="w-12 h-12 text-white" />
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden">
+      {/* Animated background elements */}
+      <div className="absolute inset-0">
+        <div className="absolute top-0 left-0 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute top-1/2 right-0 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        <div className="absolute bottom-0 left-1/2 w-96 h-96 bg-indigo-500/20 rounded-full blur-3xl animate-pulse delay-2000"></div>
+      </div>
+      
+      <div className="relative z-10 p-6">
+        {/* Header with glassmorphism */}
+        <div className="bg-white/10 backdrop-blur-xl rounded-3xl shadow-2xl p-8 mb-8 border border-white/20">
+          <div className="flex items-center justify-between">
+            <div>
+              <Button
+                onClick={() => router.push('/admin/seminars')}
+                variant="outline"
+                className="mb-4 bg-white/10 backdrop-blur-sm border-white/30 text-white hover:bg-white/20 hover:border-white/40 transition-all duration-300 rounded-xl"
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back to Seminars
+              </Button>
+              <div className="space-y-2">
+                <h1 className="text-5xl font-bold bg-gradient-to-r from-white via-purple-200 to-white bg-clip-text text-transparent">
+                  Create New Seminar
+                </h1>
+                <p className="text-purple-200 text-lg">Organize an amazing learning experience for your audience</p>
+              </div>
+            </div>
+            <div className="hidden lg:block">
+              <div className="w-32 h-32 bg-gradient-to-br from-purple-500 to-blue-600 rounded-3xl flex items-center justify-center shadow-2xl border border-white/20 backdrop-blur-sm">
+                <Calendar className="w-16 h-16 text-white" />
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Form */}
         <div className="lg:col-span-2">
-          <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
-            <CardHeader className="bg-gradient-to-r from-blue-50 to-purple-50 border-b border-gray-200">
-              <CardTitle className="text-xl font-semibold text-gray-800 flex items-center gap-2">
-                <div className="w-2 h-6 bg-gradient-to-b from-blue-500 to-purple-600 rounded-full"></div>
+          <Card className="shadow-2xl border-0 bg-white/10 backdrop-blur-xl">
+            <CardHeader className="bg-gradient-to-r from-purple-500/20 to-blue-500/20 border-b border-white/20">
+              <CardTitle className="text-xl font-semibold text-white flex items-center gap-3">
+                <div className="w-3 h-8 bg-gradient-to-b from-purple-400 to-blue-500 rounded-full shadow-lg"></div>
                 Seminar Details
               </CardTitle>
             </CardHeader>
             <CardContent className="p-8">
               <form onSubmit={handleSubmit} className="space-y-8">
-                <div className="space-y-2">
-                  <Label htmlFor="title" className="text-gray-700 font-medium">Seminar Title *</Label>
+                <div className="space-y-3">
+                  <Label htmlFor="title" className="text-purple-200 font-semibold text-lg">Seminar Title *</Label>
                   <Input
                     id="title"
                     name="title"
@@ -317,12 +327,12 @@ export default function CreateSeminarPage() {
                     onChange={handleChange}
                     placeholder="Enter an engaging seminar title"
                     required
-                    className="border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg shadow-sm transition-all duration-200"
+                    className="bg-white/10 backdrop-blur-sm border-white/30 text-white placeholder-purple-300 focus:border-purple-400 focus:ring-purple-400/50 rounded-xl shadow-lg transition-all duration-300 h-12"
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="description" className="text-gray-700 font-medium">Description *</Label>
+                <div className="space-y-3">
+                  <Label htmlFor="description" className="text-purple-200 font-semibold text-lg">Description *</Label>
                   <Textarea
                     id="description"
                     name="description"
@@ -331,14 +341,16 @@ export default function CreateSeminarPage() {
                     placeholder="Describe the seminar content, objectives, and what participants will learn"
                     rows={4}
                     required
-                    className="border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg shadow-sm transition-all duration-200 resize-none"
+                    className="bg-white/10 backdrop-blur-sm border-white/30 text-white placeholder-purple-300 focus:border-purple-400 focus:ring-purple-400/50 rounded-xl shadow-lg transition-all duration-300 resize-none"
                   />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="date" className="text-gray-700 font-medium flex items-center gap-2">
-                      <Calendar className="w-4 h-4 text-blue-500" />
+                  <div className="space-y-3">
+                    <Label htmlFor="date" className="text-purple-200 font-semibold text-lg flex items-center gap-3">
+                      <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                        <Calendar className="w-4 h-4 text-white" />
+                      </div>
                       Date *
                     </Label>
                     <Input
@@ -348,12 +360,14 @@ export default function CreateSeminarPage() {
                       value={formData.date}
                       onChange={handleChange}
                       required
-                      className="border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg shadow-sm transition-all duration-200"
+                      className="bg-white/10 backdrop-blur-sm border-white/30 text-white focus:border-purple-400 focus:ring-purple-400/50 rounded-xl shadow-lg transition-all duration-300 h-12"
                     />
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="time" className="text-gray-700 font-medium flex items-center gap-2">
-                      <Clock className="w-4 h-4 text-purple-500" />
+                  <div className="space-y-3">
+                    <Label htmlFor="time" className="text-purple-200 font-semibold text-lg flex items-center gap-3">
+                      <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-600 rounded-lg flex items-center justify-center">
+                        <Clock className="w-4 h-4 text-white" />
+                      </div>
                       Time *
                     </Label>
                     <Input
@@ -363,14 +377,16 @@ export default function CreateSeminarPage() {
                       value={formData.time}
                       onChange={handleChange}
                       required
-                      className="border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg shadow-sm transition-all duration-200"
+                      className="bg-white/10 backdrop-blur-sm border-white/30 text-white focus:border-purple-400 focus:ring-purple-400/50 rounded-xl shadow-lg transition-all duration-300 h-12"
                     />
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="location" className="text-gray-700 font-medium flex items-center gap-2">
-                    <MapPin className="w-4 h-4 text-red-500" />
+                <div className="space-y-3">
+                  <Label htmlFor="location" className="text-purple-200 font-semibold text-lg flex items-center gap-3">
+                    <div className="w-8 h-8 bg-gradient-to-br from-red-500 to-orange-600 rounded-lg flex items-center justify-center">
+                      <MapPin className="w-4 h-4 text-white" />
+                    </div>
                     Location *
                   </Label>
                   <Input
@@ -380,13 +396,15 @@ export default function CreateSeminarPage() {
                     onChange={handleChange}
                     placeholder="e.g., Room 101, Main Building"
                     required
-                    className="border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg shadow-sm transition-all duration-200"
+                    className="bg-white/10 backdrop-blur-sm border-white/30 text-white placeholder-purple-300 focus:border-purple-400 focus:ring-purple-400/50 rounded-xl shadow-lg transition-all duration-300 h-12"
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="maxParticipants" className="text-gray-700 font-medium flex items-center gap-2">
-                    <Users className="w-4 h-4 text-green-500" />
+                <div className="space-y-3">
+                  <Label htmlFor="maxParticipants" className="text-purple-200 font-semibold text-lg flex items-center gap-3">
+                    <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg flex items-center justify-center">
+                      <Users className="w-4 h-4 text-white" />
+                    </div>
                     Max Participants *
                   </Label>
                   <Input
@@ -398,78 +416,74 @@ export default function CreateSeminarPage() {
                     placeholder="Maximum number of participants"
                     min="1"
                     required
-                    className="border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg shadow-sm transition-all duration-200"
+                    className="bg-white/10 backdrop-blur-sm border-white/30 text-white placeholder-purple-300 focus:border-purple-400 focus:ring-purple-400/50 rounded-xl shadow-lg transition-all duration-300 h-12"
                   />
                 </div>
 
-                <div>
-                  <Label htmlFor="imageUrl">Image URL (Optional)</Label>
+                <div className="space-y-3">
+                  <Label htmlFor="imageUrl" className="text-purple-200 font-semibold text-lg">Image URL (Optional)</Label>
                   <Input
                     id="imageUrl"
                     name="imageUrl"
                     value={formData.imageUrl}
                     onChange={handleChange}
                     placeholder="https://example.com/seminar-image.jpg"
+                    className="bg-white/10 backdrop-blur-sm border-white/30 text-white placeholder-purple-300 focus:border-purple-400 focus:ring-purple-400/50 rounded-xl shadow-lg transition-all duration-300 h-12"
                   />
                 </div>
 
-                <div>
-                  <Label htmlFor="registrationUrl">Registration URL</Label>
-                  <div className="flex gap-2">
+                <div className="space-y-3">
+                  <Label htmlFor="registrationUrl" className="text-purple-200 font-semibold text-lg">Registration URL</Label>
+                  <div className="flex gap-3">
                     <Input
                       id="registrationUrl"
                       name="registrationUrl"
                       value={formData.registrationUrl}
                       onChange={handleChange}
                       placeholder="Registration page URL"
+                      className="flex-1 bg-white/10 backdrop-blur-sm border-white/30 text-white placeholder-purple-300 focus:border-purple-400 focus:ring-purple-400/50 rounded-xl shadow-lg transition-all duration-300 h-12"
                     />
                     <Button
                       type="button"
-                      variant="outline"
                       onClick={generateRegistrationUrl}
-                      disabled={!formData.title}
+                      className="bg-gradient-to-r from-purple-500 to-blue-600 hover:from-purple-600 hover:to-blue-700 text-white font-medium px-6 rounded-xl shadow-lg transition-all duration-300"
                     >
-                      <LinkIcon className="w-4 h-4 mr-2" />
                       Generate
                     </Button>
                   </div>
-                  <p className="text-sm text-gray-500 mt-1">
-                    Click "Generate" to auto-create a registration URL based on the title
-                  </p>
                 </div>
 
-                <div>
-                  <Label htmlFor="status">Status</Label>
+                <div className="space-y-3">
+                  <Label htmlFor="status" className="text-purple-200 font-semibold text-lg">Status</Label>
                   <select
                     id="status"
                     name="status"
                     value={formData.status}
                     onChange={handleChange}
-                    className="w-full p-2 border border-gray-300 rounded-md"
+                    className="bg-white/10 backdrop-blur-sm border-white/30 text-white focus:border-purple-400 focus:ring-purple-400/50 rounded-xl shadow-lg transition-all duration-300 h-12 px-4"
                   >
-                    <option value="UPCOMING">Upcoming</option>
-                    <option value="ONGOING">Ongoing</option>
-                    <option value="COMPLETED">Completed</option>
-                    <option value="CANCELLED">Cancelled</option>
+                    <option value="UPCOMING" className="bg-purple-900">Upcoming</option>
+                    <option value="ONGOING" className="bg-purple-900">Ongoing</option>
+                    <option value="COMPLETED" className="bg-purple-900">Completed</option>
+                    <option value="CANCELLED" className="bg-purple-900">Cancelled</option>
                   </select>
                 </div>
 
-                <div className="flex gap-4 pt-8 border-t border-gray-200">
+                <div className="flex gap-4 pt-8 border-t border-white/20">
                   <Button
                     type="submit"
                     disabled={loading}
-                    className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium px-8 py-3 rounded-lg shadow-lg transform hover:scale-105 transition-all duration-200"
+                    className="flex-1 flex items-center justify-center gap-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-bold text-lg px-8 py-4 rounded-2xl shadow-2xl transform hover:scale-105 transition-all duration-300"
                   >
-                    <Save className="w-5 h-5" />
+                    <Save className="w-6 h-6" />
                     {loading ? 'Creating...' : 'Create Seminar'}
                   </Button>
                   <Button
                     type="button"
-                    variant="outline"
                     onClick={() => setPreviewMode(true)}
-                    className="flex items-center gap-2 border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 font-medium px-6 py-3 rounded-lg transition-all duration-200"
+                    className="flex-1 bg-white/10 backdrop-blur-sm border-white/30 text-white hover:bg-white/20 hover:border-white/40 font-bold text-lg px-8 py-4 rounded-2xl shadow-xl transition-all duration-300"
                   >
-                    <Eye className="w-5 h-5" />
+                    <Eye className="w-6 h-6 mr-2" />
                     Preview
                   </Button>
                 </div>
@@ -479,84 +493,85 @@ export default function CreateSeminarPage() {
         </div>
 
         {/* Quick Tips */}
-        <div className="lg:col-span-1">
-          <Card className="shadow-xl border-0 bg-gradient-to-br from-blue-50 to-purple-50">
-            <CardHeader className="bg-white/80 backdrop-blur-sm border-b border-gray-200">
-              <CardTitle className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-                <div className="w-2 h-5 bg-gradient-to-b from-yellow-400 to-orange-500 rounded-full"></div>
+        <div className="lg:col-span-1 space-y-6">
+          <Card className="shadow-2xl border-0 bg-white/10 backdrop-blur-xl">
+            <CardHeader className="bg-gradient-to-r from-purple-500/20 to-pink-500/20 border-b border-white/20">
+              <CardTitle className="text-lg font-bold text-white flex items-center gap-3">
+                <div className="w-3 h-6 bg-gradient-to-b from-yellow-400 to-orange-500 rounded-full shadow-lg"></div>
                 Quick Tips
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6 p-6">
-              <div className="bg-white/60 backdrop-blur-sm rounded-lg p-4 border border-gray-200">
-                <h4 className="font-semibold mb-2 text-gray-800 flex items-center gap-2">
-                  <span className="text-lg">📝</span>
+              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-5 border border-white/20 hover:bg-white/15 transition-all duration-300">
+                <h4 className="font-bold mb-3 text-purple-200 flex items-center gap-3">
+                  <span className="text-xl">📝</span>
                   Title Guidelines
                 </h4>
-                <p className="text-sm text-gray-700 leading-relaxed">
+                <p className="text-purple-300 leading-relaxed text-sm">
                   Make it clear and descriptive. Include the main topic and target audience.
                 </p>
               </div>
               
-              <div className="bg-white/60 backdrop-blur-sm rounded-lg p-4 border border-gray-200">
-                <h4 className="font-semibold mb-2 text-gray-800 flex items-center gap-2">
-                  <span className="text-lg">🎯</span>
+              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-5 border border-white/20 hover:bg-white/15 transition-all duration-300">
+                <h4 className="font-bold mb-3 text-purple-200 flex items-center gap-3">
+                  <span className="text-xl">🎯</span>
                   Description Tips
                 </h4>
-                <p className="text-sm text-gray-700 leading-relaxed">
+                <p className="text-purple-300 leading-relaxed text-sm">
                   Include learning objectives, prerequisites, and what participants will gain.
                 </p>
               </div>
 
-              <div className="bg-white/60 backdrop-blur-sm rounded-lg p-4 border border-gray-200">
-                <h4 className="font-semibold mb-2 text-gray-800 flex items-center gap-2">
-                  <span className="text-lg">🔗</span>
+              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-5 border border-white/20 hover:bg-white/15 transition-all duration-300">
+                <h4 className="font-bold mb-3 text-purple-200 flex items-center gap-3">
+                  <span className="text-xl">🔗</span>
                   Registration URL
                 </h4>
-                <p className="text-sm text-gray-700 leading-relaxed">
+                <p className="text-purple-300 leading-relaxed text-sm">
                   Use the "Generate" button to create a clean URL automatically.
                 </p>
               </div>
 
-              <div className="bg-white/60 backdrop-blur-sm rounded-lg p-4 border border-gray-200">
-                <h4 className="font-semibold mb-2 text-gray-800 flex items-center gap-2">
-                  <span className="text-lg">👥</span>
+              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-5 border border-white/20 hover:bg-white/15 transition-all duration-300">
+                <h4 className="font-bold mb-3 text-purple-200 flex items-center gap-3">
+                  <span className="text-xl">👥</span>
                   Participant Limit
                 </h4>
-                <p className="text-sm text-gray-700 leading-relaxed">
+                <p className="text-purple-300 leading-relaxed text-sm">
                   Set a realistic limit based on venue capacity and interaction quality.
                 </p>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="mt-6 shadow-xl border-0 bg-gradient-to-br from-green-50 to-emerald-50">
-            <CardHeader className="bg-white/80 backdrop-blur-sm border-b border-gray-200">
-              <CardTitle className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-                <div className="w-2 h-5 bg-gradient-to-b from-green-400 to-emerald-500 rounded-full"></div>
+          <Card className="mt-6 shadow-2xl border-0 bg-white/10 backdrop-blur-xl">
+            <CardHeader className="bg-gradient-to-r from-green-500/20 to-emerald-500/20 border-b border-white/20">
+              <CardTitle className="text-lg font-bold text-white flex items-center gap-3">
+                <div className="w-3 h-6 bg-gradient-to-b from-green-400 to-emerald-500 rounded-full shadow-lg"></div>
                 Registration Flow
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4 p-6">
-              <div className="flex items-center gap-4 bg-white/60 backdrop-blur-sm rounded-lg p-3 border border-gray-200">
-                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold shadow-lg">1</div>
-                <span className="text-gray-800 font-medium">User visits registration URL</span>
+              <div className="flex items-center gap-4 bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20 hover:bg-white/15 transition-all duration-300">
+                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold shadow-xl">1</div>
+                <span className="text-purple-200 font-medium">User visits registration URL</span>
               </div>
-              <div className="flex items-center gap-4 bg-white/60 backdrop-blur-sm rounded-lg p-3 border border-gray-200">
-                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold shadow-lg">2</div>
-                <span className="text-gray-800 font-medium">Fills out registration form</span>
+              <div className="flex items-center gap-4 bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20 hover:bg-white/15 transition-all duration-300">
+                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold shadow-xl">2</div>
+                <span className="text-purple-200 font-medium">Fills out registration form</span>
               </div>
-              <div className="flex items-center gap-4 bg-white/60 backdrop-blur-sm rounded-lg p-3 border border-gray-200">
-                <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center text-white font-bold shadow-lg">3</div>
-                <span className="text-gray-800 font-medium">Receives confirmation</span>
+              <div className="flex items-center gap-4 bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20 hover:bg-white/15 transition-all duration-300">
+                <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center text-white font-bold shadow-xl">3</div>
+                <span className="text-purple-200 font-medium">Receives confirmation</span>
               </div>
-              <div className="flex items-center gap-4 bg-white/60 backdrop-blur-sm rounded-lg p-3 border border-gray-200">
-                <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center text-white font-bold shadow-lg">4</div>
-                <span className="text-gray-800 font-medium">Appears in admin dashboard</span>
+              <div className="flex items-center gap-4 bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20 hover:bg-white/15 transition-all duration-300">
+                <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center text-white font-bold shadow-xl">4</div>
+                <span className="text-purple-200 font-medium">Appears in admin dashboard</span>
               </div>
             </CardContent>
           </Card>
         </div>
+      </div>
       </div>
     </div>
   );

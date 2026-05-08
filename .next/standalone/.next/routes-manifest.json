@@ -158,6 +158,14 @@
       "namedRegex": "^/admin/mentors/(?<nxtPid>[^/]+?)/edit(?:/)?$"
     },
     {
+      "page": "/admin/seminars/[id]/edit",
+      "regex": "^/admin/seminars/([^/]+?)/edit(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/admin/seminars/(?<nxtPid>[^/]+?)/edit(?:/)?$"
+    },
+    {
       "page": "/api/admin/categories/[slug]",
       "regex": "^/api/admin/categories/([^/]+?)(?:/)?$",
       "routeKeys": {
@@ -295,6 +303,14 @@
         "nxtPid": "nxtPid"
       },
       "namedRegex": "^/api/admin/mentors/(?<nxtPid>[^/]+?)/status(?:/)?$"
+    },
+    {
+      "page": "/api/admin/seminars/[id]",
+      "regex": "^/api/admin/seminars/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/admin/seminars/(?<nxtPid>[^/]+?)(?:/)?$"
     },
     {
       "page": "/api/admin/students/[id]/status",
@@ -479,6 +495,14 @@
         "nxtPid": "nxtPid"
       },
       "namedRegex": "^/enrollment/success/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/seminar-registration/[slug]",
+      "regex": "^/seminar\\-registration/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPslug": "nxtPslug"
+      },
+      "namedRegex": "^/seminar\\-registration/(?<nxtPslug>[^/]+?)(?:/)?$"
     },
     {
       "page": "/student/course/[courseId]",
