@@ -18,6 +18,8 @@ export async function middleware(request: NextRequest) {
     '/api/auth/verify',
     '/api/auth/logout',
     '/api/auth/me',
+    '/api/public',
+    '/seminar-registration',
     '/_next',
     '/favicon.ico'
   ];

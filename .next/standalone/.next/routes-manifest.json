@@ -166,6 +166,14 @@
       "namedRegex": "^/admin/seminars/(?<nxtPid>[^/]+?)/edit(?:/)?$"
     },
     {
+      "page": "/admin/seminars/[id]/registrations",
+      "regex": "^/admin/seminars/([^/]+?)/registrations(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/admin/seminars/(?<nxtPid>[^/]+?)/registrations(?:/)?$"
+    },
+    {
       "page": "/api/admin/categories/[slug]",
       "regex": "^/api/admin/categories/([^/]+?)(?:/)?$",
       "routeKeys": {
@@ -311,6 +319,23 @@
         "nxtPid": "nxtPid"
       },
       "namedRegex": "^/api/admin/seminars/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/api/admin/seminars/[id]/registrations",
+      "regex": "^/api/admin/seminars/([^/]+?)/registrations(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/admin/seminars/(?<nxtPid>[^/]+?)/registrations(?:/)?$"
+    },
+    {
+      "page": "/api/admin/seminars/[id]/registrations/[registrationId]",
+      "regex": "^/api/admin/seminars/([^/]+?)/registrations/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid",
+        "nxtPregistrationId": "nxtPregistrationId"
+      },
+      "namedRegex": "^/api/admin/seminars/(?<nxtPid>[^/]+?)/registrations/(?<nxtPregistrationId>[^/]+?)(?:/)?$"
     },
     {
       "page": "/api/admin/students/[id]/status",
@@ -913,6 +938,12 @@
       "regex": "^/api/admin/seminars(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/api/admin/seminars(?:/)?$"
+    },
+    {
+      "page": "/api/admin/send-message",
+      "regex": "^/api/admin/send\\-message(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/admin/send\\-message(?:/)?$"
     },
     {
       "page": "/api/admin/settings",

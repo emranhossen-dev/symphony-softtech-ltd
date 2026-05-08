@@ -549,6 +549,15 @@ export default function SeminarsPage() {
                   </Button>
                   <Button
                     size="sm"
+                    onClick={() => window.open(`/admin/seminars/${seminar.id}/registrations`, '_blank')}
+                    className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-medium px-2 sm:px-4 py-1.5 sm:py-2 rounded-xl transition-all duration-300 flex items-center gap-1 sm:gap-2 text-xs sm:text-sm"
+                  >
+                    <Users className="w-3 h-3 sm:w-4 sm:h-4" />
+                    <span className="hidden sm:inline">Registrations</span>
+                    <span className="sm:hidden">Users</span>
+                  </Button>
+                  <Button
+                    size="sm"
                     onClick={() => window.open(seminar.registrationUrl, '_blank')}
                     className="bg-gradient-to-r from-purple-500 to-blue-600 hover:from-purple-600 hover:to-blue-700 text-white font-medium px-2 sm:px-4 py-1.5 sm:py-2 rounded-xl transition-all duration-300 flex items-center gap-1 sm:gap-2 text-xs sm:text-sm"
                   >

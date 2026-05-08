@@ -325,20 +325,39 @@ model Seminar {
 }
 
 model SeminarRegistration {
-  id          String              @id @default(cuid())
-  seminarId   String
-  fullName    String
-  email       String
-  phone       String
-  education   String
-  whyJoin     String
-  experience  String
-  status      RegistrationStatus  @default(PENDING)
-  createdAt   DateTime            @default(now())
-  updatedAt   DateTime            @updatedAt
-  seminar     Seminar             @relation(fields: [seminarId], references: [id])
+  id            String                    @id @default(cuid())
+  seminarId     String
+  fullName      String
+  email         String
+  phone         String
+  education     String
+  whyJoin       String
+  experience    String?
+  status        RegistrationStatus        @default(NEW_APPLICANT)
+  callStatus    CallStatus?               @default(NOT_CALLED)
+  notes         String?
+  hasWhatsApp   Boolean?                  @default(false)
+  callHistory   CallHistory[]
+  createdAt     DateTime                  @default(now())
+  updatedAt     DateTime                  @updatedAt
+  seminar       Seminar                   @relation(fields: [seminarId], references: [id])
 
   @@map("seminar_registrations")
+}
+
+model CallHistory {
+  id               String   @id @default(cuid())
+  registrationId   String
+  callType         CallType @default(INITIAL)
+  callStatus       CallStatus
+  notes            String?
+  scheduledAt      DateTime?
+  completedAt      DateTime?
+  createdBy        String
+  createdAt        DateTime @default(now())
+  registration     SeminarRegistration @relation(fields: [registrationId], references: [id], onDelete: Cascade)
+
+  @@map("call_history")
 }
 
 enum SeminarStatus {
@@ -349,9 +368,30 @@ enum SeminarStatus {
 }
 
 enum RegistrationStatus {
-  PENDING
+  NEW_APPLICANT
+  FIRST_TIME_APPLIED
+  CALLED
   CONFIRMED
+  WAITING_NEXT_SEMINAR
+  REJECTED
   CANCELLED
+  NEXT_SEMINAR_CONFIRMED
+}
+
+enum CallStatus {
+  NOT_CALLED
+  SCHEDULED
+  COMPLETED
+  NO_ANSWER
+  CALLBACK_REQUESTED
+  NOT_INTERESTED
+}
+
+enum CallType {
+  INITIAL
+  FOLLOWUP
+  CONFIRMATION
+  REMINDER
 }
 
 enum NotificationType {
