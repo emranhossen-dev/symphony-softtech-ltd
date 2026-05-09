@@ -190,6 +190,15 @@
       "namedRegex": "^/api/admin/categories/(?<nxtPslug>[^/]+?)/admissions(?:/)?$"
     },
     {
+      "page": "/api/admin/categories/[slug]/admissions/[enrollmentId]",
+      "regex": "^/api/admin/categories/([^/]+?)/admissions/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPslug": "nxtPslug",
+        "nxtPenrollmentId": "nxtPenrollmentId"
+      },
+      "namedRegex": "^/api/admin/categories/(?<nxtPslug>[^/]+?)/admissions/(?<nxtPenrollmentId>[^/]+?)(?:/)?$"
+    },
+    {
       "page": "/api/admin/categories/[slug]/mentors",
       "regex": "^/api/admin/categories/([^/]+?)/mentors(?:/)?$",
       "routeKeys": {

@@ -50,6 +50,7 @@
   "/api/admin/calls/initiate/route": "app/api/admin/calls/initiate/route.js",
   "/api/admin/calls/route": "app/api/admin/calls/route.js",
   "/api/admin/calls/status/route": "app/api/admin/calls/status/route.js",
+  "/api/admin/categories/[slug]/admissions/[enrollmentId]/route": "app/api/admin/categories/[slug]/admissions/[enrollmentId]/route.js",
   "/api/admin/categories/[slug]/admissions/route": "app/api/admin/categories/[slug]/admissions/route.js",
   "/api/admin/categories/[slug]/mentors/route": "app/api/admin/categories/[slug]/mentors/route.js",
   "/api/admin/categories/[slug]/route": "app/api/admin/categories/[slug]/route.js",

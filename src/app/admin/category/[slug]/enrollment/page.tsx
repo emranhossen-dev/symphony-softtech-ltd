@@ -316,11 +316,16 @@ const fetchEnrollments = async () => {
         console.log('Setting enrollments:', data.students || data.enrollments);
         // Transform data to match expected format
         const students = data.students || data.enrollments || [];
+        
+        // Log the actual data structure for debugging
+        console.log('Students data:', students);
+        console.log('Students length:', students.length);
+        
         setEnrollments(students);
         
         // Map stats correctly from category API or general API
         if (data.stats) {
-          setStats({
+          const mappedStats = {
             totalEnrollments: students.length,
             pendingEnrollments: (data.stats.applied || 0) + (data.stats.waiting || 0), // Both applied and waiting are pending
             approvedEnrollments: data.stats.admitted || data.stats.approvedEnrollments || 0,
@@ -330,8 +335,29 @@ const fetchEnrollments = async () => {
             pendingRevenue: 0, // Not provided by category API
             monthlyEnrollments: data.stats.monthlyGrowth || 0,
             completionRate: data.stats.completionRate || 0
-          });
+          };
+          
+          console.log('Mapped stats:', mappedStats);
+          setStats(mappedStats);
+        } else {
+          // Create default stats if none provided
+          const defaultStats = {
+            totalEnrollments: students.length,
+            pendingEnrollments: students.filter((s: { status: string; }) => s.status === 'PENDING_REVIEW' || s.status === 'PAYMENT_PENDING').length,
+            approvedEnrollments: students.filter((s: { status: string; }) => s.status === 'APPROVED').length,
+            rejectedEnrollments: students.filter((s: { status: string; }) => s.status === 'REJECTED').length,
+            completedEnrollments: students.filter((s: { status: string; }) => s.status === 'APPROVED').length,
+            totalRevenue: students.filter((s: { paymentStatus: string; }) => s.paymentStatus === 'PAID').reduce((sum: any, s: { amount: any; }) => sum + (s.amount || 0), 0),
+            pendingRevenue: students.filter((s: { paymentStatus: string; }) => s.paymentStatus === 'PENDING').reduce((sum: any, s: { amount: any; }) => sum + (s.amount || 0), 0),
+            monthlyEnrollments: students.length,
+            completionRate: students.length > 0 ? Math.round((students.filter((s: { status: string; }) => s.status === 'APPROVED').length / students.length) * 100) : 0
+          };
+          
+          console.log('Default stats:', defaultStats);
+          setStats(defaultStats);
         }
+      } else {
+        console.error('API returned error:', data.error);
       }
     } catch (error) {
       console.error('Error fetching enrollments:', error);
@@ -431,7 +457,15 @@ const fetchEnrollments = async () => {
     try {
       const token = getAuthToken();
       
-      const response = await fetch(`/api/admin/enrollments/${editingEnrollment.id}`, {
+      // Use the category-specific API for updates
+      const category = Array.isArray(params.slug) ? params.slug[0] : params.slug;
+      const updateUrl = category 
+        ? `/api/admin/categories/${category}/admissions/${editingEnrollment.id}`
+        : `/api/admin/enrollments/${editingEnrollment.id}`;
+      
+      console.log('Update URL:', updateUrl);
+      
+      const response = await fetch(updateUrl, {
         method: 'PATCH',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -443,18 +477,23 @@ const fetchEnrollments = async () => {
         })
       });
 
+      const result = await response.json();
+      console.log('Update response:', result);
+
       if (response.ok) {
         console.log('Enrollment updated successfully');
         setEditingEnrollment(null);
-        fetchEnrollments(); // Refresh the list
+        fetchEnrollments(); // Refresh list
+        alert('Enrollment updated successfully!');
       } else {
-        const error = await response.json();
-        console.error('Failed to update enrollment:', error);
-        alert(`Failed to save: ${error.error || 'Unknown error'}`);
+        console.error('Failed to update enrollment:', result);
+        const errorMessage = result.error || result.message || 'Unknown error occurred';
+        alert(`Failed to save: ${errorMessage}`);
       }
     } catch (error) {
       console.error('Error saving enrollment:', error);
-      alert('Error saving enrollment. Check console for details.');
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      alert(`Error saving enrollment: ${errorMessage}`);
     }
   };
 
@@ -466,7 +505,15 @@ const fetchEnrollments = async () => {
         console.log('Deleting enrollment:', enrollmentId);
         console.log('Token available:', !!token);
         
-        const response = await fetch(`/api/admin/enrollments/${enrollmentId}`, {
+        // Use the category-specific API for deletion
+        const category = Array.isArray(params.slug) ? params.slug[0] : params.slug;
+        const deleteUrl = category 
+          ? `/api/admin/categories/${category}/admissions/${enrollmentId}`
+          : `/api/admin/enrollments/${enrollmentId}`;
+        
+        console.log('Delete URL:', deleteUrl);
+        
+        const response = await fetch(deleteUrl, {
           method: 'DELETE',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -481,13 +528,17 @@ const fetchEnrollments = async () => {
         if (response.ok) {
           console.log('Delete successful, refreshing list...');
           fetchEnrollments(); // Refresh the list
+          // Show success message
+          alert('Enrollment deleted successfully!');
         } else {
           console.error('Delete failed:', result);
-          alert(`Delete failed: ${result.error || 'Unknown error'}`);
+          const errorMessage = result.error || result.message || 'Unknown error occurred';
+          alert(`Delete failed: ${errorMessage}`);
         }
       } catch (error) {
         console.error('Error deleting enrollment:', error);
-        alert('Error deleting enrollment. Check console for details.');
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        alert(`Error deleting enrollment: ${errorMessage}`);
       }
     }
   };

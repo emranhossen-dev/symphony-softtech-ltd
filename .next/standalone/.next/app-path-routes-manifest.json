@@ -50,6 +50,7 @@
   "/api/admin/calls/initiate/route": "/api/admin/calls/initiate",
   "/api/admin/calls/route": "/api/admin/calls",
   "/api/admin/calls/status/route": "/api/admin/calls/status",
+  "/api/admin/categories/[slug]/admissions/[enrollmentId]/route": "/api/admin/categories/[slug]/admissions/[enrollmentId]",
   "/api/admin/categories/[slug]/admissions/route": "/api/admin/categories/[slug]/admissions",
   "/api/admin/categories/[slug]/mentors/route": "/api/admin/categories/[slug]/mentors",
   "/api/admin/categories/[slug]/route": "/api/admin/categories/[slug]",
