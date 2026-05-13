@@ -390,7 +390,7 @@ function EmployeeEnrollmentsContent() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black text-white">
+    <div className="min-h-screen bg-gray-900 bg-gradient-to-br from-gray-900 to-black">
       {/* Success Message */}
       {successMessage && (
         <div className="mb-6 p-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl shadow-lg flex items-center justify-between">

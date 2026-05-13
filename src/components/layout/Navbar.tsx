@@ -133,11 +133,11 @@ const Navbar = () => {
           <div className="xl:hidden">
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="relative p-3 rounded-xl text-white hover:bg-white/10 hover:backdrop-blur-sm focus:outline-none transition-all duration-300 transform hover:scale-105"
+              className="relative p-3 rounded-xl text-white hover:bg-white/10 hover:backdrop-blur-sm focus:outline-none transition-all duration-300 transform hover:scale-105 z-50"
             >
               <div className="relative w-7 h-7">
                 {isMenuOpen ? (
-                  <X className="h-7 w-7 animate-spin-slow" />
+                  <X className="h-7 w-7" />
                 ) : (
                   <Menu className="h-7 w-7" />
                 )}
@@ -149,27 +149,29 @@ const Navbar = () => {
 
         {/* Premium Mobile Menu */}
         {isMenuOpen && (
-          <div className="xl:hidden border-t border-white/20 bg-gradient-to-r from-purple-800/95 to-blue-900/95 backdrop-blur-xl rounded-b-3xl shadow-2xl">
+          <div className="xl:hidden border-t border-gray-800 bg-[#1a1a2e] rounded-b-3xl shadow-2xl absolute top-full left-0 right-0 z-40">
             <div className="px-6 py-6 space-y-3">
               {navLinks.map((link) => (
-                <a 
+                <a
                   key={link.href}
-                  href={link.href} 
+                  href={link.href}
+                  onClick={() => setIsMenuOpen(false)}
                   className={`flex items-center space-x-4 px-5 py-4 rounded-2xl text-base font-bold transition-all duration-300 transform hover:scale-105 hover:-translate-x-2 ${
                     isActive(link.href)
-                      ? "bg-white/20 backdrop-blur-sm text-white shadow-lg border border-white/30"
-                      : "text-white/90 hover:bg-white/10 hover:text-white hover:backdrop-blur-sm border border-transparent hover:border-white/20"
+                      ? "bg-purple-600 text-white shadow-lg"
+                      : "text-gray-300 hover:bg-purple-600/20 hover:text-white"
                   }`}
                 >
-                  {link.icon && <span className="w-5 h-5">{link.icon}</span>}
+                  {link.icon && <span className="w-5 h-5 text-gray-400">{link.icon}</span>}
                   <span>{link.label}</span>
                 </a>
               ))}
-              
-              <div className="pt-6 mt-6 border-t border-white/20">
-                <a 
-                  href="/login" 
-                  className="flex items-center justify-center space-x-3 w-full px-6 py-4 text-base font-bold text-white border-2 border-white/50 rounded-2xl hover:border-white hover:bg-white/10 hover:backdrop-blur-sm transition-all duration-300 transform hover:scale-105"
+
+              <div className="pt-6 mt-6 border-t border-gray-700">
+                <a
+                  href="/login"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="flex items-center justify-center space-x-3 w-full px-6 py-4 text-base font-bold bg-purple-600 text-white rounded-2xl hover:bg-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
                 >
                   <LogIn className="w-5 h-5" />
                   <span>Login</span>

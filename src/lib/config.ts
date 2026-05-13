@@ -113,13 +113,13 @@ export const defaultSocialLinks: SocialLinks = {
 };
 
 export const defaultContactInfo: ContactInfo = {
-  phone: '+880 1234-567890',
+  phone: '01810186702',
   email: 'info@symphony-training.com',
-  address: '123 Mirpur Road',
+  address: 'Tridhara Tower (2nd Floor), 67 West Panthapath, Lake Circus, Kalabagan',
   city: 'Dhaka',
   country: 'Bangladesh',
-  postalCode: '1206',
-  mapUrl: 'https://maps.google.com/?q=Symphony+Training+Centre+Dhaka'
+  postalCode: '1205',
+  mapUrl: 'https://maps.google.com/?q=Tridhara+Tower+West+Panthapath+Dhaka'
 };
 
 export const defaultBusinessHours: BusinessHours = {

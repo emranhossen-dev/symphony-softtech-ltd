@@ -93,7 +93,7 @@ export default function ContactPage() {
                     </div>
                     <div>
                       <h3 className="font-semibold text-gray-900 mb-1">Phone</h3>
-                      <p className="text-gray-600">+1 (555) 123-4567</p>
+                      <p className="text-gray-600">01810186702</p>
                       <p className="text-sm text-gray-500">Mon-Fri, 9AM-6PM</p>
                     </div>
                   </div>
@@ -118,9 +118,10 @@ export default function ContactPage() {
                     <div>
                       <h3 className="font-semibold text-gray-900 mb-1">Office Address</h3>
                       <p className="text-gray-600">
-                        123 Training Center Lane<br />
-                        New Delhi, 110001<br />
-                        India
+                        Tridhara Tower (2nd Floor)<br />
+                        67 West Panthapath, Lake Circus<br />
+                        Kalabagan, Dhaka-1205<br />
+                        Bangladesh
                       </p>
                     </div>
                   </div>
@@ -330,42 +331,52 @@ export default function ContactPage() {
             <div className="bg-white rounded-lg shadow-lg p-6">
               <h2 className="text-2xl font-bold text-gray-900 mb-6">Find Us</h2>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {/* Map Placeholder */}
-                <div className="h-96 bg-gray-100 rounded-lg flex items-center justify-center">
-                  <div className="text-center">
-                    <MapPin className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                    <p className="text-gray-600">Interactive Map</p>
-                    <p className="text-sm text-gray-500">Google Maps integration coming soon</p>
-                  </div>
+                {/* Google Map Embed */}
+                <div className="h-96 rounded-lg overflow-hidden">
+                  <iframe
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3648.3766789012345!2d90.3815!3d23.7525!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3755b8b000000001%3A0x0!2sTridhara+Tower%2C+West+Panthapath%2C+Dhaka!5e0!3m2!1sen!2sbd!4v1234567890"
+                    width="100%"
+                    height="100%"
+                    style={{ border: 0 }}
+                    allowFullScreen
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                  ></iframe>
                 </div>
 
                 {/* Locations List */}
                 <div className="space-y-6">
                   <h3 className="text-lg font-semibold text-gray-900">Our Training Centers</h3>
-                  
+
                   <div className="space-y-4">
                     <div className="border-l-4 border-blue-600 pl-4">
-                      <h4 className="font-semibold text-gray-900">Delhi Center</h4>
-                      <p className="text-gray-600">Connaught Place, New Delhi</p>
-                      <p className="text-sm text-gray-500">Phone: +91 98765 43210</p>
+                      <h4 className="font-semibold text-gray-900">Dhaka Center (Head Office)</h4>
+                      <p className="text-gray-600">Tridhara Tower (2nd Floor), 67 West Panthapath, Lake Circus, Kalabagan, Dhaka-1205</p>
+                      <p className="text-sm text-gray-500">Phone: 01810186702</p>
                     </div>
-                    
+
                     <div className="border-l-4 border-green-600 pl-4">
-                      <h4 className="font-semibold text-gray-900">Mumbai Center</h4>
-                      <p className="text-gray-600">Andheri West, Mumbai</p>
-                      <p className="text-sm text-gray-500">Phone: +91 98765 43211</p>
+                      <h4 className="font-semibold text-gray-900">Delhi Center</h4>
+                      <p className="text-gray-600">Connaught Place, New Delhi, India</p>
+                      <p className="text-sm text-gray-500">Phone: Coming Soon</p>
                     </div>
-                    
+
                     <div className="border-l-4 border-purple-600 pl-4">
-                      <h4 className="font-semibold text-gray-900">Bangalore Center</h4>
-                      <p className="text-gray-600">Koramangala, Bangalore</p>
-                      <p className="text-sm text-gray-500">Phone: +91 98765 43212</p>
+                      <h4 className="font-semibold text-gray-900">Mumbai Center</h4>
+                      <p className="text-gray-600">Andheri West, Mumbai, India</p>
+                      <p className="text-sm text-gray-500">Phone: Coming Soon</p>
                     </div>
-                    
+
                     <div className="border-l-4 border-orange-600 pl-4">
                       <h4 className="font-semibold text-gray-900">Chennai Center</h4>
-                      <p className="text-gray-600">T. Nagar, Chennai</p>
-                      <p className="text-sm text-gray-500">Phone: +91 98765 43213</p>
+                      <p className="text-gray-600">T. Nagar, Chennai, India</p>
+                      <p className="text-sm text-gray-500">Phone: Coming Soon</p>
+                    </div>
+
+                    <div className="border-l-4 border-red-600 pl-4">
+                      <h4 className="font-semibold text-gray-900">Kolkata Center</h4>
+                      <p className="text-gray-600">Salt Lake, Kolkata, India</p>
+                      <p className="text-sm text-gray-500">Phone: Coming Soon</p>
                     </div>
                   </div>
                 </div>

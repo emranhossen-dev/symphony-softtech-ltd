@@ -418,7 +418,48 @@ export async function POST(request: NextRequest) {
       success: true,
       message: `Course created successfully in ${categoryId} category with demo module (mock data)`,
       course: mockCourse,
-      hasDemoModule: true
+            hasDemoModule: true
     });
+  }
+}
+
+// DELETE /api/admin/courses - Delete a course
+export async function DELETE(request: NextRequest) {
+  const { searchParams } = new URL(request.url);
+  const id = searchParams.get('id');
+
+  if (!id) {
+    return NextResponse.json(
+      { success: false, error: 'Course ID is required' },
+      { status: 400 }
+    );
+  }
+
+  try {
+    // Delete associated modules first
+    await prisma.module.deleteMany({
+      where: { courseId: id }
+    });
+
+    // Delete associated enrollments
+    await prisma.enrollment.deleteMany({
+      where: { courseId: id }
+    });
+
+    // Delete the course
+    await prisma.course.delete({
+      where: { id }
+    });
+
+    return NextResponse.json({
+      success: true,
+      message: 'Course deleted successfully'
+    });
+  } catch (error) {
+    console.error('Error deleting course:', error);
+    return NextResponse.json(
+      { success: false, error: 'Failed to delete course. Please try again.' },
+      { status: 500 }
+    );
   }
 }

@@ -556,29 +556,53 @@ const EnrollmentForm = ({ course, onClose }: EnrollmentFormProps) => {
             <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl p-6 border border-gray-200">
               <h5 className="font-bold text-gray-900 mb-4 text-lg">পেমেন্ট পদ্ধতি:</h5>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="text-center p-3 bg-white rounded-lg border border-gray-200">
-                  <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-2">
-                    <span className="text-blue-600 font-bold text-xs">বি</span>
+                <div className="text-center p-3 bg-white rounded-lg border border-gray-200 hover:shadow-md transition-shadow">
+                  <div className="w-12 h-8 bg-pink-600 rounded flex items-center justify-center mx-auto mb-2">
+                    <span className="text-white font-bold text-xs">bKash</span>
                   </div>
-                  <p className="text-xs font-medium">বিকাশ</p>
+                  <p className="text-xs font-medium text-gray-700">bKash</p>
                 </div>
-                <div className="text-center p-3 bg-white rounded-lg border border-gray-200">
-                  <div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-2">
-                    <span className="text-red-600 font-bold text-xs">র</span>
+                <div className="text-center p-3 bg-white rounded-lg border border-gray-200 hover:shadow-md transition-shadow">
+                  <div className="w-12 h-8 bg-purple-800 rounded flex items-center justify-center mx-auto mb-2">
+                    <span className="text-white font-bold text-xs">Rocket</span>
                   </div>
-                  <p className="text-xs font-medium">রকে</p>
+                  <p className="text-xs font-medium text-gray-700">Rocket</p>
                 </div>
-                <div className="text-center p-3 bg-white rounded-lg border border-gray-200">
-                  <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-2">
-                    <span className="text-green-600 font-bold text-xs">ন</span>
+                <div className="text-center p-3 bg-white rounded-lg border border-gray-200 hover:shadow-md transition-shadow">
+                  <div className="w-12 h-8 bg-orange-500 rounded flex items-center justify-center mx-auto mb-2">
+                    <span className="text-white font-bold text-xs">Nagad</span>
                   </div>
-                  <p className="text-xs font-medium">নগদ</p>
+                  <p className="text-xs font-medium text-gray-700">Nagad</p>
                 </div>
-                <div className="text-center p-3 bg-white rounded-lg border border-gray-200">
-                  <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-2">
-                    <span className="text-purple-600 font-bold text-xs">অ</span>
+                <div className="text-center p-3 bg-white rounded-lg border border-gray-200 hover:shadow-md transition-shadow">
+                  <div className="w-12 h-8 bg-blue-600 rounded flex items-center justify-center mx-auto mb-2">
+                    <span className="text-white font-bold text-xs">Visa</span>
                   </div>
-                  <p className="text-xs font-medium">অনলাইন</p>
+                  <p className="text-xs font-medium text-gray-700">Visa</p>
+                </div>
+                <div className="text-center p-3 bg-white rounded-lg border border-gray-200 hover:shadow-md transition-shadow">
+                  <div className="w-12 h-8 bg-red-600 rounded flex items-center justify-center mx-auto mb-2">
+                    <span className="text-white font-bold text-xs">MC</span>
+                  </div>
+                  <p className="text-xs font-medium text-gray-700">MasterCard</p>
+                </div>
+                <div className="text-center p-3 bg-white rounded-lg border border-gray-200 hover:shadow-md transition-shadow">
+                  <div className="w-12 h-8 bg-green-600 rounded flex items-center justify-center mx-auto mb-2">
+                    <span className="text-white font-bold text-xs">Amex</span>
+                  </div>
+                  <p className="text-xs font-medium text-gray-700">American Express</p>
+                </div>
+                <div className="text-center p-3 bg-white rounded-lg border border-gray-200 hover:shadow-md transition-shadow">
+                  <div className="w-12 h-8 bg-indigo-600 rounded flex items-center justify-center mx-auto mb-2">
+                    <span className="text-white font-bold text-xs">SSL</span>
+                  </div>
+                  <p className="text-xs font-medium text-gray-700">SSLCommerz</p>
+                </div>
+                <div className="text-center p-3 bg-white rounded-lg border border-gray-200 hover:shadow-md transition-shadow">
+                  <div className="w-12 h-8 bg-gray-700 rounded flex items-center justify-center mx-auto mb-2">
+                    <span className="text-white font-bold text-xs">Cash</span>
+                  </div>
+                  <p className="text-xs font-medium text-gray-700">Cash</p>
                 </div>
               </div>
             </div>

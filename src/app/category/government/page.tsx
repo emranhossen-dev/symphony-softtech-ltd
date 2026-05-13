@@ -69,7 +69,7 @@ const GovernmentCategoryPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
+      <div className="min-h-screen bg-slate-900 bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
         <div className="container mx-auto px-4 py-8">
           <div className="animate-pulse">
             <div className="h-8 bg-gray-200 rounded w-1/4 mb-8"></div>
@@ -92,7 +92,7 @@ const GovernmentCategoryPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
+    <div className="min-h-screen bg-slate-900 bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
       {/* Enhanced Page Hero Section */}
       <div className="relative overflow-hidden">
         {/* Animated Background */}

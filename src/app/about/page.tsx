@@ -137,7 +137,7 @@ export default function AboutPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      <div className="bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 text-white">
+      <div className="bg-indigo-700 bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 text-white">
         <div className="container mx-auto px-4 py-20">
           <div className="max-w-4xl mx-auto text-center">
             <h1 className="text-5xl md:text-6xl font-bold mb-6">
@@ -223,9 +223,9 @@ export default function AboutPage() {
             <div className="bg-white rounded-2xl shadow-xl p-8">
               <div className="prose max-w-none">
                 <p className="text-lg text-gray-700 leading-relaxed mb-6">
-                  SSL Training Centre began its journey in 2015 with a simple mission: to provide quality education 
-                  that prepares students for real-world challenges. What started as a small classroom with just 
-                  20 students has now grown into a comprehensive education platform serving over 5000 students 
+                  Symphony Training Centre began its journey in 2015 with a simple mission: to provide quality education
+                  that prepares students for real-world challenges. What started as a small classroom with just
+                  20 students has now grown into a comprehensive education platform serving over 5000 students
                   across multiple cities.
                 </p>
                 <p className="text-lg text-gray-700 leading-relaxed mb-6">
@@ -336,7 +336,7 @@ export default function AboutPage() {
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Why Choose SSL Training Centre?</h2>
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Why Choose Symphony Training Centre?</h2>
               <p className="text-xl text-gray-600">
                 What makes us different from others
               </p>

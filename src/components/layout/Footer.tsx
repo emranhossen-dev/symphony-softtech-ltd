@@ -3,9 +3,35 @@
 import { Mail, Phone, MapPin, Facebook, Twitter, Linkedin, Instagram, Globe, Send, Heart } from "lucide-react";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
+import { useState } from "react";
+import toast from "react-hot-toast";
 
 const Footer = () => {
   const pathname = usePathname();
+  const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleNewsletterSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!email || !email.includes('@')) {
+      toast.error('Please enter a valid email address');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      // Simulate API call - replace with actual API endpoint
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      toast.success('Successfully subscribed to newsletter!');
+      setEmail("");
+    } catch (error) {
+      toast.error('Failed to subscribe. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const isActive = (path: string) => {
     if (path === "/" && pathname === "/") return true;
@@ -55,25 +81,33 @@ const Footer = () => {
             {/* Social Media */}
             <div className="flex space-x-3">
               <a
-                href="#"
+                href="https://facebook.com/symphonytraining"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="group relative bg-white/10 backdrop-blur-xl p-3 rounded-xl border border-white/20 hover:bg-purple-600/20 hover:border-purple-400/50 transition-all duration-300"
               >
                 <Facebook className="h-5 w-5 text-gray-300 group-hover:text-white transition-colors" />
               </a>
               <a
-                href="#"
+                href="https://twitter.com/symphonytraining"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="group relative bg-white/10 backdrop-blur-xl p-3 rounded-xl border border-white/20 hover:bg-purple-600/20 hover:border-purple-400/50 transition-all duration-300"
               >
                 <Twitter className="h-5 w-5 text-gray-300 group-hover:text-white transition-colors" />
               </a>
               <a
-                href="#"
+                href="https://linkedin.com/company/symphonytraining"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="group relative bg-white/10 backdrop-blur-xl p-3 rounded-xl border border-white/20 hover:bg-purple-600/20 hover:border-purple-400/50 transition-all duration-300"
               >
                 <Linkedin className="h-5 w-5 text-gray-300 group-hover:text-white transition-colors" />
               </a>
               <a
-                href="#"
+                href="https://instagram.com/symphonytraining"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="group relative bg-white/10 backdrop-blur-xl p-3 rounded-xl border border-white/20 hover:bg-purple-600/20 hover:border-purple-400/50 transition-all duration-300"
               >
                 <Instagram className="h-5 w-5 text-gray-300 group-hover:text-white transition-colors" />
@@ -166,7 +200,7 @@ const Footer = () => {
                 </div>
                 <div>
                   <div className="text-xs text-purple-300 mb-1">Call Us</div>
-                  <span className="text-gray-300 text-sm">+1 (555) 123-4567</span>
+                  <span className="text-gray-300 text-sm">01810186702</span>
                 </div>
               </div>
               <div className="group flex items-start space-x-3 p-3 bg-white/5 rounded-xl border border-white/10 hover:bg-white/10 transition-all duration-300">
@@ -184,7 +218,7 @@ const Footer = () => {
                 </div>
                 <div>
                   <div className="text-xs text-green-300 mb-1">Visit Us</div>
-                  <span className="text-gray-300 text-sm">123 Training Street, Education City, EC 12345</span>
+                  <span className="text-gray-300 text-sm">Tridhara Tower (2nd Floor), 67 West Panthapath, Lake Circus, Kalabagan, Dhaka-1205</span>
                 </div>
               </div>
             </div>
@@ -203,17 +237,32 @@ const Footer = () => {
             <p className="text-gray-300 mb-4 text-sm leading-relaxed">
               Subscribe to get the latest courses and exclusive offers delivered to your inbox.
             </p>
-            <div className="space-y-3">
+            <form onSubmit={handleNewsletterSubmit} className="space-y-3">
               <input
                 type="email"
                 placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="w-full px-4 py-3 bg-white/10 backdrop-blur-xl border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-purple-400 focus:bg-white/15 transition-all duration-300"
               />
-              <button className="w-full px-4 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold rounded-xl hover:from-purple-500 hover:to-blue-500 transition-all duration-300 shadow-lg hover:shadow-purple-500/25 flex items-center justify-center gap-2">
-                <Send className="w-4 h-4" />
-                <span>Subscribe</span>
+              <button 
+                type="submit"
+                disabled={loading}
+                className="w-full px-4 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold rounded-xl hover:from-purple-500 hover:to-blue-500 transition-all duration-300 shadow-lg hover:shadow-purple-500/25 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {loading ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                    <span>Subscribing...</span>
+                  </>
+                ) : (
+                  <>
+                    <Send className="w-4 h-4" />
+                    <span>Subscribe</span>
+                  </>
+                )}
               </button>
-            </div>
+            </form>
           </div>
         </div>
 

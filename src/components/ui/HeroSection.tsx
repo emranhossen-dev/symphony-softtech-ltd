@@ -4,7 +4,7 @@ import { ArrowRight, Play, CheckCircle, TrendingUp, BookOpen, Star, Users, Award
 
 const HeroSection = () => {
   return (
-    <section className="relative bg-gradient-to-br from-emerald-50 via-white to-blue-50 py-20 overflow-hidden">
+    <section className="relative bg-white bg-gradient-to-br from-emerald-50 via-white to-blue-50 py-20 overflow-hidden">
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute inset-0" style={{

@@ -235,7 +235,14 @@ export default function CourseManagement() {
         }
       });
       
-      const data = await response.json();
+      // Check if response has content before parsing JSON
+      const text = await response.text();
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch {
+        data = { success: false, error: 'Empty response from server' };
+      }
       
       if (data.success) {
         toast.success('Course deleted successfully');

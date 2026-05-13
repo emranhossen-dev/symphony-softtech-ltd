@@ -130,7 +130,7 @@ const TestimonialsSection = () => {
   };
 
   return (
-    <section className="relative min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 overflow-hidden">
+      <section className="relative min-h-screen bg-slate-900 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 overflow-hidden">
         {/* Animated Background Pattern */}
         <div className="absolute inset-0">
           <div className="absolute inset-0 bg-white/5"></div>

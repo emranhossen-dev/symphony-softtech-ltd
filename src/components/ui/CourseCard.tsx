@@ -1,4 +1,4 @@
-import { Clock, Users, Calendar, MapPin } from "lucide-react";
+import { Clock, Users, Calendar, MapPin, Download, Play } from "lucide-react";
 
 interface CourseCardProps {
   title: string;
@@ -11,19 +11,25 @@ interface CourseCardProps {
   instructor?: string;
   students?: number;
   level?: string;
+  onDownloadBrochure?: () => void;
+  onWatchDemo?: () => void;
+  showCourseDetails?: boolean;
 }
 
-const CourseCard = ({ 
-  title, 
-  description, 
-  duration, 
-  price, 
-  originalPrice, 
-  badge, 
+const CourseCard = ({
+  title,
+  description,
+  duration,
+  price,
+  originalPrice,
+  badge,
   badgeColor = "primary",
   instructor,
   students,
-  level
+  level,
+  onDownloadBrochure,
+  onWatchDemo,
+  showCourseDetails = true
 }: CourseCardProps) => {
   return (
     <div className="card hover-lift-premium group">
@@ -107,6 +113,26 @@ const CourseCard = ({
           Enroll Now
           <Calendar className="inline-block ml-2 h-4 w-4 group-hover/btn:scale-110 transition-transform" />
         </button>
+
+        {/* Course Details Actions */}
+        {showCourseDetails && (
+          <div className="mt-4 pt-4 border-t border-gray-200 grid grid-cols-2 gap-3">
+            <button
+              onClick={onDownloadBrochure}
+              className="flex items-center justify-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium"
+            >
+              <Download className="w-4 h-4" />
+              <span>Brochure</span>
+            </button>
+            <button
+              onClick={onWatchDemo}
+              className="flex items-center justify-center gap-2 px-4 py-2 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition-colors text-sm font-medium"
+            >
+              <Play className="w-4 h-4" />
+              <span>Watch Demo</span>
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

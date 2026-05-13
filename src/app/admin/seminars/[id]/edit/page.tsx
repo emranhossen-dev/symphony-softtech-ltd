@@ -110,14 +110,14 @@ export default function EditSeminarPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
+      <div className="min-h-screen bg-slate-900 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
         <div className="text-white text-xl">Loading seminar details...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden">
+    <div className="min-h-screen bg-slate-900 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden">
       {/* Animated background elements */}
       <div className="absolute inset-0">
         <div className="absolute top-0 left-0 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl animate-pulse"></div>
@@ -156,9 +156,9 @@ export default function EditSeminarPage() {
           {/* Form */}
           <div className="lg:col-span-2">
             <Card className="shadow-2xl border-0 bg-white/10 backdrop-blur-xl">
-              <CardHeader className="bg-gradient-to-r from-purple-500/20 to-blue-500/20 border-b border-white/20">
+              <CardHeader className="bg-gradient-to-br from-purple-500/20 to-blue-500/20 border-b border-white/20">
                 <CardTitle className="text-xl font-semibold text-white flex items-center gap-3">
-                  <div className="w-3 h-8 bg-gradient-to-b from-purple-400 to-blue-500 rounded-full shadow-lg"></div>
+                  <div className="w-3 h-8 bg-gradient-to-br from-purple-400 to-blue-500 rounded-full shadow-lg"></div>
                   Seminar Details
                 </CardTitle>
               </CardHeader>
@@ -298,7 +298,7 @@ export default function EditSeminarPage() {
                     <Button
                       type="submit"
                       disabled={saving}
-                      className="flex-1 flex items-center justify-center gap-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-bold text-lg px-8 py-4 rounded-2xl shadow-2xl transform hover:scale-105 transition-all duration-300"
+                      className="flex-1 flex items-center justify-center gap-3 bg-gradient-to-br from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-bold text-lg px-8 py-4 rounded-2xl shadow-2xl transform hover:scale-105 transition-all duration-300"
                     >
                       <Save className="w-6 h-6" />
                       {saving ? 'Updating...' : 'Update Seminar'}
