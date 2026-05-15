@@ -7,10 +7,9 @@ export async function GET(request: NextRequest) {
   try {
     // Try both Authorization header and cookie
     const authHeader = request.headers.get('Authorization')?.replace('Bearer ', '');
-    const cookieToken = request.cookies.get('auth_token')?.value;
-    const authToken = request.cookies.get('auth_token')?.value;
+    const cookieToken = request.cookies.get('auth-token')?.value;
     
-    const token = authHeader || cookieToken || authToken;
+    const token = authHeader || cookieToken;
     
     if (!token) {
       console.log('No token found in calls API');
@@ -117,10 +116,9 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const authHeader = request.headers.get('Authorization')?.replace('Bearer ', '');
-    const cookieToken = request.cookies.get('auth_token')?.value;
-    const authToken = request.cookies.get('auth_token')?.value;
+    const cookieToken = request.cookies.get('auth-token')?.value;
     
-    const token = authHeader || cookieToken || authToken;
+    const token = authHeader || cookieToken;
     
     if (!token) {
       return NextResponse.json(

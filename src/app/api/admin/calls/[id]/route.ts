@@ -9,10 +9,9 @@ export async function PATCH(
 ) {
   try {
     const authHeader = request.headers.get('Authorization')?.replace('Bearer ', '');
-    const cookieToken = request.cookies.get('auth_token')?.value;
-    const authToken = request.cookies.get('auth_token')?.value;
+    const cookieToken = request.cookies.get('auth-token')?.value;
     
-    const token = authHeader || cookieToken || authToken;
+    const token = authHeader || cookieToken;
     
     if (!token) {
       return NextResponse.json(
@@ -69,10 +68,9 @@ export async function DELETE(
 ) {
   try {
     const authHeader = request.headers.get('Authorization')?.replace('Bearer ', '');
-    const cookieToken = request.cookies.get('auth_token')?.value;
-    const authToken = request.cookies.get('auth_token')?.value;
+    const cookieToken = request.cookies.get('auth-token')?.value;
     
-    const token = authHeader || cookieToken || authToken;
+    const token = authHeader || cookieToken;
     
     if (!token) {
       return NextResponse.json(

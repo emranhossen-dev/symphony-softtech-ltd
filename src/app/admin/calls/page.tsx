@@ -100,8 +100,15 @@ export default function CallManagementPage() {
   const [filterStatus, setFilterStatus] = useState<'all' | 'completed' | 'missed' | 'ongoing'>('all');
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showNewCallModal, setShowNewCallModal] = useState(false);
   const [selectedCall, setSelectedCall] = useState<CallRecord | null>(null);
   const [playingRecording, setPlayingRecording] = useState<string | null>(null);
+  const [newCallForm, setNewCallForm] = useState({
+    phoneNumber: '',
+    callerName: '',
+    calleeName: '',
+    type: 'outgoing' as 'incoming' | 'outgoing'
+  });
 
   useEffect(() => {
     fetchCalls();
@@ -119,7 +126,7 @@ export default function CallManagementPage() {
       });
       
       if (response.status === 401) {
-        handleAuthError(router);
+        handleAuthError(router, 'Session expired. Please login again.');
         return;
       }
 
@@ -131,9 +138,13 @@ export default function CallManagementPage() {
       } else {
         toast.error('Failed to fetch calls');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching calls:', error);
-      toast.error('Failed to fetch calls');
+      if (error.message?.includes('Invalid or expired token') || error.message?.includes('AuthError')) {
+        handleAuthError(router, 'Session expired. Please login again.');
+      } else {
+        toast.error('Failed to fetch calls');
+      }
     } finally {
       setLoading(false);
     }
@@ -172,6 +183,65 @@ export default function CallManagementPage() {
       setPlayingRecording(callId);
       // In real implementation, play audio from recordingUrl
       toast('Playing recording...');
+    }
+  };
+
+  const handleNewCall = () => {
+    setNewCallForm({
+      phoneNumber: '',
+      callerName: 'Admin',
+      calleeName: '',
+      type: 'outgoing'
+    });
+    setShowNewCallModal(true);
+  };
+
+  const handleCreateCall = async () => {
+    if (!newCallForm.phoneNumber || !newCallForm.calleeName) {
+      toast.error('Please enter phone number and callee name');
+      return;
+    }
+
+    setActionLoading({ new: true });
+    try {
+      const response = await fetch('/api/admin/calls', {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({
+          type: newCallForm.type,
+          status: 'ongoing',
+          callerName: newCallForm.callerName,
+          calleeName: newCallForm.calleeName,
+          phoneNumber: newCallForm.phoneNumber,
+          duration: 0,
+          cost: 0,
+          revenue: 0
+        })
+      });
+
+      if (response.status === 401) {
+        handleAuthError(router, 'Session expired. Please login again.');
+        return;
+      }
+
+      const data = await response.json();
+      
+      if (data.success) {
+        toast.success('Call initiated successfully');
+        setShowNewCallModal(false);
+        fetchCalls();
+      } else {
+        toast.error(data.error || 'Failed to initiate call');
+      }
+    } catch (error: any) {
+      console.error('Error creating call:', error);
+      if (error.message?.includes('Invalid or expired token') || error.message?.includes('AuthError')) {
+        handleAuthError(router, 'Session expired. Please login again.');
+      } else {
+        toast.error('Failed to initiate call');
+      }
+    } finally {
+      setActionLoading({ new: false });
     }
   };
 
@@ -223,21 +293,8 @@ export default function CallManagementPage() {
     return `৳${amount.toFixed(2)}`;
   };
 
-  const getStatusBadge = (status: string) => {
-    const styles = {
-      completed: 'bg-green-50 text-green-700 border-green-200',
-      missed: 'bg-red-50 text-red-700 border-red-200',
-      ongoing: 'bg-yellow-50 text-yellow-700 border-yellow-200'
-    };
-    return styles[status as keyof typeof styles] || 'bg-gray-50 text-gray-700 border-gray-200';
-  };
-
   const getTypeIcon = (type: string) => {
     return type === 'incoming' ? <PhoneIncoming className="w-4 h-4" /> : <PhoneOutgoing className="w-4 h-4" />;
-  };
-
-  const getTypeColor = (type: string) => {
-    return type === 'incoming' ? 'text-green-500' : 'text-blue-500';
   };
 
   return (
@@ -274,14 +331,23 @@ export default function CallManagementPage() {
               </h1>
               <p className="text-gray-300">Track, manage, and analyze all your call recordings</p>
             </div>
-            <Button
-              onClick={fetchCalls}
-              disabled={loading}
-              className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white shadow-2xl shadow-purple-500/25 transition-all hover:scale-105"
-            >
-              <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
-              Refresh Data
-            </Button>
+            <div className="flex items-center gap-3">
+              <Button
+                onClick={handleNewCall}
+                className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white shadow-2xl shadow-green-500/25 transition-all hover:scale-105"
+              >
+                <Phone className="w-4 h-4 mr-2" />
+                New Call
+              </Button>
+              <Button
+                onClick={fetchCalls}
+                disabled={loading}
+                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white shadow-2xl shadow-purple-500/25 transition-all hover:scale-105"
+              >
+                <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+                Refresh Data
+              </Button>
+            </div>
           </div>
         </div>
       </div>
@@ -410,78 +476,95 @@ export default function CallManagementPage() {
         </Card>
 
         {/* Calls Table */}
-        <Card className="bg-white border-0 shadow-sm">
+        <Card className="bg-white/5 backdrop-blur-lg border border-white/10 hover:border-purple-400/30 transition-all duration-300 shadow-2xl">
           <CardContent className="p-6">
             <Table>
               <thead>
-                <tr>
-                  <th className="text-gray-900 h-12 px-4 text-left align-middle font-medium">Type</th>
-                  <th className="text-gray-900 h-12 px-4 text-left align-middle font-medium">Caller</th>
-                  <th className="text-gray-900 h-12 px-4 text-left align-middle font-medium">Callee</th>
-                  <th className="text-gray-900 h-12 px-4 text-left align-middle font-medium">Phone</th>
-                  <th className="text-gray-900 h-12 px-4 text-left align-middle font-medium">Duration</th>
-                  <th className="text-gray-900 h-12 px-4 text-left align-middle font-medium">Status</th>
-                  <th className="text-gray-900 h-12 px-4 text-left align-middle font-medium">Cost</th>
-                  <th className="text-gray-900 h-12 px-4 text-left align-middle font-medium">Revenue</th>
-                  <th className="text-gray-900 h-12 px-4 text-left align-middle font-medium">Handled By</th>
-                  <th className="text-gray-900 h-12 px-4 text-left align-middle font-medium">Date</th>
-                  <th className="text-gray-900 h-12 px-4 text-right align-middle font-medium">Actions</th>
+                <tr className="border-b border-white/10">
+                  <th className="text-gray-300 h-14 px-4 text-left align-middle font-semibold uppercase tracking-wider text-xs">Type</th>
+                  <th className="text-gray-300 h-14 px-4 text-left align-middle font-semibold uppercase tracking-wider text-xs">Caller</th>
+                  <th className="text-gray-300 h-14 px-4 text-left align-middle font-semibold uppercase tracking-wider text-xs">Callee</th>
+                  <th className="text-gray-300 h-14 px-4 text-left align-middle font-semibold uppercase tracking-wider text-xs">Phone</th>
+                  <th className="text-gray-300 h-14 px-4 text-left align-middle font-semibold uppercase tracking-wider text-xs">Duration</th>
+                  <th className="text-gray-300 h-14 px-4 text-left align-middle font-semibold uppercase tracking-wider text-xs">Status</th>
+                  <th className="text-gray-300 h-14 px-4 text-left align-middle font-semibold uppercase tracking-wider text-xs">Cost</th>
+                  <th className="text-gray-300 h-14 px-4 text-left align-middle font-semibold uppercase tracking-wider text-xs">Revenue</th>
+                  <th className="text-gray-300 h-14 px-4 text-left align-middle font-semibold uppercase tracking-wider text-xs">Handled By</th>
+                  <th className="text-gray-300 h-14 px-4 text-left align-middle font-semibold uppercase tracking-wider text-xs">Date</th>
+                  <th className="text-gray-300 h-14 px-4 text-right align-middle font-semibold uppercase tracking-wider text-xs">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {loading ? (
                   <tr>
-                    <td colSpan={12} className="p-4 text-center py-8">
-                      <div className="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-green-600"></div>
+                    <td colSpan={12} className="p-4 text-center py-12">
+                      <div className="flex flex-col items-center justify-center gap-4">
+                        <div className="inline-block animate-spin rounded-full h-8 w-8 border-2 border-purple-500 border-t-transparent"></div>
+                        <p className="text-gray-400 text-sm">Loading calls...</p>
+                      </div>
                     </td>
                   </tr>
                 ) : filteredCalls.length === 0 ? (
                   <tr>
-                    <td colSpan={12} className="p-4 text-center py-8 text-gray-500">
-                      No calls found
+                    <td colSpan={12} className="p-4 text-center py-12">
+                      <div className="flex flex-col items-center justify-center gap-4">
+                        <div className="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center">
+                          <Phone className="w-8 h-8 text-gray-400" />
+                        </div>
+                        <p className="text-gray-400 text-lg">No calls found</p>
+                        <p className="text-gray-500 text-sm">Try adjusting your filters or search terms</p>
+                      </div>
                     </td>
                   </tr>
                 ) : (
                   filteredCalls.map((call) => (
-                    <tr key={call.id} className="hover:bg-gray-50 border-b">
+                    <tr key={call.id} className="hover:bg-white/10 border-b border-white/5 transition-all duration-200">
                       <td className="p-4 align-middle">
-                        <div className="flex items-center gap-2">
-                          <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                            call.type === 'incoming' ? 'bg-green-100' : 'bg-blue-100'
+                        <div className="flex items-center gap-3">
+                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+                            call.type === 'incoming' 
+                              ? 'bg-gradient-to-br from-green-500 to-emerald-500 shadow-lg shadow-green-500/25' 
+                              : 'bg-gradient-to-br from-blue-500 to-purple-500 shadow-lg shadow-blue-500/25'
                           }`}>
                             {getTypeIcon(call.type)}
                           </div>
-                          <span className="text-sm capitalize text-gray-600">{call.type}</span>
+                          <span className="text-sm font-semibold text-white capitalize">{call.type}</span>
                         </div>
                       </td>
                       <td className="p-4 align-middle">
-                        <div className="text-sm font-medium text-gray-900">{call.callerName}</div>
+                        <div className="text-sm font-semibold text-white">{call.callerName}</div>
                       </td>
                       <td className="p-4 align-middle">
-                        <div className="text-sm text-gray-600">{call.calleeName}</div>
+                        <div className="text-sm text-gray-300">{call.calleeName}</div>
                       </td>
                       <td className="p-4 align-middle">
-                        <div className="text-sm text-gray-600">{call.phoneNumber}</div>
+                        <div className="text-sm text-gray-300 font-mono">{call.phoneNumber}</div>
                       </td>
                       <td className="p-4 align-middle">
-                        <div className="text-sm font-medium text-gray-900">{formatDuration(call.duration)}</div>
+                        <div className="text-sm font-semibold text-white">{formatDuration(call.duration)}</div>
                       </td>
                       <td className="p-4 align-middle">
-                        <Badge className={getStatusBadge(call.status)}>
+                        <Badge className={`${
+                          call.status === 'completed' 
+                            ? 'bg-green-500/20 text-green-300 border-green-400/30' 
+                            : call.status === 'missed'
+                            ? 'bg-red-500/20 text-red-300 border-red-400/30'
+                            : 'bg-yellow-500/20 text-yellow-300 border-yellow-400/30'
+                        } border`}>
                           {call.status}
                         </Badge>
                       </td>
                       <td className="p-4 align-middle">
-                        <div className="text-sm font-medium text-gray-900">{formatCurrency(call.cost)}</div>
+                        <div className="text-sm font-semibold text-white">{formatCurrency(call.cost)}</div>
                       </td>
                       <td className="p-4 align-middle">
-                        <div className="text-sm font-medium text-gray-900">{formatCurrency(call.revenue)}</div>
+                        <div className="text-sm font-semibold text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-400">{formatCurrency(call.revenue)}</div>
                       </td>
                       <td className="p-4 align-middle">
-                        <div className="text-sm text-gray-600">{call.user?.name || 'System'}</div>
+                        <div className="text-sm text-gray-300">{call.user?.name || 'System'}</div>
                       </td>
                       <td className="p-4 align-middle">
-                        <div className="text-sm text-gray-600">{new Date(call.createdAt).toLocaleDateString()}</div>
+                        <div className="text-sm text-gray-300">{new Date(call.createdAt).toLocaleDateString()}</div>
                       </td>
                       <td className="p-4 align-middle text-right">
                         <div className="flex items-center justify-end gap-2">
@@ -490,7 +573,7 @@ export default function CallManagementPage() {
                               size="sm"
                               variant="outline"
                               onClick={() => handlePlayRecording(call.id)}
-                              className="border-gray-200 text-gray-700 hover:bg-gray-50"
+                              className="border-white/20 text-white hover:bg-white/10 hover:border-purple-400/50 transition-all"
                             >
                               {playingRecording === call.id ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
                             </Button>
@@ -499,7 +582,7 @@ export default function CallManagementPage() {
                             size="sm"
                             variant="outline"
                             onClick={() => handleEditCall(call)}
-                            className="border-gray-200 text-gray-700 hover:bg-gray-50"
+                            className="border-white/20 text-white hover:bg-white/10 hover:border-blue-400/50 transition-all"
                           >
                             <Edit className="w-4 h-4" />
                           </Button>
@@ -508,7 +591,7 @@ export default function CallManagementPage() {
                             variant="outline"
                             onClick={() => handleDeleteCall(call)}
                             disabled={actionLoading[call.id]}
-                            className="border-red-200 text-red-700 hover:bg-red-50"
+                            className="border-red-500/30 text-red-400 hover:bg-red-500/10 hover:border-red-400/50 transition-all"
                           >
                             <Trash2 className="w-4 h-4" />
                           </Button>
@@ -525,31 +608,36 @@ export default function CallManagementPage() {
 
       {/* Edit Modal */}
       {showEditModal && selectedCall && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[100] animate-in fade-in duration-200">
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[100] animate-in fade-in duration-200">
           <div 
-            className="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl animate-in zoom-in duration-200 border-2 border-gray-200 relative"
+            className="bg-slate-900/95 backdrop-blur-xl rounded-3xl p-8 w-full max-w-md shadow-2xl animate-in zoom-in duration-200 border-2 border-white/10 relative"
             onClick={(e) => e.stopPropagation()}
           >
             <button
               onClick={() => setShowEditModal(false)}
-              className="absolute top-4 right-4 p-2 rounded-full hover:bg-gray-100 transition-colors"
+              className="absolute top-5 right-5 p-2 rounded-full hover:bg-white/10 transition-colors group"
             >
-              <X className="w-5 h-5 text-gray-500" />
+              <X className="w-5 h-5 text-gray-400 group-hover:text-white transition-colors" />
             </button>
-            <h2 className="text-2xl font-bold text-gray-900 mb-2 pr-8">
-              Edit Call Details
-            </h2>
-            <p className="text-sm text-gray-500 mb-6">Update call information</p>
-            <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-gray-200">
+            <div className="flex items-center gap-3 mb-6 pr-8">
+              <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-purple-500 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/25">
+                <Edit className="w-7 h-7 text-white" />
+              </div>
+              <div>
+                <h2 className="text-2xl font-bold text-white">Edit Call Details</h2>
+                <p className="text-sm text-gray-400">Update call information</p>
+              </div>
+            </div>
+            <div className="flex justify-end gap-3 mt-8 pt-6 border-t border-white/10">
               <Button
                 variant="outline"
                 onClick={() => setShowEditModal(false)}
-                className="px-6 py-2 border-2 border-gray-300 hover:bg-gray-100 text-gray-700 font-semibold"
+                className="px-6 py-3 border-2 border-white/20 hover:bg-white/10 text-white font-semibold"
               >
                 Cancel
               </Button>
               <Button 
-                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 font-semibold shadow-lg"
+                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-3 font-semibold shadow-lg shadow-blue-500/25"
               >
                 Save Changes
               </Button>
@@ -561,46 +649,46 @@ export default function CallManagementPage() {
       {/* Delete Confirmation Modal */}
       {showDeleteModal && selectedCall && (
         <div 
-          className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[100] animate-in fade-in duration-200"
+          className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[100] animate-in fade-in duration-200"
           onClick={() => setShowDeleteModal(false)}
         >
           <div 
-            className="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl animate-in zoom-in duration-200 border-2 border-red-200 relative"
+            className="bg-slate-900/95 backdrop-blur-xl rounded-3xl p-8 w-full max-w-md shadow-2xl animate-in zoom-in duration-200 border-2 border-red-500/30 relative"
             onClick={(e) => e.stopPropagation()}
           >
             <button
               onClick={() => setShowDeleteModal(false)}
-              className="absolute top-4 right-4 p-2 rounded-full hover:bg-red-50 transition-colors"
+              className="absolute top-5 right-5 p-2 rounded-full hover:bg-red-500/10 transition-colors group"
             >
-              <X className="w-5 h-5 text-gray-500 hover:text-red-600" />
+              <X className="w-5 h-5 text-gray-400 group-hover:text-red-400 transition-colors" />
             </button>
-            <div className="flex items-center gap-3 mb-4 pr-8">
-              <div className="w-14 h-14 bg-red-100 rounded-full flex items-center justify-center">
-                <Trash2 className="w-7 h-7 text-red-600" />
+            <div className="flex items-center gap-4 mb-6 pr-8">
+              <div className="w-16 h-16 bg-gradient-to-br from-red-500 to-rose-500 rounded-xl flex items-center justify-center shadow-lg shadow-red-500/25">
+                <Trash2 className="w-8 h-8 text-white" />
               </div>
               <div>
-                <h2 className="text-2xl font-bold text-gray-900">Delete Call Record</h2>
-                <p className="text-sm text-gray-500">This action cannot be undone</p>
+                <h2 className="text-2xl font-bold text-white">Delete Call Record</h2>
+                <p className="text-sm text-gray-400">This action cannot be undone</p>
               </div>
             </div>
-            <div className="bg-red-50 rounded-lg p-4 mb-4 border border-red-200">
-              <p className="text-sm text-gray-700">
-                Are you sure you want to delete the call from <strong>{selectedCall.callerName}</strong>?
+            <div className="bg-red-500/10 rounded-xl p-4 mb-6 border border-red-500/20">
+              <p className="text-sm text-gray-300">
+                Are you sure you want to delete the call from <strong className="text-red-400">{selectedCall.callerName}</strong>?
               </p>
             </div>
-            <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-gray-200">
+            <div className="flex justify-end gap-3 mt-8 pt-6 border-t border-white/10">
               <Button
                 variant="outline"
                 onClick={() => setShowDeleteModal(false)}
                 disabled={actionLoading[selectedCall.id]}
-                className="px-6 py-2 border-2 border-gray-300 hover:bg-gray-100 text-gray-700 font-semibold"
+                className="px-6 py-3 border-2 border-white/20 hover:bg-white/10 text-white font-semibold"
               >
                 Cancel
               </Button>
               <Button
                 onClick={confirmDelete}
                 disabled={actionLoading[selectedCall.id]}
-                className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 font-semibold shadow-lg"
+                className="bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white px-6 py-3 font-semibold shadow-lg shadow-red-500/25"
               >
                 {actionLoading[selectedCall.id] ? (
                   <>
@@ -611,6 +699,95 @@ export default function CallManagementPage() {
                   <>
                     <Trash2 className="w-4 h-4 mr-2" />
                     Delete
+                  </>
+                )}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* New Call Modal */}
+      {showNewCallModal && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[100] animate-in fade-in duration-200">
+          <div 
+            className="bg-slate-900/95 backdrop-blur-xl rounded-3xl p-8 w-full max-w-md shadow-2xl animate-in zoom-in duration-200 border-2 border-green-500/30 relative"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setShowNewCallModal(false)}
+              className="absolute top-5 right-5 p-2 rounded-full hover:bg-white/10 transition-colors group"
+            >
+              <X className="w-5 h-5 text-gray-400 group-hover:text-white transition-colors" />
+            </button>
+            <div className="flex items-center gap-3 mb-6 pr-8">
+              <div className="w-14 h-14 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center shadow-lg shadow-green-500/25">
+                <Phone className="w-7 h-7 text-white" />
+              </div>
+              <div>
+                <h2 className="text-2xl font-bold text-white">New Call</h2>
+                <p className="text-sm text-gray-400">Initiate a new call</p>
+              </div>
+            </div>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Phone Number *</label>
+                <input
+                  type="tel"
+                  placeholder="+880..."
+                  value={newCallForm.phoneNumber}
+                  onChange={(e) => setNewCallForm(prev => ({ ...prev, phoneNumber: e.target.value }))}
+                  className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:border-green-400 transition-all"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Callee Name *</label>
+                <input
+                  type="text"
+                  placeholder="Enter name"
+                  value={newCallForm.calleeName}
+                  onChange={(e) => setNewCallForm(prev => ({ ...prev, calleeName: e.target.value }))}
+                  className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:border-green-400 transition-all"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Call Type</label>
+                <select
+                  value={newCallForm.type}
+                  onChange={(e) => setNewCallForm(prev => ({ ...prev, type: e.target.value as any }))}
+                  className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:border-green-400 transition-all appearance-none cursor-pointer"
+                >
+                  <option value="outgoing" className="bg-gray-900 text-gray-300">Outgoing</option>
+                  <option value="incoming" className="bg-gray-900 text-gray-300">Incoming</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-3 mt-8 pt-6 border-t border-white/10">
+              <Button
+                variant="outline"
+                onClick={() => setShowNewCallModal(false)}
+                className="px-6 py-3 border-2 border-white/20 hover:bg-white/10 text-white font-semibold"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleCreateCall}
+                disabled={actionLoading.new}
+                className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-6 py-3 font-semibold shadow-lg shadow-green-500/25"
+              >
+                {actionLoading.new ? (
+                  <>
+                    <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                    Initiating...
+                  </>
+                ) : (
+                  <>
+                    <Phone className="w-4 h-4 mr-2" />
+                    Initiate Call
                   </>
                 )}
               </Button>
