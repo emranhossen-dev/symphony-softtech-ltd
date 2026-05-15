@@ -1,36 +1,39 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/utils/supabase/server';
-import { cookies } from 'next/headers';
+import { prisma } from '@/lib/prisma';
 
 export async function GET(request: NextRequest) {
   try {
-    const cookieStore = await cookies()
-    const supabase = createClient(cookieStore)
-    
     // Fetch all active categories with their active courses
-    const { data: categories, error } = await supabase
-      .from('categories')
-      .select(`
-        *,
-        courses (
-          *,
-          mentor:users (
-            name
-          )
-        )
-      `)
-      .eq('isActive', true)
+    const categories = await prisma.category.findMany({
+      where: {
+        isActive: true,
+        courses: {
+          some: {
+            isActive: true
+          }
+        }
+      },
+      include: {
+        courses: {
+          where: {
+            isActive: true
+          },
+          include: {
+            mentor: {
+              select: {
+                name: true
+              }
+            }
+          }
+        }
+      },
+      orderBy: {
+        createdAt: 'asc'
+      }
+    });
     
-    if (error) {
-      console.error('Error fetching categories:', error)
-      return NextResponse.json(
-        { error: 'Failed to fetch categories' },
-        { status: 500 }
-      )
-    }
-    
-    // Filter active courses and transform data
-    const categoriesWithActiveCourses = categories?.map(category => ({
+    // Transform data to match expected format
+    const categoriesWithActiveCourses = categories.map(category => ({
       id: category.id,
       name: category.name,
       slug: category.slug,
@@ -38,7 +41,7 @@ export async function GET(request: NextRequest) {
       icon: category.icon || 'government',
       color: category.color || 'green',
       isActive: category.isActive,
-      courses: category.courses?.filter((course: { isActive: any; }) => course.isActive).map((course: { id: any; title: any; thumbnail: any; mentor: { name: any; }; price: any; isActive: any; }) => ({
+      courses: category.courses.map(course => ({
         id: course.id,
         title: course.title,
         thumbnail: course.thumbnail || '',
@@ -46,17 +49,12 @@ export async function GET(request: NextRequest) {
         moduleCount: 0, // Will be calculated later
         price: course.price || 0,
         isActive: course.isActive
-      })) || []
-    })) || []
-
-    // Filter out categories that have no active courses
-    const categoriesWithCourses = categoriesWithActiveCourses.filter(
-      category => category.courses.length > 0
-    );
+      }))
+    }));
 
     return NextResponse.json({
       success: true,
-      categories: categoriesWithCourses
+      categories: categoriesWithActiveCourses
     });
 
   } catch (error) {

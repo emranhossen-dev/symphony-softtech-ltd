@@ -97,11 +97,11 @@ const AdminSidebar = ({ isOpen, onClose, isMobile }: AdminSidebarProps) => {
     fetchQuickStats();
   }, [pathname]);
 
-  // Auto-refresh stats every 30 seconds
+  // Auto-refresh stats every 2 minutes
   useEffect(() => {
     const interval = setInterval(() => {
       fetchQuickStats();
-    }, 30000); // 30 seconds
+    }, 120000); // 2 minutes
 
     return () => clearInterval(interval);
   }, []);

@@ -1,21 +1,10 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { MessageCircle, X, Send, User, Phone, Mail } from 'lucide-react';
-
-interface WhatsAppMessage {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-  message: string;
-  timestamp: Date;
-  isRead: boolean;
-}
 
 const WhatsAppWidget = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState<WhatsAppMessage[]>([]);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -24,27 +13,6 @@ const WhatsAppWidget = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showNotification, setShowNotification] = useState(false);
-
-  useEffect(() => {
-    // Check for new messages periodically
-    const interval = setInterval(() => {
-      fetchMessages();
-    }, 30000); // Check every 30 seconds
-
-    return () => clearInterval(interval);
-  }, []);
-
-  const fetchMessages = async () => {
-    try {
-      const response = await fetch('/api/whatsapp/messages');
-      if (response.ok) {
-        const data = await response.json();
-        setMessages(data.messages || []);
-      }
-    } catch (error) {
-      console.error('Error fetching messages:', error);
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -91,8 +59,6 @@ const WhatsAppWidget = () => {
     }));
   };
 
-  const unreadCount = messages.filter(msg => !msg.isRead).length;
-
   return (
     <>
       {/* Success Notification */}
@@ -128,24 +94,6 @@ const WhatsAppWidget = () => {
                 </button>
               </div>
             </div>
-
-            {/* Messages Preview (for admin view) */}
-            {messages.length > 0 && (
-              <div className="bg-gray-50 p-3 border-b border-gray-200 max-h-32 overflow-y-auto">
-                <p className="text-xs text-gray-600 mb-2">Recent Messages:</p>
-                {messages.slice(0, 3).map(msg => (
-                  <div key={msg.id} className="text-xs p-2 bg-white rounded mb-1">
-                    <div className="flex items-center justify-between">
-                      <span className="font-semibold">{msg.name}</span>
-                      {!msg.isRead && (
-                        <span className="w-2 h-2 bg-red-500 rounded-full"></span>
-                      )}
-                    </div>
-                    <p className="text-gray-600 truncate">{msg.message}</p>
-                  </div>
-                ))}
-              </div>
-            )}
 
             {/* Form */}
             <form onSubmit={handleSubmit} className="p-4">
@@ -227,13 +175,6 @@ const WhatsAppWidget = () => {
           className="relative w-14 h-14 bg-gradient-to-r from-green-500 to-green-600 rounded-full shadow-lg hover:shadow-green-500/25 transition-all duration-300 hover:scale-110 flex items-center justify-center group"
         >
           <MessageCircle className="w-7 h-7 text-white" />
-          
-          {/* Unread Badge */}
-          {unreadCount > 0 && (
-            <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center animate-pulse">
-              {unreadCount}
-            </span>
-          )}
 
           {/* Pulse Animation */}
           <span className="absolute inset-0 rounded-full bg-green-400 animate-ping opacity-20"></span>

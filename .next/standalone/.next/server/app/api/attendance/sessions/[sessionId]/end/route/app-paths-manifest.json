@@ -1,3 +1,0 @@
-{
-  "/api/attendance/sessions/[sessionId]/end/route": "app/api/attendance/sessions/[sessionId]/end/route.js"
-}

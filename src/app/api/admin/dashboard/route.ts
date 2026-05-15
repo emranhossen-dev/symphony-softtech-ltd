@@ -1,80 +1,65 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/utils/supabase/server';
-import { cookies } from 'next/headers';
+import { prisma } from '@/lib/prisma';
 
 export async function GET(request: NextRequest) {
   try {
-    const cookieStore = await cookies()
-    const supabase = createClient(cookieStore)
-    
     // Get counts for courses and modules
     const [courseCount, moduleCount] = await Promise.all([
-      supabase.from('courses').select('*', { count: 'exact', head: true }).eq('isActive', true),
-      supabase.from('modules').select('*', { count: 'exact', head: true })
+      prisma.course.count({ where: { isActive: true } }),
+      prisma.module.count()
     ]);
 
     // Get recent enrollments and payments
     const [enrollments, payments] = await Promise.all([
-      supabase
-        .from('enrollments')
-        .select('*')
-        .order('createdAt', { ascending: false })
-        .limit(50), // Reduced from 100 for better performance
-      supabase
-        .from('payments')
-        .select('*')
-        .order('createdAt', { ascending: false })
-        .limit(50)
+      prisma.enrollment.findMany({
+        take: 50,
+        orderBy: { createdAt: 'desc' }
+      }),
+      prisma.payment.findMany({
+        take: 50,
+        orderBy: { createdAt: 'desc' }
+      })
     ]);
 
     // Get user counts by role
     const [students, mentors, employees] = await Promise.all([
-      supabase.from('users').select('*', { count: 'exact', head: true }).eq('role', 'STUDENT').eq('isActive', true),
-      supabase.from('users').select('*', { count: 'exact', head: true }).eq('role', 'MENTOR').eq('isActive', true),
-      supabase.from('users').select('*', { count: 'exact', head: true }).eq('role', 'EMPLOYEE').eq('isActive', true)
+      prisma.user.count({ where: { role: 'STUDENT', isActive: true } }),
+      prisma.user.count({ where: { role: 'MENTOR', isActive: true } }),
+      prisma.user.count({ where: { role: 'EMPLOYEE', isActive: true } })
     ]);
-
-    // Handle potential errors and provide defaults
-    const courseCountData = courseCount.error ? { count: 0 } : courseCount
-    const moduleCountData = moduleCount.error ? { count: 0 } : moduleCount
-    const enrollmentsData = enrollments.error ? { data: [] } : enrollments
-    const paymentsData = payments.error ? { data: [] } : payments
-    const studentsData = students.error ? { count: 0 } : students
-    const mentorsData = mentors.error ? { count: 0 } : mentors
-    const employeesData = employees.error ? { count: 0 } : employees
 
     // Calculate stats
     const stats = {
-      totalEnrollments: enrollmentsData.data?.length || 0,
+      totalEnrollments: enrollments.length || 0,
       pendingApprovals: 0, // You may need to calculate this based on your business logic
       paymentPending: 0, // You may need to calculate this based on your business logic
-      activeStudents: studentsData.count || 0,
+      activeStudents: students || 0,
       totalRevenue: 0, // You may need to calculate this from payments
       monthlyRevenue: 0, // You may need to calculate this from payments
       revenueGrowth: 0, // You may need to calculate this
       enrollmentGrowth: 0, // You may need to calculate this
-      totalCourses: courseCountData.count || 0,
-      totalModules: moduleCountData.count || 0,
+      totalCourses: courseCount || 0,
+      totalModules: moduleCount || 0,
       completionRate: 0 // You may need to calculate this
     };
 
     // Create recent activities from enrollments and payments
     const recentActivities = [
-      ...(enrollmentsData.data || []).map(enrollment => ({
+      ...enrollments.map(enrollment => ({
         id: enrollment.id,
         type: "enrollment" as const,
         description: `New enrollment received`,
-        user: enrollment.studentName || "Unknown Student",
+        user: enrollment.fullName || "Unknown Student",
         timestamp: enrollment.createdAt,
-        amount: enrollment.amount
+        amount: 0
       })),
-      ...(paymentsData.data || []).map(payment => ({
+      ...payments.map(payment => ({
         id: payment.id,
         type: "payment" as const,
         description: `Payment received`,
-        user: payment.studentName || "Unknown Student",
+        user: "Unknown Student",
         timestamp: payment.createdAt,
-        amount: payment.amount
+        amount: payment.amount || 0
       }))
     ].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()).slice(0, 10);
 

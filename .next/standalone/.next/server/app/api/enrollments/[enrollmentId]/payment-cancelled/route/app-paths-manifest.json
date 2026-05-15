@@ -1,3 +1,0 @@
-{
-  "/api/enrollments/[enrollmentId]/payment-cancelled/route": "app/api/enrollments/[enrollmentId]/payment-cancelled/route.js"
-}

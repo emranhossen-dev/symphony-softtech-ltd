@@ -1,28 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/utils/supabase/server';
-import { cookies } from 'next/headers';
+import { prisma } from '@/lib/prisma';
 
 export async function GET(request: NextRequest) {
   try {
-    const cookieStore = await cookies()
-    const supabase = createClient(cookieStore)
-    
-    const { data: categories, error } = await supabase
-      .from('categories')
-      .select('*')
-      .order('createdAt', { ascending: false })
-    
-    if (error) {
-      console.error('Error fetching categories:', error)
-      return NextResponse.json(
-        { error: 'Failed to fetch categories' },
-        { status: 500 }
-      )
-    }
-    
+    const categories = await prisma.category.findMany({
+      orderBy: {
+        createdAt: 'desc'
+      }
+    });
+
     return NextResponse.json({
       success: true,
-      data: categories || []
+      data: categories
     });
 
   } catch (error) {
@@ -36,28 +25,16 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const cookieStore = await cookies()
-    const supabase = createClient(cookieStore)
-    
-    const body = await request.json()
-    
-    const { data: category, error } = await supabase
-      .from('categories')
-      .insert([body])
-      .select()
-    
-    if (error) {
-      console.error('Error creating category:', error)
-      return NextResponse.json(
-        { error: 'Failed to create category' },
-        { status: 500 }
-      )
-    }
-    
+    const body = await request.json();
+
+    const category = await prisma.category.create({
+      data: body
+    });
+
     return NextResponse.json({
       success: true,
-      data: category?.[0]
-    })
+      data: category
+    });
 
   } catch (error) {
     console.error('Error:', error)

@@ -50,9 +50,9 @@ const Navbar = () => {
             <a href="/" className="flex items-center space-x-3 group">
               <div className="relative">
                 <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-xl blur-sm opacity-75 group-hover:opacity-100 transition-opacity duration-300"></div>
-                <img 
-                  src="/Logo.jpeg" 
-                  alt="Symphony Institute of Technology" 
+                <img
+                  src="/Logo.jpeg"
+                  alt="Symphony Institute of Technology"
                   className="relative h-14 w-auto object-contain rounded-xl transition-all duration-500 group-hover:scale-110 group-hover:rotate-1"
                 />
                 <div className="absolute -top-2 -right-2">

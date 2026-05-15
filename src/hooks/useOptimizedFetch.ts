@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { useRouteLoading } from "@/contexts/RouteLoadingContext";
 
 interface UseOptimizedFetchOptions {
   showLoading?: boolean;
@@ -36,25 +35,17 @@ export function useOptimizedFetch<T>(
   const [data, setData] = useState<T | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { setLoading: setRouteLoading } = useRouteLoading();
 
   const fetchData = useCallback(async (attempt = 0) => {
     try {
       setLoading(true);
       setError(null);
-      
-      if (showLoading) {
-        setRouteLoading(true, loadingMessage);
-      }
 
       // Check cache first
       const cached = cache.get(url);
       if (cached && Date.now() - cached.timestamp < cacheTime) {
         setData(cached.data);
         setLoading(false);
-        if (showLoading) {
-          setRouteLoading(false);
-        }
         return;
       }
 
@@ -81,11 +72,8 @@ export function useOptimizedFetch<T>(
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
       setLoading(false);
-      if (showLoading) {
-        setRouteLoading(false);
-      }
     }
-  }, [url, showLoading, loadingMessage, cacheTime, retryCount, retryDelay, setRouteLoading]);
+  }, [url, cacheTime, retryCount, retryDelay]);
 
   useEffect(() => {
     fetchData();
@@ -120,16 +108,11 @@ export function useOptimizedParallelFetch<T>(
   const [data, setData] = useState<T[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { setLoading: setRouteLoading } = useRouteLoading();
 
   const fetchAllData = useCallback(async (attempt = 0) => {
     try {
       setLoading(true);
       setError(null);
-      
-      if (showLoading) {
-        setRouteLoading(true, loadingMessage);
-      }
 
       const promises = urls.map(url => 
         fetch(url).then(res => {
@@ -153,11 +136,8 @@ export function useOptimizedParallelFetch<T>(
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
       setLoading(false);
-      if (showLoading) {
-        setRouteLoading(false);
-      }
     }
-  }, [urls, showLoading, loadingMessage, retryCount, retryDelay, setRouteLoading]);
+  }, [urls, retryCount, retryDelay]);
 
   useEffect(() => {
     fetchAllData();

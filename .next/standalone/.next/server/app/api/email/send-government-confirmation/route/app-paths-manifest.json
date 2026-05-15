@@ -1,3 +1,0 @@
-{
-  "/api/email/send-government-confirmation/route": "app/api/email/send-government-confirmation/route.js"
-}

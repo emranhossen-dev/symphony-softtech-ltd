@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/utils/supabase/server';
-import { cookies } from 'next/headers';
+import { prisma } from '@/lib/prisma';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -9,41 +8,39 @@ export async function GET(request: NextRequest) {
   const category = searchParams.get('category');
 
   try {
-    const cookieStore = await cookies()
-    const supabase = createClient(cookieStore)
-    
-    // Build query
-    let query = supabase
-      .from('courses')
-      .select(`
-        *,
-        mentor:users (
-          name
-        ),
-        category:categories (
-          name,
-          slug
-        )
-      `)
-      .eq('isActive', true)
-      .limit(limit)
+    // Build where clause
+    const where: any = {
+      isActive: true
+    };
 
     if (category) {
-      query = query.eq('category', category)
+      where.category = category;
     }
 
-    const { data: courses, error } = await query
-
-    if (error) {
-      console.error('Error fetching courses:', error)
-      return NextResponse.json(
-        { error: 'Failed to fetch courses' },
-        { status: 500 }
-      )
-    }
+    // Fetch courses with mentor and category info
+    const courses = await prisma.course.findMany({
+      where,
+      include: {
+        mentor: {
+          select: {
+            name: true
+          }
+        },
+        categoryRelation: {
+          select: {
+            name: true,
+            slug: true
+          }
+        }
+      },
+      take: limit,
+      orderBy: {
+        createdAt: 'desc'
+      }
+    });
 
     // Transform data to match expected interface
-    const transformedCourses = courses?.map(course => ({
+    const transformedCourses = courses.map(course => ({
       id: course.id,
       title: course.title,
       slug: course.slug,
@@ -52,12 +49,12 @@ export async function GET(request: NextRequest) {
       price: course.price || 0,
       duration: course.duration || '',
       mentor: course.mentor?.name || 'Unknown',
-      category: course.category?.name || 'Uncategorized',
-      categorySlug: course.category?.slug || 'uncategorized',
+      category: course.categoryRelation?.name || 'Uncategorized',
+      categorySlug: course.categoryRelation?.slug || 'uncategorized',
       isActive: course.isActive,
       moduleCount: 0, // Will be calculated later
       enrollmentCount: 0 // Will be calculated later
-    })) || []
+    }));
 
     return NextResponse.json({
       success: true,
@@ -66,7 +63,7 @@ export async function GET(request: NextRequest) {
 
   } catch (error) {
     console.error('Error fetching courses:', error);
-    
+
     // Return mock data if database is not available
     const mockCourses = [
       {

@@ -76,7 +76,9 @@ export default function UserManagement() {
       setError("");
       
       // Get auth token
-      const token = localStorage.getItem('auth_token') || localStorage.getItem('auth-token');
+      const token = localStorage.getItem('auth_token') || 
+                     localStorage.getItem('token') ||
+                     document.cookie.split(';').find(c => c.trim().startsWith('auth-token='))?.split('=')[1];
       
       const response = await fetch("/api/admin/users", {
         headers: {
@@ -141,7 +143,9 @@ export default function UserManagement() {
 
     try {
       // Get auth token
-      const token = localStorage.getItem('auth_token') || localStorage.getItem('auth-token');
+      const token = localStorage.getItem('auth_token') || 
+                     localStorage.getItem('token') ||
+                     document.cookie.split(';').find(c => c.trim().startsWith('auth-token='))?.split('=')[1];
       
       const response = await fetch("/api/admin/users", {
         method: "POST",
@@ -183,7 +187,9 @@ export default function UserManagement() {
   const handleStatusChange = async (userId: string, newStatus: boolean) => {
     try {
       // Get auth token
-      const token = localStorage.getItem('auth_token') || localStorage.getItem('auth-token');
+      const token = localStorage.getItem('auth_token') || 
+                     localStorage.getItem('token') ||
+                     document.cookie.split(';').find(c => c.trim().startsWith('auth-token='))?.split('=')[1];
       
       const response = await fetch(`/api/admin/users/${userId}`, {
         method: "PATCH",
@@ -215,7 +221,9 @@ export default function UserManagement() {
 
     try {
       // Get auth token
-      const token = localStorage.getItem('auth_token') || localStorage.getItem('auth-token');
+      const token = localStorage.getItem('auth_token') || 
+                     localStorage.getItem('token') ||
+                     document.cookie.split(';').find(c => c.trim().startsWith('auth-token='))?.split('=')[1];
       
       const response = await fetch(`/api/admin/users/${userId}`, {
         method: "DELETE",
