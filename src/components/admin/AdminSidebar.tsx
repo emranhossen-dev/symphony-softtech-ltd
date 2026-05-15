@@ -42,7 +42,8 @@ import {
   X,
   LogOut,
   Shield,
-  User
+  User,
+  Phone
 } from 'lucide-react';
 
 interface MenuItem {
@@ -378,6 +379,11 @@ const AdminSidebar = ({ isOpen, onClose, isMobile, isCollapsed = false, onToggle
       title: 'Mentors',
       href: '/admin/mentors',
       icon: <GraduationCap className="w-4 h-4" />
+    },
+    {
+      title: 'Calls',
+      href: '/admin/calls',
+      icon: <Phone className="w-4 h-4" />
     },
     {
       title: 'Seminars',
