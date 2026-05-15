@@ -86,14 +86,55 @@ const CallRecordingPanel = () => {
     return `৳${amount.toFixed(2)}`;
   };
 
-  const startRecording = () => {
-    // In real implementation, this would start Twilio recording
-    setIsRecording(true);
-    setTimeout(() => {
+  const startRecording = async () => {
+    try {
+      setIsRecording(true);
+      
+      // Create a new call record in the database
+      const response = await fetch('/api/admin/calls', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          type: 'outgoing',
+          status: 'ongoing',
+          callerName: 'Admin',
+          calleeName: 'New Call',
+          phoneNumber: '+8800000000000',
+          duration: 0,
+          cost: 0,
+          revenue: 0
+        })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          // Simulate call duration
+          setTimeout(async () => {
+            // Update the call record with completed status
+            await fetch(`/api/admin/calls/${data.data.id}`, {
+              method: 'PATCH',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                status: 'completed',
+                duration: 5,
+                notes: 'Test call recording'
+              })
+            });
+            
+            setIsRecording(false);
+            fetchCalls();
+          }, 5000);
+        }
+      }
+    } catch (error) {
+      console.error('Error starting recording:', error);
       setIsRecording(false);
-      // Add new call record
-      fetchCalls();
-    }, 5000); // Simulate 5 second call
+    }
   };
 
   const playRecording = (callId: string) => {

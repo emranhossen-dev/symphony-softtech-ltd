@@ -58,50 +58,49 @@ export async function GET(request: NextRequest) {
       ];
     }
 
-    // Mock data since Call model doesn't exist in schema
-    const mockCalls = [
-      {
-        id: 'call-1',
-        type: 'incoming',
-        status: 'completed',
-        callerName: 'Rahman Khan',
-        calleeName: 'Admin Support',
-        phoneNumber: '+8801712345678',
-        duration: 245,
-        recordingUrl: 'https://example.com/recordings/call-1.mp3',
-        transcript: 'Customer called about course enrollment...',
-        notes: 'Interested in BCS preparation course',
-        cost: 0.50,
-        revenue: 0,
-        user: {
-          id: 'user-1',
-          name: 'Admin User',
-          email: 'admin@example.com',
-          role: 'ADMIN'
+    // Fetch call records from database
+    const [calls, total] = await Promise.all([
+      prisma.callRecord.findMany({
+        where,
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              role: true
+            }
+          }
         },
-        createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString()
-      }
-    ];
+        orderBy: {
+          createdAt: 'desc'
+        },
+        skip,
+        take: limit
+      }),
+      prisma.callRecord.count({ where })
+    ]);
 
-    const finalCalls = mockCalls;
+    // Calculate stats
+    const stats = {
+      totalCalls: total,
+      incomingCalls: await prisma.callRecord.count({ where: { type: 'incoming' } }),
+      outgoingCalls: await prisma.callRecord.count({ where: { type: 'outgoing' } }),
+      totalDuration: calls.reduce((sum: number, call: any) => sum + (call.duration || 0), 0),
+      totalCost: calls.reduce((sum: number, call: any) => sum + (call.cost || 0), 0),
+      totalRevenue: calls.reduce((sum: number, call: any) => sum + (call.revenue || 0), 0)
+    };
 
     return NextResponse.json({
       success: true,
-      data: finalCalls,
+      data: calls,
       pagination: {
         page,
         limit,
-        total: 1,
-        pages: Math.ceil(1 / limit)
+        total,
+        pages: Math.ceil(total / limit)
       },
-      stats: {
-        totalCalls: finalCalls.length,
-        incomingCalls: finalCalls.filter((c: any) => c.type === 'incoming').length,
-        outgoingCalls: finalCalls.filter((c: any) => c.type === 'outgoing').length,
-        totalDuration: finalCalls.reduce((sum: number, c: any) => sum + (c.duration || 0), 0),
-        totalCost: finalCalls.reduce((sum: number, c: any) => sum + (c.cost || 0), 0),
-        totalRevenue: finalCalls.reduce((sum: number, c: any) => sum + (c.revenue || 0), 0)
-      }
+      stats
     });
 
   } catch (error) {
@@ -110,6 +109,95 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       success: false,
       error: 'Failed to fetch call records'
+    }, { status: 500 });
+  }
+}
+
+// POST /api/admin/calls - Create a new call record
+export async function POST(request: NextRequest) {
+  try {
+    const authHeader = request.headers.get('Authorization')?.replace('Bearer ', '');
+    const cookieToken = request.cookies.get('auth_token')?.value;
+    const authToken = request.cookies.get('auth_token')?.value;
+    
+    const token = authHeader || cookieToken || authToken;
+    
+    if (!token) {
+      return NextResponse.json(
+        { success: false, error: 'Authentication required' },
+        { status: 401 }
+      );
+    }
+
+    const payload = verifyToken(token);
+    if (!hasRole(payload.role, 'ADMIN') && !hasRole(payload.role, 'EMPLOYEE')) {
+      return NextResponse.json(
+        { success: false, error: 'Insufficient permissions' },
+        { status: 403 }
+      );
+    }
+
+    const body = await request.json();
+    const {
+      type,
+      status,
+      callerName,
+      calleeName,
+      phoneNumber,
+      duration = 0,
+      recordingUrl,
+      transcript,
+      notes,
+      cost = 0,
+      revenue = 0
+    } = body;
+
+    // Validate required fields
+    if (!type || !callerName || !calleeName || !phoneNumber) {
+      return NextResponse.json(
+        { success: false, error: 'Missing required fields' },
+        { status: 400 }
+      );
+    }
+
+    const callRecord = await prisma.callRecord.create({
+      data: {
+        type,
+        status: status || 'completed',
+        callerName,
+        calleeName,
+        phoneNumber,
+        duration,
+        recordingUrl,
+        transcript,
+        notes,
+        cost,
+        revenue,
+        userId: payload.id
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            role: true
+          }
+        }
+      }
+    });
+
+    return NextResponse.json({
+      success: true,
+      data: callRecord
+    });
+
+  } catch (error) {
+    console.error('Error creating call record:', error);
+    
+    return NextResponse.json({
+      success: false,
+      error: 'Failed to create call record'
     }, { status: 500 });
   }
 }
