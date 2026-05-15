@@ -3,12 +3,14 @@
 import { useState } from "react";
 import { ChevronDown, HelpCircle, MessageCircle, Phone, Mail, Sparkles, Star, Zap, Shield, Users, BookOpen, Award } from "lucide-react";
 import { getSiteConfig, getFeaturesConfig, getContactInfo } from '@/lib/config';
+import { useLiveChat } from '@/components/LiveChatWidget';
 
 const FAQSection = () => {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const siteConfig = getSiteConfig();
   const featuresConfig = getFeaturesConfig();
   const contactInfo = getContactInfo();
+  const { openChat } = useLiveChat();
 
   const faqs = [
     {
@@ -161,7 +163,7 @@ const FAQSection = () => {
                             <Sparkles className="inline-block mr-2 h-4 w-4" />
                             Learn more
                           </button>
-                          <button className="enhanced-help-btn">
+                          <button className="enhanced-help-btn" onClick={openChat}>
                             <MessageCircle className="inline-block mr-2 h-4 w-4" />
                             Contact support
                           </button>
@@ -193,11 +195,11 @@ const FAQSection = () => {
                 </p>
                 
                 <div className="flex flex-col sm:flex-row gap-6 justify-center mb-10">
-                  <button className="enhanced-primary-btn">
+                  <button className="enhanced-primary-btn" onClick={openChat}>
                     <MessageCircle className="inline-block mr-3 h-5 w-5" />
                     Live Chat Support
                   </button>
-                  <button className="enhanced-secondary-btn">
+                  <button className="enhanced-secondary-btn" onClick={() => window.location.href = `tel:${contactInfo.phone}`}>
                     <Phone className="inline-block mr-3 h-5 w-5" />
                     Call Us Now
                   </button>
@@ -211,7 +213,7 @@ const FAQSection = () => {
                     </div>
                     <div className="text-left">
                       <div className="text-xs text-blue-400 font-semibold">Email</div>
-                      <div className="font-medium text-white">support@symphonyinstitute.com</div>
+                      <div className="font-medium text-white">{contactInfo.email}</div>
                     </div>
                   </div>
                   <div className="flex items-center gap-3 group">
@@ -220,7 +222,7 @@ const FAQSection = () => {
                     </div>
                     <div className="text-left">
                       <div className="text-xs text-blue-400 font-semibold">Phone</div>
-                      <div className="font-medium text-white">+1 (555) 123-4567</div>
+                      <div className="font-medium text-white">{contactInfo.phone}</div>
                     </div>
                   </div>
                   <div className="flex items-center gap-3 group">

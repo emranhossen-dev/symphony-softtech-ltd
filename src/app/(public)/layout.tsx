@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import WhatsAppWidget from "@/components/WhatsAppWidget";
+import LiveChatWidget from "@/components/LiveChatWidget";
 
 export const metadata: Metadata = {
   title: "Symphony Institute of Technology - Professional Training & Certification",
@@ -20,12 +20,11 @@ export default function PublicLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <>
+    <LiveChatWidget>
       <Navbar />
       <main className="flex-1 pt-18">{children}</main>
       <Footer />
-      <WhatsAppWidget />
-    </>
+    </LiveChatWidget>
   );
 }
 
