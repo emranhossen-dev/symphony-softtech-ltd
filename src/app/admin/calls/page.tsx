@@ -29,7 +29,22 @@ import {
   FileAudio,
   Activity,
   CheckCircle,
-  XCircle
+  XCircle,
+  BarChart3,
+  Zap,
+  ArrowUpRight,
+  ArrowDownRight,
+  Globe,
+  MapPin,
+  Star,
+  MoreHorizontal,
+  ChevronDown,
+  Volume2,
+  VolumeX,
+  Eye,
+  EyeOff,
+  Users,
+  TrendingDown
 } from 'lucide-react';
 import { getAuthHeaders, handleAuthError } from '@/lib/auth-helper';
 import { useRouter } from 'next/navigation';
@@ -226,81 +241,121 @@ export default function CallManagementPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+      {/* Animated Background Pattern */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div 
+          className="absolute inset-0 opacity-20"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239C92AC' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
+          }}
+        ></div>
+        <div className="absolute top-20 left-20 w-72 h-72 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse"></div>
+        <div className="absolute top-40 right-20 w-96 h-96 bg-pink-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse delay-1000"></div>
+        <div className="absolute bottom-20 left-1/2 w-80 h-80 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse delay-500"></div>
+      </div>
+
       {/* Header */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="px-8 py-6">
+      <div className="relative z-10 border-b border-white/10 bg-white/5 backdrop-blur-lg">
+        <div className="px-8 py-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-semibold text-gray-900">Call Management</h1>
-              <p className="text-sm text-gray-500 mt-1">Manage call recordings and track performance</p>
+              <div className="flex items-center gap-3 mb-2">
+                <div className="inline-flex items-center gap-2 bg-purple-500/20 backdrop-blur-sm px-4 py-2 rounded-full text-purple-300 border border-purple-400/30">
+                  <Phone className="w-5 h-5" />
+                  <span className="font-semibold">Call Center</span>
+                </div>
+                <Badge className="bg-green-500/20 text-green-300 border-green-400/30">
+                  Live System
+                </Badge>
+              </div>
+              <h1 className="text-4xl font-bold text-white mb-2">
+                Call Management
+              </h1>
+              <p className="text-gray-300">Track, manage, and analyze all your call recordings</p>
             </div>
             <Button
               onClick={fetchCalls}
               disabled={loading}
-              className="bg-green-600 hover:bg-green-700 text-white"
+              className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white shadow-2xl shadow-purple-500/25 transition-all hover:scale-105"
             >
               <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
-              Refresh
+              Refresh Data
             </Button>
           </div>
         </div>
       </div>
 
-      <div className="p-8 space-y-6">
+      <div className="relative z-10 p-8 space-y-8">
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <Card className="bg-white border-0 shadow-sm">
+          <Card className="bg-white/5 backdrop-blur-lg border border-white/10 hover:border-purple-400/30 transition-all duration-300 hover:scale-105 shadow-2xl">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Total Calls</p>
-                  <p className="text-2xl font-bold text-gray-900 mt-1">{stats.totalCalls}</p>
+                  <p className="text-sm font-medium text-gray-400 mb-1">Total Calls</p>
+                  <p className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">{stats.totalCalls}</p>
+                  <div className="flex items-center gap-1 mt-2 text-xs text-green-400">
+                    <TrendingUp className="w-3 h-3" />
+                    <span>+12% from last week</span>
+                  </div>
                 </div>
-                <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center">
-                  <Phone className="w-6 h-6 text-blue-600" />
+                <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-purple-500 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/25">
+                  <Phone className="w-7 h-7 text-white" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-white border-0 shadow-sm">
+          <Card className="bg-white/5 backdrop-blur-lg border border-white/10 hover:border-green-400/30 transition-all duration-300 hover:scale-105 shadow-2xl">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Incoming</p>
-                  <p className="text-2xl font-bold text-gray-900 mt-1">{stats.incomingCalls}</p>
+                  <p className="text-sm font-medium text-gray-400 mb-1">Incoming</p>
+                  <p className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-400">{stats.incomingCalls}</p>
+                  <div className="flex items-center gap-1 mt-2 text-xs text-green-400">
+                    <TrendingUp className="w-3 h-3" />
+                    <span>+8% from last week</span>
+                  </div>
                 </div>
-                <div className="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center">
-                  <PhoneIncoming className="w-6 h-6 text-green-600" />
+                <div className="w-14 h-14 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center shadow-lg shadow-green-500/25">
+                  <PhoneIncoming className="w-7 h-7 text-white" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-white border-0 shadow-sm">
+          <Card className="bg-white/5 backdrop-blur-lg border border-white/10 hover:border-pink-400/30 transition-all duration-300 hover:scale-105 shadow-2xl">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Outgoing</p>
-                  <p className="text-2xl font-bold text-gray-900 mt-1">{stats.outgoingCalls}</p>
+                  <p className="text-sm font-medium text-gray-400 mb-1">Outgoing</p>
+                  <p className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-rose-400">{stats.outgoingCalls}</p>
+                  <div className="flex items-center gap-1 mt-2 text-xs text-green-400">
+                    <TrendingUp className="w-3 h-3" />
+                    <span>+5% from last week</span>
+                  </div>
                 </div>
-                <div className="w-12 h-12 bg-purple-50 rounded-xl flex items-center justify-center">
-                  <PhoneOutgoing className="w-6 h-6 text-purple-600" />
+                <div className="w-14 h-14 bg-gradient-to-br from-pink-500 to-rose-500 rounded-xl flex items-center justify-center shadow-lg shadow-pink-500/25">
+                  <PhoneOutgoing className="w-7 h-7 text-white" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-white border-0 shadow-sm">
+          <Card className="bg-white/5 backdrop-blur-lg border border-white/10 hover:border-orange-400/30 transition-all duration-300 hover:scale-105 shadow-2xl">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Total Duration</p>
-                  <p className="text-2xl font-bold text-gray-900 mt-1">{formatDuration(stats.totalDuration)}</p>
+                  <p className="text-sm font-medium text-gray-400 mb-1">Total Duration</p>
+                  <p className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-400">{formatDuration(stats.totalDuration)}</p>
+                  <div className="flex items-center gap-1 mt-2 text-xs text-orange-400">
+                    <Clock className="w-3 h-3" />
+                    <span>Updated just now</span>
+                  </div>
                 </div>
-                <div className="w-12 h-12 bg-orange-50 rounded-xl flex items-center justify-center">
-                  <Clock className="w-6 h-6 text-orange-600" />
+                <div className="w-14 h-14 bg-gradient-to-br from-orange-500 to-amber-500 rounded-xl flex items-center justify-center shadow-lg shadow-orange-500/25">
+                  <Clock className="w-7 h-7 text-white" />
                 </div>
               </div>
             </CardContent>
@@ -308,41 +363,47 @@ export default function CallManagementPage() {
         </div>
 
         {/* Search and Filters */}
-        <Card className="bg-white border-0 shadow-sm">
+        <Card className="bg-white/5 backdrop-blur-lg border border-white/10 hover:border-purple-400/30 transition-all duration-300 shadow-2xl">
           <CardContent className="p-6">
             <div className="flex flex-col lg:flex-row gap-4">
               <div className="flex-1 relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <input
                   type="text"
-                  placeholder="Search calls..."
+                  placeholder="Search calls by name, phone, or notes..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-colors"
+                  className="w-full pl-12 pr-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-400 transition-all"
                 />
               </div>
               
-              <div className="flex gap-2">
-                <select
-                  value={filterType}
-                  onChange={(e) => setFilterType(e.target.value as any)}
-                  className="px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-colors"
-                >
-                  <option value="all">All Types</option>
-                  <option value="incoming">Incoming</option>
-                  <option value="outgoing">Outgoing</option>
-                </select>
+              <div className="flex gap-3">
+                <div className="relative">
+                  <select
+                    value={filterType}
+                    onChange={(e) => setFilterType(e.target.value as any)}
+                    className="w-40 pl-4 pr-10 py-3 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-400 transition-all appearance-none cursor-pointer"
+                  >
+                    <option value="all" className="bg-gray-900 text-gray-300">All Types</option>
+                    <option value="incoming" className="bg-gray-900 text-gray-300">Incoming</option>
+                    <option value="outgoing" className="bg-gray-900 text-gray-300">Outgoing</option>
+                  </select>
+                  <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                </div>
                 
-                <select
-                  value={filterStatus}
-                  onChange={(e) => setFilterStatus(e.target.value as any)}
-                  className="px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-colors"
-                >
-                  <option value="all">All Status</option>
-                  <option value="completed">Completed</option>
-                  <option value="missed">Missed</option>
-                  <option value="ongoing">Ongoing</option>
-                </select>
+                <div className="relative">
+                  <select
+                    value={filterStatus}
+                    onChange={(e) => setFilterStatus(e.target.value as any)}
+                    className="w-40 pl-4 pr-10 py-3 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-400 transition-all appearance-none cursor-pointer"
+                  >
+                    <option value="all" className="bg-gray-900 text-gray-300">All Status</option>
+                    <option value="completed" className="bg-gray-900 text-gray-300">Completed</option>
+                    <option value="missed" className="bg-gray-900 text-gray-300">Missed</option>
+                    <option value="ongoing" className="bg-gray-900 text-gray-300">Ongoing</option>
+                  </select>
+                  <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                </div>
               </div>
             </div>
           </CardContent>
