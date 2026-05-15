@@ -52,6 +52,22 @@ const LiveChatWidget = ({ children }: { children?: React.ReactNode }) => {
   const openChat = () => setIsOpen(true);
   const closeChat = () => setIsOpen(false);
   const [isMinimized, setIsMinimized] = useState(false);
+  const [showGreeting, setShowGreeting] = useState(false);
+  const [greetingDismissed, setGreetingDismissed] = useState(false);
+
+  // Auto-show greeting popup after 3 seconds
+  useEffect(() => {
+    if (greetingDismissed || isOpen) return;
+    const timer = setTimeout(() => {
+      setShowGreeting(true);
+    }, 3000);
+    return () => clearTimeout(timer);
+  }, [greetingDismissed, isOpen]);
+
+  // Hide greeting when chat opens
+  useEffect(() => {
+    if (isOpen) setShowGreeting(false);
+  }, [isOpen]);
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
   const [userInfo, setUserInfo] = useState<UserInfo>({ name: '', phone: '', email: '' });
@@ -188,6 +204,31 @@ const LiveChatWidget = ({ children }: { children?: React.ReactNode }) => {
     return (
       <LiveChatContext.Provider value={{ openChat, closeChat }}>
         {children}
+        {/* Greeting Popup Bubble */}
+        {showGreeting && !greetingDismissed && (
+          <div className="fixed bottom-24 right-6 z-50 animate-in slide-in-from-bottom-3 fade-in duration-500">
+            <div className="relative bg-white rounded-2xl shadow-2xl border border-gray-200 p-4 max-w-[260px]" style={{ boxShadow: '0 8px 30px rgba(0,0,0,0.12)' }}>
+              <button
+                onClick={(e) => { e.stopPropagation(); setGreetingDismissed(true); setShowGreeting(false); }}
+                className="absolute -top-2 -right-2 w-6 h-6 bg-gray-200 hover:bg-red-500 hover:text-white text-gray-500 rounded-full flex items-center justify-center transition-all duration-200 shadow-md text-xs font-bold"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+              <div className="flex items-start gap-3">
+                <div className="w-9 h-9 bg-gradient-to-r from-slate-700 to-indigo-700 rounded-full flex items-center justify-center flex-shrink-0">
+                  <MessageCircle className="w-4 h-4 text-white" />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-gray-800 leading-snug">Symphony Institute-এ স্বাগতম! 👋</p>
+                  <p className="text-xs text-gray-500 mt-1 leading-relaxed">কিছু জানতে চাইলে আমাদের বলুন</p>
+                </div>
+              </div>
+              {/* Speech bubble arrow */}
+              <div className="absolute -bottom-2 right-8 w-4 h-4 bg-white border-r border-b border-gray-200 transform rotate-45"></div>
+            </div>
+          </div>
+        )}
+
         <button
           onClick={() => setIsOpen(true)}
           className="fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-r from-slate-700 to-indigo-700 rounded-full shadow-2xl hover:shadow-indigo-500/40 transition-all duration-300 hover:scale-110 flex items-center justify-center group z-50"
