@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Phone, PhoneIncoming, PhoneOutgoing, Play, Pause, Download, Search, Filter, Clock, DollarSign, Mic, MicOff } from 'lucide-react';
+import { getAuthHeaders } from '@/lib/auth-helper';
 
 interface CallRecord {
   id: string;
@@ -62,7 +63,10 @@ const CallRecordingPanel = () => {
         type: filter === 'all' ? '' : filter
       });
       
-      const response = await fetch(`/api/admin/calls?${params}`);
+      const response = await fetch(`/api/admin/calls?${params}`, {
+        headers: getAuthHeaders()
+      });
+      
       const data = await response.json();
       
       if (data.success) {
@@ -93,9 +97,7 @@ const CallRecordingPanel = () => {
       // Create a new call record in the database
       const response = await fetch('/api/admin/calls', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: getAuthHeaders(),
         body: JSON.stringify({
           type: 'outgoing',
           status: 'ongoing',
@@ -116,9 +118,7 @@ const CallRecordingPanel = () => {
             // Update the call record with completed status
             await fetch(`/api/admin/calls/${data.data.id}`, {
               method: 'PATCH',
-              headers: {
-                'Content-Type': 'application/json',
-              },
+              headers: getAuthHeaders(),
               body: JSON.stringify({
                 status: 'completed',
                 duration: 5,
