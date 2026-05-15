@@ -1,10 +1,12 @@
 "use client";
 
-import { Clock, Users, MapPin, Calendar, Play, Star, Zap, Award, ChevronRight } from "lucide-react";
+import { useState } from "react";
+import { Clock, Users, MapPin, Calendar, Play, Star, Zap, Award, ChevronRight, ArrowRight, Loader2 } from "lucide-react";
 import { useRouter } from 'next/navigation';
 
 const SimpleCategorySection = () => {
   const router = useRouter();
+  const [navigatingCategory, setNavigatingCategory] = useState<string | null>(null);
 
   const categories = [
     {
@@ -62,6 +64,7 @@ const SimpleCategorySection = () => {
   ];
 
   const handleCategoryClick = (slug: string) => {
+    setNavigatingCategory(slug);
     router.push(`/category/${slug}`);
   };
 
@@ -183,10 +186,32 @@ const SimpleCategorySection = () => {
                   </div>
                   
                   {/* Stats Badge */}
-                  <div className={`inline-flex items-center justify-between px-4 py-3 bg-gradient-to-r ${category.color} rounded-xl text-white font-bold shadow-lg group-hover:shadow-xl transition-all duration-300`}>
+                  <div className={`inline-flex items-center justify-between px-4 py-3 bg-gradient-to-r ${category.color} rounded-xl text-white font-bold shadow-lg group-hover:shadow-xl transition-all duration-300 mb-4`}>
                     <span className="text-sm">{category.stats}</span>
                     <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                   </div>
+
+                  {/* Explore Button */}
+                  <button 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleCategoryClick(category.slug);
+                    }}
+                    disabled={navigatingCategory === category.slug}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold rounded-xl hover:from-purple-500 hover:to-pink-500 transition-all duration-300 hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                  >
+                    {navigatingCategory === category.slug ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        <span>Loading...</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>Explore</span>
+                        <ArrowRight className="w-4 h-4" />
+                      </>
+                    )}
+                  </button>
                 </div>
               </div>
             </div>

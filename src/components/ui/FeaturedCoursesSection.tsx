@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Star, Users, Clock, TrendingUp, Award, Play, Zap, Heart, ArrowRight } from "lucide-react";
+import { Star, Users, Clock, TrendingUp, Award, Play, Zap, Heart, ArrowRight, Loader2 } from "lucide-react";
 import { formatBDT } from '@/lib/currency';
 
 interface Course {
@@ -26,6 +26,7 @@ const FeaturedCoursesSection = () => {
   const router = useRouter();
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
+  const [navigatingCourse, setNavigatingCourse] = useState<string | null>(null);
 
   useEffect(() => {
     fetchFeaturedCourses();
@@ -61,6 +62,7 @@ const FeaturedCoursesSection = () => {
   };
 
   const handleCourseClick = (courseId: string) => {
+    setNavigatingCourse(courseId);
     router.push(`/course/${courseId}`);
   };
 
@@ -249,14 +251,23 @@ const FeaturedCoursesSection = () => {
                     <div className="relative">
                       <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 blur-lg rounded-full"></div>
                       <div 
-                        className="relative flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full hover:from-purple-500 hover:to-pink-500 transition-all duration-300 cursor-pointer"
+                        className="relative flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full hover:from-purple-500 hover:to-pink-500 transition-all duration-300 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                         onClick={(e) => {
                           e.stopPropagation();
                           handleCourseClick(course.id);
                         }}
                       >
-                        <Play className="w-4 h-4 text-white" />
-                        <span className="text-white font-bold">ENROLL NOW</span>
+                        {navigatingCourse === course.id ? (
+                          <>
+                            <Loader2 className="w-4 h-4 animate-spin text-white" />
+                            <span className="text-white font-bold">Loading...</span>
+                          </>
+                        ) : (
+                          <>
+                            <Play className="w-4 h-4 text-white" />
+                            <span className="text-white font-bold">ENROLL NOW</span>
+                          </>
+                        )}
                       </div>
                     </div>
                   </div>

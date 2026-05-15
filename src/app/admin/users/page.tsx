@@ -25,6 +25,9 @@ import {
   CheckCircle,
   Clock,
   Key,
+  TrendingUp,
+  GraduationCap,
+  X,
 } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
 
@@ -47,7 +50,7 @@ interface NewUser {
   name: string;
   email: string;
   password: string;
-  role: "ADMIN" | "EMPLOYEE";
+  role: "ADMIN" | "EMPLOYEE" | "MENTOR";
   phone?: string;
 }
 
@@ -247,48 +250,71 @@ export default function UserManagement() {
   };
 
   const getStatusBadge = (isActive: boolean) => {
-    return isActive 
-      ? <Badge className="bg-green-100 text-green-800 border-green-200">Active</Badge>
-      : <Badge className="bg-red-100 text-red-800 border-red-200">Inactive</Badge>;
+    return isActive
+      ? <Badge className="bg-green-500/20 text-green-300 border-green-400/30">Active</Badge>
+      : <Badge className="bg-red-500/20 text-red-300 border-red-400/30">Inactive</Badge>;
   };
 
   const getRoleBadge = (role: string) => {
     switch (role) {
       case "ADMIN":
-        return <Badge className="bg-purple-100 text-purple-800 border-purple-200">Admin</Badge>;
+        return <Badge className="bg-purple-500/20 text-purple-300 border-purple-400/30">Admin</Badge>;
       case "EMPLOYEE":
-        return <Badge className="bg-blue-100 text-blue-800 border-blue-200">Employee</Badge>;
+        return <Badge className="bg-blue-500/20 text-blue-300 border-blue-400/30">Employee</Badge>;
       case "MENTOR":
-        return <Badge className="bg-green-100 text-green-800 border-green-200">Mentor</Badge>;
+        return <Badge className="bg-green-500/20 text-green-300 border-green-400/30">Mentor</Badge>;
       case "STUDENT":
-        return <Badge className="bg-gray-100 text-gray-800 border-gray-200">Student</Badge>;
+        return <Badge className="bg-gray-500/20 text-gray-300 border-gray-400/30">Student</Badge>;
       default:
-        return <Badge className="bg-gray-100 text-gray-800 border-gray-200">Unknown</Badge>;
+        return <Badge className="bg-gray-500/20 text-gray-300 border-gray-400/30">Unknown</Badge>;
     }
   };
 
+  const stats = {
+    totalUsers: users.length,
+    activeUsers: users.filter(u => u.isActive).length,
+    admins: users.filter(u => u.role === 'ADMIN').length,
+    mentors: users.filter(u => u.role === 'MENTOR').length
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+      {/* Animated Background Pattern */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div 
+          className="absolute inset-0 opacity-20"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239C92AC' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
+          }}
+        ></div>
+        <div className="absolute top-20 left-20 w-72 h-72 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse"></div>
+        <div className="absolute top-40 right-20 w-96 h-96 bg-pink-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse delay-1000"></div>
+        <div className="absolute bottom-20 left-1/2 w-80 h-80 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse delay-500"></div>
+      </div>
+
       {/* Header */}
-      <div className="bg-white/80 backdrop-blur-lg border-b border-gray-200/60 mb-6">
-        <div className="max-w-7xl mx-auto px-6 py-4">
+      <div className="relative z-10 border-b border-white/10 bg-white/5 backdrop-blur-lg">
+        <div className="px-8 py-8">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
-                <Users className="w-6 h-6 text-white" />
+            <div>
+              <div className="flex items-center gap-3 mb-2">
+                <div className="inline-flex items-center gap-2 bg-purple-500/20 backdrop-blur-sm px-4 py-2 rounded-full text-purple-300 border border-purple-400/30">
+                  <Shield className="w-5 h-5" />
+                  <span className="font-semibold">User Management</span>
+                </div>
+                <Badge className="bg-green-500/20 text-green-300 border-green-400/30">
+                  Active System
+                </Badge>
               </div>
-              <div>
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
-                  User Management
-                </h1>
-                <p className="text-gray-600 text-sm">Manage admin and employee accounts</p>
-              </div>
+              <h1 className="text-4xl font-bold text-white mb-2">
+                Manage Users
+              </h1>
+              <p className="text-gray-300">Create and manage admin, employee, and mentor accounts</p>
             </div>
-            
             <div className="flex items-center gap-3">
               <Button
                 onClick={() => setShowCreateModal(true)}
-                className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white border-0 shadow-lg shadow-blue-500/25"
+                className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white shadow-2xl shadow-green-500/25 transition-all hover:scale-105"
               >
                 <UserPlus className="w-4 h-4 mr-2" />
                 Add User
@@ -296,35 +322,109 @@ export default function UserManagement() {
               <Button
                 onClick={fetchUsers}
                 disabled={loading}
-                variant="outline"
-                className="bg-white/90 hover:bg-white border-gray-300/60"
+                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white shadow-2xl shadow-purple-500/25 transition-all hover:scale-105"
               >
-                <RefreshCw className={`w-4 h-4 mr-2 ${loading ? "animate-spin" : ""}`} />
-                Refresh
+                <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+                Refresh Data
               </Button>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 pb-8 relative overflow-hidden w-full">
+      <div className="relative z-10 p-8 space-y-8">
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <Card className="bg-white/5 backdrop-blur-lg border border-white/10 hover:border-purple-400/30 transition-all duration-300 hover:scale-105 shadow-2xl">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-400 mb-1">Total Users</p>
+                  <p className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">{stats.totalUsers}</p>
+                  <div className="flex items-center gap-1 mt-2 text-xs text-green-400">
+                    <TrendingUp className="w-3 h-3" />
+                    <span>All registered users</span>
+                  </div>
+                </div>
+                <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-purple-500 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/25">
+                  <Users className="w-7 h-7 text-white" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white/5 backdrop-blur-lg border border-white/10 hover:border-green-400/30 transition-all duration-300 hover:scale-105 shadow-2xl">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-400 mb-1">Active Users</p>
+                  <p className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-400">{stats.activeUsers}</p>
+                  <div className="flex items-center gap-1 mt-2 text-xs text-green-400">
+                    <UserCheck className="w-3 h-3" />
+                    <span>Currently active</span>
+                  </div>
+                </div>
+                <div className="w-14 h-14 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center shadow-lg shadow-green-500/25">
+                  <UserCheck className="w-7 h-7 text-white" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white/5 backdrop-blur-lg border border-white/10 hover:border-purple-400/30 transition-all duration-300 hover:scale-105 shadow-2xl">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-400 mb-1">Admins</p>
+                  <p className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">{stats.admins}</p>
+                  <div className="flex items-center gap-1 mt-2 text-xs text-purple-400">
+                    <Shield className="w-3 h-3" />
+                    <span>Administrators</span>
+                  </div>
+                </div>
+                <div className="w-14 h-14 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center shadow-lg shadow-purple-500/25">
+                  <Shield className="w-7 h-7 text-white" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white/5 backdrop-blur-lg border border-white/10 hover:border-blue-400/30 transition-all duration-300 hover:scale-105 shadow-2xl">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-400 mb-1">Mentors</p>
+                  <p className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400">{stats.mentors}</p>
+                  <div className="flex items-center gap-1 mt-2 text-xs text-blue-400">
+                    <GraduationCap className="w-3 h-3" />
+                    <span>Course mentors</span>
+                  </div>
+                </div>
+                <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/25">
+                  <GraduationCap className="w-7 h-7 text-white" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
         {/* Alerts */}
         {error && (
-          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl">
+          <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-xl backdrop-blur-sm">
             <div className="flex items-start gap-3">
-              <AlertCircle className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" />
+              <AlertCircle className="w-5 h-5 text-red-400 mt-0.5 flex-shrink-0" />
               <div className="flex-1">
-                <span className="text-red-800 font-medium block">{error}</span>
+                <span className="text-red-300 font-medium block">{error}</span>
                 {error.includes("Access denied") && (
-                  <div className="mt-2 text-sm text-red-700">
+                  <div className="mt-2 text-sm text-red-200">
                     <p className="mb-2">To fix this issue:</p>
                     <ol className="list-decimal list-inside space-y-1 ml-2">
-                      <li>Go to <a href="/login" className="underline hover:text-red-800">login page</a></li>
+                      <li>Go to <a href="/login" className="underline hover:text-red-300">login page</a></li>
                       <li>Login with admin credentials</li>
                       <li>Return to this page</li>
                     </ol>
                     <p className="mt-2">
-                      <button 
+                      <button
                         onClick={() => window.location.href = '/login'}
                         className="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700 transition-colors"
                       >
@@ -337,62 +437,60 @@ export default function UserManagement() {
             </div>
           </div>
         )}
-        
+
         {success && (
-          <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-xl flex items-center">
-            <CheckCircle className="w-5 h-5 text-green-600 mr-3" />
-            <span className="text-green-800">{success}</span>
+          <div className="p-4 bg-green-500/10 border border-green-500/30 rounded-xl backdrop-blur-sm flex items-center">
+            <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
+            <span className="text-green-300">{success}</span>
           </div>
         )}
 
         {/* Filters */}
-        <Card className="mb-6 border-0 shadow-xl">
+        <Card className="bg-white/5 backdrop-blur-lg border border-white/10 hover:border-purple-400/30 transition-all duration-300 shadow-2xl">
           <CardContent className="p-6">
             <div className="flex flex-col lg:flex-row gap-4">
-              <div className="flex-1">
-                <div className="relative">
-                  <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                  <input
-                    type="text"
-                    placeholder="Search users by name or email..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
+              <div className="flex-1 relative">
+                <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Search users by name or email..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-10 pr-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-400 transition-all"
+                />
               </div>
-              
+
               <select
                 value={filterRole}
                 onChange={(e) => setFilterRole(e.target.value)}
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-400 transition-all appearance-none cursor-pointer"
               >
-                <option value="all">All Roles</option>
-                <option value="ADMIN">Admin</option>
-                <option value="EMPLOYEE">Employee</option>
-                <option value="MENTOR">Mentor</option>
-                <option value="STUDENT">Student</option>
+                <option value="all" className="bg-gray-900 text-gray-300">All Roles</option>
+                <option value="ADMIN" className="bg-gray-900 text-gray-300">Admin</option>
+                <option value="EMPLOYEE" className="bg-gray-900 text-gray-300">Employee</option>
+                <option value="MENTOR" className="bg-gray-900 text-gray-300">Mentor</option>
+                <option value="STUDENT" className="bg-gray-900 text-gray-300">Student</option>
               </select>
-              
+
               <select
                 value={filterStatus}
                 onChange={(e) => setFilterStatus(e.target.value)}
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-400 transition-all appearance-none cursor-pointer"
               >
-                <option value="all">All Status</option>
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
+                <option value="all" className="bg-gray-900 text-gray-300">All Status</option>
+                <option value="active" className="bg-gray-900 text-gray-300">Active</option>
+                <option value="inactive" className="bg-gray-900 text-gray-300">Inactive</option>
               </select>
             </div>
           </CardContent>
         </Card>
 
         {/* Users Table */}
-        <Card className="border-0 shadow-xl">
-          <CardHeader className="bg-gradient-to-r from-gray-50 to-slate-50 border-b">
+        <Card className="bg-white/5 backdrop-blur-lg border border-white/10 hover:border-purple-400/30 transition-all duration-300 shadow-2xl">
+          <CardHeader className="bg-white/5 border-b border-white/10">
             <div className="flex items-center justify-between">
-              <CardTitle className="flex items-center gap-2">
-                <Users className="w-5 h-5 text-gray-600" />
+              <CardTitle className="flex items-center gap-2 text-white">
+                <Users className="w-5 h-5 text-purple-400" />
                 Users ({filteredUsers.length})
               </CardTitle>
             </div>
@@ -402,15 +500,15 @@ export default function UserManagement() {
             {loading ? (
               <div className="flex justify-center py-12">
                 <div className="relative">
-                  <div className="animate-spin rounded-full h-16 w-16 border-4 border-gray-200"></div>
-                  <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-500 border-t-transparent absolute top-0"></div>
+                  <div className="animate-spin rounded-full h-16 w-16 border-4 border-white/20"></div>
+                  <div className="animate-spin rounded-full h-16 w-16 border-4 border-purple-500 border-t-transparent absolute top-0"></div>
                 </div>
               </div>
             ) : filteredUsers.length === 0 ? (
               <div className="text-center py-12">
                 <Users className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">No users found</h3>
-                <p className="text-gray-600 mb-4">
+                <h3 className="text-lg font-semibold text-white mb-2">No users found</h3>
+                <p className="text-gray-400 mb-4">
                   {searchQuery || filterRole !== "all" || filterStatus !== "all"
                     ? "Try adjusting your filters"
                     : "Create your first user to get started"}
@@ -418,7 +516,7 @@ export default function UserManagement() {
                 {!searchQuery && filterRole === "all" && filterStatus === "all" && (
                   <Button
                     onClick={() => setShowCreateModal(true)}
-                    className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white border-0 shadow-lg shadow-blue-500/25"
+                    className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white shadow-2xl shadow-green-500/25 transition-all hover:scale-105"
                   >
                     <UserPlus className="w-4 h-4 mr-2" />
                     Create First User
@@ -429,26 +527,26 @@ export default function UserManagement() {
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
-                    <tr className="border-b border-gray-200">
-                      <th className="text-left py-3 px-4 font-medium text-gray-700">User</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-700">Role</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-700">Status</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-700">Created</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-700">Last Login</th>
-                      <th className="text-right py-3 px-4 font-medium text-gray-700">Actions</th>
+                    <tr className="border-b border-white/10">
+                      <th className="text-left py-3 px-4 font-medium text-gray-300 uppercase tracking-wider text-xs">User</th>
+                      <th className="text-left py-3 px-4 font-medium text-gray-300 uppercase tracking-wider text-xs">Role</th>
+                      <th className="text-left py-3 px-4 font-medium text-gray-300 uppercase tracking-wider text-xs">Status</th>
+                      <th className="text-left py-3 px-4 font-medium text-gray-300 uppercase tracking-wider text-xs">Created</th>
+                      <th className="text-left py-3 px-4 font-medium text-gray-300 uppercase tracking-wider text-xs">Last Login</th>
+                      <th className="text-right py-3 px-4 font-medium text-gray-300 uppercase tracking-wider text-xs">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
                     {filteredUsers.map((user) => (
-                      <tr key={user.id} className="border-b border-gray-100 hover:bg-gray-50">
+                      <tr key={user.id} className="hover:bg-white/10 border-b border-white/5 transition-all duration-200">
                         <td className="py-4 px-4">
                           <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold">
+                            <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white font-semibold shadow-lg shadow-purple-500/25">
                               {user.name.charAt(0).toUpperCase()}
                             </div>
                             <div>
-                              <p className="font-medium text-gray-900">{user.name}</p>
-                              <p className="text-sm text-gray-600">{user.email}</p>
+                              <p className="font-medium text-white">{user.name}</p>
+                              <p className="text-sm text-gray-400">{user.email}</p>
                             </div>
                           </div>
                         </td>
@@ -459,19 +557,19 @@ export default function UserManagement() {
                           {getStatusBadge(user.isActive)}
                         </td>
                         <td className="py-4 px-4">
-                          <div className="flex items-center gap-2 text-sm text-gray-600">
+                          <div className="flex items-center gap-2 text-sm text-gray-300">
                             <Calendar className="w-4 h-4" />
                             {new Date(user.createdAt).toLocaleDateString()}
                           </div>
                         </td>
                         <td className="py-4 px-4">
                           {user.lastLogin ? (
-                            <div className="flex items-center gap-2 text-sm text-gray-600">
+                            <div className="flex items-center gap-2 text-sm text-gray-300">
                               <Clock className="w-4 h-4" />
                               {new Date(user.lastLogin).toLocaleDateString()}
                             </div>
                           ) : (
-                            <span className="text-sm text-gray-400">Never</span>
+                            <span className="text-sm text-gray-500">Never</span>
                           )}
                         </td>
                         <td className="py-4 px-4">
@@ -481,7 +579,7 @@ export default function UserManagement() {
                                 size="sm"
                                 variant="outline"
                                 onClick={() => handleStatusChange(user.id, false)}
-                                className="bg-yellow-50 hover:bg-yellow-100 border-yellow-200 text-yellow-700"
+                                className="bg-yellow-500/20 hover:bg-yellow-500/30 border-yellow-500/30 text-yellow-400 hover:text-yellow-300"
                               >
                                 <UserX className="w-4 h-4" />
                               </Button>
@@ -490,7 +588,7 @@ export default function UserManagement() {
                                 size="sm"
                                 variant="outline"
                                 onClick={() => handleStatusChange(user.id, true)}
-                                className="bg-green-50 hover:bg-green-100 border-green-200 text-green-700"
+                                className="bg-green-500/20 hover:bg-green-500/30 border-green-500/30 text-green-400 hover:text-green-300"
                               >
                                 <UserCheck className="w-4 h-4" />
                               </Button>
@@ -499,7 +597,7 @@ export default function UserManagement() {
                               size="sm"
                               variant="outline"
                               onClick={() => handleDeleteUser(user.id)}
-                              className="bg-red-50 hover:bg-red-100 border-red-200 text-red-700"
+                              className="bg-red-500/20 hover:bg-red-500/30 border-red-500/30 text-red-400 hover:text-red-300"
                             >
                               <Trash2 className="w-4 h-4" />
                             </Button>
@@ -518,35 +616,25 @@ export default function UserManagement() {
       {/* Create User Modal */}
       {showCreateModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
-          <div 
-            className="absolute inset-0 bg-gradient-to-br from-slate-900/90 via-blue-900/80 to-indigo-900/90 backdrop-blur-md"
+          <div
+            className="absolute inset-0 bg-black/80 backdrop-blur-sm"
             onClick={() => setShowCreateModal(false)}
           />
-          
-          <div className="relative bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 max-h-[85vh] overflow-hidden animate-in slide-in-from-bottom-4 duration-300 border border-white/20 flex flex-col">
-            {/* Modal Header */}
-            <div className="relative bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 p-6 text-white flex-shrink-0">
-              <div className="absolute top-3 right-3">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setShowCreateModal(false)}
-                  className="text-white/80 hover:text-white hover:bg-white/20 rounded-full p-1.5 transition-all duration-200"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </Button>
+
+          <div className="relative bg-slate-900/95 backdrop-blur-xl rounded-3xl p-8 w-full max-w-md shadow-2xl animate-in zoom-in duration-200 border-2 border-white/10">
+            <button
+              onClick={() => setShowCreateModal(false)}
+              className="absolute top-5 right-5 p-2 rounded-full hover:bg-white/10 transition-colors group"
+            >
+              <X className="w-5 h-5 text-gray-400 group-hover:text-white transition-colors" />
+            </button>
+            <div className="flex items-center gap-3 mb-6 pr-8">
+              <div className="w-14 h-14 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center shadow-lg shadow-green-500/25">
+                <UserPlus className="w-7 h-7 text-white" />
               </div>
-              
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center border border-white/30">
-                  <UserPlus className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold text-white">Create New User</h3>
-                  <p className="text-blue-100 text-xs mt-0.5">Add a new member to your team</p>
-                </div>
+              <div>
+                <h2 className="text-2xl font-bold text-white">Create New User</h2>
+                <p className="text-sm text-gray-400">Add a new member to your team</p>
               </div>
             </div>
             
@@ -554,8 +642,8 @@ export default function UserManagement() {
               <div className="flex-1 overflow-y-auto p-6 space-y-4">
                 {/* Full Name Field */}
                 <div className="space-y-1.5">
-                  <label className="flex items-center gap-2 text-xs font-semibold text-gray-700">
-                    <User className="w-3.5 h-3.5 text-blue-600" />
+                  <label className="flex items-center gap-2 text-xs font-semibold text-gray-300">
+                    <User className="w-3.5 h-3.5 text-purple-400" />
                     Full Name
                   </label>
                   <div className="relative">
@@ -564,17 +652,17 @@ export default function UserManagement() {
                       required
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      className="w-full px-3 py-2.5 pl-10 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 hover:border-gray-300 bg-gray-50/50 text-sm"
+                      className="w-full px-3 py-2.5 pl-10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-400 transition-all duration-200 hover:border-white/30 bg-white/10 text-white placeholder-gray-400 text-sm"
                       placeholder="Enter full name"
                     />
                     <User className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                   </div>
                 </div>
-                
+
                 {/* Email Field */}
                 <div className="space-y-1.5">
-                  <label className="flex items-center gap-2 text-xs font-semibold text-gray-700">
-                    <Mail className="w-3.5 h-3.5 text-blue-600" />
+                  <label className="flex items-center gap-2 text-xs font-semibold text-gray-300">
+                    <Mail className="w-3.5 h-3.5 text-purple-400" />
                     Email Address
                   </label>
                   <div className="relative">
@@ -583,28 +671,28 @@ export default function UserManagement() {
                       required
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      className="w-full px-3 py-2.5 pl-10 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 hover:border-gray-300 bg-gray-50/50 text-sm"
+                      className="w-full px-3 py-2.5 pl-10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-400 transition-all duration-200 hover:border-white/30 bg-white/10 text-white placeholder-gray-400 text-sm"
                       placeholder="Enter email address"
                     />
                     <Mail className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                   </div>
                 </div>
-                
+
                 {/* Phone Field */}
                 <div className="space-y-1.5">
-                  <label className="flex items-center gap-2 text-xs font-semibold text-gray-700">
-                    <svg className="w-3.5 h-3.5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <label className="flex items-center gap-2 text-xs font-semibold text-gray-300">
+                    <svg className="w-3.5 h-3.5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                     </svg>
                     Phone Number
-                    <span className="text-gray-400 font-normal">(Optional)</span>
+                    <span className="text-gray-500 font-normal">(Optional)</span>
                   </label>
                   <div className="relative">
                     <input
                       type="tel"
                       value={formData.phone || ""}
                       onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                      className="w-full px-3 py-2.5 pl-10 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 hover:border-gray-300 bg-gray-50/50 text-sm"
+                      className="w-full px-3 py-2.5 pl-10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-400 transition-all duration-200 hover:border-white/30 bg-white/10 text-white placeholder-gray-400 text-sm"
                       placeholder="Enter phone number"
                     />
                     <svg className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -612,11 +700,11 @@ export default function UserManagement() {
                     </svg>
                   </div>
                 </div>
-                
+
                 {/* Password Field */}
                 <div className="space-y-1.5">
-                  <label className="flex items-center gap-2 text-xs font-semibold text-gray-700">
-                    <Key className="w-3.5 h-3.5 text-blue-600" />
+                  <label className="flex items-center gap-2 text-xs font-semibold text-gray-300">
+                    <Key className="w-3.5 h-3.5 text-purple-400" />
                     Password
                   </label>
                   <div className="relative">
@@ -625,34 +713,35 @@ export default function UserManagement() {
                       required
                       value={formData.password}
                       onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                      className="w-full px-3 py-2.5 pl-10 pr-10 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 hover:border-gray-300 bg-gray-50/50 text-sm"
+                      className="w-full px-3 py-2.5 pl-10 pr-10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-400 transition-all duration-200 hover:border-white/30 bg-white/10 text-white placeholder-gray-400 text-sm"
                       placeholder="Enter password"
                     />
                     <Key className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors duration-200"
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors duration-200"
                     >
                       {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
                   </div>
                 </div>
-                
+
                 {/* Role Field */}
                 <div className="space-y-1.5">
-                  <label className="flex items-center gap-2 text-xs font-semibold text-gray-700">
-                    <Shield className="w-3.5 h-3.5 text-blue-600" />
+                  <label className="flex items-center gap-2 text-xs font-semibold text-gray-300">
+                    <Shield className="w-3.5 h-3.5 text-purple-400" />
                     User Role
                   </label>
                   <div className="relative">
                     <select
                       value={formData.role}
-                      onChange={(e) => setFormData({ ...formData, role: e.target.value as "ADMIN" | "EMPLOYEE" })}
-                      className="w-full px-3 py-2.5 pl-10 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 hover:border-gray-300 bg-gray-50/50 appearance-none cursor-pointer text-sm"
+                      onChange={(e) => setFormData({ ...formData, role: e.target.value as "ADMIN" | "EMPLOYEE" | "MENTOR" })}
+                      className="w-full px-3 py-2.5 pl-10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-400 transition-all duration-200 hover:border-white/30 bg-white/10 appearance-none cursor-pointer text-white text-sm"
                     >
-                      <option value="EMPLOYEE">Employee</option>
-                      <option value="ADMIN">Admin</option>
+                      <option value="EMPLOYEE" className="bg-gray-900 text-gray-300">Employee</option>
+                      <option value="ADMIN" className="bg-gray-900 text-gray-300">Admin</option>
+                      <option value="MENTOR" className="bg-gray-900 text-gray-300">Mentor</option>
                     </select>
                     <Shield className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                     <svg className="w-4 h-4 absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -661,21 +750,21 @@ export default function UserManagement() {
                   </div>
                 </div>
               </div>
-              
+
               {/* Action Buttons */}
               <div className="flex gap-2 p-4 pt-0 flex-shrink-0">
                 <Button
                   type="button"
                   variant="outline"
                   onClick={() => setShowCreateModal(false)}
-                  className="flex-1 py-2 px-4 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-semibold transition-all duration-200 text-sm"
+                  className="flex-1 py-2 px-4 border-2 border-white/20 hover:bg-white/10 text-white font-semibold transition-all duration-200 text-sm"
                 >
                   Cancel
                 </Button>
                 <Button
                   type="submit"
                   disabled={submitting}
-                  className="flex-1 py-2 px-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-lg font-semibold shadow-lg shadow-blue-500/25 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                  className="flex-1 py-2 px-4 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-lg font-semibold shadow-lg shadow-green-500/25 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
                 >
                   {submitting ? (
                     <span className="flex items-center justify-center gap-1.5">

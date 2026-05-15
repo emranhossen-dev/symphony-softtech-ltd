@@ -19,7 +19,8 @@ import {
   Target,
   Building,
   Monitor,
-  PlayCircle
+  PlayCircle,
+  MessageCircle
 } from "lucide-react";
 
 interface EmployeeSidebarItem {
@@ -32,6 +33,7 @@ const employeeSidebarItems: EmployeeSidebarItem[] = [
   { name: "Dashboard", href: "/employee", icon: <Home className="w-5 h-5" /> },
   { name: "Enrollments", href: "/employee/enrollments", icon: <Briefcase className="w-5 h-5" /> },
   { name: "Follow-up", href: "/employee/followup", icon: <Calendar className="w-5 h-5" /> },
+  { name: "Live Chat", href: "/admin/live-chat", icon: <MessageCircle className="w-5 h-5" /> },
   { name: "Profile", href: "/employee/profile", icon: <Users className="w-5 h-5" /> },
 ];
 

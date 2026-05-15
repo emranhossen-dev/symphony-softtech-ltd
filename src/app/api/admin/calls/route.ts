@@ -1,27 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { verifyToken, hasRole } from '@/lib/auth';
+import { getAuthenticatedUser, hasRole } from '@/lib/auth';
 
 // GET /api/admin/calls - Get all call records
 export async function GET(request: NextRequest) {
   try {
-    // Try both Authorization header and cookie
-    const authHeader = request.headers.get('Authorization')?.replace('Bearer ', '');
-    const cookieToken = request.cookies.get('auth-token')?.value;
+    const user = await getAuthenticatedUser();
     
-    const token = authHeader || cookieToken;
-    
-    if (!token) {
-      console.log('No token found in calls API');
-      return NextResponse.json(
-        { success: false, error: 'Authentication required' },
-        { status: 401 }
-      );
-    }
-
-    const payload = verifyToken(token);
-    if (!hasRole(payload.role, 'ADMIN') && !hasRole(payload.role, 'EMPLOYEE')) {
-      console.log('Insufficient permissions for role:', payload.role);
+    if (!hasRole(user.role, 'ADMIN') && !hasRole(user.role, 'EMPLOYEE')) {
       return NextResponse.json(
         { success: false, error: 'Insufficient permissions' },
         { status: 403 }
@@ -115,20 +101,9 @@ export async function GET(request: NextRequest) {
 // POST /api/admin/calls - Create a new call record
 export async function POST(request: NextRequest) {
   try {
-    const authHeader = request.headers.get('Authorization')?.replace('Bearer ', '');
-    const cookieToken = request.cookies.get('auth-token')?.value;
+    const user = await getAuthenticatedUser();
     
-    const token = authHeader || cookieToken;
-    
-    if (!token) {
-      return NextResponse.json(
-        { success: false, error: 'Authentication required' },
-        { status: 401 }
-      );
-    }
-
-    const payload = verifyToken(token);
-    if (!hasRole(payload.role, 'ADMIN') && !hasRole(payload.role, 'EMPLOYEE')) {
+    if (!hasRole(user.role, 'ADMIN') && !hasRole(user.role, 'EMPLOYEE')) {
       return NextResponse.json(
         { success: false, error: 'Insufficient permissions' },
         { status: 403 }
@@ -171,7 +146,7 @@ export async function POST(request: NextRequest) {
         notes,
         cost,
         revenue,
-        userId: payload.id
+        userId: user.id
       },
       include: {
         user: {

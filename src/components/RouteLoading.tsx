@@ -1,9 +1,28 @@
+"use client";
+
+import { usePathname, useSearchParams } from "next/navigation";
+import { useEffect, useState, Suspense } from "react";
 import { Loader2 } from "lucide-react";
 import Image from "next/image";
 
-export default function Loading() {
+function RouteLoadingContent() {
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    setIsLoading(true);
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [pathname, searchParams]);
+
+  if (!isLoading) return null;
+
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center">
+    <div className="fixed inset-0 z-[99999] bg-white flex items-center justify-center">
       <div className="flex flex-col items-center space-y-6">
         {/* Logo with Spinner */}
         <div className="relative">
@@ -13,6 +32,7 @@ export default function Loading() {
               alt="Symphony Institute of Technology"
               fill
               className="object-contain"
+              priority
             />
           </div>
           <div className="absolute inset-0 w-24 h-24 sm:w-32 sm:h-32 border-4 border-blue-200 border-t-blue-600 rounded-lg animate-spin"></div>
@@ -37,5 +57,13 @@ export default function Loading() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function RouteLoading() {
+  return (
+    <Suspense fallback={null}>
+      <RouteLoadingContent />
+    </Suspense>
   );
 }

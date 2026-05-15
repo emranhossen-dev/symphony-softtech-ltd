@@ -3,11 +3,13 @@
 import { useState, useEffect } from "react";
 import { Menu, X, User, LogIn, ChevronDown, BookOpen, Users, Phone, GraduationCap, Sparkles, Star } from "lucide-react";
 import { usePathname } from "next/navigation";
+import LoginModal from "@/components/auth/LoginModal";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const pathname = usePathname();
 
   useEffect(() => {
@@ -49,25 +51,18 @@ const Navbar = () => {
           <div className="flex-shrink-0">
             <a href="/" className="flex items-center space-x-3 group">
               <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-xl blur-sm opacity-75 group-hover:opacity-100 transition-opacity duration-300"></div>
                 <img
                   src="/Logo.jpeg"
                   alt="Symphony Institute of Technology"
-                  className="relative h-14 w-auto object-contain rounded-xl transition-all duration-500 group-hover:scale-110 group-hover:rotate-1"
+                  className="h-14 w-auto object-contain rounded-lg shadow-lg bg-white p-1"
                 />
-                <div className="absolute -top-2 -right-2">
-                  <div className="relative">
-                    <Star className="w-5 h-5 text-yellow-300 animate-pulse drop-shadow-lg" />
-                    <div className="absolute inset-0 bg-yellow-300 rounded-full blur-md animate-ping"></div>
-                  </div>
-                </div>
               </div>
-              {/* <div className="hidden lg:block">
-                <div className="text-xl font-bold text-white group-hover:text-yellow-200 transition-all duration-300 drop-shadow-lg">
-                  Symphony Training
+              <div className="hidden lg:block">
+                <div className="text-lg font-bold text-white group-hover:text-emerald-200 transition-all duration-300">
+                  Symphony Institute
                 </div>
-                <div className="text-sm text-yellow-100 font-medium">Excellence in Education</div>
-              </div> */}
+                <div className="text-xs text-gray-300 font-medium tracking-wide">of Technology</div>
+              </div>
             </a>
           </div>
 
@@ -120,13 +115,13 @@ const Navbar = () => {
 
           {/* Premium Action Buttons */}
           <div className="hidden xl:flex items-center space-x-4">
-            <a 
-              href="/login" 
+            <button 
+              onClick={() => setIsLoginModalOpen(true)}
               className="group flex items-center space-x-3 px-6 py-3 text-sm font-bold text-white border-2 border-white/50 rounded-xl hover:border-white hover:bg-white/10 hover:backdrop-blur-sm transition-all duration-300 transform hover:scale-105 hover:-translate-y-1"
             >
               <LogIn className="w-5 h-5 group-hover:rotate-12 transition-transform duration-300" />
               <span>Login</span>
-            </a>
+            </button>
           </div>
 
           {/* Mobile menu button */}
@@ -168,19 +163,27 @@ const Navbar = () => {
               ))}
 
               <div className="pt-6 mt-6 border-t border-gray-700">
-                <a
-                  href="/login"
-                  onClick={() => setIsMenuOpen(false)}
+                <button
+                  onClick={() => {
+                    setIsLoginModalOpen(true);
+                    setIsMenuOpen(false);
+                  }}
                   className="flex items-center justify-center space-x-3 w-full px-6 py-4 text-base font-bold bg-purple-600 text-white rounded-2xl hover:bg-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
                 >
                   <LogIn className="w-5 h-5" />
                   <span>Login</span>
-                </a>
+                </button>
               </div>
             </div>
           </div>
         )}
       </div>
+
+      {/* Login Modal */}
+      <LoginModal
+        isOpen={isLoginModalOpen}
+        onClose={() => setIsLoginModalOpen(false)}
+      />
     </nav>
   );
 };

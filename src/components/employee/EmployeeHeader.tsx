@@ -14,6 +14,7 @@ const EmployeeHeader = ({ onSidebarToggle, sidebarOpen }: EmployeeHeaderProps) =
   const pathname = usePathname();
   const [categoryDropdownOpen, setCategoryDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [unreadCount, setUnreadCount] = useState(0);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -28,6 +29,25 @@ const EmployeeHeader = ({ onSidebarToggle, sidebarOpen }: EmployeeHeaderProps) =
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
+
+  // Fetch unread WhatsApp messages count
+  useEffect(() => {
+    fetchUnreadCount();
+    const interval = setInterval(fetchUnreadCount, 30000); // Poll every 30 seconds
+    return () => clearInterval(interval);
+  }, []);
+
+  const fetchUnreadCount = async () => {
+    try {
+      const response = await fetch('/api/whatsapp/messages?unread=true&limit=100');
+      const data = await response.json();
+      if (data.success) {
+        setUnreadCount(data.messages?.length || 0);
+      }
+    } catch (error) {
+      console.error('Error fetching unread count:', error);
+    }
+  };
 
   const categories = [
     { name: 'Government', slug: 'government', icon: <GraduationCap className="w-4 h-4" />, color: 'from-orange-500 to-red-500' },
@@ -238,9 +258,16 @@ const EmployeeHeader = ({ onSidebarToggle, sidebarOpen }: EmployeeHeaderProps) =
             </div>
 
             {/* Notifications */}
-            <button className="p-1.5 sm:p-2 rounded-full text-white/90 hover:text-white hover:bg-white/20 relative transition-all duration-200">
-              <Bell className="w-4 h-4 sm:w-5 sm:h-5" />
-              <span className="absolute top-0.5 right-0.5 w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+            <button
+              onClick={() => router.push('/admin/whatsapp-messages')}
+              className="p-1.5 sm:p-2 rounded-full text-white/90 hover:text-white hover:bg-white/20 relative transition-all duration-200 group"
+            >
+              <Bell className="w-4 h-4 sm:w-5 sm:h-5 group-hover:animate-pulse" />
+              {unreadCount > 0 && (
+                <span className="absolute top-0 right-0 w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center border-2 border-white">
+                  {unreadCount > 9 ? '9+' : unreadCount}
+                </span>
+              )}
             </button>
 
             {/* User menu */}

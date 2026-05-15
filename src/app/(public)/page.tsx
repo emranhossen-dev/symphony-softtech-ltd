@@ -1,3 +1,5 @@
+"use client";
+
 import HeroSection from "@/components/ui/HeroSection";
 import SimpleCategorySection from "@/components/ui/SimpleCategorySection";
 import CategorySection from "@/components/ui/CategorySection";

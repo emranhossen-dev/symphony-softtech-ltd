@@ -42,7 +42,8 @@ import {
   LogOut,
   Shield,
   User,
-  Phone
+  Phone,
+  MessageCircle
 } from 'lucide-react';
 
 interface MenuItem {
@@ -383,6 +384,16 @@ const AdminSidebar = ({ isOpen, onClose, isMobile, isCollapsed = false, onToggle
       title: 'Calls',
       href: '/admin/calls',
       icon: <Phone className="w-4 h-4" />
+    },
+    {
+      title: 'Live Chat',
+      href: '/admin/live-chat',
+      icon: <MessageCircle className="w-4 h-4" />
+    },
+    {
+      title: 'User Management',
+      href: '/admin/users',
+      icon: <Shield className="w-4 h-4" />
     },
     {
       title: 'Seminars',

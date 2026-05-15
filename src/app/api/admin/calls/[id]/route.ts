@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { verifyToken, hasRole } from '@/lib/auth';
+import { getAuthenticatedUser, hasRole } from '@/lib/auth';
 
 // PATCH /api/admin/calls/[id] - Update a call record
 export async function PATCH(
@@ -8,20 +8,9 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const authHeader = request.headers.get('Authorization')?.replace('Bearer ', '');
-    const cookieToken = request.cookies.get('auth-token')?.value;
+    const user = await getAuthenticatedUser();
     
-    const token = authHeader || cookieToken;
-    
-    if (!token) {
-      return NextResponse.json(
-        { success: false, error: 'Authentication required' },
-        { status: 401 }
-      );
-    }
-
-    const payload = verifyToken(token);
-    if (!hasRole(payload.role, 'ADMIN') && !hasRole(payload.role, 'EMPLOYEE')) {
+    if (!hasRole(user.role, 'ADMIN') && !hasRole(user.role, 'EMPLOYEE')) {
       return NextResponse.json(
         { success: false, error: 'Insufficient permissions' },
         { status: 403 }
@@ -67,20 +56,9 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const authHeader = request.headers.get('Authorization')?.replace('Bearer ', '');
-    const cookieToken = request.cookies.get('auth-token')?.value;
+    const user = await getAuthenticatedUser();
     
-    const token = authHeader || cookieToken;
-    
-    if (!token) {
-      return NextResponse.json(
-        { success: false, error: 'Authentication required' },
-        { status: 401 }
-      );
-    }
-
-    const payload = verifyToken(token);
-    if (!hasRole(payload.role, 'ADMIN') && !hasRole(payload.role, 'EMPLOYEE')) {
+    if (!hasRole(user.role, 'ADMIN') && !hasRole(user.role, 'EMPLOYEE')) {
       return NextResponse.json(
         { success: false, error: 'Insufficient permissions' },
         { status: 403 }

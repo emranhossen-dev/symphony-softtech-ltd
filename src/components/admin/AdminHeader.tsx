@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { LogOut, User, ChevronDown, Target, Building, Monitor, FileText, PlayCircle } from "lucide-react";
+import { LogOut, User, ChevronDown, Target, Building, Monitor, FileText, PlayCircle, Bell } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 
 interface AdminHeaderProps {
@@ -14,9 +14,29 @@ interface AdminHeaderProps {
 
 const AdminHeader = ({ onSidebarToggle, sidebarOpen, sidebarCollapsed = false, user, onLogout }: AdminHeaderProps) => {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
   const pathname = usePathname();
   const router = useRouter();
   const menuRef = useRef<HTMLDivElement>(null);
+
+  // Fetch unread WhatsApp messages count
+  useEffect(() => {
+    fetchUnreadCount();
+    const interval = setInterval(fetchUnreadCount, 30000); // Poll every 30 seconds
+    return () => clearInterval(interval);
+  }, []);
+
+  const fetchUnreadCount = async () => {
+    try {
+      const response = await fetch('/api/whatsapp/messages?unread=true&limit=100');
+      const data = await response.json();
+      if (data.success) {
+        setUnreadCount(data.messages?.length || 0);
+      }
+    } catch (error) {
+      console.error('Error fetching unread count:', error);
+    }
+  };
 
   // Get page title from pathname
   const getPageTitle = () => {
@@ -97,8 +117,21 @@ const AdminHeader = ({ onSidebarToggle, sidebarOpen, sidebarCollapsed = false, u
             </div>
           </div>
 
-          {/* Right side - User menu only */}
+          {/* Right side - Notifications and User menu */}
           <div className="flex items-center space-x-4">
+            {/* WhatsApp Messages Notification */}
+            <button
+              onClick={() => router.push('/admin/whatsapp-messages')}
+              className="relative p-2 rounded-full text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors group"
+            >
+              <Bell className="w-5 h-5 group-hover:animate-pulse" />
+              {unreadCount > 0 && (
+                <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center border-2 border-white">
+                  {unreadCount > 9 ? '9+' : unreadCount}
+                </span>
+              )}
+            </button>
+
             {/* User menu */}
             <div className="relative" ref={menuRef}>
               <button 

@@ -32,6 +32,7 @@ const CategorySection = () => {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState(0);
   const [hoveredCourse, setHoveredCourse] = useState<string | null>(null);
+  const [navigatingCourse, setNavigatingCourse] = useState<string | null>(null);
   const router = useRouter();
   const featuresConfig = getFeaturesConfig();
 
@@ -109,6 +110,7 @@ const CategorySection = () => {
   };
 
   const handleCourseClick = (courseId: string) => {
+    setNavigatingCourse(courseId);
     router.push(`/course/${courseId}`);
   };
 
@@ -329,10 +331,32 @@ const CategorySection = () => {
                         {course.title}
                       </h4>
                       
-                      <div className="flex items-center justify-between text-white/60 text-sm">
+                      <div className="flex items-center justify-between text-white/60 text-sm mb-4">
                         <span>{course.mentor}</span>
                         <Play className="w-4 h-4 group-hover:scale-110 transition-transform" />
                       </div>
+
+                      {/* View Details Button */}
+                      <button 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleCourseClick(course.id);
+                        }}
+                        disabled={navigatingCourse === course.id}
+                        className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold rounded-xl hover:from-purple-500 hover:to-pink-500 transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                      >
+                        {navigatingCourse === course.id ? (
+                          <>
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                            <span>Loading...</span>
+                          </>
+                        ) : (
+                          <>
+                            <span>View Details</span>
+                            <ArrowRight className="w-4 h-4" />
+                          </>
+                        )}
+                      </button>
                     </div>
                   </div>
                 ))}

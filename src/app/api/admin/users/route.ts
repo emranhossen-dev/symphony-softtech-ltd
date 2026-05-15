@@ -136,9 +136,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!['ADMIN', 'EMPLOYEE'].includes(role)) {
+    if (!['ADMIN', 'EMPLOYEE', 'MENTOR'].includes(role)) {
       return NextResponse.json(
-        { success: false, error: 'Invalid role. Must be ADMIN or EMPLOYEE' },
+        { success: false, error: 'Invalid role. Must be ADMIN, EMPLOYEE, or MENTOR' },
         { status: 400 }
       );
     }
