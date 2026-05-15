@@ -222,11 +222,14 @@ export default function EnrollmentManagementSystem() {
   const fetchEnrollments = async () => {
     try {
       setLoading(true);
+      const token = localStorage.getItem('token');
+      const headers: Record<string, string> = {};
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+      
       const response = await fetch('/api/admin/enrollments', {
         method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
+        headers,
+        credentials: 'include'
       });
       
       if (!response.ok) {
@@ -348,12 +351,14 @@ export default function EnrollmentManagementSystem() {
     try {
       setActionLoading(prev => ({ ...prev, [enrollmentId]: true }));
       
+      const token = localStorage.getItem('token');
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+      
       const response = await fetch('/api/admin/enrollments', {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
+        headers,
+        credentials: 'include',
         body: JSON.stringify({
           id: enrollmentId,
           enrollmentStatus: newStatus

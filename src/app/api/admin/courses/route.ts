@@ -5,14 +5,13 @@ import { prisma } from '@/lib/prisma';
 function generateSlug(title: string): string {
   const baseSlug = title
     .toLowerCase()
-    .replace(/[^a-z0-9 -]/g, '')
+    .replace(/[^\p{L}\p{N}\s-]/gu, '')
     .replace(/\s+/g, '-')
     .replace(/-+/g, '-')
-    .trim();
+    .replace(/^-|-$/g, '');
   
-  // TODO: Replace with proper unique slug generation
   const timestamp = Date.now().toString(36);
-  return `${baseSlug}-${timestamp}`;
+  return `${baseSlug || 'course'}-${timestamp}`;
 }
 
 // GET /api/admin/courses - Get all courses with filters
@@ -218,6 +217,8 @@ export async function POST(request: NextRequest) {
     description,
     shortDescription,
     price,
+    regularPrice,
+    offerPrice,
     duration,
     thumbnail,
     mentorId,
@@ -240,6 +241,8 @@ export async function POST(request: NextRequest) {
       { status: 400 }
     );
   }
+
+  const resolvedPrice = Number(offerPrice || regularPrice || price || 0);
 
   try {
     // Check if slug already exists
@@ -288,7 +291,7 @@ export async function POST(request: NextRequest) {
         slug: courseSlug,
         description,
         shortDescription,
-        price: parseFloat(price.toString()) || 0,
+        price: Number.isFinite(resolvedPrice) ? resolvedPrice : 0,
         duration,
         thumbnail,
         mentorId: mentorId || null,
@@ -398,7 +401,7 @@ export async function POST(request: NextRequest) {
       slug: slug || generateSlug(title),
       description,
       shortDescription,
-      price: parseFloat(price.toString()) || 0,
+      price: Number.isFinite(resolvedPrice) ? resolvedPrice : 0,
       duration,
       thumbnail,
       mentorId: mentorId || null,

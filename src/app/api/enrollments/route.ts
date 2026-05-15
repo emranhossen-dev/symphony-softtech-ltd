@@ -53,6 +53,22 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // If course doesn't have categoryId but has category string, try to find the category
+    let categoryId = course.categoryId;
+    if (!categoryId && course.category) {
+      const category = await prisma?.category.findFirst({
+        where: {
+          OR: [
+            { slug: course.category.toLowerCase() },
+            { name: { equals: course.category, mode: 'insensitive' } }
+          ]
+        }
+      });
+      if (category) {
+        categoryId = category.id;
+      }
+    }
+
     // Check if already enrolled
     const existingEnrollment = await prisma?.enrollment.findFirst({
       where: {
@@ -96,7 +112,7 @@ export async function POST(request: NextRequest) {
         address,
         courseId,
         courseName: course.title,
-        categoryId: course.categoryId,
+        categoryId: categoryId,
         enrollmentStatus,
         // Additional fields
         educationLevel: education,

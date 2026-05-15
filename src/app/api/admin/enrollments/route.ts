@@ -6,11 +6,11 @@ import { AuthError, verifyToken, hasRole } from '@/lib/auth';
 export async function GET(request: NextRequest) {
   try {
     // Try both Authorization header and cookie
-    const authHeader = request.headers.get('Authorization')?.replace('Bearer ', '');
-    const cookieToken = request.cookies.get('auth_token')?.value;
-    const authToken = request.cookies.get('auth_token')?.value; // Try different cookie name
+    const rawAuthHeader = request.headers.get('Authorization')?.replace('Bearer ', '');
+    const authHeader = rawAuthHeader && rawAuthHeader !== 'null' && rawAuthHeader !== 'undefined' ? rawAuthHeader : null;
+    const cookieToken = request.cookies.get('auth-token')?.value;
     
-    const token = authHeader || cookieToken || authToken;
+    const token = authHeader || cookieToken;
     
     if (!token) {
       console.log('No token found in header or cookies');

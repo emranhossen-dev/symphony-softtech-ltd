@@ -58,6 +58,12 @@ import {
   Headphones
 } from 'lucide-react';
 import CallManagementPanel from '@/components/admin/CallManagementPanel';
+import CategorySwitcher from '@/components/admin/CategorySwitcher';
+import EmptyState from '@/components/admin/EmptyState';
+import SkeletonLoader from '@/components/admin/SkeletonLoader';
+import ThemeToggle from '@/components/admin/ThemeToggle';
+import StudentDetailModal from '@/components/admin/StudentDetailModal';
+import AdvancedFilters from '@/components/admin/AdvancedFilters';
 
 // CRM Types
 interface CallStatus {
@@ -120,6 +126,10 @@ interface Enrollment {
   amount?: number;
   appliedDate: string;
   assignedMentor?: string;
+  educationLevel?: string;
+  notes?: string;
+  address?: string;
+  whyJoin?: string;
   // CRM Fields
   callStatus?: 'interested' | 'call-later' | 'no-answer' | 'rejected';
   lastCallDate?: string;
@@ -189,6 +199,17 @@ export default function CategoryEnrollmentPage() {
   const [dateRange, setDateRange] = useState({ start: '', end: '' });
   const [courseFilter, setCourseFilter] = useState('');
   const [showStats, setShowStats] = useState(true);
+  const [allCategories, setAllCategories] = useState<any[]>([]);
+  const [selectedStudentForView, setSelectedStudentForView] = useState<Enrollment | null>(null);
+  const [showStudentModal, setShowStudentModal] = useState(false);
+  const [showAdvancedFiltersPanel, setShowAdvancedFiltersPanel] = useState(false);
+  const [advancedFilters, setAdvancedFilters] = useState({
+    dateRange: 'all',
+    paymentStatus: 'all',
+    educationLevel: 'all',
+    hasNotes: false,
+    hasCallHistory: false
+  });
   
   // CRM State
   const [showCRMPanel, setShowCRMPanel] = useState<Enrollment | null>(null);
@@ -263,8 +284,21 @@ export default function CategoryEnrollmentPage() {
   useEffect(() => {
     if (params.slug) {
       fetchEnrollments();
+      fetchAllCategories();
     }
   }, [params.slug, searchQuery, statusFilter, currentPage]);
+
+  const fetchAllCategories = async () => {
+    try {
+      const response = await fetch('/api/admin/categories');
+      const data = await response.json();
+      if (data.success) {
+        setAllCategories(data.data || []);
+      }
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+    }
+  };
 
   // Auth utility function
 const getAuthToken = () => {
@@ -362,64 +396,18 @@ const fetchEnrollments = async () => {
     } catch (error) {
       console.error('Error fetching enrollments:', error);
       
-      // Generate mock data with CRM fields ONLY if API fails
-      const category = Array.isArray(params.slug) ? params.slug[0] : params.slug || 'unknown';
-      const mockEnrollments: Enrollment[] = Array.from({ length: 5 }, (_, index) => {
-        const statuses = ['PENDING_REVIEW', 'PAYMENT_PENDING', 'APPROVED', 'REJECTED'];
-        const paymentStatuses = ['PENDING', 'PAID', 'FAILED'];
-        const callStatusOptions = ['interested', 'call-later', 'no-answer', 'rejected'];
-        const priorityOptions = ['low', 'medium', 'high'];
-        
-        const randomCallStatus = callStatusOptions[Math.floor(Math.random() * callStatusOptions.length)];
-        const randomPriority = priorityOptions[Math.floor(Math.random() * priorityOptions.length)];
-        
-        return {
-          id: `enrollment-${index + 1}`,
-          name: `Student ${index + 1}`,
-          email: `student${index + 1}@example.com`,
-          phone: `+8801${Math.floor(Math.random() * 900000000) + 100000000}`,
-          courseName: `Course ${index + 1}`,
-          status: statuses[Math.floor(Math.random() * statuses.length)] as any,
-          paymentStatus: paymentStatuses[Math.floor(Math.random() * paymentStatuses.length)] as any,
-          amount: Math.floor(Math.random() * 50000) + 10000,
-          appliedDate: new Date(Date.now() - Math.floor(Math.random() * 30) * 24 * 60 * 60 * 1000).toISOString(),
-          assignedMentor: `Mentor ${index + 1}`,
-          // CRM Fields
-          callStatus: randomCallStatus as any,
-          lastCallDate: Math.random() > 0.5 ? new Date(Date.now() - Math.floor(Math.random() * 7) * 24 * 60 * 60 * 1000).toISOString() : undefined,
-          callNotes: Math.random() > 0.7 ? `Call notes for student ${index + 1}` : undefined,
-          recordingUrl: Math.random() > 0.8 ? `https://example.com/recording-${index + 1}.mp3` : undefined,
-          callCount: Math.floor(Math.random() * 5),
-          whatsappOptIn: Math.random() > 0.3,
-          smsOptIn: Math.random() > 0.2,
-          emailOptIn: Math.random() > 0.1,
-          tags: Math.random() > 0.5 ? [`tag-${index + 1}`, `category-${category}`] : [],
-          priority: randomPriority as any,
-          assignedEmployee: `Employee ${(index % 3) + 1}`,
-          // Legacy fields for backward compatibility
-          studentId: `student-${index + 1}`,
-          studentName: `Student ${index + 1}`,
-          studentEmail: `student${index + 1}@example.com`,
-          studentPhone: `+8801${Math.floor(Math.random() * 900000000) + 100000000}`,
-          courseId: `course-${index + 1}`,
-          category: category,
-          enrollmentDate: new Date(Date.now() - Math.floor(Math.random() * 30) * 24 * 60 * 60 * 1000).toISOString(),
-          mentor: `Mentor ${index + 1}`,
-          progress: Math.floor(Math.random() * 100)
-        };
-      });
-      
-      setEnrollments(mockEnrollments);
+      // Set empty data instead of mock data
+      setEnrollments([]);
       setStats({
-        totalEnrollments: mockEnrollments.length,
-        pendingEnrollments: mockEnrollments.filter(e => e.status === 'PENDING_REVIEW' || e.status === 'PAYMENT_PENDING').length,
-        approvedEnrollments: mockEnrollments.filter(e => e.status === 'APPROVED').length,
-        rejectedEnrollments: mockEnrollments.filter(e => e.status === 'REJECTED').length,
-        completedEnrollments: mockEnrollments.filter(e => e.progress === 100).length,
-        totalRevenue: mockEnrollments.filter(e => e.paymentStatus === 'PAID').reduce((sum, e) => sum + (e.amount || 0), 0),
-        pendingRevenue: mockEnrollments.filter(e => e.paymentStatus === 'PENDING').reduce((sum, e) => sum + (e.amount || 0), 0),
-        monthlyEnrollments: Math.floor(mockEnrollments.length * 0.3),
-        completionRate: Math.floor(Math.random() * 30) + 60
+        totalEnrollments: 0,
+        pendingEnrollments: 0,
+        approvedEnrollments: 0,
+        rejectedEnrollments: 0,
+        completedEnrollments: 0,
+        totalRevenue: 0,
+        pendingRevenue: 0,
+        monthlyEnrollments: 0,
+        completionRate: 0
       });
     } finally {
       setLoading(false);
@@ -543,6 +531,85 @@ const fetchEnrollments = async () => {
     }
   };
 
+  const viewStudentDetails = (enrollment: Enrollment) => {
+    setSelectedStudentForView(enrollment);
+    setShowStudentModal(true);
+  };
+
+  const handleStudentModalClose = () => {
+    setShowStudentModal(false);
+    setSelectedStudentForView(null);
+  };
+
+  const handleStudentSave = (updatedStudent: any) => {
+    // Update the enrollment in the list
+    setEnrollments(prev => prev.map(e => 
+      e.id === updatedStudent.id ? { ...e, ...updatedStudent } : e
+    ));
+    setShowStudentModal(false);
+    setSelectedStudentForView(null);
+  };
+
+  const handleAdvancedFilterChange = (newFilters: any) => {
+    setAdvancedFilters(newFilters);
+    // Apply filters to enrollments
+    let filtered = [...enrollments];
+    
+    if (newFilters.paymentStatus !== 'all') {
+      filtered = filtered.filter(e => e.paymentStatus === newFilters.paymentStatus);
+    }
+    
+    if (newFilters.educationLevel !== 'all') {
+      filtered = filtered.filter(e => e.educationLevel === newFilters.educationLevel);
+    }
+    
+    if (newFilters.hasNotes) {
+      filtered = filtered.filter(e => e.notes && e.notes.trim() !== '');
+    }
+    
+    if (newFilters.hasCallHistory) {
+      filtered = filtered.filter(e => e.callCount && e.callCount > 0);
+    }
+    
+    if (newFilters.dateRange !== 'all') {
+      const now = new Date();
+      const filterDate = new Date();
+      
+      switch (newFilters.dateRange) {
+        case 'today':
+          filterDate.setHours(0, 0, 0, 0);
+          break;
+        case 'week':
+          filterDate.setDate(now.getDate() - 7);
+          break;
+        case 'month':
+          filterDate.setMonth(now.getMonth() - 1);
+          break;
+        case 'quarter':
+          filterDate.setMonth(now.getMonth() - 3);
+          break;
+        case 'year':
+          filterDate.setFullYear(now.getFullYear() - 1);
+          break;
+      }
+      
+      filtered = filtered.filter(e => new Date(e.appliedDate) >= filterDate);
+    }
+    
+    setEnrollments(filtered);
+  };
+
+  const handleClearAdvancedFilters = () => {
+    setAdvancedFilters({
+      dateRange: 'all',
+      paymentStatus: 'all',
+      educationLevel: 'all',
+      hasNotes: false,
+      hasCallHistory: false
+    });
+    fetchEnrollments(); // Reset to original data
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'PENDING_REVIEW':
@@ -630,6 +697,7 @@ const fetchEnrollments = async () => {
                 <Eye className="w-5 h-5" />
                 Overview
               </button>
+              <ThemeToggle />
               <button
                 onClick={fetchEnrollments}
                 className="p-3 bg-white bg-opacity-20 backdrop-blur-lg rounded-xl hover:bg-opacity-30 transition-all"
@@ -643,6 +711,30 @@ const fetchEnrollments = async () => {
 
       {/* Main Content */}
       <div className="px-6 lg:px-8 py-8">
+        {/* Section Header */}
+        <div className="mb-8">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="h-1 w-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full"></div>
+            <h2 className="text-2xl font-bold text-gray-900">Enrollment Management</h2>
+          </div>
+          <p className="text-gray-600 ml-15">Manage and track student enrollments for this category</p>
+        </div>
+
+        {/* Category Switcher */}
+        <CategorySwitcher
+          categories={allCategories}
+          currentSlug={Array.isArray(params.slug) ? params.slug[0] : params.slug || ''}
+          basePath="/admin/category/[slug]/enrollment"
+          title="Switch Category"
+          description="View enrollments for different categories"
+        />
+
+        {/* Advanced Filters */}
+        <AdvancedFilters
+          onFilterChange={handleAdvancedFilterChange}
+          onClear={handleClearAdvancedFilters}
+        />
+
         {/* Enhanced Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {/* Total Students Card */}
@@ -729,6 +821,13 @@ const fetchEnrollments = async () => {
             </div>
             <div className="h-1 bg-gradient-to-r from-purple-500 to-purple-600"></div>
           </div>
+        </div>
+
+        {/* Section Divider */}
+        <div className="flex items-center gap-4 my-10">
+          <div className="h-px bg-gray-200 flex-1"></div>
+          <div className="text-gray-400 text-sm font-medium">Search & Filter</div>
+          <div className="h-px bg-gray-200 flex-1"></div>
         </div>
 
         {/* Advanced Search and Filter Section */}
@@ -908,73 +1007,72 @@ const fetchEnrollments = async () => {
               </div>
             </div>
         
-        <div className="w-full">
+        <div className="w-full overflow-x-auto rounded-xl border border-gray-200 shadow-sm">
           <table className="w-full table-auto">
-            <thead className="bg-gray-50 border-b border-gray-200">
+            <thead className="bg-gradient-to-r from-gray-50 to-gray-100 sticky top-0 z-10 shadow-md">
               <tr>
-                <th className="px-1 sm:px-3 py-2 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                <th className="px-4 sm:px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider border-b-2 border-gray-200">
                   Student
                 </th>
-                <th className="px-1 sm:px-3 py-2 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                <th className="px-4 sm:px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider border-b-2 border-gray-200">
                   Course
                 </th>
-                <th className="px-1 sm:px-3 py-2 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider hidden sm:table-cell">
+                <th className="px-4 sm:px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider border-b-2 border-gray-200 hidden sm:table-cell">
                   Status
                 </th>
-                <th className="px-1 sm:px-3 py-2 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider hidden md:table-cell">
+                <th className="px-4 sm:px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider border-b-2 border-gray-200 hidden md:table-cell">
                   Payment
                 </th>
-                <th className="px-1 sm:px-3 py-2 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider hidden lg:table-cell">
+                <th className="px-4 sm:px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider border-b-2 border-gray-200 hidden lg:table-cell">
                   Amount
                 </th>
-                <th className="px-1 sm:px-3 py-2 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider hidden sm:table-cell">
+                <th className="px-4 sm:px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider border-b-2 border-gray-200 hidden sm:table-cell">
                   Date
                 </th>
-                <th className="px-1 sm:px-3 py-2 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider hidden md:table-cell">
+                <th className="px-4 sm:px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider border-b-2 border-gray-200 hidden md:table-cell">
                   Call Status
                 </th>
-                <th className="px-1 sm:px-3 py-2 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                <th className="px-4 sm:px-6 py-4 text-center text-xs font-bold text-gray-700 uppercase tracking-wider border-b-2 border-gray-200">
                   CRM Actions
                 </th>
-                <th className="px-1 sm:px-3 py-2 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                <th className="px-4 sm:px-6 py-4 text-center text-xs font-bold text-gray-700 uppercase tracking-wider border-b-2 border-gray-200">
                   Actions
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-white divide-y divide-gray-100">
               {loading ? (
                 <tr>
-                  <td colSpan={9} className="px-1 py-4 text-center">
-                    <div className="flex flex-col items-center">
-                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-4"></div>
-                      <p className="text-gray-500">Loading enrollments...</p>
-                    </div>
+                  <td colSpan={9} className="px-1 py-4">
+                    <SkeletonLoader type="table" count={1} />
                   </td>
                 </tr>
               ) : enrollments.length === 0 ? (
                 <tr>
-                  <td colSpan={9} className="px-1 py-4 text-center">
-                    <div className="flex flex-col items-center">
-                      <Users className="w-12 h-12 text-gray-400 mb-4" />
-                      <p className="text-gray-500 text-lg font-medium">No enrollments found</p>
-                      <p className="text-gray-400 text-sm mt-2">Try adjusting your search or filter criteria</p>
-                    </div>
+                  <td colSpan={9} className="px-1 py-4">
+                    <EmptyState
+                      type="enrollments"
+                      title="No Enrollments Found"
+                      description="No enrollments found for this category. Start by adding new enrollments to track student applications."
+                      actionLabel="Add First Enrollment"
+                      onAction={() => router.push('/admin/enrollments/new')}
+                    />
                   </td>
                 </tr>
               ) : (
                 enrollments.map((enrollment) => (
-                  <tr key={enrollment.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-1 sm:px-3 py-2">
-                      <div className="flex items-center space-x-2">
-                        <div className="h-6 w-6 flex-shrink-0">
-                          <div className="h-6 w-6 rounded-full bg-gray-200 flex items-center justify-center">
-                            <span className="text-xs font-medium text-gray-600">
+                  <tr key={enrollment.id} className="hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 transition-all duration-200 hover:shadow-md group">
+                    <td className="px-4 sm:px-6 py-4">
+                      <div className="flex items-center space-x-3">
+                        <div className="h-10 w-10 flex-shrink-0">
+                          <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-md group-hover:scale-110 transition-transform">
+                            <span className="text-sm font-bold text-white">
                               {enrollment.name?.charAt(0) || '?'}
                             </span>
                           </div>
                         </div>
                         <div className="flex-1 min-w-0">
-                          <div className="text-xs font-medium text-gray-900 truncate">
+                          <div className="text-sm font-semibold text-gray-900 truncate group-hover:text-blue-700 transition-colors">
                             {enrollment.name || 'Unknown Student'}
                           </div>
                           <div className="text-xs text-gray-500 truncate hidden sm:block">
@@ -986,51 +1084,46 @@ const fetchEnrollments = async () => {
                         </div>
                       </div>
                     </td>
-                    <td className="px-1 sm:px-3 py-2">
-                      <div className="text-xs font-medium text-gray-900">
+                    <td className="px-4 sm:px-6 py-4">
+                      <div className="text-sm font-medium text-gray-900 group-hover:text-blue-700 transition-colors">
                         {enrollment.courseName || 'Unknown Course'}
                       </div>
                     </td>
-                    <td className="px-1 sm:px-3 py-2 hidden sm:table-cell">
+                    <td className="px-4 sm:px-6 py-4 hidden sm:table-cell">
                       <div className={`inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(enrollment.status)}`}>
                         {getStatusIcon(enrollment.status)}
                         <span>{enrollment.status?.replace('_', ' ') || 'Unknown'}</span>
                       </div>
                     </td>
-                    <td className="px-1 sm:px-3 py-2 hidden md:table-cell">
-                      <div className={`inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full ${
-                        enrollment.paymentStatus === 'PAID' ? 'bg-green-100 text-green-800' :
-                        enrollment.paymentStatus === 'PENDING' ? 'bg-yellow-100 text-yellow-800' :
-                        enrollment.paymentStatus === 'FAILED' ? 'bg-red-100 text-red-800' :
-                        'bg-gray-100 text-gray-800'
+                    <td className="px-4 sm:px-6 py-4 hidden md:table-cell">
+                      <div className={`inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold rounded-full shadow-sm ${
+                        enrollment.paymentStatus === 'PAID' ? 'bg-green-100 text-green-800 border border-green-200' :
+                        enrollment.paymentStatus === 'PENDING' ? 'bg-yellow-100 text-yellow-800 border border-yellow-200' :
+                        enrollment.paymentStatus === 'FAILED' ? 'bg-red-100 text-red-800 border border-red-200' :
+                        'bg-gray-100 text-gray-800 border border-gray-200'
                       }`}>
                         <span>{enrollment.paymentStatus || 'Unknown'}</span>
                       </div>
                     </td>
-                    <td className="px-1 sm:px-3 py-2 hidden lg:table-cell">
-                      <div className="text-xs font-semibold text-gray-900">
+                    <td className="px-4 sm:px-6 py-4 hidden lg:table-cell">
+                      <div className="text-sm font-semibold text-gray-900">
                         {formatCurrency(enrollment.amount)}
                       </div>
                     </td>
-                    <td className="px-1 sm:px-3 py-2 hidden sm:table-cell">
+                    <td className="px-4 sm:px-6 py-4 hidden sm:table-cell">
                       <div className="text-xs text-gray-600">
-                        {enrollment.appliedDate ? formatDate(enrollment.appliedDate) : 'No date'}
+                        {formatDate(enrollment.appliedDate)}
                       </div>
                     </td>
-                    <td className="px-1 sm:px-3 py-2 hidden md:table-cell">
+                    <td className="px-4 sm:px-6 py-4 hidden md:table-cell">
                       {enrollment.callStatus && (
                         <div className={`inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full ${getCallStatusColor(enrollment.callStatus)}`}>
                           {getCallStatusIcon(enrollment.callStatus)}
                           <span className="hidden sm:inline">{callStatuses.find(s => s.id === enrollment.callStatus)?.name}</span>
                         </div>
                       )}
-                      {enrollment.lastCallDate && (
-                        <div className="text-xs text-gray-500 mt-1">
-                          {formatDate(enrollment.lastCallDate)}
-                        </div>
-                      )}
                     </td>
-                    <td className="px-1 sm:px-3 py-2">
+                    <td className="px-4 sm:px-6 py-4 text-center">
                       <div className="flex items-center justify-center gap-1">
                         {/* Call Button */}
                         <button
@@ -1078,8 +1171,17 @@ const fetchEnrollments = async () => {
                         </button>
                       </div>
                     </td>
-                    <td className="px-1 sm:px-3 py-2">
-                      <div className="flex items-center justify-center gap-0.5">
+                    <td className="px-4 sm:px-6 py-4">
+                      <div className="flex items-center justify-center gap-2">
+                        {/* View Button */}
+                        <button
+                          onClick={() => viewStudentDetails(enrollment)}
+                          className="p-2 bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-800 transition-colors"
+                          title="View Details"
+                        >
+                          <Eye className="w-4 h-4" />
+                        </button>
+                        
                         {/* Delete Button */}
                         <button
                           onClick={() => {
@@ -1087,28 +1189,10 @@ const fetchEnrollments = async () => {
                               deleteEnrollment(enrollment.id);
                             }
                           }}
-                          className="p-1 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
+                          className="p-2 bg-red-100 dark:bg-red-900 text-red-600 dark:text-red-300 rounded-lg hover:bg-red-200 dark:hover:bg-red-800 transition-colors"
                           title="Delete Enrollment"
                         >
-                          <Trash2 className="w-3 h-3" />
-                        </button>
-                        
-                        {/* View Button */}
-                        <button
-                          onClick={() => setSelectedEnrollment(enrollment)}
-                          className="p-1 text-blue-600 hover:bg-blue-50 rounded transition-colors"
-                          title="View Details"
-                        >
-                          <Eye className="w-3 h-3" />
-                        </button>
-                        
-                        {/* Edit Button */}
-                        <button
-                          onClick={() => editEnrollment(enrollment.id)}
-                          className="p-1 text-amber-600 hover:bg-amber-50 rounded transition-colors hidden sm:inline-flex"
-                          title="Edit Enrollment"
-                        >
-                          <Edit className="w-3 h-3" />
+                          <Trash2 className="w-4 h-4" />
                         </button>
                       </div>
                     </td>
@@ -1605,6 +1689,28 @@ const fetchEnrollments = async () => {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Student Detail Modal */}
+      {showStudentModal && selectedStudentForView && (
+        <StudentDetailModal
+          student={{
+            id: selectedStudentForView.id,
+            name: selectedStudentForView.name || 'Unknown',
+            email: selectedStudentForView.email || 'No email',
+            phone: selectedStudentForView.phone || 'No phone',
+            courseName: selectedStudentForView.courseName || 'Unknown Course',
+            status: selectedStudentForView.status || 'Unknown',
+            paymentStatus: selectedStudentForView.paymentStatus || 'Unknown',
+            amount: selectedStudentForView.amount,
+            appliedDate: selectedStudentForView.appliedDate || new Date().toISOString(),
+            address: selectedStudentForView.address,
+            educationLevel: selectedStudentForView.educationLevel,
+            whyJoin: selectedStudentForView.whyJoin
+          }}
+          onClose={handleStudentModalClose}
+          onSave={handleStudentSave}
+        />
       )}
     </div>
   );

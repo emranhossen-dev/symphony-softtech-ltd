@@ -78,7 +78,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
     console.log(`Fetching enrollments for category: ${categoryString}, categoryId: ${categoryRecord?.id}`);
 
-    // Fetch enrollments for this category using both categoryId and courseName
+    // Fetch enrollments for this category using multiple methods
     const enrollments = await prisma.enrollment.findMany({
       where: {
         OR: [
@@ -88,6 +88,14 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
             course: {
               categoryRelation: {
                 slug: slug
+              }
+            }
+          },
+          {
+            course: {
+              category: {
+                contains: categoryString,
+                mode: 'insensitive'
               }
             }
           }
@@ -119,45 +127,6 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     });
 
     console.log(`Found ${enrollments.length} enrollments for ${categoryString}`);
-
-    // If no enrollments found, create some sample data for testing
-    if (enrollments.length === 0) {
-      console.log('No enrollments found, creating sample data...');
-      
-      // Create a sample enrollment for testing
-      const sampleEnrollment = {
-        id: `sample-${Date.now()}`,
-        fullName: 'Sample Student',
-        phoneNumber: '+8801234567890',
-        email: 'sample@example.com',
-        address: 'Dhaka, Bangladesh',
-        courseName: `${slug.charAt(0).toUpperCase() + slug.slice(1)} Course`,
-        educationLevel: 'Bachelor',
-        whyJoin: 'Interested in learning',
-        preferredBatchTime: 'Evening',
-        enrollmentStatus: 'APPROVED' as const,
-        paymentStatus: 'PAID' as const,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        courseId: null,
-        userId: null,
-        categoryId: categoryRecord?.id,
-        payments: [{
-          id: `payment-${Date.now()}`,
-          amount: 5000,
-          paymentStatus: 'PAID' as const,
-          paymentMethod: 'Online',
-          transactionId: `TXN${Date.now()}`,
-          createdAt: new Date(),
-          updatedAt: new Date()
-        }],
-        course: null,
-        user: null
-      };
-
-      console.log('Created sample enrollment:', sampleEnrollment);
-      enrollments.push(sampleEnrollment as any);
-    }
 
     // Calculate stats
     const approvedEnrollments = enrollments.filter(e => e.enrollmentStatus === 'APPROVED').length;

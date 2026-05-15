@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { AuthError, verifyToken, hasRole } from '@/lib/auth';
+import { AuthError, verifyToken, hasRole, getAuthenticatedUser } from '@/lib/auth';
 
 // POST /api/admin/courses/[courseId]/modules/bulk - Bulk operations on modules
 export async function POST(
@@ -9,12 +9,20 @@ export async function POST(
 ) {
   try {
     const { courseId } = await params;
-    const token = request.headers.get('Authorization')?.replace('Bearer ', '');
-    if (!token) {
-      throw new AuthError('Authentication required', 401);
+    let payload;
+
+    try {
+      payload = await getAuthenticatedUser();
+    } catch (cookieAuthError) {
+      const token = request.headers.get('Authorization')?.replace('Bearer ', '');
+
+      if (!token) {
+        throw cookieAuthError;
+      }
+
+      payload = verifyToken(token);
     }
 
-    const payload = verifyToken(token);
     if (!hasRole(payload.role, 'ADMIN') && !hasRole(payload.role, 'EMPLOYEE')) {
       throw new AuthError('Insufficient permissions', 403);
     }

@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
     const byCategory: { [key: string]: any[] } = {};
     enrollments.forEach(enrollment => {
       const category = enrollment.course?.categoryRelation;
-      const categoryName = category?.name || 'Unknown';
+      const categoryName = category?.name || (enrollment.categoryId ? 'Has CategoryId' : 'Unknown');
       
       if (!byCategory[categoryName]) {
         byCategory[categoryName] = [];
@@ -34,7 +34,8 @@ export async function GET(request: NextRequest) {
         phone: enrollment.phoneNumber,
         status: enrollment.enrollmentStatus,
         courseName: enrollment.courseName,
-        categoryId: enrollment.categoryId
+        categoryId: enrollment.categoryId,
+        courseCategory: enrollment.course?.category
       });
     });
 

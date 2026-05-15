@@ -13,8 +13,13 @@ export async function GET(
   try {
     courseId = (await params).courseId;
 
-    const course = await prisma.course.findUnique({
-      where: { id: courseId },
+    const course = await prisma.course.findFirst({
+      where: {
+        OR: [
+          { id: courseId },
+          { slug: courseId }
+        ]
+      },
       include: {
         mentor: {
           select: {
@@ -101,8 +106,13 @@ export async function PUT(
     } = body;
 
     // Check if course exists
-    const existingCourse = await prisma.course.findUnique({
-      where: { id: courseId }
+    const existingCourse = await prisma.course.findFirst({
+      where: {
+        OR: [
+          { id: courseId },
+          { slug: courseId }
+        ]
+      }
     });
 
     if (!existingCourse) {
@@ -116,7 +126,7 @@ export async function PUT(
     }
 
     const updatedCourse = await prisma.course.update({
-      where: { id: courseId },
+      where: { id: existingCourse.id },
       data: {
         ...(title && { title }),
         ...(description && { description }),

@@ -2,10 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
-import { Badge } from '@/components/ui/Badge';
 import { toast } from 'react-hot-toast';
 import { 
   Plus, 
@@ -13,18 +9,10 @@ import {
   Trash2, 
   Search,
   ArrowLeft,
-  BookOpen,
-  Users,
   Clock,
   Eye,
-  Filter,
   RefreshCw,
-  Video,
-  FileText,
-  Star,
-  TrendingUp,
-  Award,
-  Play
+  Users
 } from 'lucide-react';
 
 interface Course {
@@ -32,18 +20,13 @@ interface Course {
   title: string;
   slug: string;
   description: string;
-  shortDescription?: string;
-  price: number;
+  regularPrice?: number;
+  offerPrice?: number;
   duration?: string;
   thumbnail?: string;
   category: string;
   isActive: boolean;
   createdAt: string;
-  mentor?: {
-    id: string;
-    name: string;
-    email: string;
-  };
   _count?: {
     enrollments: number;
     modules: number;
@@ -58,19 +41,17 @@ const CoursesPage = () => {
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'inactive'>('all');
 
   useEffect(() => {
     fetchCourses();
-  }, [slug, searchTerm, filterStatus]);
+  }, [slug, searchTerm]);
 
   const fetchCourses = async () => {
     try {
       setLoading(true);
       const params = new URLSearchParams({
         category: slug.toUpperCase(),
-        ...(searchTerm && { search: searchTerm }),
-        ...(filterStatus !== 'all' && { isActive: filterStatus === 'active' ? 'true' : 'false' })
+        ...(searchTerm && { search: searchTerm })
       });
 
       const response = await fetch(`/api/admin/courses?${params}`);
@@ -89,32 +70,8 @@ const CoursesPage = () => {
     }
   };
 
-  const getCategoryName = (category: string) => {
-    return category.toUpperCase();
-  };
-
-  const getCategoryColor = (category: string) => {
-    const colors: Record<string, string> = {
-      'GOVERNMENT': 'bg-gradient-to-r from-purple-500 to-purple-600 text-white',
-      'ONLINE': 'bg-gradient-to-r from-blue-500 to-blue-600 text-white',
-      'OFFLINE': 'bg-gradient-to-r from-green-500 to-green-600 text-white',
-      'RECORDED': 'bg-gradient-to-r from-orange-500 to-orange-600 text-white'
-    };
-    return colors[category] || 'bg-gradient-to-r from-gray-500 to-gray-600 text-white';
-  };
-
-  const getCategoryIcon = (category: string) => {
-    const icons: Record<string, React.ReactNode> = {
-      'GOVERNMENT': <Award className="w-4 h-4" />,
-      'ONLINE': <Play className="w-4 h-4" />,
-      'OFFLINE': <BookOpen className="w-4 h-4" />,
-      'RECORDED': <Video className="w-4 h-4" />
-    };
-    return icons[category] || <BookOpen className="w-4 h-4" />;
-  };
-
   const handleDeleteCourse = async (courseId: string, courseTitle: string) => {
-    if (!confirm(`Are you sure you want to delete "${courseTitle}"? This action cannot be undone.`)) {
+    if (!confirm(`Are you sure you want to delete "${courseTitle}"?`)) {
       return;
     }
 
@@ -141,279 +98,206 @@ const CoursesPage = () => {
   };
 
   const filteredCourses = courses.filter(course => {
-    const matchesSearch = course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         course.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesFilter = filterStatus === 'all' || 
-                        (filterStatus === 'active' && course.isActive) ||
-                        (filterStatus === 'inactive' && !course.isActive);
-    return matchesSearch && matchesFilter;
+    return course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+           course.description.toLowerCase().includes(searchTerm.toLowerCase());
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Header */}
-      <div className="bg-gradient-to-br from-blue-200/90 via-gray-100 to-purple-200/90 backdrop-blur-lg border-b border-gray-300/60 shadow-lg">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
-          <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
-            <div className="flex items-center gap-4 lg:gap-6">
-              <Button
-                variant="outline"
+      <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+        <div className="max-w-7xl mx-auto px-6 py-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <button
                 onClick={() => router.push(`/admin/category/${slug}`)}
-                className="flex items-center gap-2 bg-white/90 hover:bg-white border-gray-300/60 shadow-md hover:shadow-lg transition-all duration-200 text-gray-800 hover:text-gray-900"
+                className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors mb-4"
               >
                 <ArrowLeft className="w-4 h-4" />
-                Back to {getCategoryName(slug)} Courses
-              </Button>
+                Back to Category
+              </button>
               
-              <div className="space-y-2">
-                <div className="flex items-center gap-3">
-                  <div className={`w-12 h-12 rounded-xl ${getCategoryColor(slug)} flex items-center justify-center shadow-lg`}>
-                    {getCategoryIcon(slug)}
-                  </div>
-                  <h1 className="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
-                    {getCategoryName(slug)} Courses
-                  </h1>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium text-white ${getCategoryColor(slug)} shadow-md`}>
-                    {getCategoryIcon(slug)}
-                    {getCategoryName(slug)}
-                  </div>
-                                  </div>
-              </div>
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+                {slug.toUpperCase()} Courses
+              </h1>
+              <p className="text-gray-600 dark:text-gray-400 mt-1">
+                Manage your courses in this category
+              </p>
             </div>
             
             <div className="flex items-center gap-3">
-              <Button
+              <button
+                onClick={fetchCourses}
+                disabled={loading}
+                className="p-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-gray-600 dark:text-gray-400"
+              >
+                <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
+              </button>
+              
+              <button
                 onClick={() => router.push(`/admin/category/${slug}/courses/create`)}
-                className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white border-0 shadow-lg shadow-green-500/25 hover:shadow-green-500/40 transition-all duration-200 px-6 py-3"
+                className="flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl transition-colors font-medium"
               >
                 <Plus className="w-5 h-5" />
                 Create Course
-              </Button>
-              <Button
-                variant={filterStatus === 'active' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setFilterStatus('active')}
-                className={filterStatus === 'active' 
-                  ? 'bg-gradient-to-r from-green-500 to-green-600 text-white border-0 shadow-lg shadow-green-500/25 hover:from-green-600 hover:to-green-700 hover:shadow-green-500/40 px-5 py-2.5 rounded-lg transition-all duration-200' 
-                  : 'bg-white/95 backdrop-blur-sm border-gray-300 text-gray-800 hover:bg-white hover:border-gray-400 hover:shadow-md px-5 py-2.5 rounded-lg transition-all duration-200'
-                }
-              >
-                Active
-              </Button>
-              <Button
-                variant={filterStatus === 'inactive' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setFilterStatus('inactive')}
-                className={filterStatus === 'inactive' 
-                  ? 'bg-gradient-to-r from-red-500 to-red-600 text-white border-0 shadow-lg shadow-red-500/25 hover:from-red-600 hover:to-red-700 hover:shadow-red-500/40 px-5 py-2.5 rounded-lg transition-all duration-200' 
-                  : 'bg-white/95 backdrop-blur-sm border-gray-300 text-gray-800 hover:bg-white hover:border-gray-400 hover:shadow-md px-5 py-2.5 rounded-lg transition-all duration-200'
-                }
-              >
-                Inactive
-              </Button>
+              </button>
             </div>
-
-            {/* Refresh */}
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={fetchCourses}
-              disabled={loading}
-              className="bg-white/95 backdrop-blur-sm border-gray-300 hover:bg-white hover:border-gray-400 hover:shadow-md px-4 py-2.5 rounded-lg transition-all duration-200 text-gray-800"
-            >
-              <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-            </Button>
           </div>
         </div>
       </div>
 
-      {/* Main Content with proper spacing */}
-      <div className="relative">
-        {/* Spacer to account for header height */}
-        <div className="lg:hidden h-32"></div>
-        <div className="hidden lg:block h-28"></div>
-        
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
-          {/* Filters and Search */}
-          <div className="bg-gradient-to-br from-gray-100 via-blue-100/70 to-purple-100/70 backdrop-blur-lg border-b border-gray-300/60 shadow-lg rounded-2xl mx-6 my-8">
-            <div className="max-w-7xl mx-auto px-6 py-8">
-              <div className="flex flex-col lg:flex-row gap-4">
-                <div className="flex-1">
-                  <div className="relative">
-                    <Search className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                    <input
-                      type="text"
-                      placeholder="Search courses..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="w-full pl-10 pr-4 py-3 border border-gray-300/60 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white/80 backdrop-blur-sm"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+      {/* Search */}
+      <div className="max-w-7xl mx-auto px-6 py-6">
+        <div className="relative">
+          <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+          <input
+            type="text"
+            placeholder="Search courses..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full pl-12 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-800 dark:text-white transition-all"
+          />
+        </div>
+      </div>
 
-          {/* Course List */}
-          {loading ? (
-            <div className="text-center py-20">
-              <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-              <p className="mt-4 text-gray-600">Loading courses...</p>
-            </div>
-          ) : filteredCourses.length === 0 ? (
+      {/* Course List */}
+      <div className="max-w-7xl mx-auto px-6 pb-12">
+        {loading ? (
           <div className="text-center py-20">
-            <div className="relative inline-block">
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full blur-3xl opacity-20"></div>
-              <div className="relative bg-white rounded-2xl p-12 shadow-xl border border-gray-100">
-                <div className="w-24 h-24 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <BookOpen className="w-12 h-12 text-white" />
-                </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-3">
-                  {searchTerm || filterStatus !== 'all' ? 'No courses found' : 'No courses yet'}
-                </h3>
-                <p className="text-gray-600 mb-8 max-w-md mx-auto">
-                  {searchTerm || filterStatus !== 'all' 
-                    ? 'Try adjusting your search or filters to find what you\'re looking for.'
-                    : 'Get started by creating your first course and see your students succeed.'
-                  }
-                </p>
-                {!searchTerm && filterStatus === 'all' && (
-                  <Button
-                    onClick={() => router.push(`/admin/category/${slug}/courses/create`)}
-                    className="flex items-center gap-2 mx-auto bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white border-0 shadow-lg shadow-purple-500/25"
-                  >
-                    <Plus className="w-5 h-5" />
-                    Create Your First Course
-                  </Button>
-                )}
-              </div>
+            <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+            <p className="mt-4 text-gray-600 dark:text-gray-400">Loading courses...</p>
+          </div>
+        ) : filteredCourses.length === 0 ? (
+          <div className="text-center py-20">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-12 border border-gray-200 dark:border-gray-700">
+              <p className="text-6xl mb-4">📚</p>
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
+                {searchTerm ? 'No courses found' : 'No courses yet'}
+              </h3>
+              <p className="text-gray-600 dark:text-gray-400 mb-8 max-w-md mx-auto">
+                {searchTerm ? 'Try adjusting your search to find what you\'re looking for.' : 'Get started by creating your first course.'}
+              </p>
+              {!searchTerm && (
+                <button
+                  onClick={() => router.push(`/admin/category/${slug}/courses/create`)}
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl transition-colors font-medium"
+                >
+                  <Plus className="w-5 h-5" />
+                  Create Your First Course
+                </button>
+              )}
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredCourses.map((course, index) => (
-              <div key={course.id} className="group">
-                <div className="relative bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100 hover:border-gray-200">
-                  {/* Gradient Overlay */}
-                  <div className={`absolute inset-0 bg-gradient-to-br ${getCategoryColor(course.category).replace('text-white', 'to-transparent opacity-10')} pointer-events-none`}></div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredCourses.map((course) => (
+              <div key={course.id} className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-xl transition-shadow relative">
+                {/* Thumbnail */}
+                {course.thumbnail ? (
+                  <img 
+                    src={course.thumbnail} 
+                    alt={course.title}
+                    className="w-full h-48 object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-48 bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                    <span className="text-6xl">📚</span>
+                  </div>
+                )}
+
+                {/* Status Badge */}
+                <div className="absolute top-3 right-3">
+                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                    course.isActive 
+                      ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' 
+                      : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
+                  }`}>
+                    {course.isActive ? 'Active' : 'Inactive'}
+                  </span>
+                </div>
+
+                {/* Content */}
+                <div className="p-6">
+                  <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2 line-clamp-2">
+                    {course.title}
+                  </h3>
                   
-                  {/* Header */}
-                  <div className={`relative p-6 pb-4 ${getCategoryColor(course.category)}`}>
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="flex items-center gap-2">
-                        {getCategoryIcon(course.category)}
-                        <span className="text-white font-semibold text-sm">
-                          {getCategoryName(course.category)}
+                  <p className="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-2">
+                    {course.description}
+                  </p>
+
+                  {/* Price */}
+                  <div className="flex items-center gap-2 mb-4">
+                    {course.regularPrice && course.offerPrice && course.regularPrice > course.offerPrice ? (
+                      <>
+                        <span className="text-lg font-bold text-gray-400 line-through">
+                          ৳{course.regularPrice.toLocaleString()}
                         </span>
-                      </div>
-                      <div className={`px-3 py-1 rounded-full text-xs font-medium ${
-                        course.isActive 
-                          ? 'bg-white/20 text-white backdrop-blur-sm border border-white/30' 
-                          : 'bg-red-500/80 text-white backdrop-blur-sm border border-red-400/50'
-                      }`}>
-                        {course.isActive ? 'Active' : 'Inactive'}
-                      </div>
-                    </div>
-                    
-                    <h3 className="text-xl font-bold text-white line-clamp-2 mb-2 group-hover:text-white/95 transition-colors">
-                      {course.title}
-                    </h3>
-                    
-                    <p className="text-white/80 text-sm line-clamp-2">
-                      {course.shortDescription || course.description}
-                    </p>
+                        <span className="text-xl font-bold text-green-600 dark:text-green-400">
+                          ৳{course.offerPrice.toLocaleString()}
+                        </span>
+                        <span className="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                          {Math.round(((course.regularPrice - course.offerPrice) / course.regularPrice) * 100)}% OFF
+                        </span>
+                      </>
+                    ) : course.offerPrice ? (
+                      <span className="text-xl font-bold text-green-600 dark:text-green-400">
+                        ৳{course.offerPrice.toLocaleString()}
+                      </span>
+                    ) : course.regularPrice ? (
+                      <span className="text-xl font-bold text-gray-900 dark:text-white">
+                        ৳{course.regularPrice.toLocaleString()}
+                      </span>
+                    ) : (
+                      <span className="text-gray-400 dark:text-gray-600">Free</span>
+                    )}
                   </div>
 
-                  {/* Content */}
-                  <div className="relative p-6 pt-4">
-                    {/* Stats */}
-                    <div className="grid grid-cols-2 gap-4 mb-6">
-                      <div className="text-center p-3 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl border border-blue-200">
-                        <span className="text-xl text-blue-600 mx-auto mb-1 block">৳</span>
-                        <p className="font-bold text-blue-900">৳{course.price.toLocaleString()}</p>
-                        <p className="text-xs text-blue-600">Price</p>
-                      </div>
-                      
-                      {course.duration && (
-                        <div className="text-center p-3 bg-gradient-to-br from-green-50 to-green-100 rounded-xl border border-green-200">
-                          <Clock className="w-5 h-5 text-green-600 mx-auto mb-1" />
-                          <p className="font-bold text-green-900 text-sm">{course.duration}</p>
-                          <p className="text-xs text-green-600">Duration</p>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Mentor */}
-                    {course.mentor && (
-                      <div className="flex items-center gap-3 p-3 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl border border-purple-200 mb-6">
-                        <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
-                          <Users className="w-5 h-5 text-white" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="font-semibold text-purple-900 truncate">{course.mentor.name}</p>
-                          <p className="text-xs text-purple-600 truncate">{course.mentor.email}</p>
-                        </div>
+                  {/* Stats */}
+                  <div className="flex items-center gap-4 mb-4 text-sm text-gray-600 dark:text-gray-400">
+                    {course.duration && (
+                      <div className="flex items-center gap-1">
+                        <Clock className="w-4 h-4" />
+                        <span>{course.duration}</span>
                       </div>
                     )}
-
-                    {/* Course Stats */}
-                    <div className="flex items-center justify-between p-4 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl border border-gray-200 mb-6">
-                      <div className="text-center">
-                        <p className="font-bold text-gray-900">{course._count?.enrollments || 0}</p>
-                        <p className="text-xs text-gray-600">Students</p>
-                      </div>
-                      <div className="text-center">
-                        <p className="font-bold text-gray-900">{course._count?.modules || 0}</p>
-                        <p className="text-xs text-gray-600">Modules</p>
-                      </div>
-                      <div className="text-center">
-                        <Star className="w-5 h-5 text-yellow-500 mx-auto mb-1" />
-                        <p className="text-xs text-gray-600">Rating</p>
-                      </div>
-                    </div>
-
-                    {/* Actions */}
-                    <div className="flex items-center gap-3">
-                      <Button
-                        size="sm"
-                        onClick={() => router.push(`/admin/category/${slug}/courses/${course.id}`)}
-                        className="flex-1 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white border-0 shadow-lg shadow-blue-500/25"
-                      >
-                        <Eye className="w-4 h-4 mr-2" />
-                        View Course
-                      </Button>
-                      
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => router.push(`/admin/category/${slug}/courses/${course.id}/modules`)}
-                        className="bg-white/70 backdrop-blur-sm hover:bg-white border-gray-200/60"
-                      >
-                        <Video className="w-4 h-4" />
-                      </Button>
-                      
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleDeleteCourse(course.id, course.title)}
-                        className="bg-white/70 backdrop-blur-sm hover:bg-red-50 hover:border-red-300 text-red-600 hover:text-red-700 border-gray-200/60"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
+                    <div className="flex items-center gap-1">
+                      <Users className="w-4 h-4" />
+                      <span>{course._count?.enrollments || 0} students</span>
                     </div>
                   </div>
 
-                  {/* Hover Effect */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                  {/* Actions */}
+                  <div className="flex items-center gap-2 pt-4 border-t border-gray-200 dark:border-gray-700">
+                    <button
+                      onClick={() => router.push(`/admin/category/${slug}/courses/${course.slug || course.id}`)}
+                      className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors text-sm font-medium"
+                    >
+                      <Eye className="w-4 h-4" />
+                      View
+                    </button>
+                    
+                    <button
+                      onClick={() => router.push(`/admin/category/${slug}/courses/${course.slug || course.id}/edit`)}
+                      className="flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg transition-colors text-sm font-medium"
+                    >
+                      <Edit className="w-4 h-4" />
+                      Edit
+                    </button>
+                    
+                    <button
+                      onClick={() => handleDeleteCourse(course.id, course.title)}
+                      className="flex items-center justify-center gap-2 px-4 py-2 border border-red-300 dark:border-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 dark:text-red-400 rounded-lg transition-colors text-sm font-medium"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}
           </div>
         )}
       </div>
-    </div>
     </div>
   );
 };

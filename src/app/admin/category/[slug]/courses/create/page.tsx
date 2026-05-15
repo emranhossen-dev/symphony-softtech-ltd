@@ -2,59 +2,24 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
-import { Textarea } from '@/components/ui/Textarea';
 import { toast } from 'react-hot-toast';
 import { 
-  Save,
   ArrowLeft,
   Upload,
   Clock,
-  BookOpen,
-  User,
-  Image as ImageIcon,
-  ToggleLeft,
-  ToggleRight,
-  Plus,
-  X,
-  Check
+  Save,
+  X
 } from 'lucide-react';
-
-interface Mentor {
-  id: string;
-  name: string;
-  email: string;
-  phone?: string;
-  image?: string;
-  bio?: string;
-  expertise: string[];
-  rating: number;
-  totalStudents: number;
-  totalRevenue: number;
-  isActive: boolean;
-  joinedAt: string;
-  courses: Array<{
-    id: string;
-    title: string;
-    students: number;
-  }>;
-}
 
 interface CourseFormData {
   title: string;
   slug: string;
   description: string;
-  shortDescription: string;
-  price: number;
+  regularPrice: number;
+  offerPrice: number;
   duration: string;
   thumbnail?: string;
-  mentorId?: string;
   categoryId: string;
-  isActive: boolean;
-  enrollmentOpen: boolean;
-  showOnLanding: boolean;
 }
 
 const CreateCoursePage = () => {
@@ -66,55 +31,31 @@ const CreateCoursePage = () => {
     title: '',
     slug: '',
     description: '',
-    shortDescription: '',
-    price: 0,
+    regularPrice: 0,
+    offerPrice: 0,
     duration: '',
     thumbnail: '',
-    mentorId: '',
-    categoryId: slug.toUpperCase(),
-    isActive: true,
-    enrollmentOpen: true,
-    showOnLanding: true
+    categoryId: slug.toUpperCase()
   });
 
-  const [mentors, setMentors] = useState<Mentor[]>([]);
-  const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
   const [thumbnailPreview, setThumbnailPreview] = useState<string>('');
   const [isDragging, setIsDragging] = useState(false);
 
   useEffect(() => {
-    // Auto-generate slug from title
     if (formData.title) {
       const slug = formData.title
         .toLowerCase()
-        .replace(/[^a-z0-9\s-]/g, '')
+        .replace(/[^\p{L}\p{N}\s-]/gu, '')
         .replace(/\s+/g, '-')
         .replace(/-+/g, '-')
-        .trim();
+        .replace(/^-|-$/g, '');
       setFormData(prev => ({ ...prev, slug }));
     }
   }, [formData.title]);
 
-  useEffect(() => {
-    fetchMentors();
-  }, [slug]);
-
-  const fetchMentors = async () => {
-    try {
-      const response = await fetch(`/api/admin/mentors?category=${slug}`);
-      const data = await response.json();
-      
-      if (data.success) {
-        setMentors(data.mentors);
-      }
-    } catch (error) {
-      console.error('Error fetching mentors:', error);
-    }
-  };
-
-  const handleInputChange = (field: keyof CourseFormData, value: string | number | boolean) => {
+  const handleInputChange = (field: keyof CourseFormData, value: string | number) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
@@ -122,14 +63,12 @@ const CreateCoursePage = () => {
   };
 
   const handleFileSelect = (file: File) => {
-    // Validate file type
     const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
     if (!allowedTypes.includes(file.type)) {
       toast.error('Please select a valid image file (PNG, JPG, GIF)');
       return;
     }
 
-    // Validate file size (10MB)
     if (file.size > 10 * 1024 * 1024) {
       toast.error('File size must be less than 10MB');
       return;
@@ -137,7 +76,6 @@ const CreateCoursePage = () => {
 
     setThumbnailFile(file);
     
-    // Create preview
     const reader = new FileReader();
     reader.onload = (e) => {
       setThumbnailPreview(e.target?.result as string);
@@ -177,7 +115,7 @@ const CreateCoursePage = () => {
     setThumbnailPreview('');
   };
 
-  const handleSubmit = async (e: React.FormEvent, addModule?: boolean) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!formData.title || !formData.description) {
@@ -190,14 +128,13 @@ const CreateCoursePage = () => {
     try {
       let thumbnailUrl = '';
       
-      // Upload thumbnail if selected
       if (thumbnailFile) {
-        const formData = new FormData();
-        formData.append('file', thumbnailFile);
+        const formDataUpload = new FormData();
+        formDataUpload.append('file', thumbnailFile);
         
         const uploadResponse = await fetch('/api/upload', {
           method: 'POST',
-          body: formData,
+          body: formDataUpload,
         });
         
         if (uploadResponse.ok) {
@@ -210,7 +147,6 @@ const CreateCoursePage = () => {
         }
       }
 
-      // Create course with thumbnail
       const courseData = {
         ...formData,
         thumbnail: thumbnailUrl
@@ -224,15 +160,12 @@ const CreateCoursePage = () => {
         body: JSON.stringify(courseData),
       });
 
-      const data = await response.json();
+      const responseText = await response.text();
+      const data = responseText ? JSON.parse(responseText) : { success: false, error: 'Empty server response' };
 
       if (data.success) {
         toast.success('Course created successfully!');
-        if (addModule) {
-          router.push(`/admin/category/${slug}/courses/${data.course.id}/modules/create`);
-        } else {
-          router.push(`/admin/category/${slug}/courses`);
-        }
+        router.push(`/admin/category/${slug}/courses/${data.course.slug || data.course.id}`);
       } else {
         toast.error(data.error || 'Failed to create course');
       }
@@ -244,372 +177,236 @@ const CreateCoursePage = () => {
     }
   };
 
-  const getCategoryName = (slug: string) => {
-    return slug.toUpperCase();
-  };
-
-  const selectedMentor = mentors.find((m: any) => m.id === formData.mentorId);
-
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Button
-                variant="outline"
-                onClick={() => router.push(`/admin/category/${slug}/courses`)}
-                className="flex items-center gap-2"
-              >
-                <ArrowLeft className="w-4 h-4" />
-                Back to {getCategoryName(slug)} Courses
-              </Button>
-              
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">Create New Course</h1>
-                <div className="flex items-center gap-3 mt-1">
-                  <span className="text-gray-600">
-                    Category: <span className="font-medium text-green-600">{getCategoryName(slug)}</span>
-                  </span>
-                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                    Auto-assigned
-                  </span>
-                </div>
-              </div>
-            </div>
-            
-            <Button
-              onClick={(e) => handleSubmit(e as any)}
-              disabled={saving}
-              className="flex items-center gap-2"
-            >
-              <Save className="w-4 h-4" />
-              {saving ? 'Saving...' : 'Save Course'}
-            </Button>
-          </div>
+      <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+        <div className="max-w-4xl mx-auto px-6 py-6">
+          <button
+            onClick={() => router.push(`/admin/category/${slug}/courses`)}
+            className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors mb-4"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back to Courses
+          </button>
+          
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Create New Course</h1>
+          <p className="text-gray-600 dark:text-gray-400 mt-1">
+            Category: <span className="font-semibold text-blue-600 dark:text-blue-400">{slug.toUpperCase()}</span>
+          </p>
         </div>
       </div>
 
       {/* Main Content */}
       <div className="max-w-4xl mx-auto p-6">
-        <form onSubmit={handleSubmit} className="space-y-8">
-          {/* Basic Information Section */}
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 space-y-6">
-            <div>
-              <h2 className="text-lg font-semibold text-gray-900 mb-2">Basic Information</h2>
-              <p className="text-sm text-gray-600">Provide the essential details about your course</p>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Course Title */}
-              <div className="lg:col-span-2">
-                <Input
-                  value={formData.title}
-                  onChange={(e) => handleInputChange('title', e.target.value)}
-                  placeholder="Enter course title"
-                  label="Course Title *"
-                  required
-                />
-                {formData.title && (
-                  <div className="mt-2 text-xs text-gray-500">
-                    Auto-generated slug: <span className="font-mono bg-gray-100 px-2 py-1 rounded">{formData.slug}</span>
-                  </div>
-                )}
+        <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-8 space-y-6">
+          
+          {/* Course Title */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2">
+              Course Title *
+            </label>
+            <input
+              type="text"
+              value={formData.title}
+              onChange={(e) => handleInputChange('title', e.target.value)}
+              placeholder="Enter course title"
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-all"
+              required
+            />
+            {formData.title && (
+              <div className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                Slug: <span className="font-mono bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">{formData.slug}</span>
               </div>
+            )}
+          </div>
 
-              {/* Price */}
+          {/* Price Section */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2">
+              Pricing
+            </label>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              {/* Regular Price */}
               <div>
-                <Input
+                <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                  Regular Price (BDT)
+                </label>
+                <input
                   type="number"
-                  value={formData.price}
-                  onChange={(e) => handleInputChange('price', parseFloat(e.target.value) || 0)}
-                  placeholder="0"
-                  label="Price (BDT)"
+                  value={formData.regularPrice}
+                  onChange={(e) => handleInputChange('regularPrice', parseFloat(e.target.value) || 0)}
+                  placeholder="13000"
                   min="0"
                   step="0.01"
-                  showBDTIcon={true}
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-all"
                 />
               </div>
 
-              {/* Duration */}
+              {/* Offer Price */}
               <div>
-                <Input
-                  value={formData.duration}
-                  onChange={(e) => handleInputChange('duration', e.target.value)}
-                  placeholder="e.g., 3 months, 40 hours"
-                  label="Duration"
-                  icon={<Clock className="w-4 h-4 text-gray-400" />}
-                />
-              </div>
-
-              {/* Short Description */}
-              <div className="lg:col-span-2">
-                <Textarea
-                  value={formData.shortDescription}
-                  onChange={(e) => handleInputChange('shortDescription', e.target.value)}
-                  placeholder="Brief course description (optional)"
-                  rows={3}
-                  label="Short Description"
-                  helperText="A brief summary that will appear in course listings"
-                />
-              </div>
-
-              {/* Full Description */}
-              <div className="lg:col-span-2">
-                <Textarea
-                  value={formData.description}
-                  onChange={(e) => handleInputChange('description', e.target.value)}
-                  placeholder="Detailed course description"
-                  rows={6}
-                  label="Full Description *"
-                  required
-                  helperText="Comprehensive description of what students will learn"
-                />
-              </div>
-
-              {/* Thumbnail Upload */}
-              <div className="lg:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Course Thumbnail
+                <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                  Offer Price (BDT)
                 </label>
-                
-                {thumbnailPreview ? (
-                  <div className="relative">
-                    <img 
-                      src={thumbnailPreview} 
-                      alt="Thumbnail preview" 
-                      className="w-full h-48 object-cover rounded-lg border border-gray-200"
-                    />
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={removeThumbnail}
-                      className="absolute top-2 right-2 bg-white/90 hover:bg-white border-gray-300"
-                    >
-                      <X className="w-4 h-4" />
-                    </Button>
-                  </div>
-                ) : (
-                  <div 
-                    className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors cursor-pointer ${
-                      isDragging 
-                        ? 'border-blue-500 bg-blue-50' 
-                        : 'border-gray-300 hover:border-gray-400'
-                    }`}
-                    onDragOver={handleDragOver}
-                    onDragLeave={handleDragLeave}
-                    onDrop={handleDrop}
-                    onClick={() => document.getElementById('thumbnail-input')?.click()}
-                  >
-                    <ImageIcon className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                    <p className="text-sm text-gray-600 mb-2">
-                      {isDragging ? 'Drop your image here' : 'Click to upload or drag & drop thumbnail image'}
-                    </p>
-                    <p className="text-xs text-gray-500 mb-4">
-                      PNG, JPG, GIF up to 10MB
-                    </p>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      className="flex items-center gap-2 mx-auto"
-                    >
-                      <Upload className="w-4 h-4" />
-                      Choose File
-                    </Button>
-                  </div>
-                )}
-                
                 <input
-                  id="thumbnail-input"
-                  type="file"
-                  accept="image/*"
-                  onChange={handleFileInput}
-                  className="hidden"
+                  type="number"
+                  value={formData.offerPrice}
+                  onChange={(e) => handleInputChange('offerPrice', parseFloat(e.target.value) || 0)}
+                  placeholder="10000"
+                  min="0"
+                  step="0.01"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-all"
                 />
-                
-                {thumbnailFile && (
-                  <div className="mt-2 text-sm text-gray-600">
-                    Selected file: <span className="font-medium">{thumbnailFile.name}</span>
-                  </div>
-                )}
               </div>
+            </div>
+
+            {/* Price Preview */}
+            {(formData.regularPrice > 0 || formData.offerPrice > 0) && (
+              <div className="bg-gradient-to-r from-blue-50 to-green-50 dark:from-blue-900/20 dark:to-green-900/20 rounded-xl p-4 border border-blue-200 dark:border-blue-800">
+                <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">Price Preview:</p>
+                <div className="flex items-center gap-3">
+                  {formData.regularPrice > 0 && formData.offerPrice > 0 && formData.regularPrice > formData.offerPrice ? (
+                    <>
+                      <span className="text-xl font-bold text-gray-400 line-through">
+                        ৳{formData.regularPrice.toLocaleString()}
+                      </span>
+                      <span className="text-2xl font-bold text-green-600 dark:text-green-400">
+                        ৳{formData.offerPrice.toLocaleString()}
+                      </span>
+                      <span className="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                        {Math.round(((formData.regularPrice - formData.offerPrice) / formData.regularPrice) * 100)}% OFF
+                      </span>
+                    </>
+                  ) : formData.offerPrice > 0 ? (
+                    <span className="text-2xl font-bold text-green-600 dark:text-green-400">
+                      ৳{formData.offerPrice.toLocaleString()}
+                    </span>
+                  ) : formData.regularPrice > 0 ? (
+                    <span className="text-2xl font-bold text-gray-900 dark:text-white">
+                      ৳{formData.regularPrice.toLocaleString()}
+                    </span>
+                  ) : (
+                    <span className="text-gray-400 dark:text-gray-600">Enter price to see preview</span>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Duration */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2">
+              Duration
+            </label>
+            <div className="relative">
+              <Clock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <input
+                type="text"
+                value={formData.duration}
+                onChange={(e) => handleInputChange('duration', e.target.value)}
+                placeholder="e.g., 3 months, 40 hours"
+                className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-all"
+              />
             </div>
           </div>
 
-          {/* Assign Mentor Section */}
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 space-y-6">
-            <div>
-              <h2 className="text-lg font-semibold text-gray-900 mb-2">Assign Mentor</h2>
-              <p className="text-sm text-gray-600">Select a mentor to guide this course</p>
-            </div>
+          {/* Description */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2">
+              Description *
+            </label>
+            <textarea
+              value={formData.description}
+              onChange={(e) => handleInputChange('description', e.target.value)}
+              placeholder="Describe what students will learn in this course"
+              rows={6}
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-all resize-none"
+              required
+            />
+          </div>
 
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Select Mentor
-                </label>
-                <div className="relative">
-                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                  <select
-                    value={formData.mentorId}
-                    onChange={(e) => handleInputChange('mentorId', e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent"
-                  >
-                    <option value="">Select a mentor (optional)</option>
-                    {mentors.map((mentor: any) => (
-                      <option key={mentor.id} value={mentor.id}>
-                        {mentor.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <p className="text-xs text-gray-500 mt-1">
-                  You can assign a mentor later if needed
+          {/* Thumbnail Upload */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2">
+              Course Thumbnail
+            </label>
+            
+            {thumbnailPreview ? (
+              <div className="relative">
+                <img 
+                  src={thumbnailPreview} 
+                  alt="Thumbnail preview" 
+                  className="w-full h-64 object-cover rounded-xl border border-gray-200 dark:border-gray-600"
+                />
+                <button
+                  type="button"
+                  onClick={removeThumbnail}
+                  className="absolute top-3 right-3 bg-red-500 hover:bg-red-600 text-white p-2 rounded-lg transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            ) : (
+              <div 
+                className={`border-2 border-dashed rounded-xl p-8 text-center transition-all cursor-pointer ${
+                  isDragging 
+                    ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' 
+                    : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
+                }`}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+                onClick={() => document.getElementById('thumbnail-input')?.click()}
+              >
+                <Upload className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                <p className="text-gray-600 dark:text-gray-400 mb-2">
+                  {isDragging ? 'Drop your image here' : 'Click to upload or drag & drop'}
+                </p>
+                <p className="text-sm text-gray-500 dark:text-gray-500">
+                  PNG, JPG, GIF up to 10MB
                 </p>
               </div>
+            )}
+            
+            <input
+              id="thumbnail-input"
+              type="file"
+              accept="image/*"
+              onChange={handleFileInput}
+              className="hidden"
+            />
+          </div>
 
-              {selectedMentor && (
-                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                      <User className="w-5 h-5 text-green-600" />
-                    </div>
-                    <div>
-                      <p className="font-medium text-gray-900">{selectedMentor.name}</p>
-                      <p className="text-sm text-gray-600">{selectedMentor.email}</p>
-                    </div>
-                    <Check className="w-5 h-5 text-green-600 ml-auto" />
-                  </div>
-                </div>
+          {/* Action Buttons */}
+          <div className="flex items-center gap-4 pt-6 border-t border-gray-200 dark:border-gray-700">
+            <button
+              type="button"
+              onClick={() => router.push(`/admin/category/${slug}/courses`)}
+              className="px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-medium"
+            >
+              Cancel
+            </button>
+            
+            <button
+              type="submit"
+              disabled={saving}
+              className="flex-1 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl transition-colors font-medium flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {saving ? (
+                <>
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <Save className="w-5 h-5" />
+                  Create Course
+                </>
               )}
-            </div>
-          </div>
-
-          {/* Course Settings Section */}
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 space-y-6">
-            <div>
-              <h2 className="text-lg font-semibold text-gray-900 mb-2">Course Settings</h2>
-              <p className="text-sm text-gray-600">Configure how your course appears and behaves</p>
-            </div>
-
-            <div className="space-y-4">
-              {/* Active Toggle */}
-              <div className="flex items-center justify-between py-3">
-                <div>
-                  <p className="font-medium text-gray-900">Active Course</p>
-                  <p className="text-sm text-gray-600">Make this course available to students</p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => handleInputChange('isActive', !formData.isActive)}
-                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                    formData.isActive ? 'bg-green-600' : 'bg-gray-200'
-                  }`}
-                >
-                  <span
-                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                      formData.isActive ? 'translate-x-6' : 'translate-x-1'
-                    }`}
-                  />
-                </button>
-              </div>
-
-              {/* Enrollment Open Toggle */}
-              <div className="flex items-center justify-between py-3">
-                <div>
-                  <p className="font-medium text-gray-900">Enrollment Open</p>
-                  <p className="text-sm text-gray-600">Allow students to enroll in this course</p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => handleInputChange('enrollmentOpen', !formData.enrollmentOpen)}
-                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                    formData.enrollmentOpen ? 'bg-blue-600' : 'bg-gray-200'
-                  }`}
-                >
-                  <span
-                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                      formData.enrollmentOpen ? 'translate-x-6' : 'translate-x-1'
-                    }`}
-                  />
-                </button>
-              </div>
-
-              {/* Show on Landing Toggle */}
-              <div className="flex items-center justify-between py-3">
-                <div>
-                  <p className="font-medium text-gray-900">Show on Landing Page</p>
-                  <p className="text-sm text-gray-600">Display this course on the public landing page</p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => handleInputChange('showOnLanding', !formData.showOnLanding)}
-                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                    formData.showOnLanding ? 'bg-blue-600' : 'bg-gray-200'
-                  }`}
-                >
-                  <span
-                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                      formData.showOnLanding ? 'translate-x-6' : 'translate-x-1'
-                    }`}
-                  />
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Category Info */}
-          <div className="bg-green-50 border border-green-200 rounded-xl p-6">
-            <div className="flex items-center gap-3 text-green-800">
-              <BookOpen className="w-5 h-5" />
-              <span className="font-medium">Category Auto-Assigned</span>
-            </div>
-            <p className="text-sm text-green-700 mt-2">
-              This course will be created under the <strong>{getCategoryName(slug)}</strong> category.
-              No manual category selection is needed when creating from within a category context.
-            </p>
+            </button>
           </div>
         </form>
-      </div>
-
-      {/* Sticky Bottom Action Bar */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4">
-        <div className="max-w-4xl mx-auto flex items-center justify-between">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => router.push(`/admin/category/${slug}/courses`)}
-            className="flex items-center gap-2"
-          >
-            <X className="w-4 h-4" />
-            Cancel
-          </Button>
-          
-          <div className="flex items-center gap-3">
-            <Button
-              type="submit"
-              onClick={(e) => handleSubmit(e as any)}
-              disabled={saving}
-              className="flex items-center gap-2 bg-green-600 hover:bg-green-700"
-            >
-              <Save className="w-4 h-4" />
-              {saving ? 'Saving...' : 'Save Course'}
-            </Button>
-            
-            <Button
-              type="submit"
-              onClick={(e) => handleSubmit(e as any, true)}
-              disabled={saving}
-              className="flex items-center gap-2 bg-orange-600 hover:bg-orange-700"
-            >
-              <Plus className="w-4 h-4" />
-              {saving ? 'Saving...' : 'Save & Add Module'}
-            </Button>
-          </div>
-        </div>
       </div>
     </div>
   );

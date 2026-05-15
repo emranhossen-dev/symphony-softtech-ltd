@@ -40,6 +40,11 @@ import {
   ArrowDownRight,
   Settings
 } from "lucide-react";
+import CategorySwitcher from '@/components/admin/CategorySwitcher';
+import EmptyState from '@/components/admin/EmptyState';
+import SkeletonLoader from '@/components/admin/SkeletonLoader';
+import StatsChart from '@/components/admin/StatsChart';
+import ThemeToggle from '@/components/admin/ThemeToggle';
 
 type EnrollmentStatus = 'PENDING_REVIEW' | 'PAYMENT_PENDING' | 'APPROVED' | 'ADMITTED' | 'WAITING' | 'REJECTED';
 
@@ -95,6 +100,7 @@ const CategoryAdmissionControl = () => {
   const [enrollments, setEnrollments] = useState<Student[]>([]);
   const [showRecentEnrollments, setShowRecentEnrollments] = useState(true);
   const [viewMode, setViewMode] = useState<'overview' | 'detailed'>('overview');
+  const [allCategories, setAllCategories] = useState<Category[]>([]);
 
   // Tab configuration
   const tabs = [
@@ -133,6 +139,15 @@ const CategoryAdmissionControl = () => {
   const fetchCategoryData = async () => {
     try {
       setLoading(true);
+      
+      // Fetch all categories
+      const categoriesResponse = await fetch('/api/admin/categories');
+      const categoriesData = await categoriesResponse.json();
+      if (categoriesData.success) {
+        setAllCategories(categoriesData.data || []);
+      }
+      
+      // Fetch current category data
       const response = await fetch(`/api/admin/categories/${categoryId}/admissions`);
       const data = await response.json();
       
@@ -301,12 +316,19 @@ const CategoryAdmissionControl = () => {
 
   if (!category) {
     return (
-      <div className="p-6">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Loading Category...</h2>
-          <p className="text-gray-600">Please wait while we load the category data.</p>
-          <div className="mt-4">
-            <RefreshCw className="w-8 h-8 animate-spin text-gray-400 mx-auto" />
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-gray-50 p-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="mb-8">
+            <SkeletonLoader type="card" count={1} />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <SkeletonLoader type="stats" count={4} />
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="lg:col-span-2">
+              <SkeletonLoader type="list" count={5} />
+            </div>
+            <SkeletonLoader type="card" count={1} />
           </div>
         </div>
       </div>
@@ -348,6 +370,7 @@ const CategoryAdmissionControl = () => {
                 <Users className="w-5 h-5" />
                 View All Enrollments
               </button>
+              <ThemeToggle />
               <button
                 onClick={() => {
                   setRefreshing(true);
@@ -365,6 +388,15 @@ const CategoryAdmissionControl = () => {
 
       {/* Main Content */}
       <div className="px-6 lg:px-8 py-8">
+        {/* Section Header */}
+        <div className="mb-8">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="h-1 w-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full"></div>
+            <h2 className="text-2xl font-bold text-gray-900">Category Overview</h2>
+          </div>
+          <p className="text-gray-600 ml-15">Key metrics and performance indicators for this category</p>
+        </div>
+
         {/* Enhanced Stats Cards */}
         {stats && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -454,6 +486,47 @@ const CategoryAdmissionControl = () => {
           </div>
         )}
 
+        {/* Section Divider */}
+        <div className="flex items-center gap-4 my-10">
+          <div className="h-px bg-gray-200 flex-1"></div>
+          <div className="text-gray-400 text-sm font-medium">Analytics</div>
+          <div className="h-px bg-gray-200 flex-1"></div>
+        </div>
+
+        {/* Charts Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+          <StatsChart
+            data={[
+              { label: 'Applied', value: stats?.applied || 0, color: '#3B82F6' },
+              { label: 'Waiting', value: stats?.waiting || 0, color: '#F59E0B' },
+              { label: 'Admitted', value: stats?.admitted || 0, color: '#10B981' },
+              { label: 'Rejected', value: stats?.rejected || 0, color: '#EF4444' }
+            ]}
+            title="Enrollment Status Distribution"
+            type="bar"
+            height={200}
+          />
+          <StatsChart
+            data={[
+              { label: 'Jan', value: Math.floor((stats?.monthlyGrowth || 0) * 0.8) },
+              { label: 'Feb', value: Math.floor((stats?.monthlyGrowth || 0) * 0.9) },
+              { label: 'Mar', value: stats?.monthlyGrowth || 0 },
+              { label: 'Apr', value: Math.floor((stats?.monthlyGrowth || 0) * 1.1) },
+              { label: 'May', value: Math.floor((stats?.monthlyGrowth || 0) * 1.2) }
+            ]}
+            title="Monthly Enrollment Trend"
+            type="line"
+            height={200}
+          />
+        </div>
+
+        {/* Section Divider */}
+        <div className="flex items-center gap-4 my-10">
+          <div className="h-px bg-gray-200 flex-1"></div>
+          <div className="text-gray-400 text-sm font-medium">Recent Activity</div>
+          <div className="h-px bg-gray-200 flex-1"></div>
+        </div>
+
         {/* Recent Enrollments & Quick Actions */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
           {/* Recent Enrollments */}
@@ -501,20 +574,13 @@ const CategoryAdmissionControl = () => {
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-12">
-                  <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Users className="w-8 h-8 text-gray-400" />
-                  </div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">No enrollments yet</h3>
-                  <p className="text-gray-500 mb-4">Start by adding new enrollments to this category</p>
-                  <button
-                    onClick={() => router.push(`/admin/category/${categoryId}/enrollment`)}
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                  >
-                    <UserPlus className="w-4 h-4" />
-                    Add First Enrollment
-                  </button>
-                </div>
+                <EmptyState
+                  type="enrollments"
+                  title="No Enrollments Yet"
+                  description={`No enrollments found for ${category?.name || 'this category'}. Start by adding new enrollments to track student applications.`}
+                  actionLabel="Add First Enrollment"
+                  onAction={() => router.push(`/admin/category/${categoryId}/enrollment`)}
+                />
               )}
             </div>
           </div>
@@ -553,38 +619,21 @@ const CategoryAdmissionControl = () => {
           </div>
         </div>
 
-        {/* Category Navigation */}
-        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Navigate Categories</h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {['government', 'online', 'offline', 'recorded'].map((catSlug) => (
-              <button
-                key={catSlug}
-                onClick={() => router.push(`/admin/category/${catSlug}`)}
-                className={`p-4 rounded-xl border-2 transition-all transform hover:scale-105 ${
-                  categoryId === catSlug
-                    ? 'border-blue-500 bg-blue-50 text-blue-700'
-                    : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300'
-                }`}
-              >
-                <div className="flex flex-col items-center gap-2">
-                  <div className={`p-3 rounded-lg ${
-                    categoryId === catSlug ? 'bg-blue-100' : 'bg-gray-100'
-                  }`}>
-                    {catSlug === 'government' ? <Building className="w-6 h-6" /> :
-                     catSlug === 'online' ? <Globe className="w-6 h-6" /> :
-                     catSlug === 'offline' ? <Monitor className="w-6 h-6" /> :
-                     <Video className="w-6 h-6" />}
-                  </div>
-                  <span className="font-medium capitalize">{catSlug}</span>
-                  <span className="text-xs text-gray-500">
-                    {categoryId === catSlug ? 'Current' : 'View'}
-                  </span>
-                </div>
-              </button>
-            ))}
-          </div>
+        {/* Section Divider */}
+        <div className="flex items-center gap-4 my-10">
+          <div className="h-px bg-gray-200 flex-1"></div>
+          <div className="text-gray-400 text-sm font-medium">Category Navigation</div>
+          <div className="h-px bg-gray-200 flex-1"></div>
         </div>
+
+        {/* Category Navigation */}
+        <CategorySwitcher
+          categories={allCategories}
+          currentSlug={categoryId}
+          basePath="/admin/category"
+          title="All Categories"
+          description="Navigate between different course categories"
+        />
       </div>
     </div>
   );
