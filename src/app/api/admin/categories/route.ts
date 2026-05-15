@@ -44,3 +44,57 @@ export async function POST(request: NextRequest) {
     )
   }
 }
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+
+    if (!id) {
+      return NextResponse.json(
+        { error: 'Category ID is required' },
+        { status: 400 }
+      );
+    }
+
+    // Check if category has courses
+    const categoryWithCourses = await prisma.category.findUnique({
+      where: { id },
+      include: {
+        _count: {
+          select: { courses: true }
+        }
+      }
+    });
+
+    if (!categoryWithCourses) {
+      return NextResponse.json(
+        { error: 'Category not found' },
+        { status: 404 }
+      );
+    }
+
+    if (categoryWithCourses._count.courses > 0) {
+      return NextResponse.json(
+        { error: 'Cannot delete category with courses. Please delete or reassign courses first.' },
+        { status: 400 }
+      );
+    }
+
+    await prisma.category.delete({
+      where: { id }
+    });
+
+    return NextResponse.json({
+      success: true,
+      message: 'Category deleted successfully'
+    });
+
+  } catch (error) {
+    console.error('Error deleting category:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}

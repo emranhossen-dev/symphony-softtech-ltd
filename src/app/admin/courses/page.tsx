@@ -68,24 +68,21 @@ interface Mentor {
   isActive: boolean;
 }
 
-const categories = [
-  { value: 'GOVERNMENT', label: 'Government' },
-  { value: 'RECORDED', label: 'Recorded' },
-  { value: 'ONLINE', label: 'Online' },
-  { value: 'OFFLINE', label: 'Offline' }
-];
-
-const categoryConfig = {
-  GOVERNMENT: { label: 'Government', color: 'badge-primary' },
-  RECORDED: { label: 'Recorded', color: 'badge-secondary' },
-  ONLINE: { label: 'Online', color: 'badge-primary' },
-  OFFLINE: { label: 'Offline', color: 'badge-secondary' }
-};
+interface Category {
+  id: string;
+  name: string;
+  slug: string;
+  description: string;
+  color: string;
+  icon: string;
+  isActive: boolean;
+}
 
 export default function CourseManagement() {
   const [courses, setCourses] = useState<Course[]>([]);
   const [filteredCourses, setFilteredCourses] = useState<Course[]>([]);
   const [mentors, setMentors] = useState<Mentor[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState<{ [key: string]: boolean }>({});
   const [showAddModal, setShowAddModal] = useState(false);
@@ -103,7 +100,7 @@ export default function CourseManagement() {
     title: '',
     description: '',
     shortDescription: '',
-    category: 'ONLINE',
+    category: '',
     price: 0,
     duration: '',
     thumbnail: '',
@@ -122,6 +119,7 @@ export default function CourseManagement() {
   useEffect(() => {
     fetchCourses();
     fetchMentors();
+    fetchCategories();
   }, []);
 
   useEffect(() => {
@@ -160,10 +158,23 @@ export default function CourseManagement() {
       const data = await response.json();
       
       if (data.success) {
-        setMentors(data.mentors || []);
+        setMentors(data.mentors);
       }
     } catch (error) {
       console.error('Error fetching mentors:', error);
+    }
+  };
+
+  const fetchCategories = async () => {
+    try {
+      const response = await fetch('/api/admin/categories');
+      const data = await response.json();
+      
+      if (data.success) {
+        setCategories(data.data || []);
+      }
+    } catch (error) {
+      console.error('Error fetching categories:', error);
     }
   };
 
@@ -495,13 +506,13 @@ export default function CourseManagement() {
               <div className="lg:w-48">
                 <SimpleSelect value={filters.category} onValueChange={(value) => setFilters(prev => ({ ...prev, category: value }))}>
                   <SimpleSelectTrigger className="w-full border-gray-200 text-sm">
-                    {filters.category ? categories.find(c => c.value === filters.category)?.label : 'Category'}
+                    {filters.category ? categories.find(c => c.slug === filters.category)?.name : 'Category'}
                   </SimpleSelectTrigger>
                   <SimpleSelectContent>
                     <SimpleSelectItem value="">All Categories</SimpleSelectItem>
-                    {categories.map((category) => (
-                      <SimpleSelectItem key={category.value} value={category.value}>
-                        {category.label}
+                    {categories.map(category => (
+                      <SimpleSelectItem key={category.id} value={category.slug}>
+                        {category.name}
                       </SimpleSelectItem>
                     ))}
                   </SimpleSelectContent>
@@ -578,8 +589,8 @@ export default function CourseManagement() {
                   {/* Title and Category */}
                   <div className="mb-3">
                     <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">{course.title}</h3>
-                    <Badge className={categoryConfig[course.category as keyof typeof categoryConfig]?.color || 'bg-gray-100 text-gray-700'}>
-                      {categoryConfig[course.category as keyof typeof categoryConfig]?.label || course.category}
+                    <Badge className="bg-purple-100 text-purple-700 border-purple-200">
+                      {categories.find(c => c.slug === course.category.toLowerCase())?.name || course.category}
                     </Badge>
                   </div>
 
@@ -733,12 +744,12 @@ export default function CourseManagement() {
                       </label>
                       <SimpleSelect value={formData.category} onValueChange={(value) => setFormData(prev => ({ ...prev, category: value }))} className="w-full">
                         <SimpleSelectTrigger className="border-2 border-gray-200 rounded-xl px-4 py-3 hover:border-gray-300 focus:border-green-500 focus:ring-green-500/20 transition-all">
-                          {formData.category ? categories.find(c => c.value === formData.category)?.label : 'Select category'}
+                          {formData.category ? categories.find(c => c.slug === formData.category)?.name : 'Select category'}
                         </SimpleSelectTrigger>
                         <SimpleSelectContent className="border-2 border-gray-200 shadow-xl rounded-xl">
                           {categories.map((category) => (
-                            <SimpleSelectItem key={category.value} value={category.value} className="hover:bg-green-50 focus:bg-green-50 rounded-lg mx-1">
-                              {category.label}
+                            <SimpleSelectItem key={category.id} value={category.slug} className="hover:bg-green-50 focus:bg-green-50 rounded-lg mx-1">
+                              {category.name}
                             </SimpleSelectItem>
                           ))}
                         </SimpleSelectContent>

@@ -16,6 +16,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   const pathname = usePathname();
   const { user, loading: authLoading, isAuthenticated, logout } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   useEffect(() => {
     // Check if user is authenticated and is admin
@@ -96,14 +97,17 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
             isOpen={true}
             onClose={() => {}}
             isMobile={false}
+            isCollapsed={isSidebarCollapsed}
+            onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
           />
         )}
 
         {/* Main Content */}
-        <div className={`admin-main-content flex-1 ${shouldShowSidebar ? 'lg:ml-64 admin-layout-with-sidebar' : ''} transition-all duration-300 flex flex-col h-full`}>
+        <div className={`admin-main-content flex-1 ${shouldShowSidebar ? (isSidebarCollapsed ? 'lg:ml-20' : 'lg:ml-72') : ''} transition-all duration-500 flex flex-col h-full`}>
           <AdminHeader
-            onSidebarToggle={() => {}}
+            onSidebarToggle={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
             sidebarOpen={shouldShowSidebar}
+            sidebarCollapsed={isSidebarCollapsed}
             user={user}
             onLogout={handleLogout}
           />

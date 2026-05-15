@@ -17,7 +17,9 @@ import {
   Users,
   TrendingUp,
   Calendar,
-  Filter
+  Filter,
+  AlertTriangle,
+  X
 } from 'lucide-react';
 
 interface Category {
@@ -53,6 +55,9 @@ export default function CategoryManagement() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     fetchCategories();
@@ -87,35 +92,69 @@ export default function CategoryManagement() {
   const handleCreateCategory = () => {
     setSelectedCategory(null);
     setShowCreateModal(true);
+    setShowEditModal(false);
+    setShowDeleteModal(false);
   };
 
   const handleEditCategory = (category: Category) => {
     setSelectedCategory(category);
     setShowEditModal(true);
+    setShowCreateModal(false);
+    setShowDeleteModal(false);
   };
 
-  const handleDeleteCategory = async (categoryId: string) => {
-    if (!confirm('Are you sure you want to delete this category? This action cannot be undone.')) {
-      return;
-    }
+  const handleDeleteCategory = (category: Category) => {
+    setCategoryToDelete(category);
+    setShowDeleteModal(true);
+    setShowCreateModal(false);
+    setShowEditModal(false);
+  };
 
+  const confirmDelete = async () => {
+    if (!categoryToDelete) return;
+
+    setDeleting(true);
     try {
-      const response = await fetch(`/api/admin/categories/${categoryId}`, {
+      const response = await fetch(`/api/admin/categories?id=${categoryToDelete.id}`, {
         method: 'DELETE'
       });
       
-      if (response.ok) {
+      const data = await response.json();
+      
+      if (response.ok && data.success) {
         toast.success('Category deleted successfully');
+        setShowDeleteModal(false);
+        setCategoryToDelete(null);
         fetchCategories();
       } else {
-        const data = await response.json();
         toast.error(data.error || 'Failed to delete category');
       }
     } catch (error) {
       console.error('Error deleting category:', error);
       toast.error('Failed to delete category');
+    } finally {
+      setDeleting(false);
     }
   };
+
+  const closeAllModals = () => {
+    setShowCreateModal(false);
+    setShowEditModal(false);
+    setShowDeleteModal(false);
+    setSelectedCategory(null);
+    setCategoryToDelete(null);
+  };
+
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        closeAllModals();
+      }
+    };
+
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, []);
 
   const filteredCategories = categories?.filter(category =>
     category.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -314,7 +353,7 @@ export default function CategoryManagement() {
                           <Button
                             size="sm"
                             variant="outline"
-                            onClick={() => handleDeleteCategory(category.id)}
+                            onClick={() => handleDeleteCategory(category)}
                             className="border-red-200 text-red-700 hover:bg-red-50"
                           >
                             <Trash2 className="w-4 h-4" />
@@ -331,26 +370,142 @@ export default function CategoryManagement() {
       </div>
 
       {/* Create/Edit Modal */}
-      {(showCreateModal || showEditModal) && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">
-              {selectedCategory ? 'Edit Category' : 'Create Category'}
+      {showCreateModal && (
+        <div 
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[100] animate-in fade-in duration-200"
+          onClick={closeAllModals}
+        >
+          <div 
+            className="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl animate-in zoom-in duration-200 border-2 border-gray-200 relative"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={closeAllModals}
+              className="absolute top-4 right-4 p-2 rounded-full hover:bg-gray-100 transition-colors"
+            >
+              <X className="w-5 h-5 text-gray-500" />
+            </button>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2 pr-8">
+              Create Category
             </h2>
+            <p className="text-sm text-gray-500 mb-6">Create a new category for organizing courses</p>
             {/* Modal content would go here */}
-            <div className="flex justify-end gap-3 mt-6">
+            <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-gray-200">
               <Button
                 variant="outline"
-                onClick={() => {
-                  setShowCreateModal(false);
-                  setShowEditModal(false);
-                  setSelectedCategory(null);
-                }}
+                onClick={closeAllModals}
+                className="px-6 py-2 border-2 border-gray-300 hover:bg-gray-100 text-gray-700 font-semibold"
               >
                 Cancel
               </Button>
-              <Button className="bg-green-600 hover:bg-green-700 text-white">
-                {selectedCategory ? 'Update' : 'Create'}
+              <Button 
+                className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 font-semibold shadow-lg"
+              >
+                Create Category
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showEditModal && selectedCategory && (
+        <div 
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[100] animate-in fade-in duration-200"
+          onClick={closeAllModals}
+        >
+          <div 
+            className="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl animate-in zoom-in duration-200 border-2 border-gray-200 relative"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={closeAllModals}
+              className="absolute top-4 right-4 p-2 rounded-full hover:bg-gray-100 transition-colors"
+            >
+              <X className="w-5 h-5 text-gray-500" />
+            </button>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2 pr-8">
+              Edit Category
+            </h2>
+            <p className="text-sm text-gray-500 mb-6">Edit category details</p>
+            {/* Modal content would go here */}
+            <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-gray-200">
+              <Button
+                variant="outline"
+                onClick={closeAllModals}
+                className="px-6 py-2 border-2 border-gray-300 hover:bg-gray-100 text-gray-700 font-semibold"
+              >
+                Cancel
+              </Button>
+              <Button 
+                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 font-semibold shadow-lg"
+              >
+                Update Category
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && categoryToDelete && (
+        <div 
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[100] animate-in fade-in duration-200"
+          onClick={closeAllModals}
+        >
+          <div 
+            className="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl animate-in zoom-in duration-200 border-2 border-red-200 relative"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={closeAllModals}
+              className="absolute top-4 right-4 p-2 rounded-full hover:bg-red-50 transition-colors"
+            >
+              <X className="w-5 h-5 text-gray-500 hover:text-red-600" />
+            </button>
+            <div className="flex items-center gap-3 mb-4 pr-8">
+              <div className="w-14 h-14 bg-red-100 rounded-full flex items-center justify-center">
+                <Trash2 className="w-7 h-7 text-red-600" />
+              </div>
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900">Delete Category</h2>
+                <p className="text-sm text-gray-500">This action cannot be undone</p>
+              </div>
+            </div>
+            <div className="bg-red-50 rounded-lg p-4 mb-4 border border-red-200">
+              <p className="text-sm text-gray-700">
+                Are you sure you want to delete <strong>{categoryToDelete.name}</strong>?
+              </p>
+              {categoryToDelete.courseCount > 0 && (
+                <p className="text-sm text-red-600 mt-2 font-semibold">
+                  ⚠️ This category has {categoryToDelete.courseCount} course(s). Deleting it may affect related data.
+                </p>
+              )}
+            </div>
+            <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-gray-200">
+              <Button
+                variant="outline"
+                onClick={closeAllModals}
+                disabled={deleting}
+                className="px-6 py-2 border-2 border-gray-300 hover:bg-gray-100 text-gray-700 font-semibold"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={confirmDelete}
+                disabled={deleting}
+                className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 font-semibold shadow-lg"
+              >
+                {deleting ? (
+                  <>
+                    <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                    Deleting...
+                  </>
+                ) : (
+                  <>
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    Delete
+                  </>
+                )}
               </Button>
             </div>
           </div>

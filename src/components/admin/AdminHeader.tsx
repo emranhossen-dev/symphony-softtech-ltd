@@ -7,11 +7,12 @@ import { usePathname, useRouter } from "next/navigation";
 interface AdminHeaderProps {
   onSidebarToggle: () => void;
   sidebarOpen: boolean;
+  sidebarCollapsed?: boolean;
   user?: any;
   onLogout?: () => void;
 }
 
-const AdminHeader = ({ onSidebarToggle, sidebarOpen, user, onLogout }: AdminHeaderProps) => {
+const AdminHeader = ({ onSidebarToggle, sidebarOpen, sidebarCollapsed = false, user, onLogout }: AdminHeaderProps) => {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
