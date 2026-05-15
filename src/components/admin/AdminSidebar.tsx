@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
-import CallRecordingPanel from './CallRecordingPanel';
 import { 
   LayoutDashboard,
   Users,
@@ -700,9 +699,6 @@ const AdminSidebar = ({ isOpen, onClose, isMobile, isCollapsed = false, onToggle
 
         {/* Main Menu */}
         {!categoryName && mainMenuItems.map((item) => renderMenuItem(item))}
-
-        {/* Call Recording Section */}
-        <CallRecordingPanel />
 
         {/* Recent Activities */}
         {!isCollapsed && (

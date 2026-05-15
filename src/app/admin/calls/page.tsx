@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/Table';
+import { Table } from '@/components/ui/Table';
 import { toast } from 'react-hot-toast';
 import { 
   Phone, 
@@ -156,7 +156,7 @@ export default function CallManagementPage() {
     } else {
       setPlayingRecording(callId);
       // In real implementation, play audio from recordingUrl
-      toast.info('Playing recording...');
+      toast('Playing recording...');
     }
   };
 
@@ -352,38 +352,38 @@ export default function CallManagementPage() {
         <Card className="bg-white border-0 shadow-sm">
           <CardContent className="p-6">
             <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="text-gray-900">Type</TableHead>
-                  <TableHead className="text-gray-900">Caller</TableHead>
-                  <TableHead className="text-gray-900">Callee</TableHead>
-                  <TableHead className="text-gray-900">Phone</TableHead>
-                  <TableHead className="text-gray-900">Duration</TableHead>
-                  <TableHead className="text-gray-900">Status</TableHead>
-                  <TableHead className="text-gray-900">Cost</Table>
-                  <TableHead className="text-gray-900">Revenue</TableHead>
-                  <TableHead className="text-gray-900">Handled By</TableHead>
-                  <TableHead className="text-gray-900">Date</TableHead>
-                  <TableHead className="text-gray-900 text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
+              <thead>
+                <tr>
+                  <th className="text-gray-900 h-12 px-4 text-left align-middle font-medium">Type</th>
+                  <th className="text-gray-900 h-12 px-4 text-left align-middle font-medium">Caller</th>
+                  <th className="text-gray-900 h-12 px-4 text-left align-middle font-medium">Callee</th>
+                  <th className="text-gray-900 h-12 px-4 text-left align-middle font-medium">Phone</th>
+                  <th className="text-gray-900 h-12 px-4 text-left align-middle font-medium">Duration</th>
+                  <th className="text-gray-900 h-12 px-4 text-left align-middle font-medium">Status</th>
+                  <th className="text-gray-900 h-12 px-4 text-left align-middle font-medium">Cost</th>
+                  <th className="text-gray-900 h-12 px-4 text-left align-middle font-medium">Revenue</th>
+                  <th className="text-gray-900 h-12 px-4 text-left align-middle font-medium">Handled By</th>
+                  <th className="text-gray-900 h-12 px-4 text-left align-middle font-medium">Date</th>
+                  <th className="text-gray-900 h-12 px-4 text-right align-middle font-medium">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
                 {loading ? (
-                  <TableRow>
-                    <TableCell colSpan={12} className="text-center py-8">
+                  <tr>
+                    <td colSpan={12} className="p-4 text-center py-8">
                       <div className="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-green-600"></div>
-                    </TableCell>
-                  </TableRow>
+                    </td>
+                  </tr>
                 ) : filteredCalls.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={12} className="text-center py-8 text-gray-500">
+                  <tr>
+                    <td colSpan={12} className="p-4 text-center py-8 text-gray-500">
                       No calls found
-                    </TableCell>
-                  </TableRow>
+                    </td>
+                  </tr>
                 ) : (
                   filteredCalls.map((call) => (
-                    <TableRow key={call.id} className="hover:bg-gray-50">
-                      <TableCell>
+                    <tr key={call.id} className="hover:bg-gray-50 border-b">
+                      <td className="p-4 align-middle">
                         <div className="flex items-center gap-2">
                           <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
                             call.type === 'incoming' ? 'bg-green-100' : 'bg-blue-100'
@@ -392,37 +392,37 @@ export default function CallManagementPage() {
                           </div>
                           <span className="text-sm capitalize text-gray-600">{call.type}</span>
                         </div>
-                      </TableCell>
-                      <TableCell>
+                      </td>
+                      <td className="p-4 align-middle">
                         <div className="text-sm font-medium text-gray-900">{call.callerName}</div>
-                      </TableCell>
-                      <TableCell>
+                      </td>
+                      <td className="p-4 align-middle">
                         <div className="text-sm text-gray-600">{call.calleeName}</div>
-                      </TableCell>
-                      <TableCell>
+                      </td>
+                      <td className="p-4 align-middle">
                         <div className="text-sm text-gray-600">{call.phoneNumber}</div>
-                      </TableCell>
-                      <TableCell>
+                      </td>
+                      <td className="p-4 align-middle">
                         <div className="text-sm font-medium text-gray-900">{formatDuration(call.duration)}</div>
-                      </TableCell>
-                      <TableCell>
+                      </td>
+                      <td className="p-4 align-middle">
                         <Badge className={getStatusBadge(call.status)}>
                           {call.status}
                         </Badge>
-                      </TableCell>
-                      <TableCell>
+                      </td>
+                      <td className="p-4 align-middle">
                         <div className="text-sm font-medium text-gray-900">{formatCurrency(call.cost)}</div>
-                      </TableCell>
-                      <TableCell>
+                      </td>
+                      <td className="p-4 align-middle">
                         <div className="text-sm font-medium text-gray-900">{formatCurrency(call.revenue)}</div>
-                      </TableCell>
-                      <TableCell>
+                      </td>
+                      <td className="p-4 align-middle">
                         <div className="text-sm text-gray-600">{call.user?.name || 'System'}</div>
-                      </TableCell>
-                      <TableCell>
+                      </td>
+                      <td className="p-4 align-middle">
                         <div className="text-sm text-gray-600">{new Date(call.createdAt).toLocaleDateString()}</div>
-                      </TableCell>
-                      <TableCell className="text-right">
+                      </td>
+                      <td className="p-4 align-middle text-right">
                         <div className="flex items-center justify-end gap-2">
                           {call.recordingUrl && (
                             <Button
@@ -452,11 +452,11 @@ export default function CallManagementPage() {
                             <Trash2 className="w-4 h-4" />
                           </Button>
                         </div>
-                      </TableCell>
-                    </TableRow>
+                      </td>
+                    </tr>
                   ))
                 )}
-              </TableBody>
+              </tbody>
             </Table>
           </CardContent>
         </Card>
