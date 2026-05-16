@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { getAuthenticatedUser } from '@/lib/auth';
 
 // Helper function to generate slug from title
 function generateSlug(title: string): string {
@@ -17,6 +18,25 @@ function generateSlug(title: string): string {
 // GET /api/admin/courses - Get all courses with filters
 export async function GET(request: NextRequest) {
   console.log('GET request received');
+  
+  try {
+    // Check authentication
+    const user = await getAuthenticatedUser();
+    console.log('✅ Authenticated user:', user.email, 'Role:', user.role);
+    
+    if (user.role !== 'ADMIN') {
+      return NextResponse.json(
+        { success: false, error: 'Admin access required' },
+        { status: 403 }
+      );
+    }
+  } catch (error) {
+    console.error('❌ Authentication failed:', error);
+    return NextResponse.json(
+      { success: false, error: 'Please login to access this resource' },
+      { status: 401 }
+    );
+  }
   
   const { searchParams } = new URL(request.url);
   const page = parseInt(searchParams.get('page') || '1');
@@ -81,6 +101,7 @@ export async function GET(request: NextRequest) {
       success: true,
       courses: courses.map(course => ({
         ...course,
+        regularPrice: course.price, // Map price to regularPrice for admin panel
         enrollmentCount: course._count.enrollments
       })),
       pagination: {
@@ -102,6 +123,7 @@ export async function GET(request: NextRequest) {
         description: 'Complete BCS exam preparation course with all materials',
         shortDescription: 'BCS exam prep',
         price: 5000,
+        regularPrice: 5000,
         duration: '6 months',
         thumbnail: '',
         category: 'GOVERNMENT',
@@ -127,6 +149,7 @@ export async function GET(request: NextRequest) {
         description: 'Full-stack web development course',
         shortDescription: 'Web dev bootcamp',
         price: 8000,
+        regularPrice: 8000,
         duration: '3 months',
         thumbnail: '',
         category: 'ONLINE',
@@ -152,6 +175,7 @@ export async function GET(request: NextRequest) {
         description: 'Learn data science from scratch',
         shortDescription: 'Data science basics',
         price: 12000,
+        regularPrice: 12000,
         duration: '4 months',
         thumbnail: '',
         category: 'ONLINE',
@@ -423,6 +447,121 @@ export async function POST(request: NextRequest) {
       course: mockCourse,
             hasDemoModule: true
     });
+  }
+}
+
+// PUT /api/admin/courses - Update existing course
+export async function PUT(request: NextRequest) {
+  console.log('🔄 PUT request received for course update');
+  
+  try {
+    // Check authentication
+    const user = await getAuthenticatedUser();
+    console.log('✅ Authenticated user for update:', user.email, 'Role:', user.role);
+    
+    if (user.role !== 'ADMIN') {
+      return NextResponse.json(
+        { success: false, error: 'Admin access required to update courses' },
+        { status: 403 }
+      );
+    }
+
+    const {
+      id,
+      title,
+      description,
+      shortDescription,
+      price,
+      regularPrice,
+      offerPrice,
+      duration,
+      thumbnail,
+      mentorId,
+      categoryId,
+      isActive
+    } = await request.json();
+
+    console.log('📝 Course update data:', { id, title, price, isActive });
+
+    if (!id) {
+      return NextResponse.json(
+        { success: false, error: 'Course ID is required for update' },
+        { status: 400 }
+      );
+    }
+
+    // Validate required fields
+    if (!title || !description) {
+      return NextResponse.json(
+        { success: false, error: 'Title and description are required' },
+        { status: 400 }
+      );
+    }
+
+    // Get category name if categoryId is provided
+    let categoryName = 'ONLINE';
+    if (categoryId) {
+      const category = await prisma.category.findUnique({ where: { id: categoryId } });
+      categoryName = category?.name || 'ONLINE';
+    }
+
+    // Update the course
+    const updatedCourse = await prisma.course.update({
+      where: { id },
+      data: {
+        title,
+        description,
+        shortDescription,
+        price: Number(offerPrice || regularPrice || price || 0),
+        duration,
+        thumbnail,
+        mentorId: mentorId || null,
+        categoryId: categoryId || null,
+        category: categoryName,
+        isActive: isActive !== undefined ? isActive : true
+      },
+      include: {
+        mentor: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        },
+        _count: {
+          select: {
+            enrollments: true,
+            modules: true
+          }
+        }
+      }
+    });
+
+    console.log('✅ Course updated successfully:', updatedCourse.title);
+
+    return NextResponse.json({
+      success: true,
+      message: 'Course updated successfully',
+      course: {
+        ...updatedCourse,
+        regularPrice: updatedCourse.price, // Map for admin panel
+        enrollmentCount: updatedCourse._count.enrollments
+      }
+    });
+  } catch (error) {
+    console.error('❌ Error in PUT request:', error);
+    
+    if (error instanceof Error && (error.message.includes('Not authenticated') || error.message.includes('Token'))) {
+      return NextResponse.json(
+        { success: false, error: 'Please login to update course' },
+        { status: 401 }
+      );
+    }
+    
+    return NextResponse.json(
+      { success: false, error: 'Failed to update course. Please try again.' },
+      { status: 500 }
+    );
   }
 }
 

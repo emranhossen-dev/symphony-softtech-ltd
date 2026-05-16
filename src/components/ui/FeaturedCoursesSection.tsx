@@ -35,11 +35,17 @@ const FeaturedCoursesSection = () => {
   const fetchFeaturedCourses = async () => {
     try {
       setLoading(true);
+      console.log('Fetching featured courses...');
       const response = await fetch('/api/public/courses?featured=true&limit=6');
       const data = await response.json();
       
+      console.log('API Response:', data);
+      
       if (data.success) {
+        console.log('Setting courses:', data.courses);
         setCourses(data.courses);
+      } else {
+        console.error('API returned error:', data.error);
       }
     } catch (error) {
       console.error('Error fetching featured courses:', error);

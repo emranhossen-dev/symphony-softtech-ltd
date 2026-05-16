@@ -60,6 +60,7 @@ model Course {
   price               Float                @default(0)
   duration            String
   isActive            Boolean              @default(true)
+  featured            Boolean              @default(false)
   mentorId            String?
   createdBy           String
   createdAt           DateTime             @default(now())
