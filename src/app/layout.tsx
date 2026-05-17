@@ -7,7 +7,6 @@ import { AuthProvider } from '@/contexts/AuthContext';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import { NotificationProvider } from '@/contexts/NotificationContext';
 import RouteLoading from '@/components/RouteLoading';
-import NeonBlobs from '@/components/NeonBlobs';
 
 const poppins = Poppins({
   variable: "--font-poppins",
@@ -44,12 +43,9 @@ export default function RootLayout({
             <body
               className={`${poppins.variable} ${inter.variable} antialiased`}
             >
-              <NeonBlobs />
-              <div className="relative z-10">
-                <Suspense fallback={<div>Loading...</div>}>
-                  {children}
-                </Suspense>
-              </div>
+              <Suspense fallback={<div>Loading...</div>}>
+                {children}
+              </Suspense>
 
               {/* Global Route Loading */}
               <RouteLoading />
@@ -60,22 +56,20 @@ export default function RootLayout({
                 toastOptions={{
                   duration: 4000,
                   style: {
-                    background: 'rgba(15, 23, 42, 0.95)',
-                    color: '#f1f5f9',
-                    border: '1px solid rgba(0, 212, 255, 0.3)',
-                    boxShadow: '0 0 20px rgba(0, 212, 255, 0.2)',
+                    background: '#363636',
+                    color: '#fff',
                   },
                   success: {
                     duration: 3000,
                     iconTheme: {
-                      primary: '#00d4ff',
+                      primary: '#4ade80',
                       secondary: '#fff',
                     },
                   },
                   error: {
                     duration: 5000,
                     iconTheme: {
-                      primary: '#ec4899',
+                      primary: '#ef4444',
                       secondary: '#fff',
                     },
                   },

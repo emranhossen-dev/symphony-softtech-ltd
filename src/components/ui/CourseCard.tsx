@@ -83,9 +83,9 @@ const CourseCard = ({
       onMouseLeave={() => setIsHovered(false)}
       onClick={handleCardClick}
     >
-      <div className="relative glass-card overflow-hidden">
+      <div className="relative bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 overflow-hidden border border-gray-100">
         {/* Course Image */}
-        <div className="relative h-48 bg-gradient-to-br from-blue-900/30 to-purple-900/30 overflow-hidden">
+        <div className="relative h-48 bg-gradient-to-br from-blue-100 to-purple-100 overflow-hidden">
           {thumbnail ? (
             <img 
               src={thumbnail} 
@@ -95,10 +95,10 @@ const CourseCard = ({
           ) : (
             <div className="w-full h-full flex items-center justify-center">
               <div className="text-center">
-                <div className="text-4xl font-bold text-blue-500 mb-2">
+                <div className="text-4xl font-bold text-blue-600 mb-2">
                   {title.split(' ').map(word => word[0]?.toUpperCase() || '').join('')}
                 </div>
-                <div className="text-sm text-gray-400">Course</div>
+                <div className="text-sm text-gray-500">Course</div>
               </div>
             </div>
           )}
@@ -108,24 +108,24 @@ const CourseCard = ({
             {badge && (
               <div className={`px-3 py-1 text-white text-xs rounded-full shadow-lg ${
                 badgeColor === "primary" ? "bg-gradient-to-r from-blue-500 to-blue-600" :
-                badgeColor === "secondary" ? "bg-gradient-to-r from-purple-500 to-purple-600" :
-                "bg-gradient-to-r from-indigo-500 to-indigo-600"
+                badgeColor === "secondary" ? "bg-gradient-to-r from-purple-500 to-pink-500" :
+                "bg-gradient-to-r from-red-500 to-red-600"
               }`}>
                 {badge}
               </div>
             )}
             {category && (
-              <div className="glass-button px-3 py-1 text-blue-400 text-xs rounded-full shadow-lg font-medium">
+              <div className="px-3 py-1 bg-white/90 backdrop-blur-sm text-gray-700 text-xs rounded-full shadow-lg font-medium">
                 {category}
               </div>
             )}
           </div>
           
           {/* Rating Badge */}
-          <div className="glass-button absolute top-4 right-4 px-3 py-1 rounded-full shadow-lg">
+          <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full shadow-lg">
             <div className="flex items-center gap-1">
-              <Star className="w-4 h-4 text-yellow-400 fill-current" />
-              <span className="text-sm font-semibold text-gray-200">{rating}</span>
+              <Star className="w-4 h-4 text-yellow-500 fill-current" />
+              <span className="text-sm font-semibold text-gray-700">{rating}</span>
             </div>
           </div>
         </div>
@@ -134,35 +134,35 @@ const CourseCard = ({
         <div className="p-5">
           {level && (
             <div className="mb-3">
-              <span className="text-xs font-medium text-blue-400 bg-blue-900/50 px-2.5 py-1 rounded-full border border-blue-700">
+              <span className="text-xs font-medium text-blue-700 bg-blue-50 px-2.5 py-1 rounded-full border border-blue-100">
                 {level}
               </span>
             </div>
           )}
 
-          <h3 className="text-lg font-bold text-white mb-2 group-hover:text-blue-400 transition-colors line-clamp-2">
+          <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors line-clamp-2">
             {title}
           </h3>
           
           {/* Rating Row */}
           <div className="flex items-center gap-2 mb-3">
             {renderStars()}
-            <span className="text-xs text-gray-400">({reviewCount})</span>
+            <span className="text-xs text-gray-500">({reviewCount})</span>
           </div>
           
-          <p className="text-gray-300 mb-4 text-sm leading-relaxed line-clamp-2">
+          <p className="text-gray-600 mb-4 text-sm leading-relaxed line-clamp-2">
             {shortDescription || description}
           </p>
 
           {/* Course Details */}
-          <div className="flex items-center gap-4 text-sm text-gray-400 mb-4">
+          <div className="flex items-center gap-4 text-sm text-gray-500 mb-4">
             <div className="flex items-center gap-1">
-              <Clock className="w-4 h-4 text-blue-400" />
+              <Clock className="w-4 h-4 text-blue-500" />
               <span>{duration}</span>
             </div>
             {students !== undefined && (
               <div className="flex items-center gap-1">
-                <Users className="w-4 h-4 text-purple-400" />
+                <Users className="w-4 h-4 text-blue-500" />
                 <span>{students.toLocaleString()} students</span>
               </div>
             )}
@@ -170,14 +170,14 @@ const CourseCard = ({
 
           {/* Instructor */}
           {instructor && (
-            <div className="mb-4 pb-4 border-b border-blue-900/30">
+            <div className="mb-4 pb-4 border-b border-gray-100">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white text-xs font-bold">
                   {instructor.split(' ').map(n => n[0]).join('')}
                 </div>
                 <div>
-                  <div className="text-xs text-gray-400">Instructor</div>
-                  <div className="text-sm font-semibold text-white">{instructor}</div>
+                  <div className="text-xs text-gray-500">Instructor</div>
+                  <div className="text-sm font-semibold text-gray-900">{instructor}</div>
                 </div>
               </div>
             </div>
@@ -186,9 +186,9 @@ const CourseCard = ({
           {/* Price and CTA */}
           <div className="flex items-center justify-between">
             <div>
-              <span className="text-xl font-bold text-blue-400">{formatPrice(price)}</span>
+              <span className="text-xl font-bold text-blue-600">{formatPrice(price)}</span>
               {originalPrice && (
-                <span className="text-sm text-gray-500 line-through ml-2">{originalPrice}</span>
+                <span className="text-sm text-gray-400 line-through ml-2">{originalPrice}</span>
               )}
             </div>
             <button 
@@ -196,7 +196,7 @@ const CourseCard = ({
                 e.stopPropagation();
                 handleCardClick();
               }}
-              className="glass-button px-5 py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-sm font-semibold rounded-xl hover:from-blue-500 hover:to-purple-500 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+              className="px-5 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 text-white text-sm font-semibold rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
             >
               View Course
             </button>

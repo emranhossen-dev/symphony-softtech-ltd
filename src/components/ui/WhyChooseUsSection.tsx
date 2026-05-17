@@ -39,11 +39,18 @@ const WhyChooseUsSection = () => {
   ];
 
   return (
-    <section className="relative py-24 overflow-hidden">
+    <section className="relative py-24 bg-slate-900 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 overflow-hidden">
+      {/* Animated Background */}
+      <div className="absolute inset-0">
+        <div className="absolute top-10 left-10 w-72 h-72 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse"></div>
+        <div className="absolute top-40 right-10 w-96 h-96 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse delay-1000"></div>
+        <div className="absolute bottom-20 left-1/2 w-80 h-80 bg-purple-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse delay-500"></div>
+      </div>
+
       <div className="container mx-auto px-4 relative z-10">
         {/* Header */}
         <div className="text-center mb-20">
-          <div className="inline-flex items-center gap-3 glass-button px-6 py-3 rounded-full text-blue-400 mb-8">
+          <div className="inline-flex items-center gap-3 bg-gradient-to-r from-purple-500/20 to-blue-500/20 backdrop-blur-sm px-6 py-3 rounded-full text-purple-300 mb-8 border border-purple-400/30">
             <Zap className="w-5 h-5 text-yellow-400" />
             <span className="font-bold">WHY CHOOSE US</span>
             <Star className="w-5 h-5 text-yellow-400" />
@@ -51,12 +58,12 @@ const WhyChooseUsSection = () => {
           
           <h2 className="text-5xl md:text-6xl font-bold text-white mb-6">
             Why Choose
-            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
+            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-blue-400 to-purple-400">
               {siteConfig.name}
             </span>
           </h2>
           
-          <p className="text-xl text-gray-300 max-w-4xl mx-auto leading-relaxed">
+          <p className="text-xl text-white/70 max-w-4xl mx-auto leading-relaxed">
             We provide the best learning experience with comprehensive support and expert guidance at {siteConfig.name} to ensure your success
           </p>
         </div>
@@ -69,22 +76,22 @@ const WhyChooseUsSection = () => {
               className="group relative"
             >
               {/* Glass Card */}
-              <div className="glass-card p-8 h-full hover:scale-105 transition-all duration-500">
+              <div className="relative bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-lg rounded-3xl border border-white/20 p-8 h-full hover:scale-105 transition-all duration-500">
                 {/* Hover Gradient */}
                 <div className={`absolute inset-0 bg-gradient-to-br ${
                   feature.color === 'primary' 
-                    ? 'from-blue-500/10 to-purple-500/10' 
-                    : 'from-purple-500/10 to-pink-500/10'
+                    ? 'from-purple-500/10 to-blue-500/10' 
+                    : 'from-blue-500/10 to-cyan-500/10'
                 } rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300`}></div>
                 
                 <div className="relative z-10">
                   {/* Icon Container */}
                   <div className={`w-20 h-20 rounded-2xl bg-gradient-to-br ${
                     feature.color === 'primary' 
-                      ? 'from-blue-500 to-purple-600' 
-                      : 'from-purple-500 to-pink-600'
+                      ? 'from-purple-500 to-blue-600' 
+                      : 'from-blue-500 to-cyan-600'
                   } p-1 shadow-2xl mb-6 mx-auto group-hover:rotate-6 transition-transform duration-300`}>
-                    <div className="w-full h-full glass-button rounded-2xl flex items-center justify-center">
+                    <div className="w-full h-full bg-slate-900 rounded-2xl flex items-center justify-center">
                       <div className="text-white">
                         {feature.icon}
                       </div>
@@ -92,20 +99,20 @@ const WhyChooseUsSection = () => {
                   </div>
                   
                   {/* Title */}
-                  <h3 className="text-2xl font-bold text-white mb-4 text-center group-hover:text-blue-400 transition-all duration-300">
+                  <h3 className="text-2xl font-bold text-white mb-4 text-center group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-purple-400 group-hover:to-blue-400 transition-all duration-300">
                     {feature.title}
                   </h3>
                   
                   {/* Description */}
-                  <p className="text-gray-300 text-sm leading-relaxed mb-6 text-center">
+                  <p className="text-white/70 text-sm leading-relaxed mb-6 text-center">
                     {feature.description}
                   </p>
                   
                   {/* Stats Badge */}
                   <div className={`inline-flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-bold mx-auto transition-all duration-300 group-hover:scale-105 ${
                     feature.color === 'primary' 
-                      ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg shadow-blue-500/25' 
-                      : 'bg-gradient-to-r from-purple-500 to-pink-600 text-white shadow-lg shadow-purple-500/25'
+                      ? 'bg-gradient-to-r from-purple-500 to-blue-600 text-white shadow-lg shadow-purple-500/25' 
+                      : 'bg-gradient-to-r from-blue-500 to-cyan-600 text-white shadow-lg shadow-blue-500/25'
                   }`}>
                     <CheckCircle className="w-4 h-4" />
                     <span>{feature.stats}</span>
@@ -118,12 +125,12 @@ const WhyChooseUsSection = () => {
 
         {/* Bottom CTA */}
         <div className="text-center mt-20">
-          <div className="inline-flex items-center gap-4 px-8 py-4 glass-button rounded-full text-blue-400 font-semibold border-2 border-blue-500/50 hover:border-blue-400 transition-all duration-300 hover:scale-105 cursor-pointer">
+          <div className="inline-flex items-center gap-4 px-8 py-4 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full text-white font-semibold shadow-2xl hover:shadow-purple-500/25 transition-all duration-300 hover:scale-105 cursor-pointer">
             <Target className="w-5 h-5" />
             <span>Start Your Journey Today</span>
             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
           </div>
-          <p className="text-gray-400 mt-4">Join thousands of successful students</p>
+          <p className="text-white/60 mt-4">Join thousands of successful students</p>
         </div>
       </div>
     </section>
