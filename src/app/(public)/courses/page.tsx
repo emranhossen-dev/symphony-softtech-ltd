@@ -316,11 +316,22 @@ export default function CoursesPage() {
             ) : (
               <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6' : 'space-y-4'}>
                 {filteredCourses.map((course) => (
-                  <div key={course.id} className={`glass-card overflow-hidden hover:scale-105 transition-all duration-300 cursor-pointer ${
-                    viewMode === 'list' ? 'flex' : ''
-                  }`} onClick={() => router.push(`/course/${course.id}`)}>
+                  <div 
+                    key={course.id} 
+                    className="glass-card overflow-hidden hover:scale-105 transition-all duration-300 cursor-pointer"
+                    style={{
+                      background: 'rgba(26, 31, 76, 0.9)',
+                      backdropFilter: 'blur(16px)',
+                      border: '1px solid rgba(99, 102, 241, 0.3)',
+                      borderRadius: '20px',
+                      minHeight: '500px',
+                      display: 'flex',
+                      flexDirection: 'column'
+                    }}
+                    onClick={() => router.push(`/course/${course.id}`)}
+                  >
                     {/* Course Image */}
-                    <div className={viewMode === 'list' ? 'w-48 h-32 flex-shrink-0' : 'h-56'}>
+                    <div className="h-56 flex-shrink-0">
                       <div className="w-full h-full bg-gradient-to-br from-blue-900/30 to-purple-900/30 flex items-center justify-center relative">
                         {course.thumbnail ? (
                           <img 
@@ -343,7 +354,7 @@ export default function CoursesPage() {
                     </div>
 
                     {/* Course Content */}
-                    <div className="p-6 flex-1">
+                    <div className="p-6 flex-1 flex flex-col">
                       <div className="flex items-center justify-between mb-4">
                         <span className="text-sm font-medium text-blue-400 glass-button px-3 py-1 rounded-full border border-blue-500/30">
                           {course.category}
@@ -373,7 +384,7 @@ export default function CoursesPage() {
                         <span className="text-sm text-gray-400">({course.reviewCount} reviews)</span>
                       </div>
 
-                      <div className="flex items-center justify-between">
+                      <div className="flex items-center justify-between mt-auto">
                         <div>
                           <span className="text-2xl font-bold text-blue-400">
                             {formatBDT(course.price)}

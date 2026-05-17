@@ -34,6 +34,8 @@
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
+  min-height: 400px;
+  display: block;
 }
 
 .glass-card::before {
