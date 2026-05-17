@@ -62,18 +62,11 @@ const FAQSection = () => {
   };
 
   return (
-    <section className="relative py-24 bg-slate-900 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 overflow-hidden">
-      {/* Animated Background Elements */}
-      <div className="absolute inset-0">
-        <div className="absolute top-10 left-10 w-72 h-72 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse"></div>
-        <div className="absolute top-40 right-10 w-96 h-96 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse delay-1000"></div>
-        <div className="absolute bottom-20 left-1/2 w-80 h-80 bg-pink-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse delay-500"></div>
-      </div>
-      
+    <section className="relative py-24 overflow-hidden">
       <div className="container mx-auto px-4 relative z-10">
         {/* Enhanced Header */}
         <div className="text-center mb-20">
-          <div className="inline-flex items-center gap-3 bg-gradient-to-r from-blue-500/20 to-purple-500/20 backdrop-blur-sm px-6 py-3 rounded-full text-blue-300 mb-8 border border-blue-400/30">
+          <div className="inline-flex items-center gap-3 glass-button px-6 py-3 rounded-full text-blue-400 mb-8 border border-blue-500/30">
             <HelpCircle className="w-5 h-5 text-yellow-400" />
             <span className="font-bold">FAQ</span>
             <Zap className="w-5 h-5 text-yellow-400" />
@@ -86,7 +79,7 @@ const FAQSection = () => {
             </span>
           </h2>
           
-          <p className="text-xl text-white/70 max-w-4xl mx-auto leading-relaxed">
+          <p className="text-xl text-gray-300 max-w-4xl mx-auto leading-relaxed">
             Got questions? We've got answers. Find everything you need to know about our training programs.
           </p>
         </div>
@@ -125,7 +118,7 @@ const FAQSection = () => {
                     
                     {/* Category Badge */}
                     <div className="hidden md:block">
-                      <span className="text-xs font-bold text-blue-300 bg-blue-500/20 px-2 py-1 rounded-full border border-blue-400/30">
+                      <span className="text-xs font-bold text-blue-300 glass-button px-2 py-1 rounded-full border border-blue-500/30">
                         {faq.category}
                       </span>
                     </div>
@@ -152,18 +145,18 @@ const FAQSection = () => {
                 >
                   <div className="px-8 pb-6">
                     <div className="pl-16">
-                      <p className="text-white/80 leading-relaxed text-lg">
+                      <p className="text-gray-300 leading-relaxed text-lg">
                         {faq.answer}
                       </p>
                       
                       {/* Enhanced help links */}
                       {activeIndex === index && (
                         <div className="mt-6 flex items-center gap-4">
-                          <button className="enhanced-help-btn">
+                          <button className="glass-button px-4 py-2 rounded-full text-blue-400 hover:border-blue-400 border-2 border-blue-500/30">
                             <Sparkles className="inline-block mr-2 h-4 w-4" />
                             Learn more
                           </button>
-                          <button className="enhanced-help-btn" onClick={openChat}>
+                          <button className="glass-button px-4 py-2 rounded-full text-blue-400 hover:border-blue-400 border-2 border-blue-500/30" onClick={openChat}>
                             <MessageCircle className="inline-block mr-2 h-4 w-4" />
                             Contact support
                           </button>
@@ -178,9 +171,9 @@ const FAQSection = () => {
 
           {/* Enhanced Help Section */}
           <div className="mt-20">
-            <div className="enhanced-help-card">
+            <div className="glass-card p-12">
               <div className="text-center">
-                <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-3xl flex items-center justify-center mx-auto mb-8 enhanced-icon-glow">
+                <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-3xl flex items-center justify-center mx-auto mb-8">
                   <HelpCircle className="h-12 w-12 text-white" />
                 </div>
                 
@@ -190,25 +183,25 @@ const FAQSection = () => {
                     questions?
                   </span>
                 </h3>
-                <p className="text-xl text-white/70 mb-10 max-w-3xl mx-auto leading-relaxed">
+                <p className="text-xl text-gray-300 mb-10 max-w-3xl mx-auto leading-relaxed">
                   Our support team is here to help you with any queries you might have about our programs, admission process, or career guidance.
                 </p>
                 
                 <div className="flex flex-col sm:flex-row gap-6 justify-center mb-10">
-                  <button className="enhanced-primary-btn" onClick={openChat}>
+                  <button className="glass-button px-8 py-4 rounded-full font-bold hover:scale-105 transition-all duration-300 text-blue-400 border-2 border-blue-500/50" onClick={openChat}>
                     <MessageCircle className="inline-block mr-3 h-5 w-5" />
                     Live Chat Support
                   </button>
-                  <button className="enhanced-secondary-btn" onClick={() => window.location.href = `tel:${contactInfo.phone}`}>
+                  <button className="glass-button px-8 py-4 rounded-full font-bold hover:scale-105 transition-all duration-300 text-blue-400 border-2 border-blue-500/50" onClick={() => window.location.href = `tel:${contactInfo.phone}`}>
                     <Phone className="inline-block mr-3 h-5 w-5" />
                     Call Us Now
                   </button>
                 </div>
 
                 {/* Enhanced Contact info */}
-                <div className="flex flex-wrap justify-center gap-10 text-white/60">
+                <div className="flex flex-wrap justify-center gap-10 text-gray-400">
                   <div className="flex items-center gap-3 group">
-                    <div className="w-10 h-10 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <div className="w-10 h-10 glass-button rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
                       <Mail className="h-5 w-5 text-blue-400" />
                     </div>
                     <div className="text-left">
@@ -217,7 +210,7 @@ const FAQSection = () => {
                     </div>
                   </div>
                   <div className="flex items-center gap-3 group">
-                    <div className="w-10 h-10 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <div className="w-10 h-10 glass-button rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
                       <Phone className="h-5 w-5 text-blue-400" />
                     </div>
                     <div className="text-left">
@@ -226,7 +219,7 @@ const FAQSection = () => {
                     </div>
                   </div>
                   <div className="flex items-center gap-3 group">
-                    <div className="w-10 h-10 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <div className="w-10 h-10 glass-button rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
                       <MessageCircle className="h-5 w-5 text-blue-400" />
                     </div>
                     <div className="text-left">

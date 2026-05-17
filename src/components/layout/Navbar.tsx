@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Menu, X, User, LogIn, ChevronDown, BookOpen, Users, Phone, GraduationCap, Sparkles, Star } from "lucide-react";
 import { usePathname } from "next/navigation";
 import LoginModal from "@/components/auth/LoginModal";
+import ThemeToggler from "@/components/ThemeToggler";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -40,10 +41,10 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 glass-nav ${
       isScrolled 
-        ? "bg-gradient-to-r from-purple-800/95 to-blue-900/95 backdrop-blur-xl shadow-2xl border-b border-purple-700/30" 
-        : "bg-gradient-to-r from-purple-700/90 to-blue-800/90 backdrop-blur-lg shadow-xl border-b border-purple-600/20"
+        ? "shadow-2xl" 
+        : "shadow-xl"
     }`}>
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center h-18">
@@ -115,6 +116,7 @@ const Navbar = () => {
 
           {/* Premium Action Buttons */}
           <div className="hidden xl:flex items-center space-x-4">
+            <ThemeToggler />
             <button 
               onClick={() => setIsLoginModalOpen(true)}
               className="group flex items-center space-x-3 px-6 py-3 text-sm font-bold text-white border-2 border-white/50 rounded-xl hover:border-white hover:bg-white/10 hover:backdrop-blur-sm transition-all duration-300 transform hover:scale-105 hover:-translate-y-1"
@@ -163,6 +165,10 @@ const Navbar = () => {
               ))}
 
               <div className="pt-6 mt-6 border-t border-gray-700">
+                <div className="flex items-center justify-between mb-4">
+                  <span className="text-sm font-medium text-gray-400">Theme</span>
+                  <ThemeToggler />
+                </div>
                 <button
                   onClick={() => {
                     setIsLoginModalOpen(true);
