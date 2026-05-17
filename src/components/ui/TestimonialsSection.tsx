@@ -3,6 +3,7 @@
 import { Star, Quote, ThumbsUp, Heart, Linkedin, Twitter, MapPin, Briefcase, TrendingUp, Award, Users, Sparkles, Play, ChevronLeft, ChevronRight, MessageCircle, Eye } from "lucide-react";
 import { getSiteConfig } from '@/lib/config';
 import { useState, useEffect } from 'react';
+import Counter from "@/components/Counter";
 
 const TestimonialsSection = () => {
   const siteConfig = getSiteConfig();
@@ -130,58 +131,21 @@ const TestimonialsSection = () => {
   };
 
   return (
-      <section className="relative min-h-screen bg-slate-900 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 overflow-hidden">
-        {/* Animated Background Pattern */}
-        <div className="absolute inset-0">
-          <div className="absolute inset-0 bg-white/5"></div>
-          
-          {/* Animated Gradient Mesh */}
-          <div className="absolute inset-0">
-            <div className="absolute top-0 left-0 w-96 h-96 bg-purple-600/30 rounded-full filter blur-3xl animate-pulse"></div>
-            <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-blue-600/30 rounded-full filter blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-pink-600/20 rounded-full filter blur-3xl animate-pulse" style={{ animationDelay: '4s' }}></div>
-          </div>
-          
-          {/* Floating Elements */}
-          <div className="absolute inset-0">
-            {[...Array(15)].map((_, i) => {
-              // Use deterministic values based on index to avoid hydration mismatch
-              const seed = i * 137.5; // Prime number for better distribution
-              const left = ((seed * 9.7) % 100);
-              const top = ((seed * 13.3) % 100);
-              const delay = ((seed * 2.1) % 5);
-              const duration = 4 + ((seed * 1.7) % 6);
-              
-              return (
-                <div
-                  key={i}
-                  className="absolute w-1 h-1 bg-white rounded-full animate-float opacity-40"
-                  style={{
-                    left: `${left}%`,
-                    top: `${top}%`,
-                    animationDelay: `${delay}s`,
-                    animationDuration: `${duration}s`
-                  }}
-                />
-              );
-            })}
-          </div>
-        </div>
-        
+      <section className="relative min-h-screen overflow-hidden">
         <div className="relative z-10 container mx-auto px-4 py-20">
           {/* Header */}
           <div className={`text-center mb-16 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'}`}>
-            <div className="inline-flex items-center gap-3 bg-white/10 backdrop-blur-md px-6 py-3 rounded-full mb-8 border border-white/20">
-              <MessageCircle className="h-5 w-5 text-purple-400" />
+            <div className="inline-flex items-center gap-3 glass-button px-6 py-3 rounded-full mb-8 border border-blue-500/30">
+              <MessageCircle className="h-5 w-5 text-blue-400" />
               <span className="text-sm font-semibold text-white">Student Voices</span>
-              <Eye className="h-5 w-5 text-blue-400" />
+              <Eye className="h-5 w-5 text-purple-400" />
             </div>
             
             <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 relative">
-              <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
                 Success Stories
               </span>
-              <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-gradient-to-r from-purple-400 to-blue-400 rounded-full"></div>
+              <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full"></div>
             </h1>
             
             <p className="text-xl text-gray-300 max-w-4xl mx-auto mb-8">
@@ -194,8 +158,8 @@ const TestimonialsSection = () => {
                 onClick={() => setViewMode('carousel')}
                 className={`px-6 py-2 rounded-full transition-all ${
                   viewMode === 'carousel'
-                    ? 'bg-white text-purple-900 font-semibold'
-                    : 'bg-white/10 text-white hover:bg-white/20'
+                    ? 'glass-button text-blue-400 font-semibold border-2 border-blue-500/50'
+                    : 'glass-button text-gray-300 hover:border-blue-400'
                 }`}
               >
                 Carousel View
@@ -204,8 +168,8 @@ const TestimonialsSection = () => {
                 onClick={() => setViewMode('grid')}
                 className={`px-6 py-2 rounded-full transition-all ${
                   viewMode === 'grid'
-                    ? 'bg-white text-purple-900 font-semibold'
-                    : 'bg-white/10 text-white hover:bg-white/20'
+                    ? 'glass-button text-blue-400 font-semibold border-2 border-blue-500/50'
+                    : 'glass-button text-gray-300 hover:border-blue-400'
                 }`}
               >
                 Grid View
@@ -226,10 +190,10 @@ const TestimonialsSection = () => {
                         : 'opacity-0 scale-95'
                     }`}
                   >
-                    <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-12 border border-white/20 h-full flex flex-col justify-between">
+                    <div className="glass-card p-12 h-full flex flex-col justify-between">
                       {/* Quote */}
                       <div className="text-center mb-8">
-                        <Quote className="h-16 w-16 text-purple-400 mx-auto mb-6" />
+                        <Quote className="h-16 w-16 text-blue-400 mx-auto mb-6" />
                         <p className="text-2xl text-white font-light leading-relaxed italic">
                           "{testimonial.content}"
                         </p>
@@ -252,7 +216,7 @@ const TestimonialsSection = () => {
                       {/* Author */}
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-6">
-                          <div className="w-20 h-20 rounded-2xl overflow-hidden ring-4 ring-white/20">
+                          <div className="w-20 h-20 rounded-2xl overflow-hidden ring-4 ring-blue-500/20">
                             <img
                               src={testimonial.image}
                               alt={testimonial.name}
@@ -261,13 +225,13 @@ const TestimonialsSection = () => {
                           </div>
                           <div>
                             <h3 className="text-2xl font-bold text-white mb-2">{testimonial.name}</h3>
-                            <p className="text-purple-300 mb-1">{testimonial.role}</p>
+                            <p className="text-blue-300 mb-1">{testimonial.role}</p>
                             <p className="text-gray-400 text-sm">{testimonial.company} • {testimonial.location}</p>
                           </div>
                         </div>
                         
                         <div className="text-right">
-                          <div className="text-sm text-purple-300 font-medium mb-1">{testimonial.course}</div>
+                          <div className="text-sm text-blue-300 font-medium mb-1">{testimonial.course}</div>
                           <div className="text-xs text-green-400">{testimonial.achievement}</div>
                         </div>
                       </div>
@@ -279,13 +243,13 @@ const TestimonialsSection = () => {
               {/* Navigation */}
               <button
                 onClick={prevTestimonial}
-                className="absolute left-4 top-1/2 transform -translate-y-1/2 w-12 h-12 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:bg-white/20 transition-all border border-white/20"
+                className="absolute left-4 top-1/2 transform -translate-y-1/2 w-12 h-12 glass-button rounded-full flex items-center justify-center text-white hover:border-blue-400 transition-all border border-blue-500/30"
               >
                 <ChevronLeft className="h-6 w-6" />
               </button>
               <button
                 onClick={nextTestimonial}
-                className="absolute right-4 top-1/2 transform -translate-y-1/2 w-12 h-12 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:bg-white/20 transition-all border border-white/20"
+                className="absolute right-4 top-1/2 transform -translate-y-1/2 w-12 h-12 glass-button rounded-full flex items-center justify-center text-white hover:border-blue-400 transition-all border border-blue-500/30"
               >
                 <ChevronRight className="h-6 w-6" />
               </button>
@@ -298,8 +262,8 @@ const TestimonialsSection = () => {
                     onClick={() => setCurrentTestimonialIndex(index)}
                     className={`w-2 h-2 rounded-full transition-all ${
                       index === currentTestimonialIndex
-                        ? 'bg-white w-8'
-                        : 'bg-white/40 hover:bg-white/60'
+                        ? 'bg-blue-400 w-8'
+                        : 'bg-gray-600 hover:bg-gray-500'
                     }`}
                   />
                 ))}
@@ -311,9 +275,9 @@ const TestimonialsSection = () => {
               {testimonials.map((testimonial, index) => (
                 <div
                   key={index}
-                  className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20 hover:bg-white/15 transition-all duration-300 hover:scale-105 hover:-translate-y-2 group"
+                  className="glass-card p-6 hover:bg-blue-900/30 transition-all duration-300 hover:scale-105 hover:-translate-y-2 group"
                 >
-                  <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                     <Quote className="h-6 w-6 text-white transform rotate-180" />
                   </div>
                   
@@ -344,11 +308,11 @@ const TestimonialsSection = () => {
                     </div>
                     <div className="min-w-0">
                       <h4 className="text-white font-semibold text-sm truncate">{testimonial.name}</h4>
-                      <p className="text-purple-300 text-xs truncate">{testimonial.role}</p>
+                      <p className="text-blue-300 text-xs truncate">{testimonial.role}</p>
                     </div>
                   </div>
                   
-                  <div className="text-xs text-purple-400">{testimonial.course}</div>
+                  <div className="text-xs text-blue-400">{testimonial.course}</div>
                 </div>
               ))}
             </div>
@@ -357,18 +321,20 @@ const TestimonialsSection = () => {
           {/* Stats */}
           <div className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-6">
             {[
-              { number: "5000+", label: "Graduates", icon: Users },
-              { number: "4.9/5", label: "Rating", icon: Star },
-              { number: "95%", label: "Success Rate", icon: TrendingUp },
-              { number: "50+", label: "Partners", icon: Award }
+              { number: 5000, label: "Graduates", icon: Users },
+              { number: 4.9, label: "Rating", icon: Star, suffix: "/5", decimals: 1 },
+              { number: 95, label: "Success Rate", icon: TrendingUp, suffix: "%" },
+              { number: 50, label: "Partners", icon: Award, suffix: "+" }
             ].map((stat, index) => (
               <div
                 key={index}
-                className="bg-white/5 backdrop-blur-md rounded-2xl p-6 text-center border border-white/10 hover:bg-white/10 transition-all duration-300"
+                className="glass-card p-6 text-center hover:scale-105 transition-all duration-300"
               >
-                <stat.icon className="h-8 w-8 text-purple-400 mx-auto mb-3" />
-                <div className="text-3xl font-bold text-white mb-1">{stat.number}</div>
-                <div className="text-purple-300 text-sm">{stat.label}</div>
+                <stat.icon className="h-8 w-8 text-blue-400 mx-auto mb-3" />
+                <div className="text-3xl font-bold text-white mb-1">
+                  <Counter end={stat.number} suffix={stat.suffix || ""} decimals={stat.decimals || 0} />
+                </div>
+                <div className="text-blue-300 text-sm">{stat.label}</div>
               </div>
             ))}
           </div>
