@@ -85,7 +85,7 @@ const CourseCard = ({
     >
       <div className="relative glass-card overflow-hidden">
         {/* Course Image */}
-        <div className="relative h-64 bg-gradient-to-br from-blue-900/30 to-purple-900/30 overflow-hidden">
+        <div className="relative h-48 sm:h-56 md:h-64 bg-gradient-to-br from-blue-900/30 to-purple-900/30 overflow-hidden">
           {thumbnail ? (
             <img 
               src={thumbnail} 
@@ -95,18 +95,18 @@ const CourseCard = ({
           ) : (
             <div className="w-full h-full flex items-center justify-center">
               <div className="text-center">
-                <div className="text-4xl font-bold text-blue-500 mb-2">
+                <div className="text-3xl sm:text-4xl font-bold text-blue-500 mb-2">
                   {title.split(' ').map(word => word[0]?.toUpperCase() || '').join('')}
                 </div>
-                <div className="text-sm text-gray-400">Course</div>
+                <div className="text-xs sm:text-sm text-gray-400">Course</div>
               </div>
             </div>
           )}
           
           {/* Badges */}
-          <div className="absolute top-4 left-4 flex gap-2">
+          <div className="absolute top-2 sm:top-4 left-2 sm:left-4 flex gap-1 sm:gap-2">
             {badge && (
-              <div className={`px-3 py-1 text-white text-xs rounded-full shadow-lg ${
+              <div className={`px-2 sm:px-3 py-1 text-white text-xs rounded-full shadow-lg ${
                 badgeColor === "primary" ? "bg-gradient-to-r from-blue-500 to-blue-600" :
                 badgeColor === "secondary" ? "bg-gradient-to-r from-purple-500 to-purple-600" :
                 "bg-gradient-to-r from-indigo-500 to-indigo-600"
@@ -115,23 +115,23 @@ const CourseCard = ({
               </div>
             )}
             {category && (
-              <div className="glass-button px-3 py-1 text-blue-400 text-xs rounded-full shadow-lg font-medium">
+              <div className="glass-button px-2 sm:px-3 py-1 text-blue-400 text-xs rounded-full shadow-lg font-medium">
                 {category}
               </div>
             )}
           </div>
           
           {/* Rating Badge */}
-          <div className="glass-button absolute top-4 right-4 px-3 py-1 rounded-full shadow-lg">
+          <div className="glass-button absolute top-2 sm:top-4 right-2 sm:right-4 px-2 sm:px-3 py-1 rounded-full shadow-lg">
             <div className="flex items-center gap-1">
-              <Star className="w-4 h-4 text-yellow-400 fill-current" />
-              <span className="text-sm font-semibold text-gray-200">{rating}</span>
+              <Star className="w-3 sm:w-4 h-3 sm:h-4 text-yellow-400 fill-current" />
+              <span className="text-xs sm:text-sm font-semibold text-gray-200">{rating}</span>
             </div>
           </div>
         </div>
 
         {/* Course Content */}
-        <div className="p-5">
+        <div className="p-3 sm:p-4 md:p-5">
           {level && (
             <div className="mb-3">
               <span className="text-xs font-medium text-blue-400 bg-blue-900/50 px-2.5 py-1 rounded-full border border-blue-700">
@@ -140,7 +140,7 @@ const CourseCard = ({
             </div>
           )}
 
-          <h3 className="text-lg font-bold text-white mb-2 group-hover:text-blue-400 transition-colors line-clamp-2">
+          <h3 className="text-base sm:text-lg font-bold text-white mb-2 group-hover:text-blue-400 transition-colors line-clamp-2">
             {title}
           </h3>
           
@@ -150,19 +150,19 @@ const CourseCard = ({
             <span className="text-xs text-gray-400">({reviewCount})</span>
           </div>
           
-          <p className="text-gray-300 mb-4 text-sm leading-relaxed line-clamp-2">
+          <p className="text-gray-300 mb-3 sm:mb-4 text-xs sm:text-sm leading-relaxed line-clamp-2">
             {shortDescription || description}
           </p>
 
           {/* Course Details */}
-          <div className="flex items-center gap-4 text-sm text-gray-400 mb-4">
+          <div className="flex items-center gap-2 sm:gap-4 text-xs sm:text-sm text-gray-400 mb-3 sm:mb-4">
             <div className="flex items-center gap-1">
-              <Clock className="w-4 h-4 text-blue-400" />
+              <Clock className="w-3 sm:w-4 h-3 sm:h-4 text-blue-400" />
               <span>{duration}</span>
             </div>
             {students !== undefined && (
               <div className="flex items-center gap-1">
-                <Users className="w-4 h-4 text-purple-400" />
+                <Users className="w-3 sm:w-4 h-3 sm:h-4 text-purple-400" />
                 <span>{students.toLocaleString()} students</span>
               </div>
             )}
@@ -170,14 +170,14 @@ const CourseCard = ({
 
           {/* Instructor */}
           {instructor && (
-            <div className="mb-4 pb-4 border-b border-blue-900/30">
+            <div className="mb-3 sm:mb-4 pb-3 sm:pb-4 border-b border-blue-900/30">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white text-xs font-bold">
+                <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white text-xs font-bold">
                   {instructor.split(' ').map(n => n[0]).join('')}
                 </div>
                 <div>
                   <div className="text-xs text-gray-400">Instructor</div>
-                  <div className="text-sm font-semibold text-white">{instructor}</div>
+                  <div className="text-xs sm:text-sm font-semibold text-white">{instructor}</div>
                 </div>
               </div>
             </div>
@@ -186,7 +186,7 @@ const CourseCard = ({
           {/* Price and CTA */}
           <div className="flex items-center justify-between">
             <div>
-              <span className="text-xl font-bold text-blue-400">{formatPrice(price)}</span>
+              <span className="text-lg sm:text-xl font-bold text-blue-400">{formatPrice(price)}</span>
               {originalPrice && (
                 <span className="text-sm text-gray-500 line-through ml-2">{originalPrice}</span>
               )}
@@ -196,7 +196,7 @@ const CourseCard = ({
                 e.stopPropagation();
                 handleCardClick();
               }}
-              className="glass-button px-5 py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-sm font-semibold rounded-xl hover:from-blue-500 hover:to-purple-500 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+              className="glass-button px-3 sm:px-5 py-2 sm:py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-xs sm:text-sm font-semibold rounded-xl hover:from-blue-500 hover:to-purple-500 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
             >
               View Course
             </button>

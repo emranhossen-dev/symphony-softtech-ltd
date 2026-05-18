@@ -32,6 +32,24 @@ const FeaturedCourses = () => {
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState("ALL");
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [itemsPerPage, setItemsPerPage] = useState(3);
+
+  // Update items per page based on screen size
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 768) {
+        setItemsPerPage(1);
+      } else if (window.innerWidth < 1024) {
+        setItemsPerPage(2);
+      } else {
+        setItemsPerPage(3);
+      }
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const categories = [
     { value: "ALL", label: "All", color: "from-purple-500 to-pink-500" },
@@ -103,18 +121,18 @@ const FeaturedCourses = () => {
   };
 
   const handlePrev = () => {
-    setCurrentIndex((prev) => Math.max(0, prev - 3));
+    setCurrentIndex((prev) => Math.max(0, prev - itemsPerPage));
   };
 
   const handleNext = () => {
     setCurrentIndex((prev) => 
-      Math.min(filteredCourses.length - 3, prev + 3)
+      Math.min(filteredCourses.length - itemsPerPage, prev + itemsPerPage)
     );
   };
 
-  const visibleCourses = filteredCourses.slice(currentIndex, currentIndex + 3);
+  const visibleCourses = filteredCourses.slice(currentIndex, currentIndex + itemsPerPage);
   const canGoPrev = currentIndex > 0;
-  const canGoNext = currentIndex + 3 < filteredCourses.length;
+  const canGoNext = currentIndex + itemsPerPage < filteredCourses.length;
 
   if (loading) {
     return (
@@ -180,8 +198,8 @@ const FeaturedCourses = () => {
         {filteredCourses.length > 0 ? (
           <div className="relative">
             {/* Course Grid - 3 column layout */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
-              {filteredCourses.slice(currentIndex, currentIndex + 3).map((course, index) => (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8">
+              {filteredCourses.slice(currentIndex, currentIndex + itemsPerPage).map((course, index) => (
                 <div key={course.id}>
                   <CourseCard
                     id={course.id}
@@ -206,36 +224,36 @@ const FeaturedCourses = () => {
             </div>
 
             {/* Navigation Buttons */}
-            {filteredCourses.length > 3 && (
+            {filteredCourses.length > itemsPerPage && (
               <>
                 <button
                   onClick={handlePrev}
                   disabled={!canGoPrev}
-                  className={`absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 z-10 ${
+                  className={`absolute left-0 top-1/2 -translate-y-1/2 -translate-x-2 sm:-translate-x-4 w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center transition-all duration-300 z-10 ${
                     canGoPrev
                       ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:scale-110 shadow-lg"
                       : "bg-gray-700 text-gray-500 cursor-not-allowed opacity-50"
                   }`}
                 >
-                  <ChevronLeft className="w-6 h-6" />
+                  <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
                 </button>
 
                 <button
                   onClick={handleNext}
                   disabled={!canGoNext}
-                  className={`absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 z-10 ${
+                  className={`absolute right-0 top-1/2 -translate-y-1/2 translate-x-2 sm:translate-x-4 w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center transition-all duration-300 z-10 ${
                     canGoNext
                       ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:scale-110 shadow-lg"
                       : "bg-gray-700 text-gray-500 cursor-not-allowed opacity-50"
                   }`}
                 >
-                  <ChevronRight className="w-6 h-6" />
+                  <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
                 </button>
               </>
             )}
 
             {/* Carousel Indicators */}
-            {filteredCourses.length > 3 && (
+            {filteredCourses.length > itemsPerPage && (
               <div className="flex justify-center gap-2 mt-8">
                 {Array.from({ length: Math.ceil(filteredCourses.length / 3) }).map((_, index) => (
                   <button

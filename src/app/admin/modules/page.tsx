@@ -96,11 +96,7 @@ export default function ModulesManagement() {
   const fetchModules = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/admin/modules', {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-      });
+      const response = await fetch('/api/admin/modules');
       const data = await response.json();
       
       if (data.success) {
@@ -118,11 +114,7 @@ export default function ModulesManagement() {
 
   const fetchCourses = async () => {
     try {
-      const response = await fetch('/api/admin/courses', {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-      });
+      const response = await fetch('/api/admin/courses');
       const data = await response.json();
       
       if (data.success) {
@@ -159,8 +151,7 @@ export default function ModulesManagement() {
       const response = await fetch('/api/admin/modules/lock', {
         method: 'PATCH',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           moduleId,
@@ -191,8 +182,7 @@ export default function ModulesManagement() {
       const response = await fetch('/api/admin/modules', {
         method: 'DELETE',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           moduleId
@@ -237,8 +227,7 @@ export default function ModulesManagement() {
       const response = await fetch(url, {
         method,
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify(payload)
       });
@@ -315,14 +304,13 @@ export default function ModulesManagement() {
         return;
       }
 
-      const response = await fetch('/api/admin/modules/bulk', {
+      const response = await fetch(`/api/admin/courses/${bulkUploadCourseId}/modules/bulk`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          courseId: bulkUploadCourseId,
+          action: 'create',
           modules: data.modules
         })
       });

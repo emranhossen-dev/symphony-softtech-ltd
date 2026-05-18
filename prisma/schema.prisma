@@ -58,6 +58,8 @@ model Course {
   shortDescription    String?
   thumbnail           String?
   price               Float                @default(0)
+  originalPrice       Float?
+  discountPercent     Int?                 @default(0)
   duration            String
   isActive            Boolean              @default(true)
   featured            Boolean              @default(false)

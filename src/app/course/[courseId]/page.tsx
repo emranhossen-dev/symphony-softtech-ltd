@@ -910,13 +910,6 @@ const CourseDetailPage = () => {
                   </div>
                 </div>
 
-                {/* Course Details */}
-                <div className="glass-card p-6 mb-8">
-                  <h3 className="text-xl font-bold text-white mb-4">Course Details</h3>
-                  <p className="text-gray-300 leading-relaxed">
-                    {course.description}
-                  </p>
-                </div>
               </div>
 
               {/* Right Column - Course Image and Pricing */}
@@ -935,57 +928,59 @@ const CourseDetailPage = () => {
                     </div>
                   )}
                   
-                  {/* Pricing Section */}
+                  {/* Minimal Pricing Section */}
                   <div className="p-6">
-                    <div className="text-center mb-6">
-                      <div className="text-4xl font-black text-white mb-2">
-                        ৳{course.price.toLocaleString()}
+                    {/* Price row with 3 items */}
+                    <div className="flex items-center justify-between mb-4">
+                      <div>
+                        <div className="text-sm text-gray-400 mb-1">Current Price</div>
+                        <div className="text-2xl font-bold text-white">
+                          ৳{course.price.toLocaleString()}
+                        </div>
                       </div>
-                      <div className="text-white/60 line-through text-lg">
-                        ৳{(course.price * 2).toLocaleString()}
+                      <div className="text-right">
+                        <div className="text-sm text-gray-400 mb-1">Original Price</div>
+                        <div className="text-xl font-semibold text-white/50 line-through">
+                          ৳{course.originalPrice ? course.originalPrice.toLocaleString() : (course.price * 1.5).toLocaleString()}
+                        </div>
                       </div>
-                      <div className="inline-block mt-3 bg-red-500 text-white px-4 py-2 rounded-full text-sm font-bold">
-                        🔥 50% OFF - Limited Time
+                      <div className="text-right">
+                        <div className="text-sm text-gray-400 mb-1">Discount</div>
+                        <div className="text-xl font-bold text-red-400">
+                          {course.discountPercent ? `${course.discountPercent}% OFF` : '33% OFF'}
+                        </div>
                       </div>
                     </div>
                     
                     <Button
                       onClick={handlePurchase}
-                      className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white py-4 rounded-2xl font-bold text-lg transition-all duration-300 shadow-lg hover:shadow-xl mb-4 transform hover:scale-105"
+                      className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white py-4 rounded-xl font-bold text-lg transition-all duration-300 mb-4"
                     >
-                      <ShoppingCart className="w-5 h-5 mr-2" />
                       Enroll Now
                     </Button>
                     
-                    <div className="text-center text-gray-400 text-sm mb-4">
-                      ⚡ 30-day money-back guarantee
+                    {/* Features in 2 columns */}
+                    <div className="grid grid-cols-2 gap-3 mb-3">
+                      <div className="flex items-center gap-2 text-white">
+                        <CheckCircle className="w-4 h-4 text-green-400" />
+                        <span className="text-sm">{modules.length} lessons</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-white">
+                        <CheckCircle className="w-4 h-4 text-green-400" />
+                        <span className="text-sm">Certificate</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-white">
+                        <CheckCircle className="w-4 h-4 text-green-400" />
+                        <span className="text-sm">Lifetime access</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-white">
+                        <CheckCircle className="w-4 h-4 text-green-400" />
+                        <span className="text-sm">Resources</span>
+                      </div>
                     </div>
                     
-                    <div className="space-y-3">
-                      <div className="flex items-center gap-3 text-white">
-                        <div className="w-8 h-8 bg-green-500/20 rounded-lg flex items-center justify-center">
-                          <CheckCircle className="w-4 h-4 text-green-400" />
-                        </div>
-                        <span className="text-sm font-medium">{modules.length} video lessons</span>
-                      </div>
-                      <div className="flex items-center gap-3 text-white">
-                        <div className="w-8 h-8 bg-green-500/20 rounded-lg flex items-center justify-center">
-                          <CheckCircle className="w-4 h-4 text-green-400" />
-                        </div>
-                        <span className="text-sm font-medium">Downloadable resources</span>
-                      </div>
-                      <div className="flex items-center gap-3 text-white">
-                        <div className="w-8 h-8 bg-green-500/20 rounded-lg flex items-center justify-center">
-                          <CheckCircle className="w-4 h-4 text-green-400" />
-                        </div>
-                        <span className="text-sm font-medium">Certificate of completion</span>
-                      </div>
-                      <div className="flex items-center gap-3 text-white">
-                        <div className="w-8 h-8 bg-green-500/20 rounded-lg flex items-center justify-center">
-                          <CheckCircle className="w-4 h-4 text-green-400" />
-                        </div>
-                        <span className="text-sm font-medium">Lifetime access</span>
-                      </div>
+                    <div className="text-center text-gray-400 text-sm">
+                      30-day money-back guarantee
                     </div>
                   </div>
                 </div>
@@ -1049,7 +1044,7 @@ const CourseDetailPage = () => {
             </p>
           </div>
           
-          <div className="glass-card overflow-hidden max-h-[600px] overflow-y-auto custom-scrollbar bg-gradient-to-br from-slate-900/95 to-slate-950/95 backdrop-blur-xl">
+          <div className="glass-card overflow-hidden max-h-[1000px] overflow-y-auto bg-gradient-to-br from-slate-900/95 to-slate-950/95 backdrop-blur-xl" style={{scrollbarWidth: 'thin', scrollbarColor: '#667eea #1e293b'}}>
             {modules.length === 0 ? (
               <div className="text-center py-16">
                 <div className="w-16 h-16 bg-gray-700/50 rounded-full mx-auto mb-4 flex items-center justify-center">

@@ -167,7 +167,7 @@ export default function CoursesPage() {
         <div className="container mx-auto px-4 py-8">
           <div className="animate-pulse">
             <div className="h-8 bg-gray-800 rounded w-1/4 mb-8"></div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
               {[...Array(6)].map((_, index) => (
                 <div key={index} className="glass-card overflow-hidden">
                   <div className="h-48 bg-gray-800"></div>
@@ -217,7 +217,7 @@ export default function CoursesPage() {
         <div className="flex flex-col lg:flex-row gap-8 items-start">
           {/* Filters Sidebar */}
           <div className="lg:w-80 flex-shrink-0">
-            <div className="glass-card p-6 sticky top-0">
+            <div className="glass-card p-4 sm:p-6 sticky top-0">
               <div className="flex items-center gap-2 mb-6">
                 <Filter className="w-5 h-5 text-blue-400" />
                 <h2 className="text-lg font-semibold text-white">Filters</h2>
@@ -323,7 +323,7 @@ export default function CoursesPage() {
                 <p className="text-gray-300">Try adjusting your filters or search terms</p>
               </div>
             ) : (
-              <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6' : 'space-y-4'}>
+              <div className={viewMode === 'grid' ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6' : 'space-y-4'}>
                 {filteredCourses.map((course) => (
                   <div 
                     key={course.id} 
