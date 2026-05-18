@@ -1,122 +1,151 @@
 "use client";
 
-import { ArrowRight, Play, CheckCircle, TrendingUp, BookOpen, Star, Users, Award, Clock } from "lucide-react";
+import { useState, useEffect, useCallback } from "react";
+import { ArrowRight, Play, CheckCircle, BookOpen, Users, Award, Clock } from "lucide-react";
+import Counter from "@/components/Counter";
+
+const bgImages = [
+  "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1920",
+  "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=1920",
+  "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=1920",
+  "https://images.unsplash.com/photo-1531482615713-2afd69097998?w=1920",
+];
 
 const HeroSection = () => {
+  const [current, setCurrent] = useState(0);
+  const [next, setNext] = useState<number | null>(null);
+
+  const advance = useCallback(() => {
+    const nxt = (current + 1) % bgImages.length;
+    setNext(nxt);
+    setTimeout(() => {
+      setCurrent(nxt);
+      setNext(null);
+    }, 1000);
+  }, [current]);
+
+  useEffect(() => {
+    const interval = setInterval(advance, 5000);
+    return () => clearInterval(interval);
+  }, [advance]);
   return (
-    <section className="relative bg-white bg-gradient-to-br from-emerald-50 via-white to-blue-50 py-20 overflow-hidden">
-      {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-10">
-        <div className="absolute inset-0" style={{
-          backgroundImage: `radial-gradient(circle at 20% 50%, #10b981 1px, transparent 1px),
-                           radial-gradient(circle at 80% 20%, #f59e0b 1px, transparent 1px),
-                           radial-gradient(circle at 40% 80%, #3b82f6 1px, transparent 1px)`,
-          backgroundSize: '60px 60px'
-        }}></div>
+    <section className="relative py-8 md:py-20 overflow-hidden min-h-[550px] md:min-h-[700px] flex items-center">
+      {/* Background Image Carousel */}
+      <div className="absolute inset-0 z-0">
+        {bgImages.map((img, i) => (
+          <div
+            key={img}
+            className="absolute inset-0 bg-cover bg-center transition-opacity duration-[1200ms] ease-in-out"
+            style={{
+              backgroundImage: `url(${img})`,
+              opacity: next !== null ? (i === next ? 1 : i === current ? 0 : 0) : i === current ? 1 : 0,
+            }}
+          />
+        ))}
+        {/* Dark overlay for text readability */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0a0e27]/90 via-[#0d1b3e]/85 to-[#0a0e27]/95" />
       </div>
-      
-      {/* Floating Elements */}
-      <div className="absolute top-10 left-10 w-20 h-20 bg-emerald-200/40 rounded-full blur-2xl animate-pulse"></div>
-      <div className="absolute top-32 right-10 w-24 h-24 bg-orange-200/40 rounded-full blur-2xl animate-pulse delay-1000"></div>
-      <div className="absolute bottom-20 left-1/3 w-16 h-16 bg-blue-200/40 rounded-full blur-2xl animate-pulse delay-500"></div>
-      
+
       <div className="container mx-auto px-4 relative z-10">
         <div className="text-center max-w-6xl mx-auto">
           {/* Main Heading */}
-          <h1 className="text-6xl md:text-7xl font-bold text-gray-900 mb-6 leading-tight">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-4 md:mb-6 leading-tight">
             Transform Your
-            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 via-blue-600 to-orange-500">
+            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 animate-pulse">
               Career Today
             </span>
           </h1>
           
           {/* Subheading */}
-          <p className="text-xl md:text-2xl text-gray-600 mb-16 max-w-4xl mx-auto leading-relaxed">
+          <p className="text-base md:text-xl lg:text-2xl text-gray-300 mb-8 md:mb-16 max-w-4xl mx-auto leading-relaxed px-4">
             Master industry-relevant skills with expert mentors and join thousands of successful graduates building their dream careers.
           </p>
 
-          {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16 max-w-5xl mx-auto">
-            <div className="group bg-white rounded-2xl p-8 shadow-lg border border-gray-100 hover:shadow-xl hover:scale-105 transition-all duration-300">
-              <div className="text-center">
-                <div className="text-5xl font-bold text-emerald-600 mb-2 group-hover:scale-110 transition-transform">95%</div>
-                <div className="text-gray-600 flex items-center justify-center gap-2">
-                  <CheckCircle className="w-5 h-5 text-emerald-600" />
-                  <span>Placement Rate</span>
-                </div>
+          {/* Stats Cards (Fixed Height & Padding according to image) */}
+          <div className="flex flex-wrap justify-center gap-4 md:gap-6 mb-8 md:mb-16 max-w-5xl mx-auto px-4">
+            <div className="glass-card px-6 md:px-10 py-4 md:py-5 group min-w-[140px] md:min-w-[240px] flex flex-col justify-center items-center">
+              <div className="text-3xl md:text-5xl font-bold text-green-500 mb-1 md:mb-2 group-hover:scale-105 transition-transform">
+                <Counter end={95} suffix="%" />
+              </div>
+              <div className="text-gray-400 flex items-center justify-center gap-2 text-xs md:text-sm font-medium">
+                <CheckCircle className="w-3 h-3 md:w-4 md:h-4 text-green-500" />
+                <span>Placement Rate</span>
               </div>
             </div>
-            <div className="group bg-white rounded-2xl p-8 shadow-lg border border-gray-100 hover:shadow-xl hover:scale-105 transition-all duration-300">
-              <div className="text-center">
-                <div className="text-5xl font-bold text-orange-500 mb-2 group-hover:scale-110 transition-transform">5000+</div>
-                <div className="text-gray-600 flex items-center justify-center gap-2">
-                  <Users className="w-5 h-5 text-orange-500" />
-                  <span>Students</span>
-                </div>
+
+            <div className="glass-card px-6 md:px-10 py-4 md:py-5 group min-w-[140px] md:min-w-[240px] flex flex-col justify-center items-center">
+              <div className="text-3xl md:text-5xl font-bold text-orange-500 mb-1 md:mb-2 group-hover:scale-105 transition-transform">
+                <Counter end={5000} suffix="+" />
+              </div>
+              <div className="text-gray-400 flex items-center justify-center gap-2 text-xs md:text-sm font-medium">
+                <Users className="w-3 h-3 md:w-4 md:h-4 text-orange-500" />
+                <span>Students</span>
               </div>
             </div>
-            <div className="group bg-white rounded-2xl p-8 shadow-lg border border-gray-100 hover:shadow-xl hover:scale-105 transition-all duration-300">
-              <div className="text-center">
-                <div className="text-5xl font-bold text-blue-600 mb-2 group-hover:scale-110 transition-transform">50+</div>
-                <div className="text-gray-600 flex items-center justify-center gap-2">
-                  <Award className="w-5 h-5 text-blue-600" />
-                  <span>Expert Mentors</span>
-                </div>
+
+            <div className="glass-card px-6 md:px-10 py-4 md:py-5 group min-w-[140px] md:min-w-[240px] flex flex-col justify-center items-center">
+              <div className="text-3xl md:text-5xl font-bold text-blue-500 mb-1 md:mb-2 group-hover:scale-105 transition-transform">
+                <Counter end={50} suffix="+" />
+              </div>
+              <div className="text-gray-400 flex items-center justify-center gap-2 text-xs md:text-sm font-medium">
+                <Award className="w-3 h-3 md:w-4 md:h-4 text-blue-500" />
+                <span>Expert Mentors</span>
               </div>
             </div>
           </div>
 
           {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-6 justify-center mb-16">
+          <div className="flex flex-col sm:flex-row gap-4 md:gap-6 justify-center mb-8 md:mb-16 px-4">
             <button 
-              className="group relative px-10 py-5 bg-gradient-to-r from-emerald-600 to-blue-600 text-white text-lg font-bold rounded-2xl hover:shadow-2xl hover:scale-105 transition-all duration-300"
+              className="glass-button px-6 md:px-10 py-3 md:py-5 bg-gradient-to-r from-teal-500 to-blue-600 text-white text-sm md:text-lg font-bold rounded-xl md:rounded-2xl hover:scale-105 transition-all duration-300 group"
               onClick={() => window.location.href = '/courses'}
             >
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-orange-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
-              <div className="relative flex items-center justify-center gap-3">
-                <Play className="w-6 h-6 group-hover:scale-110 transition-transform" />
+              <div className="flex items-center justify-center gap-2 md:gap-3">
+                <Play className="w-4 h-4 md:w-6 md:h-6 group-hover:scale-110 transition-transform fill-white" />
                 <span>Start Learning Now</span>
-                <ArrowRight className="w-6 h-6 group-hover:translate-x-2 transition-transform" />
+                <ArrowRight className="w-4 h-4 md:w-6 md:h-6 group-hover:translate-x-2 transition-transform" />
               </div>
             </button>
             <button 
-              className="group px-10 py-5 border-2 border-gray-300 text-gray-700 text-lg font-bold rounded-2xl hover:border-emerald-600 hover:text-emerald-600 hover:bg-emerald-50 transition-all duration-300"
+              className="glass-button px-6 md:px-10 py-3 md:py-5 border-2 border-gray-700 text-gray-300 text-sm md:text-lg font-bold rounded-xl md:rounded-2xl hover:border-gray-500 transition-all duration-300 group"
               onClick={() => window.location.href = '/courses'}
             >
-              <div className="flex items-center justify-center gap-3">
-                <BookOpen className="w-6 h-6 group-hover:scale-110 transition-transform" />
+              <div className="flex items-center justify-center gap-2 md:gap-3">
+                <BookOpen className="w-4 h-4 md:w-6 md:h-6 group-hover:scale-110 transition-transform" />
                 <span>Browse All Courses</span>
               </div>
             </button>
           </div>
 
           {/* Trust Indicators */}
-          <div className="flex flex-wrap justify-center items-center gap-10 p-8 bg-gradient-to-r from-gray-50 to-white rounded-3xl shadow-lg border border-gray-100">
-            <div className="flex items-center gap-3 group">
-              <div className="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center group-hover:bg-emerald-200 transition-colors">
-                <CheckCircle className="w-6 h-6 text-emerald-600 group-hover:scale-110 transition-transform" />
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6 p-4 md:p-8 max-w-5xl mx-auto rounded-[20px] border border-[rgba(99,102,241,0.3)] backdrop-blur-[16px]" style={{background: 'rgba(26, 31, 76, 0.9)', boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)'}}>
+            <div className="flex items-center justify-center gap-3 md:gap-4 group">
+              <div className="w-10 h-10 md:w-12 md:h-12 bg-green-100 rounded-xl flex items-center justify-center shrink-0">
+                <CheckCircle className="w-5 h-5 md:w-6 md:h-6 text-green-600 group-hover:scale-110 transition-transform" />
               </div>
-              <div>
-                <div className="font-bold text-gray-900">Certified Programs</div>
-                <div className="text-sm text-gray-600">Industry recognized</div>
-              </div>
-            </div>
-            <div className="flex items-center gap-3 group">
-              <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center group-hover:bg-orange-200 transition-colors">
-                <Award className="w-6 h-6 text-orange-500 group-hover:scale-110 transition-transform" />
-              </div>
-              <div>
-                <div className="font-bold text-gray-900">Expert Mentors</div>
-                <div className="text-sm text-gray-600">10+ years experience</div>
+              <div className="text-left">
+                <div className="font-bold text-gray-900 text-sm md:text-base">Certified Programs</div>
+                <div className="text-xs md:text-sm text-gray-500">Industry recognized</div>
               </div>
             </div>
-            <div className="flex items-center gap-3 group">
-              <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center group-hover:bg-blue-200 transition-colors">
-                <Clock className="w-6 h-6 text-blue-600 group-hover:scale-110 transition-transform" />
+
+            <div className="flex items-center justify-center gap-3 md:gap-4 group">
+              <div className="w-10 h-10 md:w-12 md:h-12 bg-orange-100 rounded-xl flex items-center justify-center shrink-0">
+                <Award className="w-5 h-5 md:w-6 md:h-6 text-orange-600 group-hover:scale-110 transition-transform" />
               </div>
-              <div>
-                <div className="font-bold text-gray-900">Lifetime Support</div>
-                <div className="text-sm text-gray-600">24/7 assistance</div>
+              <div className="text-left">
+                <div className="font-bold text-gray-900 text-sm md:text-base">Expert Mentors</div>
+                <div className="text-xs md:text-sm text-gray-500">10+ years experience</div>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-center gap-3 md:gap-4 group">
+              <div className="w-10 h-10 md:w-12 md:h-12 bg-blue-100 rounded-xl flex items-center justify-center shrink-0">
+                <Clock className="w-5 h-5 md:w-6 md:h-6 text-blue-600 group-hover:scale-110 transition-transform" />
+              </div>
+              <div className="text-left">
+                <div className="font-bold text-gray-900 text-sm md:text-base">Lifetime Support</div>
+                <div className="text-xs md:text-sm text-gray-500">24/7 assistance</div>
               </div>
             </div>
           </div>

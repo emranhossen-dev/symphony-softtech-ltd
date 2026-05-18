@@ -162,14 +162,14 @@ export default function CategoryManagement() {
   ) || [];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-900">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200">
+      <div className="bg-gray-800 border-b border-gray-700">
         <div className="px-8 py-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-semibold text-gray-900">Category Management</h1>
-              <p className="text-sm text-gray-500 mt-1">Manage course categories and track performance</p>
+              <h1 className="text-2xl font-semibold text-white">Category Management</h1>
+              <p className="text-sm text-gray-300 mt-1">Manage course categories and track performance</p>
             </div>
             <Button 
               onClick={handleCreateCategory}
@@ -185,43 +185,43 @@ export default function CategoryManagement() {
       <div className="p-8 space-y-6">
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <Card className="bg-white border-0 shadow-sm">
+          <Card className="bg-gray-800 border-0 shadow-sm">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Total Categories</p>
-                  <p className="text-2xl font-bold text-gray-900 mt-1">{stats?.totalCategories || 0}</p>
+                  <p className="text-sm font-medium text-gray-300">Total Categories</p>
+                  <p className="text-2xl font-bold text-white mt-1">{stats?.totalCategories || 0}</p>
                 </div>
-                <div className="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center">
-                  <BookOpen className="w-6 h-6 text-green-600" />
+                <div className="w-12 h-12 bg-green-900/30 rounded-xl flex items-center justify-center">
+                  <BookOpen className="w-6 h-6 text-green-400" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-white border-0 shadow-sm">
+          <Card className="bg-gray-800 border-0 shadow-sm">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Active Categories</p>
-                  <p className="text-2xl font-bold text-gray-900 mt-1">{stats?.activeCategories || 0}</p>
+                  <p className="text-sm font-medium text-gray-300">Active Categories</p>
+                  <p className="text-2xl font-bold text-white mt-1">{stats?.activeCategories || 0}</p>
                 </div>
-                <div className="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center">
-                  <TrendingUp className="w-6 h-6 text-green-600" />
+                <div className="w-12 h-12 bg-green-900/30 rounded-xl flex items-center justify-center">
+                  <TrendingUp className="w-6 h-6 text-green-400" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-white border-0 shadow-sm">
+          <Card className="bg-gray-800 border-0 shadow-sm">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Total Courses</p>
-                  <p className="text-2xl font-bold text-gray-900 mt-1">{stats?.totalCourses || 0}</p>
+                  <p className="text-sm font-medium text-gray-300">Total Courses</p>
+                  <p className="text-2xl font-bold text-white mt-1">{stats?.totalCourses || 0}</p>
                 </div>
-                <div className="w-12 h-12 bg-orange-50 rounded-xl flex items-center justify-center">
-                  <BookOpen className="w-6 h-6 text-orange-600" />
+                <div className="w-12 h-12 bg-orange-900/30 rounded-xl flex items-center justify-center">
+                  <BookOpen className="w-6 h-6 text-orange-400" />
                 </div>
               </div>
             </CardContent>

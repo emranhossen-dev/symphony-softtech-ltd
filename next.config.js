@@ -5,9 +5,6 @@ const nextConfig = {
   },
   output: 'standalone',
   serverExternalPackages: ['pg'],
-  turbopack: {
-    root: __dirname,
-  },
 };
 
 module.exports = nextConfig;

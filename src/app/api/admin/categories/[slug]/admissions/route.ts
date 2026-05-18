@@ -129,7 +129,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     console.log(`Found ${enrollments.length} enrollments for ${categoryString}`);
 
     // Calculate stats
-    const approvedEnrollments = enrollments.filter(e => e.enrollmentStatus === 'APPROVED').length;
+    const approvedEnrollments = enrollments.filter(e => e.enrollmentStatus === 'ADMITTED' as any).length;
     const totalEnrollments = enrollments.length;
     const completionRate = totalEnrollments > 0 ? Math.round((approvedEnrollments / totalEnrollments) * 100) : 0;
 
@@ -142,13 +142,13 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     }).length;
 
     const stats = {
-      applied: enrollments.filter(e => e.enrollmentStatus === 'PENDING_REVIEW').length,
-      waiting: enrollments.filter(e => e.enrollmentStatus === 'PAYMENT_PENDING').length,
+      applied: enrollments.filter(e => e.enrollmentStatus === 'APPLIED' as any).length,
+      waiting: enrollments.filter(e => e.enrollmentStatus === 'WAITING' as any).length,
       admitted: approvedEnrollments,
-      nextBatch: 0, // Not in current schema
+      nextBatch: enrollments.filter(e => e.enrollmentStatus === 'NEXT_BATCH' as any).length,
       rejected: enrollments.filter(e => e.enrollmentStatus === 'REJECTED').length,
       totalRevenue: enrollments
-        .filter(e => e.enrollmentStatus === 'APPROVED')
+        .filter(e => e.enrollmentStatus === 'ADMITTED' as any)
         .reduce((sum: number, e: any) => {
           const payment = e.payments && e.payments.length > 0 ? e.payments[0] : null;
           return sum + (payment?.amount || 0);

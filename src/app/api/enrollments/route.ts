@@ -92,15 +92,15 @@ export async function POST(request: NextRequest) {
 
     // Determine enrollment status based on payment method and course category
     const categorySlug = course.categoryRelation?.slug?.toLowerCase() || '';
-    let enrollmentStatus: 'PENDING_REVIEW' | 'PAYMENT_PENDING' | 'APPROVED' | 'REJECTED' = 'PAYMENT_PENDING';
+    let enrollmentStatus: 'APPLIED' | 'ADMITTED' | 'REJECTED' | 'WAITING' | 'NEXT_BATCH' = 'APPLIED';
 
-    // Government courses - free enrollment
+    // Government courses - applied status
     if (categorySlug === 'government' || categorySlug.includes('government')) {
-      enrollmentStatus = 'PENDING_REVIEW';
+      enrollmentStatus = 'APPLIED';
     }
-    // Cash and online payment - pending payment
+    // Cash and online payment - waiting for payment
     else if (paymentMethod === 'cash' || paymentMethod === 'online') {
-      enrollmentStatus = 'PAYMENT_PENDING';
+      enrollmentStatus = 'WAITING';
     }
 
     // Create enrollment
@@ -206,9 +206,9 @@ export async function POST(request: NextRequest) {
     // For non-online payments, return enrollment success
     return NextResponse.json({
       success: true,
-      message: enrollmentStatus === 'PENDING_REVIEW' 
+      message: enrollmentStatus === 'APPLIED' 
         ? 'Enrollment submitted successfully! Your enrollment is now under review.'
-        : enrollmentStatus === 'PAYMENT_PENDING'
+        : enrollmentStatus === 'WAITING'
         ? 'Enrollment submitted successfully! Please visit our center to complete payment.'
         : 'Enrollment submitted successfully!',
       enrollment: {

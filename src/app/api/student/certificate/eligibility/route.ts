@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
           id: user.id
         },
         courseId: courseId,
-        enrollmentStatus: 'APPROVED'
+        enrollmentStatus: 'ADMITTED'
       }
     });
 

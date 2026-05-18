@@ -62,7 +62,7 @@ const OfflineCategoryPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-orange-50">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
         <div className="container mx-auto px-4 py-8">
           <div className="animate-pulse">
             <div className="h-12 bg-gray-200 rounded-xl w-1/3 mb-12"></div>
@@ -85,11 +85,11 @@ const OfflineCategoryPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-orange-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
       {/* Hero Section */}
       <div className="relative overflow-hidden">
         {/* Background with glassmorphism */}
-        <div className="absolute inset-0 bg-gradient-to-br from-emerald-600/10 via-white to-orange-600/10"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-emerald-600/10 via-slate-900 to-orange-600/10"></div>
         <div className="absolute inset-0">
           <div className="absolute top-0 left-0 w-full h-full bg-[url(&quot;data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2310b981' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E&quot;)] opacity-40"></div>
         </div>
@@ -106,14 +106,14 @@ const OfflineCategoryPage = () => {
         <div className="container mx-auto px-4 relative z-10">
           <div className="text-center py-20 lg:py-24">
             {/* Badge with animation */}
-            <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm px-6 py-3 rounded-full text-emerald-700 mb-8 border border-emerald-200/50 shadow-lg animate-pulse">
+            <div className="inline-flex items-center gap-2 bg-gray-800/80 backdrop-blur-sm px-6 py-3 rounded-full text-emerald-400 mb-8 border border-emerald-600/50 shadow-lg animate-pulse">
               <MapPin className="w-5 h-5" />
               <span className="font-semibold">In-Person Learning</span>
               <Sparkles className="w-4 h-4 text-orange-500 animate-spin" />
             </div>
 
             {/* Main Title with enhanced gradient */}
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 mb-6 leading-tight">
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight">
               Offline
               <span className="block text-4xl md:text-5xl lg:text-6xl mt-2 text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 via-orange-500 to-emerald-600 bg-300% animate-gradient">
                 Classroom Training
@@ -121,38 +121,38 @@ const OfflineCategoryPage = () => {
             </h1>
             
             {/* Subtitle with better typography */}
-            <p className="text-xl md:text-2xl text-gray-600 max-w-4xl mx-auto leading-relaxed mb-16">
+            <p className="text-xl md:text-2xl text-gray-300 max-w-4xl mx-auto leading-relaxed mb-16">
               Experience the power of 
-              <span className="font-semibold text-emerald-700 bg-emerald-100 px-2 py-1 rounded-lg"> hands-on learning</span> in our modern classrooms. 
-              Learn directly from <span className="font-semibold text-orange-700 bg-orange-100 px-2 py-1 rounded-lg"> expert instructors</span> in a collaborative, professional environment.
+              <span className="font-semibold text-emerald-400 bg-emerald-900/30 px-2 py-1 rounded-lg"> hands-on learning</span> in our modern classrooms. 
+              Learn directly from <span className="font-semibold text-orange-400 bg-orange-900/30 px-2 py-1 rounded-lg"> expert instructors</span> in a collaborative, professional environment.
             </p>
 
             {/* Enhanced Statistics Row with animations */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 max-w-5xl mx-auto mb-16">
-              <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-emerald-200/50 hover:bg-white/80 transition-all duration-300 transform hover:scale-105 group">
+              <div className="bg-slate-800/60 backdrop-blur-sm rounded-2xl p-6 border border-emerald-500/30 hover:bg-slate-800/80 transition-all duration-300 transform hover:scale-105 group">
                 <div className="text-4xl font-bold text-emerald-600 mb-2 group-hover:scale-110 transition-transform">2,500+</div>
-                <div className="text-gray-600 font-medium">Students</div>
+                <div className="text-gray-300 font-medium">Students</div>
                 <div className="flex items-center justify-center mt-2">
                   <GraduationCap className="w-4 h-4 text-emerald-500" />
                 </div>
               </div>
-              <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-orange-200/50 hover:bg-white/80 transition-all duration-300 transform hover:scale-105 group">
+              <div className="bg-slate-800/60 backdrop-blur-sm rounded-2xl p-6 border border-orange-500/30 hover:bg-slate-800/80 transition-all duration-300 transform hover:scale-105 group">
                 <div className="text-4xl font-bold text-orange-600 mb-2 group-hover:scale-110 transition-transform">15+</div>
-                <div className="text-gray-600 font-medium">Courses</div>
+                <div className="text-gray-300 font-medium">Courses</div>
                 <div className="flex items-center justify-center mt-2">
                   <BookOpen className="w-4 h-4 text-orange-500" />
                 </div>
               </div>
-              <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-emerald-200/50 hover:bg-white/80 transition-all duration-300 transform hover:scale-105 group">
+              <div className="bg-slate-800/60 backdrop-blur-sm rounded-2xl p-6 border border-emerald-500/30 hover:bg-slate-800/80 transition-all duration-300 transform hover:scale-105 group">
                 <div className="text-4xl font-bold text-emerald-600 mb-2 group-hover:scale-110 transition-transform">20</div>
-                <div className="text-gray-600 font-medium">Max Batch Size</div>
+                <div className="text-gray-300 font-medium">Max Batch Size</div>
                 <div className="flex items-center justify-center mt-2">
                   <Users className="w-4 h-4 text-emerald-500" />
                 </div>
               </div>
-              <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-orange-200/50 hover:bg-white/80 transition-all duration-300 transform hover:scale-105 group">
+              <div className="bg-slate-800/60 backdrop-blur-sm rounded-2xl p-6 border border-orange-500/30 hover:bg-slate-800/80 transition-all duration-300 transform hover:scale-105 group">
                 <div className="text-4xl font-bold text-orange-600 mb-2 group-hover:scale-110 transition-transform">98%</div>
-                <div className="text-gray-600 font-medium">Success Rate</div>
+                <div className="text-gray-300 font-medium">Success Rate</div>
                 <div className="flex items-center justify-center mt-2">
                   <Award className="w-4 h-4 text-orange-500" />
                 </div>
@@ -166,7 +166,7 @@ const OfflineCategoryPage = () => {
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform relative z-10" />
                 <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
               </button>
-              <button className="px-8 py-4 bg-white/80 backdrop-blur-sm text-emerald-700 font-semibold rounded-2xl border border-emerald-200 hover:bg-white transition-all duration-300 flex items-center justify-center gap-2 hover:shadow-lg">
+              <button className="px-8 py-4 bg-slate-800/80 backdrop-blur-sm text-emerald-400 font-semibold rounded-2xl border border-emerald-500/30 hover:bg-slate-700 transition-all duration-300 flex items-center justify-center gap-2 hover:shadow-lg">
                 <Play className="w-5 h-5" />
                 Watch Demo
               </button>

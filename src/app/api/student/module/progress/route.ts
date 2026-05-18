@@ -29,7 +29,7 @@ export const GET = withRateLimit(
                 id: user.id
               },
               courseId: courseId,
-              enrollmentStatus: 'APPROVED'
+              enrollmentStatus: 'ADMITTED'
             }
           });
 

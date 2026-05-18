@@ -178,32 +178,32 @@ const CreateCoursePage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div>
       {/* Header */}
-      <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+      <div className="bg-gray-800 border-b border-gray-700">
         <div className="max-w-4xl mx-auto px-6 py-6">
           <button
             onClick={() => router.push(`/admin/category/${slug}/courses`)}
-            className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors mb-4"
+            className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-4"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to Courses
           </button>
           
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Create New Course</h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-1">
-            Category: <span className="font-semibold text-blue-600 dark:text-blue-400">{slug.toUpperCase()}</span>
+          <h1 className="text-3xl font-bold text-white">Create New Course</h1>
+          <p className="text-gray-400 mt-1">
+            Category: <span className="font-semibold text-blue-400">{slug.toUpperCase()}</span>
           </p>
         </div>
       </div>
 
       {/* Main Content */}
       <div className="max-w-4xl mx-auto p-6">
-        <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-8 space-y-6">
+        <form onSubmit={handleSubmit} className="bg-gray-800 rounded-2xl shadow-lg border border-gray-700 p-8 space-y-6">
           
           {/* Course Title */}
           <div>
-            <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2">
+            <label className="block text-sm font-semibold text-white mb-2">
               Course Title *
             </label>
             <input
@@ -211,26 +211,26 @@ const CreateCoursePage = () => {
               value={formData.title}
               onChange={(e) => handleInputChange('title', e.target.value)}
               placeholder="Enter course title"
-              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-all"
+              className="w-full px-4 py-3 border border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-700 text-white transition-all"
               required
             />
             {formData.title && (
-              <div className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                Slug: <span className="font-mono bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">{formData.slug}</span>
+              <div className="mt-2 text-sm text-gray-400">
+                <span className="font-mono bg-gray-700 px-2 py-1 rounded">{formData.slug}</span>
               </div>
             )}
           </div>
 
           {/* Price Section */}
           <div>
-            <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2">
+            <label className="block text-sm font-semibold text-white mb-2">
               Pricing
             </label>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
               {/* Regular Price */}
               <div>
-                <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                <label className="block text-xs font-medium text-gray-400 mb-1">
                   Regular Price (BDT)
                 </label>
                 <input
@@ -240,13 +240,13 @@ const CreateCoursePage = () => {
                   placeholder="13000"
                   min="0"
                   step="0.01"
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-all"
+                  className="w-full px-4 py-3 border border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-700 text-white transition-all"
                 />
               </div>
 
               {/* Offer Price */}
               <div>
-                <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                <label className="block text-xs font-medium text-gray-400 mb-1">
                   Offer Price (BDT)
                 </label>
                 <input
@@ -256,22 +256,22 @@ const CreateCoursePage = () => {
                   placeholder="10000"
                   min="0"
                   step="0.01"
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-all"
+                  className="w-full px-4 py-3 border border-gray-600 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-700 text-white transition-all"
                 />
               </div>
             </div>
 
             {/* Price Preview */}
             {(formData.regularPrice > 0 || formData.offerPrice > 0) && (
-              <div className="bg-gradient-to-r from-blue-50 to-green-50 dark:from-blue-900/20 dark:to-green-900/20 rounded-xl p-4 border border-blue-200 dark:border-blue-800">
-                <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">Price Preview:</p>
+              <div className="bg-gradient-to-r from-blue-900/20 to-green-900/20 rounded-xl p-4 border border-blue-800">
+                <p className="text-xs font-medium text-gray-400 mb-2">Price Preview:</p>
                 <div className="flex items-center gap-3">
                   {formData.regularPrice > 0 && formData.offerPrice > 0 && formData.regularPrice > formData.offerPrice ? (
                     <>
                       <span className="text-xl font-bold text-gray-400 line-through">
                         ৳{formData.regularPrice.toLocaleString()}
                       </span>
-                      <span className="text-2xl font-bold text-green-600 dark:text-green-400">
+                      <span className="text-2xl font-bold text-green-400">
                         ৳{formData.offerPrice.toLocaleString()}
                       </span>
                       <span className="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
@@ -279,15 +279,15 @@ const CreateCoursePage = () => {
                       </span>
                     </>
                   ) : formData.offerPrice > 0 ? (
-                    <span className="text-2xl font-bold text-green-600 dark:text-green-400">
+                    <span className="text-2xl font-bold text-green-400">
                       ৳{formData.offerPrice.toLocaleString()}
                     </span>
                   ) : formData.regularPrice > 0 ? (
-                    <span className="text-2xl font-bold text-gray-900 dark:text-white">
+                    <span className="text-2xl font-bold text-white">
                       ৳{formData.regularPrice.toLocaleString()}
                     </span>
                   ) : (
-                    <span className="text-gray-400 dark:text-gray-600">Enter price to see preview</span>
+                    <span className="text-gray-400">Enter price to see preview</span>
                   )}
                 </div>
               </div>
@@ -296,7 +296,7 @@ const CreateCoursePage = () => {
 
           {/* Duration */}
           <div>
-            <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2">
+            <label className="block text-sm font-semibold text-white mb-2">
               Duration
             </label>
             <div className="relative">
@@ -306,14 +306,14 @@ const CreateCoursePage = () => {
                 value={formData.duration}
                 onChange={(e) => handleInputChange('duration', e.target.value)}
                 placeholder="e.g., 3 months, 40 hours"
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-all"
+                className="w-full pl-10 pr-4 py-3 border border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-700 text-white transition-all"
               />
             </div>
           </div>
 
           {/* Description */}
           <div>
-            <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2">
+            <label className="block text-sm font-semibold text-white mb-2">
               Description *
             </label>
             <textarea
@@ -321,14 +321,14 @@ const CreateCoursePage = () => {
               onChange={(e) => handleInputChange('description', e.target.value)}
               placeholder="Describe what students will learn in this course"
               rows={6}
-              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-all resize-none"
+              className="w-full px-4 py-3 border border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-700 text-white transition-all resize-none"
               required
             />
           </div>
 
           {/* Thumbnail Upload */}
           <div>
-            <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2">
+            <label className="block text-sm font-semibold text-white mb-2">
               Course Thumbnail
             </label>
             
@@ -337,7 +337,7 @@ const CreateCoursePage = () => {
                 <img 
                   src={thumbnailPreview} 
                   alt="Thumbnail preview" 
-                  className="w-full h-64 object-cover rounded-xl border border-gray-200 dark:border-gray-600"
+                  className="w-full h-64 object-cover rounded-xl border border-gray-600"
                 />
                 <button
                   type="button"
@@ -351,8 +351,8 @@ const CreateCoursePage = () => {
               <div 
                 className={`border-2 border-dashed rounded-xl p-8 text-center transition-all cursor-pointer ${
                   isDragging 
-                    ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' 
-                    : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
+                    ? 'border-blue-500 bg-blue-900/20' 
+                    : 'border-gray-600 hover:border-gray-500'
                 }`}
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
@@ -360,10 +360,10 @@ const CreateCoursePage = () => {
                 onClick={() => document.getElementById('thumbnail-input')?.click()}
               >
                 <Upload className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                <p className="text-gray-600 dark:text-gray-400 mb-2">
+                <p className="text-gray-400 mb-2">
                   {isDragging ? 'Drop your image here' : 'Click to upload or drag & drop'}
                 </p>
-                <p className="text-sm text-gray-500 dark:text-gray-500">
+                <p className="text-sm text-gray-500">
                   PNG, JPG, GIF up to 10MB
                 </p>
               </div>
@@ -379,11 +379,11 @@ const CreateCoursePage = () => {
           </div>
 
           {/* Action Buttons */}
-          <div className="flex items-center gap-4 pt-6 border-t border-gray-200 dark:border-gray-700">
+          <div className="flex items-center gap-4 pt-6 border-t border-gray-700">
             <button
               type="button"
               onClick={() => router.push(`/admin/category/${slug}/courses`)}
-              className="px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-medium"
+              className="px-6 py-3 border border-gray-600 text-gray-300 rounded-xl hover:bg-gray-700 transition-colors font-medium"
             >
               Cancel
             </button>

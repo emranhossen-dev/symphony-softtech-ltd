@@ -227,15 +227,15 @@ const EnrollmentForm = ({ course, onClose }: EnrollmentFormProps) => {
   const renderPersonalInfo = () => (
     <div className="space-y-6">
       <div>
-        <h3 className="text-xl font-semibold mb-6 flex items-center gap-2">
-          <User className="w-6 h-6 text-emerald-600" />
+        <h3 className="text-xl font-semibold mb-6 flex items-center gap-2 text-white">
+          <User className="w-6 h-6 text-emerald-400" />
           Personal Information
         </h3>
         
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-emerald-200/50 shadow-lg">
+        <div className="bg-gray-800/80 backdrop-blur-sm rounded-2xl p-6 border border-gray-700 shadow-lg">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label htmlFor="fullName" className="block text-sm font-semibold text-gray-700 mb-2">Full Name <span className="text-red-500">*</span></label>
+              <label htmlFor="fullName" className="block text-sm font-semibold text-gray-300 mb-2">Full Name <span className="text-red-400">*</span></label>
               <input
                 type="text"
                 id="fullName"
@@ -243,13 +243,13 @@ const EnrollmentForm = ({ course, onClose }: EnrollmentFormProps) => {
                 value={formData.name}
                 onChange={handleInputChange}
                 required
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-gray-900 placeholder-gray-500 transition-all duration-300"
+                className="w-full px-4 py-3 border border-gray-600 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-white placeholder-gray-400 bg-gray-700 transition-all duration-300"
                 placeholder="Enter your full name"
               />
             </div>
             
             <div>
-              <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">Email <span className="text-red-500">*</span></label>
+              <label htmlFor="email" className="block text-sm font-semibold text-gray-300 mb-2">Email <span className="text-red-400">*</span></label>
               <input
                 type="email"
                 id="email"
@@ -257,13 +257,13 @@ const EnrollmentForm = ({ course, onClose }: EnrollmentFormProps) => {
                 value={formData.email}
                 onChange={handleInputChange}
                 required
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-gray-900 placeholder-gray-500 transition-all duration-300"
+                className="w-full px-4 py-3 border border-gray-600 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-white placeholder-gray-400 bg-gray-700 transition-all duration-300"
                 placeholder="your@email.com"
               />
             </div>
             
             <div>
-              <label htmlFor="phone" className="block text-sm font-semibold text-gray-700 mb-2">Phone Number <span className="text-red-500">*</span></label>
+              <label htmlFor="phone" className="block text-sm font-semibold text-gray-300 mb-2">Phone Number <span className="text-red-400">*</span></label>
               <input
                 type="tel"
                 id="phone"
@@ -271,13 +271,13 @@ const EnrollmentForm = ({ course, onClose }: EnrollmentFormProps) => {
                 value={formData.phone}
                 onChange={handleInputChange}
                 required
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-gray-900 placeholder-gray-500 transition-all duration-300"
+                className="w-full px-4 py-3 border border-gray-600 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-white placeholder-gray-400 bg-gray-700 transition-all duration-300"
                 placeholder="01XXXXXXXXX"
               />
             </div>
             
             <div>
-              <label htmlFor="dob" className="block text-sm font-semibold text-gray-700 mb-2">Date of Birth</label>
+              <label htmlFor="dob" className="block text-sm font-semibold text-gray-300 mb-2">Date of Birth</label>
               <div className="relative">
                 <input
                   type="date"
@@ -285,7 +285,7 @@ const EnrollmentForm = ({ course, onClose }: EnrollmentFormProps) => {
                   name="dateOfBirth"
                   value={formData.dateOfBirth}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-gray-900 transition-all duration-300"
+                  className="w-full px-4 py-3 border border-gray-600 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-white bg-gray-700 transition-all duration-300"
                 />
                 <Calendar className="absolute right-3 top-3 w-5 h-5 text-gray-400 pointer-events-none" />
               </div>
@@ -293,26 +293,26 @@ const EnrollmentForm = ({ course, onClose }: EnrollmentFormProps) => {
           </div>
           
           <div>
-            <label htmlFor="address" className="block text-sm font-semibold text-gray-700 mb-2">Address</label>
+            <label htmlFor="address" className="block text-sm font-semibold text-gray-300 mb-2">Address</label>
             <textarea
               id="address"
               name="address"
               value={formData.address}
               onChange={handleInputChange}
               rows={3}
-              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-gray-900 placeholder-gray-500 transition-all duration-300"
+              className="w-full px-4 py-3 border border-gray-600 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-white placeholder-gray-400 bg-gray-700 transition-all duration-300"
               placeholder="Your full address"
             />
           </div>
           
           <div>
-            <label htmlFor="education" className="block text-sm font-semibold text-gray-700 mb-2">Education</label>
+            <label htmlFor="education" className="block text-sm font-semibold text-gray-300 mb-2">Education</label>
             <select
               id="education"
               name="education"
               value={formData.education}
               onChange={handleInputChange}
-              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-gray-900 transition-all duration-300"
+              className="w-full px-4 py-3 border border-gray-600 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-white bg-gray-700 transition-all duration-300"
             >
               <option value="">Select Education Level</option>
               <option value="ssc">SSC</option>
@@ -330,11 +330,11 @@ const EnrollmentForm = ({ course, onClose }: EnrollmentFormProps) => {
   const renderPaymentOptions = () => (
     <div className="space-y-6">
       <div>
-        <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
-          <CreditCard className="w-6 h-6 text-blue-600" />
+        <h3 className="text-xl font-semibold mb-4 flex items-center gap-2 text-white">
+          <CreditCard className="w-6 h-6 text-blue-400" />
           {paymentConfig.title}
         </h3>
-        <p className="text-gray-600 mb-6">{paymentConfig.description}</p>
+        <p className="text-gray-400 mb-6">{paymentConfig.description}</p>
         
         {paymentConfig.showPayment && (
           <div className="space-y-4">
@@ -345,8 +345,8 @@ const EnrollmentForm = ({ course, onClose }: EnrollmentFormProps) => {
                   key={option.id}
                   className={`block p-4 border-2 rounded-lg cursor-pointer transition-all duration-300 ${
                     formData.paymentMethod === option.id
-                      ? 'border-blue-500 bg-blue-50'
-                      : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                      ? 'border-blue-500 bg-blue-900/30'
+                      : 'border-gray-600 hover:border-gray-500 hover:bg-gray-700/30'
                   }`}
                 >
                   <div className="flex items-center gap-4">
@@ -359,15 +359,15 @@ const EnrollmentForm = ({ course, onClose }: EnrollmentFormProps) => {
                       className="w-4 h-4"
                     />
                     <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${
-                      option.color === 'blue' ? 'bg-blue-100' : option.color === 'green' ? 'bg-green-100' : 'bg-gray-100'
+                      option.color === 'blue' ? 'bg-blue-900/30' : option.color === 'green' ? 'bg-green-900/30' : 'bg-gray-800'
                     }`}>
                       <IconComponent className={`w-6 h-6 ${
-                        option.color === 'blue' ? 'text-blue-600' : option.color === 'green' ? 'text-green-600' : 'text-gray-600'
+                        option.color === 'blue' ? 'text-blue-400' : option.color === 'green' ? 'text-green-400' : 'text-gray-400'
                       }`} />
                     </div>
                     <div className="flex-1">
-                      <h4 className="font-semibold text-gray-900">{option.name}</h4>
-                      <p className="text-sm text-gray-600">{option.description}</p>
+                      <h4 className="font-semibold text-white">{option.name}</h4>
+                      <p className="text-sm text-gray-400">{option.description}</p>
                     </div>
                   </div>
                 </label>
@@ -377,12 +377,12 @@ const EnrollmentForm = ({ course, onClose }: EnrollmentFormProps) => {
         )}
         
         {!paymentConfig.showPayment && (
-          <div className="bg-green-50 border border-green-200 rounded-lg p-6">
+          <div className="bg-green-900/30 border border-green-700 rounded-lg p-6">
             <div className="flex items-center gap-3 mb-3">
-              <CheckCircle className="w-5 h-5 text-green-600" />
-              <h4 className="font-semibold text-green-800">Free Course</h4>
+              <CheckCircle className="w-5 h-5 text-green-400" />
+              <h4 className="font-semibold text-green-300">Free Course</h4>
             </div>
-            <p className="text-green-700">
+            <p className="text-green-300">
               This government course is completely free of charge. You will get access to all materials and support at no cost.
             </p>
           </div>
@@ -398,7 +398,7 @@ const EnrollmentForm = ({ course, onClose }: EnrollmentFormProps) => {
             required
             className="w-4 h-4 mt-1"
           />
-          <span className="text-sm text-gray-600">
+          <span className="text-sm text-gray-400">
             I agree to the terms and conditions and understand that my information will be used for enrollment purposes.
           </span>
         </label>
@@ -432,63 +432,63 @@ const EnrollmentForm = ({ course, onClose }: EnrollmentFormProps) => {
         <h3 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-emerald-600 mb-3">
           ভর্তি সফলভাবে সম্পন্ন হয়েছে! 🎉
         </h3>
-        <p className="text-lg text-gray-600">
+        <p className="text-lg text-gray-400">
           আপনার কোর্সে ভর্তির আবেদন গৃহীত হয়েছে
         </p>
       </div>
       
       {/* Verification Required Card */}
-      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 rounded-2xl p-8 mb-8 shadow-lg transform transition-all duration-300 hover:scale-105">
+      <div className="bg-gradient-to-br from-blue-900/30 to-indigo-900/30 border border-blue-700 rounded-2xl p-8 mb-8 shadow-lg transform transition-all duration-300 hover:scale-105">
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-            <AlertCircle className="w-6 h-6 text-blue-600 animate-pulse" />
+          <div className="w-12 h-12 bg-blue-800 rounded-full flex items-center justify-center">
+            <AlertCircle className="w-6 h-6 text-blue-400 animate-pulse" />
           </div>
-          <h4 className="text-xl font-bold text-blue-800">যাচাইকরণ প্রয়োজন</h4>
+          <h4 className="text-xl font-bold text-blue-300">যাচাইকরণ প্রয়োজন</h4>
         </div>
-        <p className="text-blue-700 mb-6 text-lg leading-relaxed">
+        <p className="text-blue-300 mb-6 text-lg leading-relaxed">
           আপনার ভর্তি সফলভাবে জমা হয়েছে! তবে আপনার ড্যাশবোর্ড অ্যাক্সেস করার জন্য অ্যাডমিনের অনুমোদন প্রয়োজন।
         </p>
         
-        <div className="bg-white rounded-xl p-6 border border-blue-100">
-          <h5 className="font-bold text-gray-900 mb-4 text-lg">পরবর্তী ধাপসমূহ:</h5>
+        <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+          <h5 className="font-bold text-white mb-4 text-lg">পরবর্তী ধাপসমূহ:</h5>
           <div className="space-y-3">
             <div className="flex items-start gap-3">
-              <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                <span className="text-blue-600 font-bold text-sm">1</span>
+              <div className="w-8 h-8 bg-blue-800 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                <span className="text-blue-400 font-bold text-sm">1</span>
               </div>
               <div>
-                <p className="font-medium text-gray-900">অ্যাডমিন পর্যালোচনা করবেন</p>
-                <p className="text-sm text-gray-600">আপনার ভর্তির আবেদন পর্যালোচনা করা হবে</p>
+                <p className="font-medium text-white">অ্যাডমিন পর্যালোচনা করবেন</p>
+                <p className="text-sm text-gray-400">আপনার ভর্তির আবেদন পর্যালোচনা করা হবে</p>
               </div>
             </div>
             
             <div className="flex items-start gap-3">
-              <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                <span className="text-blue-600 font-bold text-sm">2</span>
+              <div className="w-8 h-8 bg-blue-800 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                <span className="text-blue-400 font-bold text-sm">2</span>
               </div>
               <div>
-                <p className="font-medium text-gray-900">ইমেল নোটিফিকেশন পাবেন</p>
-                <p className="text-sm text-gray-600">অনুমোদনের পর ইমেল পাবেন</p>
+                <p className="font-medium text-white">ইমেল নোটিফিকেশন পাবেন</p>
+                <p className="text-sm text-gray-400">অনুমোদনের পর ইমেল পাবেন</p>
               </div>
             </div>
             
             <div className="flex items-start gap-3">
-              <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                <span className="text-blue-600 font-bold text-sm">3</span>
+              <div className="w-8 h-8 bg-blue-800 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                <span className="text-blue-400 font-bold text-sm">3</span>
               </div>
               <div>
-                <p className="font-medium text-gray-900">পাসওয়ার্ড সেট করুন</p>
-                <p className="text-sm text-gray-600">ইমেল লিংক থেকে পাসওয়ার্ড সেট করুন</p>
+                <p className="font-medium text-white">পাসওয়ার্ড সেট করুন</p>
+                <p className="text-sm text-gray-400">ইমেল লিংক থেকে পাসওয়ার্ড সেট করুন</p>
               </div>
             </div>
             
             <div className="flex items-start gap-3">
-              <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                <span className="text-green-600 font-bold text-sm">4</span>
+              <div className="w-8 h-8 bg-green-800 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                <span className="text-green-400 font-bold text-sm">4</span>
               </div>
               <div>
-                <p className="font-medium text-gray-900">ড্যাশবোর্ড অ্যাক্সেস করুন</p>
-                <p className="text-sm text-gray-600">সম্পূর্ণ ড্যাশবোর্ড ব্যবহার করুন</p>
+                <p className="font-medium text-white">ড্যাশবোর্ড অ্যাক্সেস করুন</p>
+                <p className="text-sm text-gray-400">সম্পূর্ণ ড্যাশবোর্ড ব্যবহার করুন</p>
               </div>
             </div>
           </div>
@@ -512,97 +512,97 @@ const EnrollmentForm = ({ course, onClose }: EnrollmentFormProps) => {
           </div>
           
           {/* Content with modern card design */}
-          <div className="bg-white p-8 border border-gray-100">
+          <div className="bg-gray-800 p-8 border border-gray-700">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
               {/* Amount Card */}
-              <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-6 border border-green-100 text-center transform transition-all duration-300 hover:scale-105">
-                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="bg-gradient-to-br from-green-900/30 to-emerald-900/30 rounded-xl p-6 border border-green-700 text-center transform transition-all duration-300 hover:scale-105">
+                <div className="w-12 h-12 bg-green-800 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <svg className="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                   </svg>
                 </div>
-                <p className="text-sm text-gray-600 mb-2">পরিমাণ</p>
-                <p className="text-3xl font-bold text-gray-900">BDT {course.price.toLocaleString()}</p>
+                <p className="text-sm text-gray-400 mb-2">পরিমাণ</p>
+                <p className="text-3xl font-bold text-white">BDT {course.price.toLocaleString()}</p>
                 <p className="text-xs text-gray-500 mt-1">সম্পূর্ণ পেমেন্ট</p>
               </div>
               
               {/* Location Card */}
-              <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-100 text-center transform transition-all duration-300 hover:scale-105">
-                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="bg-gradient-to-br from-blue-900/30 to-indigo-900/30 rounded-xl p-6 border border-blue-700 text-center transform transition-all duration-300 hover:scale-105">
+                <div className="w-12 h-12 bg-blue-800 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <svg className="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
                   </svg>
                 </div>
-                <p className="text-sm text-gray-600 mb-2">অবস্থান</p>
-                <p className="text-lg font-bold text-gray-900">Symphony Institute of Technology</p>
-                <p className="text-sm text-gray-600">মিরপুর রোড, ঢাকা</p>
+                <p className="text-sm text-gray-400 mb-2">অবস্থান</p>
+                <p className="text-lg font-bold text-white">Symphony Institute of Technology</p>
+                <p className="text-sm text-gray-400">মিরপুর রোড, ঢাকা</p>
               </div>
               
               {/* Time Card */}
-              <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-6 border border-purple-100 text-center transform transition-all duration-300 hover:scale-105">
-                <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="bg-gradient-to-br from-purple-900/30 to-pink-900/30 rounded-xl p-6 border border-purple-700 text-center transform transition-all duration-300 hover:scale-105">
+                <div className="w-12 h-12 bg-purple-800 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <svg className="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                   </svg>
                 </div>
-                <p className="text-sm text-gray-600 mb-2">সময়</p>
-                <p className="text-xl font-bold text-gray-900">সকাল ৯টা - সন্ধ্যা ৬টা</p>
+                <p className="text-sm text-gray-400 mb-2">সময়</p>
+                <p className="text-xl font-bold text-white">সকাল ৯টা - সন্ধ্যা ৬টা</p>
                 <p className="text-xs text-gray-500 mt-1">সোমবার - শুক্রবার</p>
               </div>
             </div>
             
             {/* Payment Methods */}
-            <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl p-6 border border-gray-200">
-              <h5 className="font-bold text-gray-900 mb-4 text-lg">পেমেন্ট পদ্ধতি:</h5>
+            <div className="bg-gradient-to-r from-gray-800 to-gray-700 rounded-xl p-6 border border-gray-600">
+              <h5 className="font-bold text-white mb-4 text-lg">পেমেন্ট পদ্ধতি:</h5>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="text-center p-3 bg-white rounded-lg border border-gray-200 hover:shadow-md transition-shadow">
+                <div className="text-center p-3 bg-gray-700 rounded-lg border border-gray-600 hover:shadow-md transition-shadow">
                   <div className="w-12 h-8 bg-pink-600 rounded flex items-center justify-center mx-auto mb-2">
                     <span className="text-white font-bold text-xs">bKash</span>
                   </div>
-                  <p className="text-xs font-medium text-gray-700">bKash</p>
+                  <p className="text-xs font-medium text-gray-300">bKash</p>
                 </div>
-                <div className="text-center p-3 bg-white rounded-lg border border-gray-200 hover:shadow-md transition-shadow">
+                <div className="text-center p-3 bg-gray-700 rounded-lg border border-gray-600 hover:shadow-md transition-shadow">
                   <div className="w-12 h-8 bg-purple-800 rounded flex items-center justify-center mx-auto mb-2">
                     <span className="text-white font-bold text-xs">Rocket</span>
                   </div>
-                  <p className="text-xs font-medium text-gray-700">Rocket</p>
+                  <p className="text-xs font-medium text-gray-300">Rocket</p>
                 </div>
-                <div className="text-center p-3 bg-white rounded-lg border border-gray-200 hover:shadow-md transition-shadow">
+                <div className="text-center p-3 bg-gray-700 rounded-lg border border-gray-600 hover:shadow-md transition-shadow">
                   <div className="w-12 h-8 bg-orange-500 rounded flex items-center justify-center mx-auto mb-2">
                     <span className="text-white font-bold text-xs">Nagad</span>
                   </div>
-                  <p className="text-xs font-medium text-gray-700">Nagad</p>
+                  <p className="text-xs font-medium text-gray-300">Nagad</p>
                 </div>
-                <div className="text-center p-3 bg-white rounded-lg border border-gray-200 hover:shadow-md transition-shadow">
+                <div className="text-center p-3 bg-gray-700 rounded-lg border border-gray-600 hover:shadow-md transition-shadow">
                   <div className="w-12 h-8 bg-blue-600 rounded flex items-center justify-center mx-auto mb-2">
                     <span className="text-white font-bold text-xs">Visa</span>
                   </div>
-                  <p className="text-xs font-medium text-gray-700">Visa</p>
+                  <p className="text-xs font-medium text-gray-300">Visa</p>
                 </div>
-                <div className="text-center p-3 bg-white rounded-lg border border-gray-200 hover:shadow-md transition-shadow">
+                <div className="text-center p-3 bg-gray-700 rounded-lg border border-gray-600 hover:shadow-md transition-shadow">
                   <div className="w-12 h-8 bg-red-600 rounded flex items-center justify-center mx-auto mb-2">
                     <span className="text-white font-bold text-xs">MC</span>
                   </div>
-                  <p className="text-xs font-medium text-gray-700">MasterCard</p>
+                  <p className="text-xs font-medium text-gray-300">MasterCard</p>
                 </div>
-                <div className="text-center p-3 bg-white rounded-lg border border-gray-200 hover:shadow-md transition-shadow">
+                <div className="text-center p-3 bg-gray-700 rounded-lg border border-gray-600 hover:shadow-md transition-shadow">
                   <div className="w-12 h-8 bg-green-600 rounded flex items-center justify-center mx-auto mb-2">
                     <span className="text-white font-bold text-xs">Amex</span>
                   </div>
-                  <p className="text-xs font-medium text-gray-700">American Express</p>
+                  <p className="text-xs font-medium text-gray-300">American Express</p>
                 </div>
-                <div className="text-center p-3 bg-white rounded-lg border border-gray-200 hover:shadow-md transition-shadow">
+                <div className="text-center p-3 bg-gray-700 rounded-lg border border-gray-600 hover:shadow-md transition-shadow">
                   <div className="w-12 h-8 bg-indigo-600 rounded flex items-center justify-center mx-auto mb-2">
                     <span className="text-white font-bold text-xs">SSL</span>
                   </div>
-                  <p className="text-xs font-medium text-gray-700">SSLCommerz</p>
+                  <p className="text-xs font-medium text-gray-300">SSLCommerz</p>
                 </div>
-                <div className="text-center p-3 bg-white rounded-lg border border-gray-200 hover:shadow-md transition-shadow">
+                <div className="text-center p-3 bg-gray-700 rounded-lg border border-gray-600 hover:shadow-md transition-shadow">
                   <div className="w-12 h-8 bg-gray-700 rounded flex items-center justify-center mx-auto mb-2">
                     <span className="text-white font-bold text-xs">Cash</span>
                   </div>
-                  <p className="text-xs font-medium text-gray-700">Cash</p>
+                  <p className="text-xs font-medium text-gray-300">Cash</p>
                 </div>
               </div>
             </div>
@@ -611,28 +611,28 @@ const EnrollmentForm = ({ course, onClose }: EnrollmentFormProps) => {
       )}
       
       {formData.paymentMethod === 'online' && (
-        <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 rounded-2xl p-6 mb-8 shadow-lg">
+        <div className="bg-gradient-to-br from-blue-900/30 to-indigo-900/30 border border-blue-700 rounded-2xl p-6 mb-8 shadow-lg">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center animate-pulse">
-              <CreditCard className="w-6 h-6 text-blue-600" />
+            <div className="w-12 h-12 bg-blue-800 rounded-full flex items-center justify-center animate-pulse">
+              <CreditCard className="w-6 h-6 text-blue-400" />
             </div>
-            <h4 className="text-xl font-bold text-blue-800">পেমেন্ট প্রক্রিয়াধান</h4>
+            <h4 className="text-xl font-bold text-blue-300">পেমেন্ট প্রক্রিয়াধান</h4>
           </div>
-          <p className="text-blue-700 text-lg">
+          <p className="text-blue-300 text-lg">
             আপনার পেমেন্ট প্রক্রিয়া চলছে। পেমেন্ট এবং অ্যাডমিন অনুমোদন উভয় সম্পন্ন হলে আপনি নিশ্চিতকরণ পাবেন।
           </p>
         </div>
       )}
       
       {!paymentConfig.showPayment && (
-        <div className="bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200 rounded-2xl p-6 mb-8 shadow-lg">
+        <div className="bg-gradient-to-br from-green-900/30 to-emerald-900/30 border border-green-700 rounded-2xl p-6 mb-8 shadow-lg">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center animate-pulse">
-              <CheckCircle className="w-6 h-6 text-green-600" />
+            <div className="w-12 h-12 bg-green-800 rounded-full flex items-center justify-center animate-pulse">
+              <CheckCircle className="w-6 h-6 text-green-400" />
             </div>
-            <h4 className="text-xl font-bold text-green-800">বিনামূল্য কোর্স</h4>
+            <h4 className="text-xl font-bold text-green-300">বিনামূল্য কোর্স</h4>
           </div>
-          <p className="text-green-700 text-lg">
+          <p className="text-green-300 text-lg">
             আপনার বিনামূল্য কোর্সের ভর্তি এখন পর্যালোচনাধীন। ড্যাশবোর্ড অ্যাক্সেসের জন্য অ্যাডমিন অনুমোদন প্রয়োজন।
           </p>
         </div>
@@ -656,7 +656,7 @@ const EnrollmentForm = ({ course, onClose }: EnrollmentFormProps) => {
         {onClose && (
           <button
             onClick={onClose}
-            className="group relative px-8 py-4 bg-white border-2 border-gray-300 text-gray-700 rounded-xl hover:border-gray-400 hover:bg-gray-50 transition-all duration-300 transform hover:scale-105 shadow-lg font-medium text-lg overflow-hidden"
+            className="group relative px-8 py-4 bg-gray-700 border-2 border-gray-600 text-gray-300 rounded-xl hover:border-gray-500 hover:bg-gray-600 transition-all duration-300 transform hover:scale-105 shadow-lg font-medium text-lg overflow-hidden"
           >
             <span className="relative z-10 flex items-center justify-center">
               <svg className="w-5 h-5 mr-2 group-hover:rotate-90 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -672,7 +672,7 @@ const EnrollmentForm = ({ course, onClose }: EnrollmentFormProps) => {
   );
 
   return (
-    <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+    <div className="bg-gray-800 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
       {/* Header */}
       <div className="bg-gradient-to-r from-emerald-600 to-blue-600 p-6 text-white">
         <div className="flex items-center justify-between">
@@ -692,33 +692,33 @@ const EnrollmentForm = ({ course, onClose }: EnrollmentFormProps) => {
       </div>
 
       {/* Progress Steps */}
-      <div className="px-6 py-4 border-b border-gray-200">
+      <div className="px-6 py-4 border-b border-gray-700">
         <div className="flex items-center justify-between">
-          <div className={`flex items-center gap-2 ${step >= 1 ? 'text-emerald-600' : 'text-gray-400'}`}>
+          <div className={`flex items-center gap-2 ${step >= 1 ? 'text-emerald-400' : 'text-gray-500'}`}>
             <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-              step >= 1 ? 'bg-emerald-600 text-white' : 'bg-gray-200'
+              step >= 1 ? 'bg-emerald-600 text-white' : 'bg-gray-700'
             }`}>
               1
             </div>
-            <span className="text-sm font-medium">Personal Info</span>
+            <span className="text-sm font-medium text-gray-300">Personal Info</span>
           </div>
-          <div className={`flex-1 h-1 mx-2 ${step >= 2 ? 'bg-emerald-600' : 'bg-gray-200'}`}></div>
-          <div className={`flex items-center gap-2 ${step >= 2 ? 'text-emerald-600' : 'text-gray-400'}`}>
+          <div className={`flex-1 h-1 mx-2 ${step >= 2 ? 'bg-emerald-600' : 'bg-gray-700'}`}></div>
+          <div className={`flex items-center gap-2 ${step >= 2 ? 'text-emerald-400' : 'text-gray-500'}`}>
             <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-              step >= 2 ? 'bg-emerald-600 text-white' : 'bg-gray-200'
+              step >= 2 ? 'bg-emerald-600 text-white' : 'bg-gray-700'
             }`}>
               2
             </div>
-            <span className="text-sm font-medium">Payment</span>
+            <span className="text-sm font-medium text-gray-300">Payment</span>
           </div>
-          <div className={`flex-1 h-1 mx-2 ${step >= 3 ? 'bg-emerald-600' : 'bg-gray-200'}`}></div>
-          <div className={`flex items-center gap-2 ${step >= 3 ? 'text-emerald-600' : 'text-gray-400'}`}>
+          <div className={`flex-1 h-1 mx-2 ${step >= 3 ? 'bg-emerald-600' : 'bg-gray-700'}`}></div>
+          <div className={`flex items-center gap-2 ${step >= 3 ? 'text-emerald-400' : 'text-gray-500'}`}>
             <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-              step >= 3 ? 'bg-emerald-600 text-white' : 'bg-gray-200'
+              step >= 3 ? 'bg-emerald-600 text-white' : 'bg-gray-700'
             }`}>
               3
             </div>
-            <span className="text-sm font-medium">Success</span>
+            <span className="text-sm font-medium text-gray-300">Success</span>
           </div>
         </div>
       </div>
@@ -736,7 +736,7 @@ const EnrollmentForm = ({ course, onClose }: EnrollmentFormProps) => {
               <button
                 type="button"
                 onClick={() => setStep(step - 1)}
-                className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                className="px-6 py-3 border border-gray-600 text-gray-300 rounded-lg hover:bg-gray-700 transition-colors"
               >
                 Back
               </button>
@@ -746,7 +746,7 @@ const EnrollmentForm = ({ course, onClose }: EnrollmentFormProps) => {
                 <button
                   type="button"
                   onClick={onClose}
-                  className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                  className="px-6 py-3 border border-gray-600 text-gray-300 rounded-lg hover:bg-gray-700 transition-colors"
                 >
                   Cancel
                 </button>

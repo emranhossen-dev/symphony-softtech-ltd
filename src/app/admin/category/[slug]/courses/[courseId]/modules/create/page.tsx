@@ -6,16 +6,13 @@ import { toast } from 'react-hot-toast';
 import {
   ArrowLeft,
   BookOpen,
-  CheckCircle,
+  Download,
   FileText,
-  Lightbulb,
-  ListPlus,
   Lock,
-  Plus,
   Save,
-  Trash2,
   Unlock,
-  Video
+  Video,
+  Upload
 } from 'lucide-react';
 
 interface Course {
@@ -23,16 +20,15 @@ interface Course {
   title: string;
 }
 
-interface ModuleData {
+interface ExistingModule {
   id: string;
   title: string;
   videoUrl: string;
   homework: string;
+  description?: string;
+  topics?: string[];
   isLocked: boolean;
   order: number;
-  duration?: string;
-  description?: string;
-  resources?: string[];
 }
 
 const CreateModulePage = () => {
@@ -44,21 +40,23 @@ const CreateModulePage = () => {
   const [course, setCourse] = useState<Course | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [showBulkAdd, setShowBulkAdd] = useState(false);
-  const [bulkText, setBulkText] = useState('');
-  const [modules, setModules] = useState<ModuleData[]>([
-    {
-      id: Date.now().toString(),
-      title: '',
-      videoUrl: '',
-      homework: '',
-      isLocked: false,
-      order: 1
-    }
-  ]);
+  const [mode, setMode] = useState<'individual' | 'bulk'>('individual');
+  const [existingModules, setExistingModules] = useState<ExistingModule[]>([]);
+  
+  // Individual mode state
+  const [individualData, setIndividualData] = useState({
+    title: '',
+    videoUrl: '',
+    homework: '',
+    isLocked: false
+  });
+  
+  // Bulk mode state
+  const [bulkJson, setBulkJson] = useState('');
 
   useEffect(() => {
     fetchCourseInfo();
+    fetchExistingModules();
   }, [courseId]);
 
   const fetchCourseInfo = async () => {
@@ -72,165 +70,159 @@ const CreateModulePage = () => {
       
       if (data.success) {
         setCourse(data.course);
+      } else {
+        setCourse({ id: courseId, title: 'Course' });
       }
     } catch (error) {
       console.error('Error fetching course info:', error);
+      setCourse({ id: courseId, title: 'Course' });
     } finally {
       setLoading(false);
     }
   };
 
-  const handleSaveModules = async (modules: ModuleData[]) => {
+  const fetchExistingModules = async () => {
     try {
-      const response = await fetch(`/api/admin/courses/${courseId}/modules/bulk`, {
-        method: 'POST',
+      const response = await fetch(`/api/admin/courses/${courseId}/modules`, {
         headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ 
-          action: 'create',
-          modules: modules.map(m => ({
-            title: m.title,
-            videoUrl: m.videoUrl,
-            homework: m.homework,
-            isLocked: m.isLocked,
-            order: m.order
-          }))
-        }),
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
       });
-
-      const responseText = await response.text();
-      const data = responseText ? JSON.parse(responseText) : { success: false, error: 'Empty server response' };
-
-      if (data.success) {
-        router.push(`/admin/category/${slug}/courses/${courseId}`);
-      } else {
-        throw new Error(data.error || 'Failed to create modules');
+      const data = await response.json();
+      if (data.success && data.modules) {
+        const modules = data.modules.sort((a: ExistingModule, b: ExistingModule) => a.order - b.order);
+        setExistingModules(modules);
+        
+        // Prefill bulk JSON with existing modules
+        if (modules.length > 0) {
+          const jsonData = {
+            courseTitle: course?.title || 'Course',
+            modules: modules.map((m: ExistingModule) => ({
+              title: m.title,
+              videoUrl: m.videoUrl || '',
+              homework: m.homework || '',
+              description: m.description || '',
+              topics: m.topics || [],
+              isLocked: m.isLocked,
+              order: m.order
+            }))
+          };
+          setBulkJson(JSON.stringify(jsonData, null, 2));
+        }
       }
     } catch (error) {
-      throw error;
+      console.error('Error fetching existing modules:', error);
     }
   };
 
-  const updateModule = (id: string, field: keyof ModuleData, value: string | boolean) => {
-    setModules(prev => prev.map(module => (
-      module.id === id ? { ...module, [field]: value } : module
-    )));
+  const loadSampleData = () => {
+    const sampleData = {
+      courseTitle: course?.title || "Sample Course",
+      modules: [
+        {
+          title: "Module 1: Introduction",
+          videoUrl: "https://example.com/video1.mp4",
+          homework: "Complete the introduction assignment",
+          description: "Learn the basics",
+          topics: ["Topic 1", "Topic 2"],
+          isLocked: false,
+          order: 1
+        },
+        {
+          title: "Module 2: Advanced Concepts",
+          videoUrl: "https://example.com/video2.mp4",
+          homework: "Complete the advanced assignment",
+          description: "Deep dive into concepts",
+          topics: ["Topic 3", "Topic 4"],
+          isLocked: true,
+          order: 2
+        }
+      ]
+    };
+    setBulkJson(JSON.stringify(sampleData, null, 2));
+    toast.success('Sample data loaded');
   };
 
-  const addModule = () => {
-    setModules(prev => [
-      ...prev,
-      {
-        id: Date.now().toString(),
-        title: '',
-        videoUrl: '',
-        homework: '',
-        isLocked: true,
-        order: prev.length + 1
-      }
-    ]);
-  };
-
-  const removeModule = (id: string) => {
-    if (modules.length === 1) {
-      toast.error('At least one module is required');
-      return;
-    }
-
-    setModules(prev => {
-      return prev
-        .filter(module => module.id !== id)
-        .map((module, index) => ({ ...module, order: index + 1 }));
-    });
-  };
-
-  const parseBulkModules = (text: string) => {
-    const moduleHeadingRegex = /^\s*Module\s+\d+\s*:\s*(.+)$/gim;
-    const matches = Array.from(text.matchAll(moduleHeadingRegex));
-
-    if (matches.length === 0) {
-      return text
-        .split('\n')
-        .map(title => title.trim())
-        .filter(Boolean)
-        .map(title => ({ title, homework: '' }));
-    }
-
-    return matches.map((match, index) => {
-      const title = match[1].trim();
-      const contentStart = (match.index || 0) + match[0].length;
-      const contentEnd = matches[index + 1]?.index ?? text.length;
-      const homework = text.slice(contentStart, contentEnd).trim();
-
-      return { title, homework };
-    });
-  };
-
-  const addBulkModules = () => {
-    const parsedModules = parseBulkModules(bulkText);
-
-    if (parsedModules.length === 0) {
-      toast.error('Write at least one module title');
-      return;
-    }
-
-    const existingModules = modules.filter(module => module.title.trim() || module.videoUrl.trim() || module.homework.trim());
-
-    setModules([
-      ...existingModules,
-      ...parsedModules.map((module, index) => ({
-        id: `${Date.now()}-${index}`,
-        title: module.title,
-        videoUrl: '',
-        homework: module.homework,
-        isLocked: existingModules.length + index > 0,
-        order: existingModules.length + index + 1
-      }))
-    ].map((module, index) => ({ ...module, order: index + 1 })));
-
-    setBulkText('');
-    setShowBulkAdd(false);
-    toast.success(`${parsedModules.length} modules added`);
-  };
-
-  const applyExample = () => {
-    setModules([
-      {
-        id: 'example-1',
-        title: 'Introduction & Course Overview',
-        videoUrl: '',
-        homework: 'Watch the intro video and write down 3 learning goals for this course.',
-        isLocked: false,
-        order: 1
-      },
-      {
-        id: 'example-2',
-        title: 'Core Lesson & Practice',
-        videoUrl: '',
-        homework: 'Complete the practice task and submit your work before the next class.',
-        isLocked: true,
-        order: 2
-      }
-    ]);
-  };
-
-  const handleSubmit = async () => {
-    const validModules = modules.filter(module => module.title.trim());
-
-    if (validModules.length === 0) {
-      toast.error('Please add at least one module title');
+  const handleIndividualSubmit = async () => {
+    if (!individualData.title.trim()) {
+      toast.error('Module title is required');
       return;
     }
 
     setSaving(true);
 
     try {
-      await handleSaveModules(validModules.map((module, index) => ({ ...module, order: index + 1 })));
-      toast.success(`${validModules.length} module${validModules.length > 1 ? 's' : ''} created successfully`);
+      const response = await fetch(`/api/admin/modules`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({
+          title: individualData.title,
+          videoUrl: individualData.videoUrl,
+          homework: individualData.homework,
+          courseId,
+          isLocked: individualData.isLocked
+        })
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        toast.success('Module created successfully');
+        setIndividualData({ title: '', videoUrl: '', homework: '', isLocked: false });
+        fetchExistingModules();
+      } else {
+        toast.error(data.error || 'Failed to create module');
+      }
     } catch (error) {
-      console.error('Error creating modules:', error);
-      toast.error('Failed to create modules');
+      console.error('Error creating module:', error);
+      toast.error('Failed to create module');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleBulkSubmit = async () => {
+    if (!bulkJson.trim()) {
+      toast.error('Please enter module data');
+      return;
+    }
+
+    try {
+      const data = JSON.parse(bulkJson);
+      
+      if (!data.modules || !Array.isArray(data.modules) || data.modules.length === 0) {
+        toast.error('Invalid format. Expected modules array.');
+        return;
+      }
+
+      setSaving(true);
+
+      const response = await fetch('/api/admin/modules/bulk', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({
+          courseId,
+          modules: data.modules
+        })
+      });
+
+      const result = await response.json();
+      
+      if (result.success) {
+        toast.success(`Successfully uploaded ${result.modules.length} modules`);
+        router.push(`/admin/category/${slug}/courses/${courseId}`);
+      } else {
+        toast.error(result.error || 'Failed to upload modules');
+      }
+    } catch (error) {
+      console.error('Error uploading modules:', error);
+      toast.error('Failed to parse JSON or upload modules');
     } finally {
       setSaving(false);
     }
@@ -242,244 +234,244 @@ const CreateModulePage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading course information...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!course) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-red-600 mb-4">
-            <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-          </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">Course Not Found</h3>
-          <p className="text-gray-600 mb-4">Unable to load course information.</p>
-          <button
-            onClick={handleCancel}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            Go Back
-          </button>
+          <p className="text-gray-400">Loading...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-950">
-      <div className="border-b border-slate-200 bg-white">
-        <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
+    <div className="min-h-screen bg-gray-900 text-white p-6">
+      <div className="max-w-4xl mx-auto">
+        {/* Header */}
+        <div className="mb-8">
           <button
             onClick={handleCancel}
-            className="mb-4 inline-flex items-center gap-2 text-sm font-bold text-slate-500 transition-colors hover:text-blue-600"
+            className="mb-4 inline-flex items-center gap-2 text-sm font-bold text-gray-400 transition-colors hover:text-blue-400"
           >
             <ArrowLeft className="h-4 w-4" />
             Back to Course
           </button>
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-            <div>
-              <p className="text-sm font-bold uppercase tracking-wide text-blue-600">Add modules</p>
-              <h1 className="mt-1 text-3xl font-black tracking-tight text-slate-950">{course.title}</h1>
-              <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">Create one module or add multiple lesson titles at once. Video and homework can be added now or edited later.</p>
-            </div>
+          <h1 className="text-3xl font-bold text-white">{course?.title || 'Course'}</h1>
+          <p className="mt-2 text-gray-400">Add modules to this course</p>
+        </div>
+
+        {/* Mode Toggle */}
+        <div className="mb-6">
+          <div className="flex gap-2 p-1 bg-gray-800 rounded-xl w-fit">
             <button
-              onClick={handleSubmit}
-              disabled={saving}
-              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-blue-600 px-6 py-3 text-sm font-black text-white shadow-lg shadow-blue-100 transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+              onClick={() => setMode('individual')}
+              className={`px-6 py-2 rounded-lg text-sm font-bold transition-colors ${
+                mode === 'individual'
+                  ? 'bg-blue-600 text-white'
+                  : 'text-gray-400 hover:text-white'
+              }`}
             >
-              <Save className="h-5 w-5" />
-              {saving ? 'Creating...' : `Create ${modules.filter(module => module.title.trim()).length || 1} Module`}
+              Individual Upload
+            </button>
+            <button
+              onClick={() => setMode('bulk')}
+              className={`px-6 py-2 rounded-lg text-sm font-bold transition-colors ${
+                mode === 'bulk'
+                  ? 'bg-blue-600 text-white'
+                  : 'text-gray-400 hover:text-white'
+              }`}
+            >
+              Bulk Upload
             </button>
           </div>
         </div>
-      </div>
 
-      <div className="mx-auto grid max-w-7xl grid-cols-1 gap-6 px-4 py-6 sm:px-6 lg:grid-cols-3 lg:py-8">
-        <div className="space-y-6 lg:col-span-2">
-          <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
-            <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        {/* Individual Mode */}
+        {mode === 'individual' && (
+          <div className="bg-gray-800 border border-gray-700 rounded-2xl p-6">
+            <h2 className="text-xl font-bold text-white mb-6">Add Single Module</h2>
+            
+            <div className="space-y-4">
               <div>
-                <h2 className="text-xl font-black text-slate-950">Module Details</h2>
-                <p className="mt-1 text-sm font-medium text-slate-500">Fill title first. Other fields are optional.</p>
+                <label className="mb-2 flex items-center gap-2 text-sm font-bold text-gray-300">
+                  <BookOpen className="h-4 w-4 text-blue-400" />
+                  Module Title *
+                </label>
+                <input
+                  type="text"
+                  value={individualData.title}
+                  onChange={(e) => setIndividualData(prev => ({ ...prev, title: e.target.value }))}
+                  placeholder="Enter module title"
+                  className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
+                />
               </div>
-              <div className="flex flex-wrap gap-2">
+
+              <div>
+                <label className="mb-2 flex items-center gap-2 text-sm font-bold text-gray-300">
+                  <Video className="h-4 w-4 text-purple-400" />
+                  Video URL
+                </label>
+                <input
+                  type="text"
+                  value={individualData.videoUrl}
+                  onChange={(e) => setIndividualData(prev => ({ ...prev, videoUrl: e.target.value }))}
+                  placeholder="Enter video URL (optional)"
+                  className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-purple-500"
+                />
+              </div>
+
+              <div>
+                <label className="mb-2 flex items-center gap-2 text-sm font-bold text-gray-300">
+                  <FileText className="h-4 w-4 text-emerald-400" />
+                  Homework / Instructions
+                </label>
+                <textarea
+                  value={individualData.homework}
+                  onChange={(e) => setIndividualData(prev => ({ ...prev, homework: e.target.value }))}
+                  rows={4}
+                  placeholder="Enter homework instructions (optional)"
+                  className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-emerald-500 resize-none"
+                />
+              </div>
+
+              <div className="flex items-center gap-3">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={individualData.isLocked}
+                    onChange={(e) => setIndividualData(prev => ({ ...prev, isLocked: e.target.checked }))}
+                    className="w-4 h-4 rounded border-gray-600 bg-gray-700 text-blue-600 focus:ring-blue-500"
+                  />
+                  <span className="text-sm text-gray-300">Lock module for students</span>
+                </label>
+              </div>
+
+              <div className="flex gap-3 pt-4">
                 <button
-                  onClick={() => setShowBulkAdd(!showBulkAdd)}
-                  className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 transition-colors hover:bg-slate-50"
+                  onClick={handleIndividualSubmit}
+                  disabled={saving}
+                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <ListPlus className="h-4 w-4" />
-                  Bulk Add
+                  {saving ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                      Saving...
+                    </span>
+                  ) : (
+                    <span className="flex items-center justify-center gap-2">
+                      <Save className="h-4 w-4" />
+                      Save Module
+                    </span>
+                  )}
                 </button>
                 <button
-                  onClick={addModule}
-                  className="inline-flex items-center gap-2 rounded-xl bg-slate-950 px-4 py-2.5 text-sm font-bold text-white transition-colors hover:bg-slate-800"
+                  onClick={handleCancel}
+                  className="px-6 py-3 border border-gray-600 text-gray-300 rounded-xl hover:bg-gray-700 transition-colors"
                 >
-                  <Plus className="h-4 w-4" />
-                  Add Another
+                  Cancel
                 </button>
               </div>
             </div>
 
-            {showBulkAdd && (
-              <div className="mb-5 rounded-2xl border border-blue-100 bg-blue-50 p-4">
-                <label className="mb-2 block text-sm font-black text-blue-950">Paste full module outline</label>
-                <p className="mb-3 text-sm font-medium leading-6 text-blue-800">Use format like <span className="font-black">Module 1: Python Basics</span>. Everything until the next module heading will be saved as that module's instructions.</p>
-                <textarea
-                  value={bulkText}
-                  onChange={(event) => setBulkText(event.target.value)}
-                  rows={5}
-                  placeholder="Module 1: Python Basics&#10;&#10;Topics:&#10;Variables&#10;Functions&#10;&#10;Module 2: Web Fundamentals&#10;&#10;Topics:&#10;HTML&#10;CSS"
-                  className="w-full rounded-xl border border-blue-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
-                />
-                <div className="mt-3 flex items-center gap-2">
-                  <button
-                    onClick={addBulkModules}
-                    className="rounded-xl bg-blue-600 px-4 py-2 text-sm font-black text-white transition-colors hover:bg-blue-700"
-                  >
-                    Add Modules
-                  </button>
-                  <button
-                    onClick={() => setShowBulkAdd(false)}
-                    className="rounded-xl px-4 py-2 text-sm font-bold text-slate-600 transition-colors hover:bg-white"
-                  >
-                    Cancel
-                  </button>
+            {/* Existing Modules Preview */}
+            {existingModules.length > 0 && (
+              <div className="mt-8 pt-8 border-t border-gray-700">
+                <h3 className="text-lg font-bold text-white mb-4">Existing Modules ({existingModules.length})</h3>
+                <div className="space-y-2">
+                  {existingModules.map((module) => (
+                    <div key={module.id} className="flex items-center justify-between p-3 bg-gray-700 rounded-lg">
+                      <div className="flex items-center gap-3">
+                        <span className="text-gray-400">#{module.order}</span>
+                        <span className="text-white font-medium">{module.title}</span>
+                      </div>
+                      <span className={`text-xs px-2 py-1 rounded ${module.isLocked ? 'bg-orange-900/50 text-orange-400' : 'bg-green-900/50 text-green-400'}`}>
+                        {module.isLocked ? <Lock className="h-3 w-3 inline" /> : <Unlock className="h-3 w-3 inline" />}
+                      </span>
+                    </div>
+                  ))}
                 </div>
               </div>
             )}
+          </div>
+        )}
 
+        {/* Bulk Mode */}
+        {mode === 'bulk' && (
+          <div className="bg-gray-800 border border-gray-700 rounded-2xl p-6">
+            <h2 className="text-xl font-bold text-white mb-6">Bulk Upload Modules</h2>
+            
             <div className="space-y-4">
-              {modules.map((module, index) => (
-                <div key={module.id} className="rounded-2xl border border-slate-200 bg-slate-50 p-4 sm:p-5">
-                  <div className="mb-4 flex items-start justify-between gap-3">
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-blue-600 text-lg font-black text-white">{index + 1}</div>
-                      <div>
-                        <p className="font-black text-slate-950">Module {index + 1}</p>
-                        <p className="text-xs font-bold text-slate-500">{module.isLocked ? 'Locked for students' : 'Open for students'}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => updateModule(module.id, 'isLocked', !module.isLocked)}
-                        className={`inline-flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-black transition-colors ${module.isLocked ? 'bg-orange-100 text-orange-700 hover:bg-orange-200' : 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200'}`}
-                      >
-                        {module.isLocked ? <Lock className="h-4 w-4" /> : <Unlock className="h-4 w-4" />}
-                        {module.isLocked ? 'Locked' : 'Open'}
-                      </button>
-                      <button
-                        onClick={() => removeModule(module.id)}
-                        className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-white text-rose-600 ring-1 ring-slate-200 transition-colors hover:bg-rose-50"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
-                    </div>
-                  </div>
+              <button
+                onClick={loadSampleData}
+                className="flex items-center gap-2 px-4 py-2 bg-gray-700 border border-gray-600 rounded-xl text-gray-300 hover:bg-gray-600 transition-colors"
+              >
+                <Download className="h-4 w-4" />
+                Load Sample Data
+              </button>
 
-                  <div className="grid grid-cols-1 gap-4">
-                    <div>
-                      <label className="mb-2 flex items-center gap-2 text-sm font-black text-slate-700">
-                        <BookOpen className="h-4 w-4 text-blue-600" />
-                        Module Title
-                      </label>
-                      <input
-                        value={module.title}
-                        onChange={(event) => updateModule(module.id, 'title', event.target.value)}
-                        placeholder="Example: Introduction to Government Job Preparation"
-                        className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
-                      />
-                    </div>
-                    <div>
-                      <label className="mb-2 flex items-center gap-2 text-sm font-black text-slate-700">
-                        <Video className="h-4 w-4 text-purple-600" />
-                        Video URL
-                      </label>
-                      <input
-                        value={module.videoUrl}
-                        onChange={(event) => updateModule(module.id, 'videoUrl', event.target.value)}
-                        placeholder="YouTube, Vimeo, or uploaded video link"
-                        className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-purple-500 focus:ring-4 focus:ring-purple-100"
-                      />
-                    </div>
-                    <div>
-                      <label className="mb-2 flex items-center gap-2 text-sm font-black text-slate-700">
-                        <FileText className="h-4 w-4 text-emerald-600" />
-                        Homework / Instructions
-                      </label>
-                      <textarea
-                        value={module.homework}
-                        onChange={(event) => updateModule(module.id, 'homework', event.target.value)}
-                        rows={4}
-                        placeholder="Write class task, assignment, deadline, or notes for students"
-                        className="w-full resize-none rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm leading-6 outline-none transition focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100"
-                      />
-                    </div>
-                  </div>
+              <div>
+                <label className="mb-2 block text-sm font-bold text-gray-300">
+                  Module Data (JSON)
+                </label>
+                <textarea
+                  value={bulkJson}
+                  onChange={(e) => setBulkJson(e.target.value)}
+                  rows={20}
+                  placeholder={`{
+  "courseTitle": "Course Name",
+  "modules": [
+    {
+      "title": "Module 1",
+      "videoUrl": "https://example.com/video1.mp4",
+      "homework": "Complete assignment 1",
+      "description": "Introduction",
+      "topics": ["Topic 1"],
+      "isLocked": false,
+      "order": 1
+    }
+  ]
+}`}
+                  className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 font-mono text-sm resize-none"
+                />
+              </div>
+
+              <div className="flex gap-3 pt-4">
+                <button
+                  onClick={handleBulkSubmit}
+                  disabled={saving}
+                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {saving ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                      Saving...
+                    </span>
+                  ) : (
+                    <span className="flex items-center justify-center gap-2">
+                      <Upload className="h-4 w-4" />
+                      Save Modules
+                    </span>
+                  )}
+                </button>
+                <button
+                  onClick={handleCancel}
+                  className="px-6 py-3 border border-gray-600 text-gray-300 rounded-xl hover:bg-gray-700 transition-colors"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+
+            {/* Existing Modules Info */}
+            {existingModules.length > 0 && (
+              <div className="mt-8 pt-8 border-t border-gray-700">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-bold text-white">Existing Modules: {existingModules.length}</h3>
+                  <span className="text-sm text-gray-400">Data prefilled above</span>
                 </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        <div className="space-y-6">
-          <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-            <div className="mb-5 flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
-                <CheckCircle className="h-5 w-5" />
               </div>
-              <h2 className="text-xl font-black text-slate-950">Preview</h2>
-            </div>
-            <div className="space-y-3">
-              {modules.filter(module => module.title.trim()).length === 0 ? (
-                <p className="rounded-2xl bg-slate-50 p-4 text-sm font-medium leading-6 text-slate-500">Start typing a module title to see preview here.</p>
-              ) : (
-                modules.filter(module => module.title.trim()).map((module, index) => (
-                  <div key={module.id} className="rounded-2xl border border-slate-200 p-4">
-                    <div className="flex items-start gap-3">
-                      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-slate-950 text-sm font-black text-white">{index + 1}</span>
-                      <div className="min-w-0 flex-1">
-                        <p className="line-clamp-2 font-black text-slate-950">{module.title}</p>
-                        <div className="mt-2 flex flex-wrap gap-2">
-                          {module.videoUrl && <span className="rounded-lg bg-purple-50 px-2 py-1 text-xs font-black text-purple-700">Video</span>}
-                          {module.homework && <span className="rounded-lg bg-emerald-50 px-2 py-1 text-xs font-black text-emerald-700">Homework</span>}
-                          <span className={`rounded-lg px-2 py-1 text-xs font-black ${module.isLocked ? 'bg-orange-50 text-orange-700' : 'bg-blue-50 text-blue-700'}`}>{module.isLocked ? 'Locked' : 'Open'}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
+            )}
           </div>
-
-          <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-            <div className="mb-4 flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-50 text-amber-600">
-                <Lightbulb className="h-5 w-5" />
-              </div>
-              <h2 className="text-xl font-black text-slate-950">Easy Tips</h2>
-            </div>
-            <div className="space-y-3 text-sm leading-6 text-slate-600">
-              <p><span className="font-black text-slate-950">Title first:</span> only title is required.</p>
-              <p><span className="font-black text-slate-950">First module open:</span> good for demo or intro class.</p>
-              <p><span className="font-black text-slate-950">Bulk add:</span> paste multiple titles to create a course outline fast.</p>
-            </div>
-            <button
-              onClick={applyExample}
-              className="mt-5 w-full rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-black text-amber-700 transition-colors hover:bg-amber-100"
-            >
-              Use Example Structure
-            </button>
-          </div>
-        </div>
+        )}
       </div>
     </div>
   );

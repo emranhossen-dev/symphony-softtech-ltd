@@ -43,7 +43,7 @@ export async function GET(request: NextRequest) {
         createdAt: {
           gte: startDate
         },
-        enrollmentStatus: 'APPROVED'
+        enrollmentStatus: 'ADMITTED'
       },
       orderBy: {
         createdAt: 'asc'

@@ -62,7 +62,7 @@ const RecordedCategoryPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-purple-50">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
         <div className="container mx-auto px-4 py-8">
           <div className="animate-pulse">
             <div className="h-12 bg-gray-200 rounded-xl w-1/3 mb-12"></div>
@@ -85,11 +85,11 @@ const RecordedCategoryPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-purple-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
       {/* Hero Section */}
       <div className="relative overflow-hidden">
         {/* Background with glassmorphism */}
-        <div className="absolute inset-0 bg-gradient-to-br from-orange-600/10 via-white to-purple-600/10"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-orange-600/10 via-slate-900 to-purple-600/10"></div>
         <div className="absolute inset-0">
           <div className="absolute top-0 left-0 w-full h-full bg-[url(&quot;data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23f97316' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E&quot;)] opacity-40"></div>
         </div>
@@ -106,14 +106,14 @@ const RecordedCategoryPage = () => {
         <div className="container mx-auto px-4 relative z-10">
           <div className="text-center py-20 lg:py-24">
             {/* Badge with animation */}
-            <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm px-6 py-3 rounded-full text-orange-700 mb-8 border border-orange-200/50 shadow-lg animate-pulse">
+            <div className="inline-flex items-center gap-2 bg-gray-800/80 backdrop-blur-sm px-6 py-3 rounded-full text-orange-400 mb-8 border border-orange-600/50 shadow-lg animate-pulse">
               <Play className="w-5 h-5" />
               <span className="font-semibold">Self-Paced Learning</span>
               <Sparkles className="w-4 h-4 text-purple-500 animate-spin" />
             </div>
 
             {/* Main Title with enhanced gradient */}
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 mb-6 leading-tight">
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight">
               Recorded
               <span className="block text-4xl md:text-5xl lg:text-6xl mt-2 text-transparent bg-clip-text bg-gradient-to-r from-orange-600 via-purple-500 to-orange-600 bg-300% animate-gradient">
                 Video Courses
@@ -121,38 +121,38 @@ const RecordedCategoryPage = () => {
             </h1>
             
             {/* Subtitle with better typography */}
-            <p className="text-xl md:text-2xl text-gray-600 max-w-4xl mx-auto leading-relaxed mb-16">
+            <p className="text-xl md:text-2xl text-gray-300 max-w-4xl mx-auto leading-relaxed mb-16">
               Learn at your own pace with 
-              <span className="font-semibold text-orange-700 bg-orange-100 px-2 py-1 rounded-lg"> lifetime access</span> to course materials. 
-              Study <span className="font-semibold text-purple-700 bg-purple-100 px-2 py-1 rounded-lg"> anytime, anywhere</span> with our comprehensive recorded courses taught by industry experts.
+              <span className="font-semibold text-orange-400 bg-orange-900/30 px-2 py-1 rounded-lg"> lifetime access</span> to course materials. 
+              Study <span className="font-semibold text-purple-400 bg-purple-900/30 px-2 py-1 rounded-lg"> anytime, anywhere</span> with our comprehensive recorded courses taught by industry experts.
             </p>
 
             {/* Enhanced Statistics Row with animations */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 max-w-5xl mx-auto mb-16">
-              <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-orange-200/50 hover:bg-white/80 transition-all duration-300 transform hover:scale-105 group">
+              <div className="bg-gray-800/60 backdrop-blur-sm rounded-2xl p-6 border border-orange-600/50 hover:bg-gray-800/80 transition-all duration-300 transform hover:scale-105 group">
                 <div className="text-4xl font-bold text-orange-600 mb-2 group-hover:scale-110 transition-transform">5,000+</div>
-                <div className="text-gray-600 font-medium">Students</div>
+                <div className="text-gray-300 font-medium">Students</div>
                 <div className="flex items-center justify-center mt-2">
                   <GraduationCap className="w-4 h-4 text-orange-500" />
                 </div>
               </div>
-              <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-purple-200/50 hover:bg-white/80 transition-all duration-300 transform hover:scale-105 group">
+              <div className="bg-gray-800/60 backdrop-blur-sm rounded-2xl p-6 border border-purple-600/50 hover:bg-gray-800/80 transition-all duration-300 transform hover:scale-105 group">
                 <div className="text-4xl font-bold text-purple-600 mb-2 group-hover:scale-110 transition-transform">30+</div>
-                <div className="text-gray-600 font-medium">Courses</div>
+                <div className="text-gray-300 font-medium">Courses</div>
                 <div className="flex items-center justify-center mt-2">
                   <BookOpen className="w-4 h-4 text-purple-500" />
                 </div>
               </div>
-              <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-orange-200/50 hover:bg-white/80 transition-all duration-300 transform hover:scale-105 group">
+              <div className="bg-gray-800/60 backdrop-blur-sm rounded-2xl p-6 border border-orange-600/50 hover:bg-gray-800/80 transition-all duration-300 transform hover:scale-105 group">
                 <div className="text-4xl font-bold text-orange-600 mb-2 group-hover:scale-110 transition-transform">24/7</div>
-                <div className="text-gray-600 font-medium">Support</div>
+                <div className="text-gray-300 font-medium">Support</div>
                 <div className="flex items-center justify-center mt-2">
                   <Headphones className="w-4 h-4 text-orange-500" />
                 </div>
               </div>
-              <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-purple-200/50 hover:bg-white/80 transition-all duration-300 transform hover:scale-105 group">
+              <div className="bg-gray-800/60 backdrop-blur-sm rounded-2xl p-6 border border-purple-600/50 hover:bg-gray-800/80 transition-all duration-300 transform hover:scale-105 group">
                 <div className="text-4xl font-bold text-purple-600 mb-2 group-hover:scale-110 transition-transform">Lifetime</div>
-                <div className="text-gray-600 font-medium">Access</div>
+                <div className="text-gray-300 font-medium">Access</div>
                 <div className="flex items-center justify-center mt-2">
                   <Award className="w-4 h-4 text-purple-500" />
                 </div>
@@ -176,59 +176,59 @@ const RecordedCategoryPage = () => {
       </div>
 
       {/* Enhanced Features Section with better animations */}
-      <div className="py-20 bg-white/60 backdrop-blur-sm relative overflow-hidden">
+      <div className="py-20 bg-gray-800/60 backdrop-blur-sm relative overflow-hidden">
         {/* Background decoration */}
-        <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-orange-200/50 to-transparent rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 left-0 w-48 h-48 bg-gradient-to-br from-purple-200/50 to-transparent rounded-full blur-3xl"></div>
+        <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-orange-600/20 to-transparent rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 left-0 w-48 h-48 bg-gradient-to-br from-purple-600/20 to-transparent rounded-full blur-3xl"></div>
         
         <div className="container mx-auto px-4 relative z-10">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">Why Choose Recorded Courses?</h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">Experience the flexibility of self-paced learning with comprehensive video content</p>
+            <h2 className="text-4xl font-bold text-white mb-4">Why Choose Recorded Courses?</h2>
+            <p className="text-xl text-gray-300 max-w-3xl mx-auto">Experience the flexibility of self-paced learning with comprehensive video content</p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <div className="group">
-              <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-orange-100 relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-orange-100 to-transparent rounded-full blur-3xl"></div>
+              <div className="bg-gray-800 rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-orange-600/30 relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-orange-600/20 to-transparent rounded-full blur-3xl"></div>
                 <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform relative z-10">
                   <Download className="w-8 h-8 text-white" />
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-4 relative z-10">Lifetime Access</h3>
-                <p className="text-gray-600 leading-relaxed relative z-10">No expiration date - learn at your own pace forever with unlimited access to course materials</p>
-                <div className="mt-4 flex items-center gap-2 text-orange-600 relative z-10">
+                <h3 className="text-2xl font-bold text-white mb-4 relative z-10">Lifetime Access</h3>
+                <p className="text-gray-300 leading-relaxed relative z-10">No expiration date - learn at your own pace forever with unlimited access to course materials</p>
+                <div className="mt-4 flex items-center gap-2 text-orange-400 relative z-10">
                   <CheckCircle className="w-4 h-4" />
-                  <span className="text-sm font-medium">Forever Access</span>
+                  <span className="text-sm font-medium text-gray-300">Forever Access</span>
                 </div>
               </div>
             </div>
             
             <div className="group">
-              <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-purple-100 relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-purple-100 to-transparent rounded-full blur-3xl"></div>
+              <div className="bg-gray-800 rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-purple-600/30 relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-purple-600/20 to-transparent rounded-full blur-3xl"></div>
                 <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform relative z-10">
                   <Monitor className="w-8 h-8 text-white" />
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-4 relative z-10">Self-Paced Learning</h3>
-                <p className="text-gray-600 leading-relaxed relative z-10">Study anytime, anywhere with no deadlines and complete control over your learning schedule</p>
-                <div className="mt-4 flex items-center gap-2 text-purple-600 relative z-10">
+                <h3 className="text-2xl font-bold text-white mb-4 relative z-10">Self-Paced Learning</h3>
+                <p className="text-gray-300 leading-relaxed relative z-10">Study anytime, anywhere with no deadlines and complete control over your learning schedule</p>
+                <div className="mt-4 flex items-center gap-2 text-purple-400 relative z-10">
                   <CheckCircle className="w-4 h-4" />
-                  <span className="text-sm font-medium">Flexible Schedule</span>
+                  <span className="text-sm font-medium text-gray-300">Flexible Schedule</span>
                 </div>
               </div>
             </div>
             
             <div className="group">
-              <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-orange-100 relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-orange-100 to-transparent rounded-full blur-3xl"></div>
+              <div className="bg-gray-800 rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-orange-600/30 relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-orange-600/20 to-transparent rounded-full blur-3xl"></div>
                 <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform relative z-10">
                   <Headphones className="w-8 h-8 text-white" />
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-4 relative z-10">24/7 Support</h3>
-                <p className="text-gray-600 leading-relaxed relative z-10">Get help whenever you need it with round-the-clock support from our expert team</p>
-                <div className="mt-4 flex items-center gap-2 text-orange-600 relative z-10">
+                <h3 className="text-2xl font-bold text-white mb-4 relative z-10">Expert Support</h3>
+                <p className="text-gray-300 leading-relaxed relative z-10">Get help whenever you need it with round-the-clock support from our expert team</p>
+                <div className="mt-4 flex items-center gap-2 text-orange-400 relative z-10">
                   <CheckCircle className="w-4 h-4" />
-                  <span className="text-sm font-medium">Always Available</span>
+                  <span className="text-sm font-medium text-gray-300">Always Available</span>
                 </div>
               </div>
             </div>
@@ -237,15 +237,15 @@ const RecordedCategoryPage = () => {
       </div>
 
       {/* Enhanced Course List Section */}
-      <div className="py-20 bg-gradient-to-br from-white to-orange-50/30 relative overflow-hidden">
+      <div className="py-20 bg-gradient-to-br from-slate-800 to-slate-900 relative overflow-hidden">
         {/* Background decoration */}
-        <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-orange-100/30 to-transparent rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 right-0 w-64 h-64 bg-gradient-to-br from-purple-100/30 to-transparent rounded-full blur-3xl"></div>
+        <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-orange-600/20 to-transparent rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 right-0 w-64 h-64 bg-gradient-to-br from-purple-600/20 to-transparent rounded-full blur-3xl"></div>
         
         <div className="container mx-auto px-4 relative z-10">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">Available Recorded Courses</h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">Choose from our comprehensive range of self-paced learning programs</p>
+            <h2 className="text-4xl font-bold text-white mb-4">Available Recorded Courses</h2>
+            <p className="text-xl text-gray-300 max-w-2xl mx-auto">Choose from our comprehensive range of self-paced learning programs</p>
           </div>
           
           {courses.length === 0 ? (

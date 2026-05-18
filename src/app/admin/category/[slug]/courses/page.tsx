@@ -103,24 +103,24 @@ const CoursesPage = () => {
   });
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div>
       {/* Header */}
-      <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+      <div className="bg-gray-800/50 border-b border-gray-700">
         <div className="max-w-7xl mx-auto px-6 py-6">
           <div className="flex items-center justify-between">
             <div>
               <button
                 onClick={() => router.push(`/admin/category/${slug}`)}
-                className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors mb-4"
+                className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-4"
               >
                 <ArrowLeft className="w-4 h-4" />
                 Back to Category
               </button>
               
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+              <h1 className="text-3xl font-bold text-white">
                 {slug.toUpperCase()} Courses
               </h1>
-              <p className="text-gray-600 dark:text-gray-400 mt-1">
+              <p className="text-gray-400 mt-1">
                 Manage your courses in this category
               </p>
             </div>
@@ -129,7 +129,7 @@ const CoursesPage = () => {
               <button
                 onClick={fetchCourses}
                 disabled={loading}
-                className="p-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-gray-600 dark:text-gray-400"
+                className="p-2 border border-gray-600 rounded-lg hover:bg-gray-700 transition-colors text-gray-400"
               >
                 <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
               </button>
@@ -155,7 +155,7 @@ const CoursesPage = () => {
             placeholder="Search courses..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-12 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-800 dark:text-white transition-all"
+            className="w-full pl-12 pr-4 py-3 border border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-800 text-white transition-all"
           />
         </div>
       </div>
@@ -165,16 +165,16 @@ const CoursesPage = () => {
         {loading ? (
           <div className="text-center py-20">
             <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-            <p className="mt-4 text-gray-600 dark:text-gray-400">Loading courses...</p>
+            <p className="mt-4 text-gray-400">Loading courses...</p>
           </div>
         ) : filteredCourses.length === 0 ? (
           <div className="text-center py-20">
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-12 border border-gray-200 dark:border-gray-700">
+            <div className="bg-gray-800 rounded-2xl p-12 border border-gray-700">
               <p className="text-6xl mb-4">📚</p>
-              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
+              <h3 className="text-2xl font-bold text-white mb-3">
                 {searchTerm ? 'No courses found' : 'No courses yet'}
               </h3>
-              <p className="text-gray-600 dark:text-gray-400 mb-8 max-w-md mx-auto">
+              <p className="text-gray-400 mb-8 max-w-md mx-auto">
                 {searchTerm ? 'Try adjusting your search to find what you\'re looking for.' : 'Get started by creating your first course.'}
               </p>
               {!searchTerm && (
@@ -191,7 +191,7 @@ const CoursesPage = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredCourses.map((course) => (
-              <div key={course.id} className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-xl transition-shadow relative">
+              <div key={course.id} className="bg-gray-800 rounded-2xl shadow-lg border border-gray-700 overflow-hidden hover:shadow-xl transition-shadow relative">
                 {/* Thumbnail */}
                 {course.thumbnail ? (
                   <img 
@@ -218,11 +218,11 @@ const CoursesPage = () => {
 
                 {/* Content */}
                 <div className="p-6">
-                  <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2 line-clamp-2">
+                  <h3 className="text-lg font-bold text-white mb-2 line-clamp-2">
                     {course.title}
                   </h3>
                   
-                  <p className="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-2">
+                  <p className="text-gray-400 text-sm mb-4 line-clamp-2">
                     {course.description}
                   </p>
 
@@ -233,7 +233,7 @@ const CoursesPage = () => {
                         <span className="text-lg font-bold text-gray-400 line-through">
                           ৳{course.regularPrice.toLocaleString()}
                         </span>
-                        <span className="text-xl font-bold text-green-600 dark:text-green-400">
+                        <span className="text-xl font-bold text-green-400">
                           ৳{course.offerPrice.toLocaleString()}
                         </span>
                         <span className="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
@@ -245,16 +245,16 @@ const CoursesPage = () => {
                         ৳{course.offerPrice.toLocaleString()}
                       </span>
                     ) : course.regularPrice ? (
-                      <span className="text-xl font-bold text-gray-900 dark:text-white">
+                      <span className="text-xl font-bold text-white">
                         ৳{course.regularPrice.toLocaleString()}
                       </span>
                     ) : (
-                      <span className="text-gray-400 dark:text-gray-600">Free</span>
+                      <span className="text-gray-400">Free</span>
                     )}
                   </div>
 
                   {/* Stats */}
-                  <div className="flex items-center gap-4 mb-4 text-sm text-gray-600 dark:text-gray-400">
+                  <div className="flex items-center gap-4 mb-4 text-sm text-gray-400">
                     {course.duration && (
                       <div className="flex items-center gap-1">
                         <Clock className="w-4 h-4" />
@@ -268,7 +268,7 @@ const CoursesPage = () => {
                   </div>
 
                   {/* Actions */}
-                  <div className="flex items-center gap-2 pt-4 border-t border-gray-200 dark:border-gray-700">
+                  <div className="flex items-center gap-2 pt-4 border-t border-gray-700">
                     <button
                       onClick={() => router.push(`/admin/category/${slug}/courses/${course.slug || course.id}`)}
                       className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors text-sm font-medium"
@@ -279,7 +279,7 @@ const CoursesPage = () => {
                     
                     <button
                       onClick={() => router.push(`/admin/category/${slug}/courses/${course.slug || course.id}/edit`)}
-                      className="flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg transition-colors text-sm font-medium"
+                      className="flex items-center justify-center gap-2 px-4 py-2 p-2 border border-gray-600 rounded-lg hover:bg-gray-700 transition-colors text-gray-400"
                     >
                       <Edit className="w-4 h-4" />
                       Edit
@@ -287,7 +287,7 @@ const CoursesPage = () => {
                     
                     <button
                       onClick={() => handleDeleteCourse(course.id, course.title)}
-                      className="flex items-center justify-center gap-2 px-4 py-2 border border-red-300 dark:border-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 dark:text-red-400 rounded-lg transition-colors text-sm font-medium"
+                      className="flex items-center justify-center gap-2 px-4 py-2 border border-red-700 hover:bg-red-900/20 text-red-400 rounded-lg transition-colors text-sm font-medium"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>

@@ -26,7 +26,9 @@ import {
   CheckCircle,
   TrendingUp,
   BarChart3,
-  ArrowRight
+  ArrowRight,
+  Upload,
+  Download
 } from 'lucide-react';
 
 interface Module {
@@ -71,6 +73,9 @@ export default function ModulesManagement() {
     courseId: '',
     isLocked: true
   });
+  const [showBulkUploadModal, setShowBulkUploadModal] = useState(false);
+  const [bulkUploadCourseId, setBulkUploadCourseId] = useState('');
+  const [bulkUploadFile, setBulkUploadFile] = useState<File | null>(null);
 
   const stats = {
     totalModules: modules.length,
@@ -285,6 +290,97 @@ export default function ModulesManagement() {
     setShowDeleteModal(true);
   };
 
+  const handleBulkUpload = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!bulkUploadCourseId) {
+      toast.error('Please select a course');
+      return;
+    }
+    
+    if (!bulkUploadFile) {
+      toast.error('Please select a JSON file');
+      return;
+    }
+
+    try {
+      setActionLoading(prev => ({ ...prev, bulkUpload: true }));
+      
+      // Read file content
+      const fileContent = await bulkUploadFile.text();
+      const data = JSON.parse(fileContent);
+      
+      if (!data.modules || !Array.isArray(data.modules)) {
+        toast.error('Invalid file format. Expected modules array.');
+        return;
+      }
+
+      const response = await fetch('/api/admin/modules/bulk', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({
+          courseId: bulkUploadCourseId,
+          modules: data.modules
+        })
+      });
+
+      const result = await response.json();
+      
+      if (result.success) {
+        toast.success(`Successfully uploaded ${result.modules.length} modules`);
+        setShowBulkUploadModal(false);
+        setBulkUploadCourseId('');
+        setBulkUploadFile(null);
+        fetchModules();
+      } else {
+        toast.error(result.error || 'Failed to upload modules');
+      }
+    } catch (error) {
+      console.error('Error uploading modules:', error);
+      toast.error('Failed to upload modules');
+    } finally {
+      setActionLoading(prev => ({ ...prev, bulkUpload: false }));
+    }
+  };
+
+  const downloadSampleTemplate = () => {
+    const sampleData = {
+      courseTitle: "Sample Course",
+      modules: [
+        {
+          title: "Module 1: Introduction",
+          videoUrl: "https://example.com/video1.mp4",
+          homework: "Complete the introduction assignment",
+          description: "Learn the basics",
+          topics: ["Topic 1", "Topic 2"],
+          isLocked: false,
+          order: 1
+        },
+        {
+          title: "Module 2: Advanced Concepts",
+          videoUrl: "https://example.com/video2.mp4",
+          homework: "Complete the advanced assignment",
+          description: "Deep dive into concepts",
+          topics: ["Topic 3", "Topic 4"],
+          isLocked: true,
+          order: 2
+        }
+      ]
+    };
+    
+    const blob = new Blob([JSON.stringify(sampleData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'module_template.json';
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success('Sample template downloaded');
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -294,75 +390,93 @@ export default function ModulesManagement() {
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="min-h-screen bg-gray-900 p-6 space-y-6">
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Modules Management</h1>
-          <p className="text-gray-600 mt-1">Manage all course modules and content</p>
+          <h1 className="text-3xl font-bold text-white">Modules Management</h1>
+          <p className="text-gray-400 mt-1">Manage all course modules and content</p>
         </div>
-        <Button 
-          onClick={() => setShowAddModal(true)}
-          className="btn-primary"
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          Add Module
-        </Button>
+        <div className="flex items-center gap-3">
+          <Button 
+            variant="outline"
+            onClick={downloadSampleTemplate}
+            className="border-gray-600 text-gray-300 hover:bg-gray-800"
+          >
+            <Download className="w-4 h-4 mr-2" />
+            Template
+          </Button>
+          <Button 
+            variant="outline"
+            onClick={() => setShowBulkUploadModal(true)}
+            className="border-gray-600 text-gray-300 hover:bg-gray-800"
+          >
+            <Upload className="w-4 h-4 mr-2" />
+            Bulk Upload
+          </Button>
+          <Button 
+            onClick={() => setShowAddModal(true)}
+            className="btn-primary"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Add Module
+          </Button>
+        </div>
       </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card className="stat-card">
+        <Card className="bg-gray-800 border-gray-700">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Total Modules</p>
-                <p className="text-2xl font-bold text-gray-900 stat-number">{stats.totalModules}</p>
+                <p className="text-sm font-medium text-gray-400">Total Modules</p>
+                <p className="text-2xl font-bold text-white">{stats.totalModules}</p>
               </div>
-              <div className="icon-wrapper bg-blue-100">
-                <BookOpen className="w-6 h-6 text-blue-600" />
+              <div className="w-12 h-12 bg-blue-900/50 rounded-lg flex items-center justify-center">
+                <BookOpen className="w-6 h-6 text-blue-400" />
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="stat-card">
+        <Card className="bg-gray-800 border-gray-700">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Total Courses</p>
-                <p className="text-2xl font-bold text-gray-900 stat-number">{stats.totalCourses}</p>
+                <p className="text-sm font-medium text-gray-400">Total Courses</p>
+                <p className="text-2xl font-bold text-white">{stats.totalCourses}</p>
               </div>
-              <div className="icon-wrapper bg-green-100">
-                <BarChart3 className="w-6 h-6 text-green-600" />
+              <div className="w-12 h-12 bg-green-900/50 rounded-lg flex items-center justify-center">
+                <BarChart3 className="w-6 h-6 text-green-400" />
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="stat-card">
+        <Card className="bg-gray-800 border-gray-700">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Locked</p>
-                <p className="text-2xl font-bold text-gray-900 stat-number">{stats.lockedModules}</p>
+                <p className="text-sm font-medium text-gray-400">Locked</p>
+                <p className="text-2xl font-bold text-white">{stats.lockedModules}</p>
               </div>
-              <div className="icon-wrapper bg-red-100">
-                <Lock className="w-6 h-6 text-red-600" />
+              <div className="w-12 h-12 bg-red-900/50 rounded-lg flex items-center justify-center">
+                <Lock className="w-6 h-6 text-red-400" />
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="stat-card">
+        <Card className="bg-gray-800 border-gray-700">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Unlocked</p>
-                <p className="text-2xl font-bold text-gray-900 stat-number">{stats.unlockedModules}</p>
+                <p className="text-sm font-medium text-gray-400">Unlocked</p>
+                <p className="text-2xl font-bold text-white">{stats.unlockedModules}</p>
               </div>
-              <div className="icon-wrapper bg-green-100">
-                <Unlock className="w-6 h-6 text-green-600" />
+              <div className="w-12 h-12 bg-green-900/50 rounded-lg flex items-center justify-center">
+                <Unlock className="w-6 h-6 text-green-400" />
               </div>
             </div>
           </CardContent>
@@ -370,9 +484,9 @@ export default function ModulesManagement() {
       </div>
 
       {/* Filters */}
-      <Card className="card-premium">
+      <Card className="bg-gray-800 border-gray-700">
         <CardHeader>
-          <CardTitle className="flex items-center">
+          <CardTitle className="flex items-center text-white">
             <Filter className="w-5 h-5 mr-2" />
             Filters
           </CardTitle>
@@ -387,21 +501,21 @@ export default function ModulesManagement() {
                   placeholder="Search modules..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full pl-10 pr-4 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-400"
                 />
               </div>
             </div>
             <div className="w-full sm:w-48">
               <Select value={selectedCourse} onValueChange={setSelectedCourse}>
-                <SelectTrigger>
+                <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
                   <SelectValue>
                     Select Course
                   </SelectValue>
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Courses</SelectItem>
+                <SelectContent className="bg-gray-800 border-gray-700">
+                  <SelectItem value="all" className="text-white">All Courses</SelectItem>
                   {courses.map((course) => (
-                    <SelectItem key={course.id} value={course.id}>
+                    <SelectItem key={course.id} value={course.id} className="text-white">
                       {course.title}
                     </SelectItem>
                   ))}
@@ -413,16 +527,16 @@ export default function ModulesManagement() {
       </Card>
 
       {/* Modules Table */}
-      <Card className="card-premium">
+      <Card className="bg-gray-800 border-gray-700">
         <CardHeader>
-          <CardTitle className="flex items-center justify-between">
+          <CardTitle className="flex items-center justify-between text-white">
             <div className="flex items-center">
               <BookOpen className="w-5 h-5 mr-2" />
               All Modules ({filteredModules.length})
             </div>
             <Button 
               variant="outline" 
-              className="border-gray-200 text-gray-700 hover:bg-gray-50"
+              className="border-gray-600 text-gray-300 hover:bg-gray-700"
               onClick={fetchModules}
               disabled={loading}
             >
@@ -434,24 +548,24 @@ export default function ModulesManagement() {
         <CardContent>
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead>Title</TableHead>
-                <TableHead>Course</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Order</TableHead>
-                <TableHead>Actions</TableHead>
+              <TableRow className="border-gray-700">
+                <TableHead className="text-gray-400">Title</TableHead>
+                <TableHead className="text-gray-400">Course</TableHead>
+                <TableHead className="text-gray-400">Status</TableHead>
+                <TableHead className="text-gray-400">Order</TableHead>
+                <TableHead className="text-gray-400">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredModules.map((module) => (
-                <TableRow key={module.id}>
+                <TableRow key={module.id} className="border-gray-700">
                   <TableCell>
                     <div className="flex items-center">
                       <BookOpen className="w-4 h-4 mr-2 text-gray-400" />
                       <div>
-                        <p className="font-medium">{module.title}</p>
+                        <p className="font-medium text-white">{module.title}</p>
                         {module.videoUrl && (
-                          <p className="text-sm text-gray-500 flex items-center">
+                          <p className="text-sm text-gray-400 flex items-center">
                             <Video className="w-3 h-3 mr-1" />
                             Has video
                           </p>
@@ -460,14 +574,14 @@ export default function ModulesManagement() {
                     </div>
                   </TableCell>
                   <TableCell>
-                    <Badge variant="outline" className="bg-gray-50 text-gray-700">
+                    <Badge variant="outline" className="bg-gray-700 text-gray-300 border-gray-600">
                       {module.course?.title || 'Unknown'}
                     </Badge>
                   </TableCell>
                   <TableCell>
                     <Badge 
                       variant={module.isLocked ? "destructive" : "default"}
-                      className={module.isLocked ? "badge-danger" : "badge-success"}
+                      className={module.isLocked ? "bg-red-900/50 text-red-400 border-red-700" : "bg-green-900/50 text-green-400 border-green-700"}
                     >
                       {module.isLocked ? (
                         <>
@@ -483,7 +597,7 @@ export default function ModulesManagement() {
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    <span className="font-medium">#{module.order}</span>
+                    <span className="font-medium text-white">#{module.order}</span>
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center space-x-2">
@@ -492,7 +606,7 @@ export default function ModulesManagement() {
                         variant="outline"
                         onClick={() => toggleModuleLock(module.id, !module.isLocked)}
                         disabled={actionLoading[module.id]}
-                        className={module.isLocked ? "text-green-600 hover:bg-green-50" : "text-red-600 hover:bg-red-50"}
+                        className={module.isLocked ? "border-green-700 text-green-400 hover:bg-green-900/30" : "border-red-700 text-red-400 hover:bg-red-900/30"}
                       >
                         {module.isLocked ? (
                           <Unlock className="w-4 h-4" />
@@ -504,7 +618,7 @@ export default function ModulesManagement() {
                         size="sm"
                         variant="outline"
                         onClick={() => openEditModal(module)}
-                        className="text-blue-600 hover:bg-blue-50"
+                        className="border-blue-700 text-blue-400 hover:bg-blue-900/30"
                       >
                         <Edit className="w-4 h-4" />
                       </Button>
@@ -512,7 +626,7 @@ export default function ModulesManagement() {
                         size="sm"
                         variant="outline"
                         onClick={() => openDeleteModal(module)}
-                        className="text-red-600 hover:bg-red-50"
+                        className="border-red-700 text-red-400 hover:bg-red-900/30"
                       >
                         <Trash2 className="w-4 h-4" />
                       </Button>
@@ -528,9 +642,9 @@ export default function ModulesManagement() {
       {/* Add/Edit Modal */}
       {(showAddModal || showEditModal) && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <Card className="w-full max-w-md mx-4">
+          <Card className="w-full max-w-md mx-4 bg-gray-800 border-gray-700">
             <CardHeader>
-              <CardTitle className="flex items-center justify-between">
+              <CardTitle className="flex items-center justify-between text-white">
                 {showEditModal ? 'Edit Module' : 'Add New Module'}
                 <Button
                   variant="ghost"
@@ -540,6 +654,7 @@ export default function ModulesManagement() {
                     setShowEditModal(false);
                     resetForm();
                   }}
+                  className="text-gray-400 hover:text-white"
                 >
                   <X className="w-4 h-4" />
                 </Button>
@@ -548,18 +663,18 @@ export default function ModulesManagement() {
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-300 mb-1">
                     Course *
                   </label>
                   <Select value={formData.courseId} onValueChange={(value) => setFormData(prev => ({ ...prev, courseId: value }))}>
-                    <SelectTrigger>
+                    <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
                       <SelectValue>
                         Select Course
                       </SelectValue>
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="bg-gray-800 border-gray-700">
                       {courses.map((course) => (
-                        <SelectItem key={course.id} value={course.id}>
+                        <SelectItem key={course.id} value={course.id} className="text-white">
                           {course.title}
                         </SelectItem>
                       ))}
@@ -568,40 +683,40 @@ export default function ModulesManagement() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-300 mb-1">
                     Module Title *
                   </label>
                   <input
                     type="text"
                     value={formData.title}
                     onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-400"
                     placeholder="Enter module title"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-300 mb-1">
                     Video URL
                   </label>
                   <input
                     type="url"
                     value={formData.videoUrl}
                     onChange={(e) => setFormData(prev => ({ ...prev, videoUrl: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-400"
                     placeholder="Enter video URL (optional)"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-300 mb-1">
                     Homework
                   </label>
                   <textarea
                     value={formData.homework}
                     onChange={(e) => setFormData(prev => ({ ...prev, homework: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-400"
                     placeholder="Enter homework details (optional)"
                     rows={3}
                   />
@@ -613,9 +728,9 @@ export default function ModulesManagement() {
                     id="isLocked"
                     checked={formData.isLocked}
                     onChange={(e) => setFormData(prev => ({ ...prev, isLocked: e.target.checked }))}
-                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    className="rounded border-gray-600 bg-gray-700 text-blue-600 focus:ring-blue-500"
                   />
-                  <label htmlFor="isLocked" className="text-sm font-medium text-gray-700">
+                  <label htmlFor="isLocked" className="text-sm font-medium text-gray-300">
                     Lock module by default
                   </label>
                 </div>
@@ -629,6 +744,7 @@ export default function ModulesManagement() {
                       setShowEditModal(false);
                       resetForm();
                     }}
+                    className="border-gray-600 text-gray-300 hover:bg-gray-700"
                   >
                     Cancel
                   </Button>
@@ -659,16 +775,16 @@ export default function ModulesManagement() {
       {/* Delete Confirmation Modal */}
       {showDeleteModal && selectedModule && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <Card className="w-full max-w-md mx-4">
+          <Card className="w-full max-w-md mx-4 bg-gray-800 border-gray-700">
             <CardHeader>
-              <CardTitle className="flex items-center text-red-600">
+              <CardTitle className="flex items-center text-red-400">
                 <AlertTriangle className="w-5 h-5 mr-2" />
                 Delete Module
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-gray-700 mb-6">
-                Are you sure you want to delete the module "<strong>{selectedModule.title}</strong>"? This action cannot be undone.
+              <p className="text-gray-300 mb-6">
+                Are you sure you want to delete the module "<strong className="text-white">{selectedModule.title}</strong>"? This action cannot be undone.
               </p>
               <div className="flex justify-end space-x-3">
                 <Button
@@ -677,6 +793,7 @@ export default function ModulesManagement() {
                     setShowDeleteModal(false);
                     setSelectedModule(null);
                   }}
+                  className="border-gray-600 text-gray-300 hover:bg-gray-700"
                 >
                   Cancel
                 </Button>
@@ -684,7 +801,7 @@ export default function ModulesManagement() {
                   variant="destructive"
                   onClick={() => deleteModule(selectedModule.id)}
                   disabled={actionLoading[selectedModule.id]}
-                  className="btn-danger"
+                  className="bg-red-600 hover:bg-red-700"
                 >
                   {actionLoading[selectedModule.id] ? (
                     <>
@@ -699,6 +816,105 @@ export default function ModulesManagement() {
                   )}
                 </Button>
               </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* Bulk Upload Modal */}
+      {showBulkUploadModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <Card className="w-full max-w-md mx-4 bg-gray-800 border-gray-700">
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between text-white">
+                <div className="flex items-center">
+                  <Upload className="w-5 h-5 mr-2" />
+                  Bulk Upload Modules
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setShowBulkUploadModal(false);
+                    setBulkUploadCourseId('');
+                    setBulkUploadFile(null);
+                  }}
+                  className="text-gray-400 hover:text-white"
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleBulkUpload} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-1">
+                    Course *
+                  </label>
+                  <Select value={bulkUploadCourseId} onValueChange={setBulkUploadCourseId}>
+                    <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                      <SelectValue>
+                        Select Course
+                      </SelectValue>
+                    </SelectTrigger>
+                    <SelectContent className="bg-gray-800 border-gray-700">
+                      {courses.map((course) => (
+                        <SelectItem key={course.id} value={course.id} className="text-white">
+                          {course.title}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-1">
+                    JSON File *
+                  </label>
+                  <input
+                    type="file"
+                    accept=".json"
+                    onChange={(e) => setBulkUploadFile(e.target.files?.[0] || null)}
+                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-400"
+                    required
+                  />
+                  <p className="text-xs text-gray-400 mt-1">
+                    Upload a JSON file with modules array. Download the template for reference.
+                  </p>
+                </div>
+
+                <div className="flex justify-end space-x-3 pt-4">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      setShowBulkUploadModal(false);
+                      setBulkUploadCourseId('');
+                      setBulkUploadFile(null);
+                    }}
+                    className="border-gray-600 text-gray-300 hover:bg-gray-700"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    disabled={actionLoading.bulkUpload}
+                    className="btn-primary"
+                  >
+                    {actionLoading.bulkUpload ? (
+                      <>
+                        <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                        Uploading...
+                      </>
+                    ) : (
+                      <>
+                        <Upload className="w-4 h-4 mr-2" />
+                        Upload Modules
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </form>
             </CardContent>
           </Card>
         </div>

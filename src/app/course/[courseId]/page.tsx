@@ -36,118 +36,118 @@ const customStyles = `
     50% { background-position: 100% 50%; }
     100% { background-position: 0% 50%; }
   }
-  
+
   @keyframes fadeIn {
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
   }
-  
+
   @keyframes slideIn {
     from { opacity: 0; transform: translateX(-30px); }
     to { opacity: 1; transform: translateX(0); }
   }
-  
+
   @keyframes bounce {
     0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
     40% { transform: translateY(-10px); }
     60% { transform: translateY(-5px); }
   }
-  
+
   @keyframes pulse {
     0% { transform: scale(1); }
     50% { transform: scale(1.05); }
     100% { transform: scale(1); }
   }
-  
+
   @keyframes float {
     0% { transform: translateY(0px); }
     50% { transform: translateY(-20px); }
     100% { transform: translateY(0px); }
   }
-  
+
   .animate-gradient {
     background-size: 200% 200%;
     animation: gradient 3s ease infinite;
   }
-  
+
   .animate-fade-in {
     animation: fadeIn 0.8s ease-out;
   }
-  
+
   .animate-slide-in {
     animation: slideIn 0.6s ease-out;
   }
-  
+
   .animate-bounce {
     animation: bounce 2s infinite;
   }
-  
+
   .animate-pulse {
     animation: pulse 2s infinite;
   }
-  
+
   .animate-float {
     animation: float 3s ease-in-out infinite;
   }
-  
+
   .hover-lift {
     transition: all 0.3s ease;
   }
-  
+
   .hover-lift:hover {
     transform: translateY(-5px);
     box-shadow: 0 20px 40px rgba(0,0,0,0.1);
   }
-  
+
   .glass-effect {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(26, 31, 76, 0.9);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(99, 102, 241, 0.3);
   }
-  
+
   .shimmer {
     background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
     background-size: 200% 100%;
     animation: shimmer 2s infinite;
   }
-  
+
   .delay-200 { animation-delay: 200ms; }
   .delay-400 { animation-delay: 400ms; }
   .delay-600 { animation-delay: 600ms; }
   .delay-800 { animation-delay: 800ms; }
-  
+
   .gradient-text {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
-  
+
   .card-hover {
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   }
-  
+
   .card-hover:hover {
     transform: translateY(-10px) rotateX(5deg);
     box-shadow: 0 30px 60px rgba(0,0,0,0.15);
   }
-  
+
   .stats-counter {
     background: linear-gradient(45deg, #f093fb 0%, #f5576c 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
-  
+
   .premium-gradient {
     background: linear-gradient(120deg, #f6d365 0%, #fda085 100%);
   }
-  
+
   .shimmer-effect {
     position: relative;
     overflow: hidden;
   }
-  
+
   .shimmer-effect::before {
     content: '';
     position: absolute;
@@ -162,6 +162,36 @@ const customStyles = `
       transparent
     );
     animation: shimmer 2s infinite;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: rgba(30, 41, 59, 0.5);
+    border-radius: 4px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+    border-radius: 4px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #5a67d8 0%, #6b46c1 100%);
+  }
+
+  .glass-button {
+    background: rgba(30, 41, 59, 0.6);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(99, 102, 241, 0.2);
+  }
+
+  .glass-card {
+    background: rgba(30, 41, 59, 0.7);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(99, 102, 241, 0.15);
   }
 `;
 
@@ -311,14 +341,17 @@ const CourseDetailPage = () => {
       try {
         await Promise.all([
           fetchCourse(),
-          fetchModules(),
-          fetchCourseStats(),
-          fetchLearningPaths(),
-          fetchAchievements()
+          fetchModules()
         ]);
+        // Load other data in background after page is visible
+        setTimeout(() => {
+          fetchCourseStats();
+        }, 500);
       } catch (error) {
         console.error('Error initializing page:', error);
         toast.error('Some features may not be available');
+      } finally {
+        setLoading(false);
       }
     };
     
@@ -399,8 +432,6 @@ const CourseDetailPage = () => {
       }
     } catch (error) {
       console.error('Error fetching modules:', error);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -753,35 +784,35 @@ const CourseDetailPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-rose-50 via-pink-50/30 to-purple-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/50 to-slate-900 flex items-center justify-center">
         <style jsx>{customStyles}</style>
         <div className="text-center">
           {/* Professional Loading Animation */}
           <div className="relative">
-            <div className="w-32 h-32 bg-gradient-to-r from-rose-500 to-pink-600 rounded-3xl flex items-center justify-center shadow-2xl animate-pulse">
+            <div className="w-32 h-32 bg-gradient-to-r from-blue-500 to-purple-600 rounded-3xl flex items-center justify-center shadow-2xl animate-pulse">
               <BookOpen className="w-16 h-16 text-white animate-bounce" />
             </div>
             <div className="mt-8">
-              <div className="w-16 h-2 bg-gradient-to-r from-rose-200 to-pink-200 rounded-full animate-fade-in"></div>
-              <div className="w-16 h-2 bg-gradient-to-r from-pink-200 to-purple-200 rounded-full animate-fade-in delay-200"></div>
-              <div className="w-16 h-2 bg-gradient-to-r from-purple-200 to-rose-200 rounded-full animate-fade-in delay-400"></div>
+              <div className="w-16 h-2 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full animate-fade-in"></div>
+              <div className="w-16 h-2 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full animate-fade-in delay-200"></div>
+              <div className="w-16 h-2 bg-gradient-to-r from-pink-400 to-blue-400 rounded-full animate-fade-in delay-400"></div>
             </div>
-            <h2 className="text-2xl font-bold text-gray-700 mb-4 animate-fade-in delay-600">Loading Course Details...</h2>
-            <p className="text-gray-500 animate-fade-in delay-800">Please wait while we prepare the best learning experience for you</p>
+            <h2 className="text-2xl font-bold text-white mb-4 animate-fade-in delay-600">Loading Course Details...</h2>
+            <p className="text-gray-300 animate-fade-in delay-800">Please wait while we prepare the best learning experience for you</p>
             
             {/* Loading Stats */}
             <div className="grid grid-cols-3 gap-8 mt-12 max-w-md mx-auto">
-              <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-rose-200 animate-slide-in">
-                <Users className="w-8 h-8 text-rose-500 mx-auto mb-2" />
-                <div className="text-2xl font-bold text-gray-700">Loading...</div>
+              <div className="glass-card p-6 animate-slide-in">
+                <Users className="w-8 h-8 text-blue-400 mx-auto mb-2" />
+                <div className="text-2xl font-bold text-white">Loading...</div>
               </div>
-              <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-pink-200 animate-slide-in delay-200">
-                <BookOpen className="w-8 h-8 text-pink-500 mx-auto mb-2" />
-                <div className="text-2xl font-bold text-gray-700">Loading...</div>
+              <div className="glass-card p-6 animate-slide-in delay-200">
+                <BookOpen className="w-8 h-8 text-purple-400 mx-auto mb-2" />
+                <div className="text-2xl font-bold text-white">Loading...</div>
               </div>
-              <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-purple-200 animate-slide-in delay-400">
-                <Award className="w-8 h-8 text-purple-500 mx-auto mb-2" />
-                <div className="text-2xl font-bold text-gray-700">Loading...</div>
+              <div className="glass-card p-6 animate-slide-in delay-400">
+                <Award className="w-8 h-8 text-pink-400 mx-auto mb-2" />
+                <div className="text-2xl font-bold text-white">Loading...</div>
               </div>
             </div>
           </div>
@@ -792,11 +823,11 @@ const CourseDetailPage = () => {
 
   if (!course) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/50 to-slate-900 flex items-center justify-center">
         <div className="text-center">
           <AlertCircle className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">Course Not Found</h2>
-          <p className="text-gray-600">The course you're looking for doesn't exist.</p>
+          <h2 className="text-xl font-semibold text-white mb-2">Course Not Found</h2>
+          <p className="text-gray-300">The course you're looking for doesn't exist.</p>
         </div>
       </div>
     );
@@ -805,156 +836,153 @@ const CourseDetailPage = () => {
   return (
     <>
       <style jsx>{customStyles}</style>
-      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/50 to-slate-900">
         {/* Ultra Modern Hero Section */}
-        <div className="relative overflow-hidden">
-          {/* Beautiful Gradient Background */}
-          <div className="absolute inset-0 bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500">
-            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
-            {/* Modern Pattern Overlay */}
-            <div className="absolute inset-0 opacity-20">
-              <div className="h-full w-full bg-[url(&quot;data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3Ccircle cx='10' cy='10' r='1'/%3E%3Ccircle cx='50' cy='10' r='1'/%3E%3Ccircle cx='10' cy='50' r='1'/%3E%3Ccircle cx='50' cy='50' r='1'/%3E%3C/g%3E%3C/svg%3E&quot;)]"></div>
-            </div>
-          </div>
-          
-          {/* Floating Orbs */}
-          <div className="absolute top-20 left-20 w-32 h-32 bg-white/10 rounded-full backdrop-blur-md animate-float-slow"></div>
-          <div className="absolute top-40 right-32 w-24 h-24 bg-purple-300/20 rounded-full backdrop-blur-md animate-float-delay-3"></div>
-          <div className="absolute bottom-20 left-1/4 w-28 h-28 bg-pink-300/20 rounded-full backdrop-blur-md animate-float-delay-5"></div>
-          <div className="absolute bottom-32 right-20 w-20 h-20 bg-blue-300/20 rounded-full backdrop-blur-md animate-float-delay-7"></div>
+        <div className="relative overflow-hidden glass-card" style={{background: 'linear-gradient(135deg, rgba(26, 31, 76, 0.9), rgba(13, 27, 62, 0.85))'}}>
           
           <div className="relative z-10 max-w-7xl mx-auto px-8 py-20">
             {/* Smart Navigation */}
-            <div className="flex items-center justify-between mb-16">
-              <Button
-                onClick={() => window.history.back()}
-                className="group bg-white/10 backdrop-blur-lg border border-white/20 text-white px-6 py-3 rounded-2xl font-medium hover:bg-white/20 hover:border-white/30 transition-all duration-300 shadow-xl hover:shadow-2xl"
-              >
-                <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform duration-300" />
-                Back
-              </Button>
-              <div className="flex items-center gap-3 bg-white/10 backdrop-blur-lg border border-white/20 px-6 py-3 rounded-2xl">
+            <div className="flex items-center justify-end mb-16">
+              <div className="flex items-center gap-3 glass-button px-6 py-3 rounded-2xl">
                 <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
                 <span className="text-white font-medium">{getCategoryName(course.category)}</span>
               </div>
             </div>
             
-            <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 items-center">
-              <div className="lg:col-span-3">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+              {/* Left Column - Course Title and Details */}
+              <div className="lg:col-span-1 order-1 lg:order-1">
                 {/* Premium Badges */}
-                <div className="flex flex-wrap gap-3 mb-8">
-                  <div className="bg-gradient-to-r from-amber-400 to-orange-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg animate-pulse">
+                <div className="flex flex-wrap gap-3 mb-6">
+                  <div className="bg-gradient-to-r from-amber-500 to-orange-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg">
                     ⭐ Bestselling
                   </div>
-                  <div className="bg-white/20 backdrop-blur-lg border border-white/30 text-white px-4 py-2 rounded-full text-sm font-semibold">
+                  <div className="glass-button text-white px-4 py-2 rounded-full text-sm font-semibold">
                     🎯 {getCategoryName(course.category)}
-                  </div>
-                  <div className="bg-white/20 backdrop-blur-lg border border-white/30 text-white px-4 py-2 rounded-full text-sm font-semibold">
-                    🔥 Trending
                   </div>
                 </div>
                 
                 {/* Modern Title */}
-                <h1 className="text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
+                <h1 className="text-4xl lg:text-5xl font-bold text-white mb-6 leading-tight">
                   {course.title}
                 </h1>
                 
                 {/* Smart Description */}
-                <p className="text-xl text-white/90 mb-8 leading-relaxed">
-                  {course.shortDescription || course.description.substring(0, 150) + '...'}
+                <p className="text-lg text-white/90 mb-8 leading-relaxed">
+                  {course.shortDescription || course.description.substring(0, 200) + '...'}
                 </p>
                 
                 {/* Advanced Stats */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                  <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-4 text-center">
-                    <Users className="w-6 h-6 text-white mx-auto mb-2" />
-                    <div className="text-2xl font-bold text-white">{courseStats.totalStudents || 1250}+</div>
-                    <div className="text-white/70 text-sm">Students</div>
+                  <div className="glass-card p-4 text-center">
+                    <Users className="w-5 h-5 text-blue-400 mx-auto mb-2" />
+                    <div className="text-xl font-bold text-white">{courseStats.totalStudents || 1250}+</div>
+                    <div className="text-gray-400 text-xs">Students</div>
                   </div>
-                  <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-4 text-center">
-                    <Clock className="w-6 h-6 text-white mx-auto mb-2" />
-                    <div className="text-2xl font-bold text-white">{course.duration || '48h'}</div>
-                    <div className="text-white/70 text-sm">Duration</div>
+                  <div className="glass-card p-4 text-center">
+                    <Clock className="w-5 h-5 text-purple-400 mx-auto mb-2" />
+                    <div className="text-xl font-bold text-white">{course.duration || '48h'}</div>
+                    <div className="text-gray-400 text-xs">Duration</div>
                   </div>
-                  <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-4 text-center">
-                    <Star className="w-6 h-6 text-yellow-300 fill-current mx-auto mb-2" />
-                    <div className="text-2xl font-bold text-white">{courseStats.averageRating.toFixed(1)}</div>
-                    <div className="text-white/70 text-sm">Rating</div>
+                  <div className="glass-card p-4 text-center">
+                    <Star className="w-5 h-5 text-yellow-400 fill-current mx-auto mb-2" />
+                    <div className="text-xl font-bold text-white">{courseStats.averageRating.toFixed(1)}</div>
+                    <div className="text-gray-400 text-xs">Rating</div>
                   </div>
-                  <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-4 text-center">
-                    <Award className="w-6 h-6 text-white mx-auto mb-2" />
-                    <div className="text-2xl font-bold text-white">Certificate</div>
-                    <div className="text-white/70 text-sm">Included</div>
+                  <div className="glass-card p-4 text-center">
+                    <Award className="w-5 h-5 text-pink-400 mx-auto mb-2" />
+                    <div className="text-xl font-bold text-white">Certificate</div>
+                    <div className="text-gray-400 text-xs">Included</div>
                   </div>
                 </div>
                 
                 {/* Instructor Card */}
-                <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-4 flex items-center gap-4">
-                  <div className="w-14 h-14 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full flex items-center justify-center">
-                    <User className="w-7 h-7 text-white" />
+                <div className="glass-card p-4 flex items-center gap-4 mb-8">
+                  <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
+                    <User className="w-6 h-6 text-white" />
                   </div>
                   <div className="flex-1">
                     <div className="text-white font-semibold">Expert Instructor</div>
                     <div className="text-white/70 text-sm">Industry Professional • 10+ years</div>
                   </div>
-                  <div className="bg-green-400/20 text-green-300 px-3 py-1 rounded-full text-sm font-medium">
+                  <div className="bg-green-500/20 text-green-300 px-3 py-1 rounded-full text-xs font-medium">
                     Verified
                   </div>
                 </div>
+
+                {/* Course Details */}
+                <div className="glass-card p-6 mb-8">
+                  <h3 className="text-xl font-bold text-white mb-4">Course Details</h3>
+                  <p className="text-gray-300 leading-relaxed">
+                    {course.description}
+                  </p>
+                </div>
               </div>
-              
-              {/* Smart Pricing Card */}
-              <div className="lg:col-span-2">
-                <div className="bg-white rounded-3xl shadow-2xl overflow-hidden transform hover:scale-105 transition-all duration-500">
-                  <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-8">
+
+              {/* Right Column - Course Image and Pricing */}
+              <div className="lg:col-span-1 order-2 lg:order-2">
+                <div className="glass-card overflow-hidden sticky top-8">
+                  {/* Course Image */}
+                  {course.thumbnail ? (
+                    <img
+                      src={course.thumbnail}
+                      alt={course.title}
+                      className="w-full h-80 object-fill"
+                    />
+                  ) : (
+                    <div className="w-full h-80 bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center">
+                      <BookOpen className="w-16 h-16 text-white/50" />
+                    </div>
+                  )}
+                  
+                  {/* Pricing Section */}
+                  <div className="p-6">
                     <div className="text-center mb-6">
-                      <div className="text-5xl font-black text-white mb-2">
+                      <div className="text-4xl font-black text-white mb-2">
                         ৳{course.price.toLocaleString()}
                       </div>
-                      <div className="text-white/80 line-through text-lg">
+                      <div className="text-white/60 line-through text-lg">
                         ৳{(course.price * 2).toLocaleString()}
                       </div>
-                      <div className="inline-block mt-4 bg-red-500 text-white px-4 py-2 rounded-full text-sm font-bold animate-pulse">
+                      <div className="inline-block mt-3 bg-red-500 text-white px-4 py-2 rounded-full text-sm font-bold">
                         🔥 50% OFF - Limited Time
                       </div>
                     </div>
-                  </div>
-                  
-                  <div className="p-8">
+                    
                     <Button
                       onClick={handlePurchase}
-                      className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white py-4 rounded-2xl font-bold text-lg transition-all duration-300 shadow-lg hover:shadow-xl mb-6 transform hover:scale-105"
+                      className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white py-4 rounded-2xl font-bold text-lg transition-all duration-300 shadow-lg hover:shadow-xl mb-4 transform hover:scale-105"
                     >
                       <ShoppingCart className="w-5 h-5 mr-2" />
                       Enroll Now
                     </Button>
                     
-                    <div className="text-center text-gray-500 text-sm mb-6">
+                    <div className="text-center text-gray-400 text-sm mb-4">
                       ⚡ 30-day money-back guarantee
                     </div>
                     
-                    <div className="space-y-4">
-                      <div className="flex items-center gap-3 text-gray-700">
-                        <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
-                          <CheckCircle className="w-4 h-4 text-green-600" />
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-3 text-white">
+                        <div className="w-8 h-8 bg-green-500/20 rounded-lg flex items-center justify-center">
+                          <CheckCircle className="w-4 h-4 text-green-400" />
                         </div>
                         <span className="text-sm font-medium">{modules.length} video lessons</span>
                       </div>
-                      <div className="flex items-center gap-3 text-gray-700">
-                        <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
-                          <CheckCircle className="w-4 h-4 text-green-600" />
+                      <div className="flex items-center gap-3 text-white">
+                        <div className="w-8 h-8 bg-green-500/20 rounded-lg flex items-center justify-center">
+                          <CheckCircle className="w-4 h-4 text-green-400" />
                         </div>
                         <span className="text-sm font-medium">Downloadable resources</span>
                       </div>
-                      <div className="flex items-center gap-3 text-gray-700">
-                        <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
-                          <CheckCircle className="w-4 h-4 text-green-600" />
+                      <div className="flex items-center gap-3 text-white">
+                        <div className="w-8 h-8 bg-green-500/20 rounded-lg flex items-center justify-center">
+                          <CheckCircle className="w-4 h-4 text-green-400" />
                         </div>
                         <span className="text-sm font-medium">Certificate of completion</span>
                       </div>
-                      <div className="flex items-center gap-3 text-gray-700">
-                        <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
-                          <CheckCircle className="w-4 h-4 text-green-600" />
+                      <div className="flex items-center gap-3 text-white">
+                        <div className="w-8 h-8 bg-green-500/20 rounded-lg flex items-center justify-center">
+                          <CheckCircle className="w-4 h-4 text-green-400" />
                         </div>
                         <span className="text-sm font-medium">Lifetime access</span>
                       </div>
@@ -966,531 +994,135 @@ const CourseDetailPage = () => {
           </div>
         </div>
         
-        {/* Ultra Modern Content Sections */}
-        <div className="max-w-7xl mx-auto px-8 py-20">
-          {/* Course Learning Plan - Modern */}
-          <div className="mb-24">
-            <div className="text-center mb-16">
-              <div className="inline-flex items-center gap-3 bg-gradient-to-r from-indigo-100 to-blue-100 px-6 py-3 rounded-full mb-6">
-                <Target className="w-5 h-5 text-indigo-600" />
-                <span className="text-indigo-900 font-bold">Learning Journey</span>
-              </div>
-              <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">Your Learning Path</h2>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                Step-by-step roadmap to master {course.category.toLowerCase()}
-              </p>
-            </div>
-            
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              {/* Phase 1 */}
-              <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-3xl p-8 border border-blue-100 shadow-xl group hover:shadow-2xl transition-all duration-300">
-                <div className="text-center mb-6">
-                  <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
-                    <span className="text-2xl font-bold text-white">1</span>
-                  </div>
-                  <h3 className="text-2xl font-bold text-gray-900 mb-3">Foundation</h3>
-                  <div className="inline-block bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-semibold mb-4">
-                    Weeks 1-4
-                  </div>
-                </div>
-                <div className="space-y-4">
-                  <div className="flex items-start gap-3">
-                    <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                      <CheckCircle className="w-3 h-3 text-green-600" />
-                    </div>
-                    <div>
-                      <p className="font-medium text-gray-900">Basic Concepts</p>
-                      <p className="text-sm text-gray-600">Core fundamentals and terminology</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                      <CheckCircle className="w-3 h-3 text-green-600" />
-                    </div>
-                    <div>
-                      <p className="font-medium text-gray-900">Setup & Tools</p>
-                      <p className="text-sm text-gray-600">Environment configuration</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                      <CheckCircle className="w-3 h-3 text-green-600" />
-                    </div>
-                    <div>
-                      <p className="font-medium text-gray-900">First Projects</p>
-                      <p className="text-sm text-gray-600">Hands-on practice exercises</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Phase 2 */}
-              <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-3xl p-8 border border-purple-100 shadow-xl group hover:shadow-2xl transition-all duration-300">
-                <div className="text-center mb-6">
-                  <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
-                    <span className="text-2xl font-bold text-white">2</span>
-                  </div>
-                  <h3 className="text-2xl font-bold text-gray-900 mb-3">Advanced Skills</h3>
-                  <div className="inline-block bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-sm font-semibold mb-4">
-                    Weeks 5-8
-                  </div>
-                </div>
-                <div className="space-y-4">
-                  <div className="flex items-start gap-3">
-                    <div className="w-6 h-6 bg-amber-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                      <Zap className="w-3 h-3 text-amber-600" />
-                    </div>
-                    <div>
-                      <p className="font-medium text-gray-900">Advanced Topics</p>
-                      <p className="text-sm text-gray-600">Deep dive into complex concepts</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <div className="w-6 h-6 bg-amber-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                      <Zap className="w-3 h-3 text-amber-600" />
-                    </div>
-                    <div>
-                      <p className="font-medium text-gray-900">Real Projects</p>
-                      <p className="text-sm text-gray-600">Industry-relevant applications</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <div className="w-6 h-6 bg-amber-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                      <Zap className="w-3 h-3 text-amber-600" />
-                    </div>
-                    <div>
-                      <p className="font-medium text-gray-900">Best Practices</p>
-                      <p className="text-sm text-gray-600">Professional development patterns</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Phase 3 */}
-              <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-3xl p-8 border border-green-100 shadow-xl group hover:shadow-2xl transition-all duration-300">
-                <div className="text-center mb-6">
-                  <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-green-600 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
-                    <span className="text-2xl font-bold text-white">3</span>
-                  </div>
-                  <h3 className="text-2xl font-bold text-gray-900 mb-3">Career Ready</h3>
-                  <div className="inline-block bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-semibold mb-4">
-                    Weeks 9-12
-                  </div>
-                </div>
-                <div className="space-y-4">
-                  <div className="flex items-start gap-3">
-                    <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                      <Rocket className="w-3 h-3 text-blue-600" />
-                    </div>
-                    <div>
-                      <p className="font-medium text-gray-900">Portfolio Building</p>
-                      <p className="text-sm text-gray-600">Create impressive projects</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                      <Rocket className="w-3 h-3 text-blue-600" />
-                    </div>
-                    <div>
-                      <p className="font-medium text-gray-900">Interview Prep</p>
-                      <p className="text-sm text-gray-600">Technical and soft skills</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                      <Rocket className="w-3 h-3 text-blue-600" />
-                    </div>
-                    <div>
-                      <p className="font-medium text-gray-900">Job Placement</p>
-                      <p className="text-sm text-gray-600">Career support and guidance</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+        {/* What You'll Achieve */}
+        <div className="max-w-7xl mx-auto px-8 py-12">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl lg:text-4xl font-bold text-white mb-4">What You'll Achieve</h2>
+            <p className="text-lg text-gray-300">After completing this course, you'll have the skills to:</p>
           </div>
           
-          {/* Course Mission & Vision - Modern */}
-          <div className="mb-24">
-            <div className="text-center mb-16">
-              <div className="inline-flex items-center gap-3 bg-gradient-to-r from-amber-100 to-orange-100 px-6 py-3 rounded-full mb-6">
-                <Trophy className="w-5 h-5 text-amber-600" />
-                <span className="text-amber-900 font-bold">Course Mission</span>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="glass-card p-6 text-center hover:shadow-xl transition-all duration-300">
+              <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <CheckCircle className="w-6 h-6 text-white" />
               </div>
-              <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">What You'll Achieve</h2>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                Transform from beginner to professional {course.category.toLowerCase()} expert
-              </p>
+              <h4 className="font-bold text-white mb-2">Build Projects</h4>
+              <p className="text-sm text-gray-400">Create real-world applications</p>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
-              {/* Mission */}
-              <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-3xl p-8 border border-amber-100 shadow-xl">
-                <div className="flex items-center gap-4 mb-6">
-                  <div className="w-14 h-14 bg-gradient-to-r from-amber-500 to-orange-500 rounded-2xl flex items-center justify-center">
-                    <Target className="w-7 h-7 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="text-2xl font-bold text-gray-900">Our Mission</h3>
-                    <p className="text-amber-600 font-medium">Empowering Your Success</p>
-                  </div>
-                </div>
-                <div className="space-y-4">
-                  <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 bg-amber-100 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
-                      <CheckCircle className="w-4 h-4 text-amber-600" />
-                    </div>
-                    <div>
-                      <p className="font-semibold text-gray-900">Practical Skills</p>
-                      <p className="text-gray-600">Hands-on experience with real-world projects and industry tools</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 bg-amber-100 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
-                      <CheckCircle className="w-4 h-4 text-amber-600" />
-                    </div>
-                    <div>
-                      <p className="font-semibold text-gray-900">Expert Guidance</p>
-                      <p className="text-gray-600">Learn from industry professionals with 10+ years experience</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 bg-amber-100 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
-                      <CheckCircle className="w-4 h-4 text-amber-600" />
-                    </div>
-                    <div>
-                      <p className="font-semibold text-gray-900">Career Support</p>
-                      <p className="text-gray-600">Job placement assistance and interview preparation</p>
-                    </div>
-                  </div>
-                </div>
+            <div className="glass-card p-6 text-center hover:shadow-xl transition-all duration-300">
+              <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <CheckCircle className="w-6 h-6 text-white" />
               </div>
-              
-              {/* Vision */}
-              <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-3xl p-8 border border-blue-100 shadow-xl">
-                <div className="flex items-center gap-4 mb-6">
-                  <div className="w-14 h-14 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-2xl flex items-center justify-center">
-                    <Rocket className="w-7 h-7 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="text-2xl font-bold text-gray-900">Your Vision</h3>
-                    <p className="text-blue-600 font-medium">Future Success</p>
-                  </div>
-                </div>
-                <div className="space-y-4">
-                  <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
-                      <Star className="w-4 h-4 text-blue-600" />
-                    </div>
-                    <div>
-                      <p className="font-semibold text-gray-900">Become Expert</p>
-                      <p className="text-gray-600">Master advanced concepts and best practices</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
-                      <Star className="w-4 h-4 text-blue-600" />
-                    </div>
-                    <div>
-                      <p className="font-semibold text-gray-900">Build Portfolio</p>
-                      <p className="text-gray-600">Create impressive projects that showcase your skills</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
-                      <Star className="w-4 h-4 text-blue-600" />
-                    </div>
-                    <div>
-                      <p className="font-semibold text-gray-900">Get Hired</p>
-                      <p className="text-gray-600">Land your dream job in the tech industry</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <h4 className="font-bold text-white mb-2">Solve Problems</h4>
+              <p className="text-sm text-gray-400">Think critically and debug effectively</p>
             </div>
             
-            {/* Learning Outcomes */}
-            <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-3xl p-12 border border-gray-200 shadow-xl">
-              <div className="text-center mb-8">
-                <h3 className="text-3xl font-bold text-gray-900 mb-4">What You'll Be Able To Do</h3>
-                <p className="text-lg text-gray-600">After completing this course, you'll have the skills to:</p>
+            <div className="glass-card p-6 text-center hover:shadow-xl transition-all duration-300">
+              <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <CheckCircle className="w-6 h-6 text-white" />
               </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <div className="bg-white rounded-2xl p-6 text-center shadow-lg hover:shadow-xl transition-all duration-300">
-                  <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl flex items-center justify-center mx-auto mb-4">
-                    <CheckCircle className="w-6 h-6 text-white" />
-                  </div>
-                  <h4 className="font-bold text-gray-900 mb-2">Build Projects</h4>
-                  <p className="text-sm text-gray-600">Create real-world applications</p>
-                </div>
-                
-                <div className="bg-white rounded-2xl p-6 text-center shadow-lg hover:shadow-xl transition-all duration-300">
-                  <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-xl flex items-center justify-center mx-auto mb-4">
-                    <CheckCircle className="w-6 h-6 text-white" />
-                  </div>
-                  <h4 className="font-bold text-gray-900 mb-2">Solve Problems</h4>
-                  <p className="text-sm text-gray-600">Think critically and debug effectively</p>
-                </div>
-                
-                <div className="bg-white rounded-2xl p-6 text-center shadow-lg hover:shadow-xl transition-all duration-300">
-                  <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl flex items-center justify-center mx-auto mb-4">
-                    <CheckCircle className="w-6 h-6 text-white" />
-                  </div>
-                  <h4 className="font-bold text-gray-900 mb-2">Work in Teams</h4>
-                  <p className="text-sm text-gray-600">Collaborate on complex projects</p>
-                </div>
-                
-                <div className="bg-white rounded-2xl p-6 text-center shadow-lg hover:shadow-xl transition-all duration-300">
-                  <div className="w-12 h-12 bg-gradient-to-r from-amber-500 to-orange-500 rounded-xl flex items-center justify-center mx-auto mb-4">
-                    <CheckCircle className="w-6 h-6 text-white" />
-                  </div>
-                  <h4 className="font-bold text-gray-900 mb-2">Get Hired</h4>
-                  <p className="text-sm text-gray-600">Land your dream tech job</p>
-                </div>
+              <h4 className="font-bold text-white mb-2">Work in Teams</h4>
+              <p className="text-sm text-gray-400">Collaborate on complex projects</p>
+            </div>
+            
+            <div className="glass-card p-6 text-center hover:shadow-xl transition-all duration-300">
+              <div className="w-12 h-12 bg-gradient-to-r from-amber-500 to-orange-500 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <CheckCircle className="w-6 h-6 text-white" />
               </div>
+              <h4 className="font-bold text-white mb-2">Get Hired</h4>
+              <p className="text-sm text-gray-400">Land your dream tech job</p>
             </div>
           </div>
-          
-          {/* What You'll Learn - Modern */}
-          <div className="mb-24">
-            <div className="text-center mb-16">
-              <div className="inline-flex items-center gap-3 bg-gradient-to-r from-blue-100 to-purple-100 px-6 py-3 rounded-full mb-6">
-                <Target className="w-5 h-5 text-blue-600" />
-                <span className="text-blue-900 font-bold">Learning Outcomes</span>
-              </div>
-              <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">What You'll Master</h2>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                Transform your skills and become a {course.category.toLowerCase()} expert
-              </p>
+        </div>
+        
+        {/* Course Curriculum */}
+        <div className="max-w-7xl mx-auto px-8 py-12">
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-3 glass-button px-6 py-3 rounded-full mb-6">
+              <BookOpen className="w-5 h-5 text-purple-400" />
+              <span className="text-white font-bold">Course Content</span>
             </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="group bg-white rounded-3xl p-8 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300">
-                <div className="flex items-start gap-6">
-                  <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
-                    <Target className="w-8 h-8 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="text-2xl font-bold text-gray-900 mb-4">Build Strong Foundation</h3>
-                    <p className="text-gray-600 leading-relaxed text-lg">
-                      Master the fundamentals and build a solid understanding of core concepts.
-                    </p>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="group bg-white rounded-3xl p-8 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300">
-                <div className="flex items-start gap-6">
-                  <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
-                    <Zap className="w-8 h-8 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="text-2xl font-bold text-gray-900 mb-4">Create Real Projects</h3>
-                    <p className="text-gray-600 leading-relaxed text-lg">
-                      Apply your knowledge by building impressive, portfolio-ready projects.
-                    </p>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="group bg-white rounded-3xl p-8 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300">
-                <div className="flex items-start gap-6">
-                  <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-green-600 rounded-2xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
-                    <Rocket className="w-8 h-8 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="text-2xl font-bold text-gray-900 mb-4">Launch Your Career</h3>
-                    <p className="text-gray-600 leading-relaxed text-lg">
-                      Get job-ready with career guidance and industry-relevant skills.
-                    </p>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="group bg-white rounded-3xl p-8 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300">
-                <div className="flex items-start gap-6">
-                  <div className="w-16 h-16 bg-gradient-to-r from-amber-500 to-amber-600 rounded-2xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
-                    <Trophy className="w-8 h-8 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="text-2xl font-bold text-gray-900 mb-4">Earn Certification</h3>
-                    <p className="text-gray-600 leading-relaxed text-lg">
-                      Receive a recognized certificate that validates your expertise.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <h2 className="text-3xl lg:text-4xl font-bold text-white mb-4">Course Modules</h2>
+            <p className="text-lg text-gray-300">
+              {modules.length} modules included
+            </p>
           </div>
           
-          {/* Course Curriculum - Modern */}
-          <div className="mb-24">
-            <div className="text-center mb-16">
-              <div className="inline-flex items-center gap-3 bg-gradient-to-r from-purple-100 to-pink-100 px-6 py-3 rounded-full mb-6">
-                <BookOpen className="w-5 h-5 text-purple-600" />
-                <span className="text-purple-900 font-bold">Course Content</span>
-              </div>
-              <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">Comprehensive Curriculum</h2>
-              <p className="text-xl text-gray-600">
-                {modules.length} expertly crafted modules
-              </p>
-            </div>
-            
-            <div className="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
-              {modules.length === 0 ? (
-                <div className="text-center py-20">
-                  <div className="w-20 h-20 bg-gray-100 rounded-full mx-auto mb-6 flex items-center justify-center">
-                    <BookOpen className="w-10 h-10 text-gray-400" />
-                  </div>
-                  <h3 className="text-2xl font-bold text-gray-700 mb-3">Content Coming Soon</h3>
-                  <p className="text-gray-500 text-lg">We're preparing exceptional content for you</p>
+          <div className="glass-card overflow-hidden max-h-[600px] overflow-y-auto custom-scrollbar bg-gradient-to-br from-slate-900/95 to-slate-950/95 backdrop-blur-xl">
+            {modules.length === 0 ? (
+              <div className="text-center py-16">
+                <div className="w-16 h-16 bg-gray-700/50 rounded-full mx-auto mb-4 flex items-center justify-center">
+                  <BookOpen className="w-8 h-8 text-gray-400" />
                 </div>
-              ) : (
-                <div className="divide-y divide-gray-100">
-                  {modules.map((module, index) => {
-                    const isPreview = isPreviewModule(module, index);
-                    const isLocked = !isPreview && !enrolledModules.has(module.id);
-                    
-                    return (
-                      <div key={module.id} className="p-8 hover:bg-gray-50 transition-colors group">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-6">
-                            <div className="w-14 h-14 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center font-bold text-xl text-white group-hover:scale-110 transition-transform duration-300">
-                              {module.order}
-                            </div>
-                            <div>
-                              <h3 className="text-xl font-bold text-gray-900 mb-3">{module.title}</h3>
-                              <div className="flex items-center gap-4">
-                                {isPreview && (
-                                  <span className="bg-gradient-to-r from-green-100 to-emerald-100 text-green-700 px-3 py-1 rounded-full text-sm font-bold">
+                <h3 className="text-xl font-bold text-white mb-2">Content Coming Soon</h3>
+                <p className="text-gray-400">We're preparing exceptional content for you</p>
+              </div>
+            ) : (
+              <div className="divide-y divide-purple-500/20">
+                {modules.map((module, index) => {
+                  const isPreview = isPreviewModule(module, index);
+                  const isLocked = !isPreview && !enrolledModules.has(module.id);
+
+                  return (
+                    <div key={module.id} className="p-6 hover:bg-purple-900/20 transition-colors group">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                          <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl flex items-center justify-center font-bold text-lg text-white">
+                            {module.order}
+                          </div>
+                          <div>
+                            <h3 className="text-lg font-bold text-white mb-2">{module.title}</h3>
+                            <div className="flex items-center gap-3">
+                              {isPreview && (
+                                <span className="bg-gradient-to-r from-green-500/20 to-emerald-500/20 text-green-300 px-3 py-1 rounded-full text-xs font-bold">
                                     🔥 FREE PREVIEW
                                   </span>
-                                )}
-                                {module.videoUrl && (
-                                  <span className="flex items-center gap-2 text-gray-600 font-medium">
-                                    <Video className="w-5 h-5" />
-                                    <span>Video Lesson</span>
-                                  </span>
-                                )}
-                                {module.homework && (
-                                  <span className="flex items-center gap-2 text-gray-600 font-medium">
-                                    <FileText className="w-5 h-5" />
-                                    <span>Assignment</span>
-                                  </span>
-                                )}
-                              </div>
+                              )}
+                              {module.videoUrl && (
+                                <span className="flex items-center gap-1 text-gray-400 text-sm">
+                                  <Video className="w-4 h-4" />
+                                  <span>Video</span>
+                                </span>
+                              )}
+                              {module.homework && (
+                                <span className="flex items-center gap-1 text-gray-400 text-sm">
+                                  <FileText className="w-4 h-4" />
+                                  <span>Assignment</span>
+                                </span>
+                              )}
                             </div>
                           </div>
-                          
-                          <div className="flex items-center gap-4">
-                            {module.videoUrl && isPreview && (
-                              <Button
-                                onClick={() => openVideoModal(module.videoUrl!, module.title)}
-                                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-3 rounded-2xl font-bold transition-all duration-300 shadow-lg hover:shadow-xl"
-                              >
-                                <Play className="w-5 h-5 mr-2" />
-                                Preview
-                              </Button>
-                            )}
-                            {isLocked ? (
-                              <div className="flex items-center gap-3 text-gray-400">
-                                <Lock className="w-5 h-5" />
-                                <span className="font-medium">Enroll to unlock</span>
-                              </div>
-                            ) : (
-                              <div className="flex items-center gap-3 text-green-600">
-                                <Unlock className="w-5 h-5" />
-                                <span className="font-bold">Available</span>
-                              </div>
-                            )}
-                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-3">
+                          {module.videoUrl && isPreview && (
+                            <Button
+                              onClick={() => openVideoModal(module.videoUrl!, module.title)}
+                              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-4 py-2 rounded-xl font-bold transition-all duration-300 shadow-lg text-sm"
+                            >
+                              <Play className="w-4 h-4 mr-1" />
+                              Preview
+                            </Button>
+                          )}
+                          {isLocked ? (
+                            <div className="flex items-center gap-2 text-gray-400">
+                              <Lock className="w-4 h-4" />
+                              <span className="text-sm font-medium">Locked</span>
+                            </div>
+                          ) : (
+                            <div className="flex items-center gap-2 text-green-400">
+                              <Unlock className="w-4 h-4" />
+                              <span className="text-sm font-bold">Available</span>
+                            </div>
+                          )}
                         </div>
                       </div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-          </div>
-          
-          {/* Student Success - Modern */}
-          <div className="mb-24">
-            <div className="text-center mb-16">
-              <div className="inline-flex items-center gap-3 bg-gradient-to-r from-green-100 to-emerald-100 px-6 py-3 rounded-full mb-6">
-                <Trophy className="w-5 h-5 text-green-600" />
-                <span className="text-green-900 font-bold">Success Stories</span>
+                    </div>
+                  );
+                })}
               </div>
-              <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">Student Success</h2>
-              <p className="text-xl text-gray-600">
-                Join thousands of successful graduates worldwide
-              </p>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-              <div className="bg-white rounded-3xl p-8 shadow-xl border border-gray-100 text-center group hover:shadow-2xl transition-all duration-300">
-                <div className="text-5xl font-black text-gray-900 mb-6 group-hover:scale-110 transition-transform duration-300">{courseStats.averageRating.toFixed(1)}</div>
-                <div className="flex items-center justify-center gap-2 mb-6">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className={`w-8 h-8 ${i < Math.floor(courseStats.averageRating) ? 'text-yellow-400 fill-current' : 'text-gray-300'}`} />
-                  ))}
-                </div>
-                <div className="text-xl font-bold text-gray-900">Average Rating</div>
-              </div>
-              
-              <div className="bg-white rounded-3xl p-8 shadow-xl border border-gray-100 text-center group hover:shadow-2xl transition-all duration-300">
-                <div className="text-5xl font-black text-gray-900 mb-6 group-hover:scale-110 transition-transform duration-300">95%</div>
-                <div className="text-xl font-bold text-gray-900 mb-4">Job Placement</div>
-                <div className="text-gray-600 font-medium">Within 3 months</div>
-              </div>
-              
-              <div className="bg-white rounded-3xl p-8 shadow-xl border border-gray-100 text-center group hover:shadow-2xl transition-all duration-300">
-                <div className="text-5xl font-black text-gray-900 mb-6 group-hover:scale-110 transition-transform duration-300">{courseStats.totalStudents || 1250}+</div>
-                <div className="text-xl font-bold text-gray-900">Happy Students</div>
-              </div>
-            </div>
-            
-            <div className="bg-white rounded-3xl p-8 shadow-xl border border-gray-100">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-8">
-                  <div className="flex -space-x-4">
-                    {[1, 2, 3, 4, 5].map((i) => (
-                      <div key={i} className="w-14 h-14 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full border-4 border-white flex items-center justify-center hover:scale-110 transition-transform duration-300">
-                        <span className="text-white text-sm font-bold">{i}</span>
-                      </div>
-                    ))}
-                  </div>
-                  <div>
-                    <div className="text-xl font-bold text-gray-900 mb-2">Graduates work at</div>
-                    <div className="text-gray-600">Top companies worldwide</div>
-                  </div>
-                </div>
-                <div className="flex flex-wrap gap-3">
-                  {['Google', 'Microsoft', 'Amazon', 'Apple', 'Meta'].map((company) => (
-                    <span key={company} className="px-4 py-2 bg-gray-100 text-gray-700 rounded-full text-sm font-bold hover:bg-gray-200 transition-colors duration-300">
-                      {company}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          {/* Course Description - Modern */}
-          <div>
-            <div className="text-center mb-16">
-              <div className="inline-flex items-center gap-3 bg-gradient-to-r from-indigo-100 to-blue-100 px-6 py-3 rounded-full mb-6">
-                <FileText className="w-5 h-5 text-indigo-600" />
-                <span className="text-indigo-900 font-bold">Course Details</span>
-              </div>
-              <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">About This Course</h2>
-            </div>
-            
-            <div className="bg-white rounded-3xl p-16 shadow-xl border border-gray-100">
-              <p className="text-xl text-gray-700 leading-relaxed text-center max-w-5xl mx-auto">
-                {course.description}
-              </p>
-            </div>
+            )}
           </div>
         </div>
         
@@ -1521,14 +1153,14 @@ const CourseDetailPage = () => {
         {/* Professional Video Modal */}
       {videoModal.isOpen && (
         <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
-            <div className="p-4 border-b border-gray-200 flex items-center justify-between">
-              <h3 className="text-xl font-semibold text-gray-900">{videoModal.title}</h3>
+          <div className="glass-card max-w-4xl w-full max-h-[90vh] overflow-hidden">
+            <div className="p-4 border-b border-gray-700/50 flex items-center justify-between">
+              <h3 className="text-xl font-semibold text-white">{videoModal.title}</h3>
               <Button
                 onClick={closeVideoModal}
-                className="p-2 hover:bg-gray-100 rounded-lg"
+                className="p-2 hover:bg-white/10 rounded-lg"
               >
-                <X className="w-5 h-5 text-gray-600" />
+                <X className="w-5 h-5 text-white" />
               </Button>
             </div>
             <div className="aspect-video bg-black">
@@ -1554,25 +1186,25 @@ const CourseDetailPage = () => {
           {/* Professional Enrollment Form Modal */}
       {showEnrollmentForm && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-xl z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b border-gray-200">
+          <div className="glass-card max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-gray-700/50">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-2xl font-bold text-gray-900">Course Enrollment</h3>
-                  <p className="text-gray-600">Start your learning journey today</p>
+                  <h3 className="text-2xl font-bold text-white">Course Enrollment</h3>
+                  <p className="text-gray-400">Start your learning journey today</p>
                 </div>
                 <Button
                   onClick={() => setShowEnrollmentForm(false)}
-                  className="p-2 hover:bg-gray-100 rounded-lg"
+                  className="p-2 hover:bg-white/10 rounded-lg"
                 >
-                  <X className="w-5 h-5 text-gray-600" />
+                  <X className="w-5 h-5 text-white" />
                 </Button>
               </div>
             </div>
             <div className="p-6">
-              <div className="bg-gray-50 rounded-lg p-6 mb-6">
-                <h4 className="font-semibold text-gray-900 mb-2">{course?.title}</h4>
-                <div className="text-2xl font-bold text-blue-600">
+              <div className="glass-card p-6 mb-6">
+                <h4 className="font-semibold text-white mb-2">{course?.title}</h4>
+                <div className="text-2xl font-bold text-blue-400">
                   ৳{course?.price.toLocaleString()}
                 </div>
               </div>
@@ -1580,28 +1212,28 @@ const CourseDetailPage = () => {
               <form onSubmit={handleEnrollmentSubmit} className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
                       Full Name *
                     </label>
                     <input
                       type="text"
                       value={enrollmentForm.fullName}
                       onChange={(e) => setEnrollmentForm({...enrollmentForm, fullName: e.target.value})}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-4 py-3 bg-slate-800/50 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-500"
                       placeholder="Enter your full name"
                       required
                     />
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
                       Phone Number *
                     </label>
                     <input
                       type="tel"
                       value={enrollmentForm.phone}
                       onChange={(e) => setEnrollmentForm({...enrollmentForm, phone: e.target.value})}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-4 py-3 bg-slate-800/50 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-500"
                       placeholder="Enter your phone number"
                       required
                     />
@@ -1609,39 +1241,39 @@ const CourseDetailPage = () => {
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
                     Email Address *
                   </label>
                   <input
                     type="email"
                     value={enrollmentForm.email}
                     onChange={(e) => setEnrollmentForm({...enrollmentForm, email: e.target.value})}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-3 bg-slate-800/50 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-500"
                     placeholder="Enter your email address"
                     required
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
                     Address *
                   </label>
                   <textarea
                     value={enrollmentForm.address}
                     onChange={(e) => setEnrollmentForm({...enrollmentForm, address: e.target.value})}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-3 bg-slate-800/50 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-500"
                     rows={4}
                     placeholder="Enter your complete address"
                     required
                   />
                 </div>
                 
-                <div className="flex items-center justify-between pt-6 border-t border-gray-200">
+                <div className="flex items-center justify-between pt-6 border-t border-gray-700/50">
                   <div>
-                    <div className="text-xl font-bold text-blue-600">
+                    <div className="text-xl font-bold text-blue-400">
                       Total: ৳{course?.price.toLocaleString()}
                     </div>
-                    <div className="text-sm text-gray-500">Including all taxes</div>
+                    <div className="text-sm text-gray-400">Including all taxes</div>
                   </div>
                   <Button
                     type="submit"

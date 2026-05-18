@@ -661,7 +661,7 @@ const fetchEnrollments = async () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-900 to-gray-900">
       {/* Beautiful Header */}
       <div className={`bg-gradient-to-r ${getCategoryGradient()} text-white relative overflow-hidden`}>
         <div className="absolute inset-0 bg-black opacity-10"></div>

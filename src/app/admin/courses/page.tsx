@@ -395,14 +395,14 @@ export default function CourseManagement() {
   const totalRevenue = courses.reduce((sum, course) => sum + (course.price * course._count.enrollments), 0);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-900">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200">
+      <div className="bg-gray-800 border-b border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Course Management</h1>
-              <p className="text-sm text-gray-500 mt-1">Manage your training courses and programs</p>
+              <h1 className="text-2xl font-bold text-white">Course Management</h1>
+              <p className="text-sm text-gray-300 mt-1">Manage your training courses and programs</p>
             </div>
             <div className="flex items-center space-x-3">
               <Button
@@ -413,8 +413,8 @@ export default function CourseManagement() {
                 Add Course
               </Button>
               <Button 
-                variant="outline" 
-                className="border-gray-200 text-gray-700 hover:bg-gray-50"
+                variant="outline"
+                className="border-gray-600 text-gray-300 hover:bg-gray-700"
                 onClick={fetchCourses}
                 disabled={loading}
               >
@@ -429,29 +429,29 @@ export default function CourseManagement() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card className="stat-card">
+          <Card className="bg-gray-800 border-0 shadow-sm">
             <CardContent className="p-6">
               <div className="flex items-center">
-                <div className="icon-wrapper">
-                  <BookOpen className="icon-primary" />
+                <div className="w-12 h-12 bg-blue-900/30 rounded-xl flex items-center justify-center">
+                  <BookOpen className="w-6 h-6 text-blue-400" />
                 </div>
                 <div className="ml-4">
-                  <p className="stat-label">Total Courses</p>
-                  <p className="stat-number">{courses.length}</p>
+                  <p className="text-sm font-medium text-gray-300">Total Courses</p>
+                  <p className="text-2xl font-bold text-white">{courses.length}</p>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="stat-card">
+          <Card className="bg-gray-800 border-0 shadow-sm">
             <CardContent className="p-6">
               <div className="flex items-center">
-                <div className="icon-wrapper">
-                  <Eye className="icon-primary" />
+                <div className="w-12 h-12 bg-green-900/30 rounded-xl flex items-center justify-center">
+                  <Eye className="w-6 h-6 text-green-400" />
                 </div>
                 <div className="ml-4">
-                  <p className="stat-label">Active Courses</p>
-                  <p className="stat-number">{activeCourses}</p>
+                  <p className="text-sm font-medium text-gray-300">Active Courses</p>
+                  <p className="text-2xl font-bold text-white">{activeCourses}</p>
                 </div>
               </div>
             </CardContent>

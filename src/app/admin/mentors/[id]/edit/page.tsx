@@ -161,25 +161,25 @@ const EditMentorPage = () => {
 
   if (fetchLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
         <div className="text-center">
           <div className="w-12 h-12 border-4 border-green-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading mentor details...</p>
+          <p className="text-gray-300">Loading mentor details...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-900">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200">
+      <div className="bg-gray-800 border-b border-gray-700">
         <div className="max-w-4xl mx-auto px-6 py-4">
           <div className="flex items-center gap-4">
             <Button
               variant="outline"
               onClick={() => router.push('/admin/mentors')}
-              className="flex items-center gap-2"
+              className="flex items-center gap-2 border-gray-600 text-gray-300 hover:bg-gray-700"
             >
               <ArrowLeft className="w-4 h-4" />
               Back to Mentors

@@ -89,15 +89,15 @@ export default function CreateSeminarPage() {
 
   if (previewMode) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6">
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 p-6">
         {/* Header */}
-        <div className="bg-white rounded-2xl shadow-xl p-8 mb-8 border border-gray-200">
+        <div className="bg-gray-800 rounded-2xl shadow-xl p-8 mb-8 border border-gray-700">
           <div className="flex items-center justify-between">
             <div>
               <Button
                 onClick={() => setPreviewMode(false)}
                 variant="outline"
-                className="mb-4 border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-all duration-200"
+                className="mb-4 border-gray-600 text-gray-300 hover:bg-gray-700 hover:border-gray-500 transition-all duration-200"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back to Edit

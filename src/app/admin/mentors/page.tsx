@@ -364,8 +364,8 @@ export default function MentorManagement() {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Mentor Management</h1>
-          <p className="text-gray-600 mt-1">Manage mentors, assignments, and performance</p>
+          <h1 className="text-3xl font-bold text-white">Mentor Management</h1>
+          <p className="text-gray-400 mt-1">Manage mentors, assignments, and performance</p>
         </div>
         <button
           onClick={() => router.push('/admin/mentors/add')}
@@ -378,53 +378,53 @@ export default function MentorManagement() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-gray-800 rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Total Mentors</p>
-              <p className="text-2xl font-bold text-gray-900">{mentors.length}</p>
+              <p className="text-sm text-gray-400">Total Mentors</p>
+              <p className="text-2xl font-bold text-white">{mentors.length}</p>
             </div>
-            <Users className="w-8 h-8 text-blue-600" />
+            <Users className="w-8 h-8 text-blue-400" />
           </div>
         </div>
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-gray-800 rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Active Mentors</p>
-              <p className="text-2xl font-bold text-green-600">{mentors.filter(m => m.isActive).length}</p>
+              <p className="text-sm text-gray-400">Active Mentors</p>
+              <p className="text-2xl font-bold text-green-400">{mentors.filter(m => m.isActive).length}</p>
             </div>
-            <CheckCircle className="w-8 h-8 text-green-600" />
+            <CheckCircle className="w-8 h-8 text-green-400" />
           </div>
         </div>
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-gray-800 rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Total Students</p>
-              <p className="text-2xl font-bold text-gray-900">
+              <p className="text-sm text-gray-400">Total Students</p>
+              <p className="text-2xl font-bold text-white">
                 {mentors.reduce((sum, m) => sum + (m.totalStudents || 0), 0)}
               </p>
             </div>
-            <TrendingUp className="w-8 h-8 text-purple-600" />
+            <TrendingUp className="w-8 h-8 text-purple-400" />
           </div>
         </div>
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-gray-800 rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Avg Rating</p>
-              <p className="text-2xl font-bold text-yellow-600">
+              <p className="text-sm text-gray-400">Avg Rating</p>
+              <p className="text-2xl font-bold text-yellow-400">
                 {mentors.length > 0 
                   ? (mentors.reduce((sum, m) => sum + (m.rating || 0), 0) / mentors.length).toFixed(1)
                   : '0.0'
                 }
               </p>
             </div>
-            <Award className="w-8 h-8 text-yellow-600" />
+            <Award className="w-8 h-8 text-yellow-400" />
           </div>
         </div>
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-lg shadow p-6">
+      <div className="bg-gray-800 rounded-lg shadow p-6">
         <div className="flex flex-col md:flex-row gap-4">
           <div className="flex-1">
             <div className="relative">
@@ -453,7 +453,7 @@ export default function MentorManagement() {
       </div>
 
       {/* Mentors Table */}
-      <div className="bg-white rounded-lg shadow overflow-hidden">
+      <div className="bg-gray-800 rounded-lg shadow overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-gray-50">
@@ -478,7 +478,7 @@ export default function MentorManagement() {
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-gray-800 divide-y divide-gray-700">
               {filteredMentors.map((mentor) => (
                 <tr key={mentor.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
@@ -495,7 +495,7 @@ export default function MentorManagement() {
                         </div>
                       )}
                       <div>
-                        <div className="text-sm font-medium text-gray-900">
+                        <div className="text-sm font-medium text-white">
                           {mentor.name}
                         </div>
                         <div className="text-sm text-gray-500">
@@ -505,7 +505,7 @@ export default function MentorManagement() {
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">{mentor.email}</div>
+                    <div className="text-sm text-gray-300">{mentor.email}</div>
                     <div className="text-sm text-gray-500">{mentor.phone || 'N/A'}</div>
                   </td>
                   <td className="px-6 py-4">
@@ -577,7 +577,7 @@ export default function MentorManagement() {
       {/* Assign Course/Batch Modal */}
       {showAssignModal && selectedMentor && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+          <div className="bg-gray-800 rounded-lg p-6 w-full max-w-md">
             <h2 className="text-xl font-bold mb-4">
               Assign to {selectedMentor.name}
             </h2>

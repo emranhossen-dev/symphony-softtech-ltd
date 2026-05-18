@@ -124,7 +124,7 @@ export async function POST(
         courseName: course.title,
         categoryId: course.categoryId || course.category,
         userId: user.id,
-        enrollmentStatus: 'PENDING_REVIEW'
+        enrollmentStatus: 'APPLIED'
       }
     });
 

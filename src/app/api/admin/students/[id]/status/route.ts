@@ -12,16 +12,8 @@ export async function PATCH(
     const { id } = await params;
     const { status } = await request.json();
 
-    // Validate status - map to actual EnrollmentStatus enum
-    const statusMap: Record<string, EnrollmentStatus> = {
-      'APPLIED': 'PENDING_REVIEW',
-      'WAITING': 'PAYMENT_PENDING',
-      'ADMITTED': 'APPROVED',
-      'NEXT_BATCH': 'PENDING_REVIEW', // Not in schema, map to pending
-      'REJECTED': 'REJECTED'
-    };
-
-    const validStatuses = Object.keys(statusMap);
+    // Validate status - use new enum values directly
+    const validStatuses = ['APPLIED', 'ADMITTED', 'REJECTED', 'WAITING', 'NEXT_BATCH'];
     if (!validStatuses.includes(status)) {
       return NextResponse.json(
         { success: false, error: 'Invalid status' },
@@ -29,13 +21,11 @@ export async function PATCH(
       );
     }
 
-    const mappedStatus = statusMap[status];
-
     // Update enrollment status
     const enrollment = await prisma.enrollment.update({
       where: { id },
       data: { 
-        enrollmentStatus: mappedStatus,
+        enrollmentStatus: status as any,
         updatedAt: new Date()
       },
       include: {
@@ -52,10 +42,10 @@ export async function PATCH(
     await prisma.activityLog.create({
       data: {
         type: 'STATUS_CHANGE',
-        action: `Enrollment status changed to ${mappedStatus}`,
+        action: `Enrollment status changed to ${status}`,
         metadata: {
           previousStatus: enrollment.enrollmentStatus,
-          newStatus: mappedStatus,
+          newStatus: status,
           enrollmentId: id,
           courseName: enrollment.course?.title,
           category: enrollment.course?.category
@@ -70,7 +60,7 @@ export async function PATCH(
       enrollment: {
         id: enrollment.id,
         fullName: enrollment.fullName,
-        status: mappedStatus,
+        status: status,
         course: enrollment.course
       }
     });

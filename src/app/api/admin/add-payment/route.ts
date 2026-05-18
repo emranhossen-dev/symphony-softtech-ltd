@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
     const enrollment = await prisma?.enrollment.update({
       where: { id: enrollmentId },
       data: {
-        enrollmentStatus: 'APPROVED'
+        enrollmentStatus: 'ADMITTED'
       }
     });
 

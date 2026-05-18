@@ -51,7 +51,7 @@ async function verifyPaymentHandler(request: NextRequest): Promise<NextResponse>
     });
 
     // Update enrollment status based on payment action
-    const enrollmentStatus = action === 'approve' ? 'APPROVED' : 'PAYMENT_PENDING';
+    const enrollmentStatus = action === 'approve' ? 'ADMITTED' : 'WAITING';
     
     await prisma.enrollment.update({
       where: { id: payment.enrollmentId },

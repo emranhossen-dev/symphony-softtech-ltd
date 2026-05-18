@@ -23,11 +23,11 @@ export async function POST(request: NextRequest) {
       }
     });
 
-    // Update enrollment status to APPROVED if payment is verified
+    // Update enrollment status to ADMITTED if payment is verified
     if (updatedPayment.enrollmentId) {
       await prisma.enrollment.update({
         where: { id: updatedPayment.enrollmentId },
-      data: { enrollmentStatus: 'APPROVED' }
+      data: { enrollmentStatus: 'ADMITTED' }
     });
     }
 

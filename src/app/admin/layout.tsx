@@ -89,7 +89,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   const shouldShowSidebar = pathname !== '/admin' && pathname.startsWith('/admin/');
   
   return (
-    <div className="admin-main-container min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 h-screen overflow-hidden">
+    <div className="admin-main-container min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 h-screen overflow-hidden">
       <div className="flex h-full">
         {/* Sidebar */}
         {shouldShowSidebar && (

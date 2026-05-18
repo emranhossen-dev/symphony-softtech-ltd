@@ -4,11 +4,13 @@ import { useState, useEffect } from "react";
 import { Menu, X, User, LogIn, ChevronDown, BookOpen, Users, Phone, GraduationCap, Sparkles, Star } from "lucide-react";
 import { usePathname } from "next/navigation";
 import LoginModal from "@/components/auth/LoginModal";
+import ThemeToggler from "@/components/ThemeToggler";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isMobileCourseDropdownOpen, setIsMobileCourseDropdownOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const pathname = usePathname();
 
@@ -40,10 +42,10 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 glass-nav ${
       isScrolled 
-        ? "bg-gradient-to-r from-purple-800/95 to-blue-900/95 backdrop-blur-xl shadow-2xl border-b border-purple-700/30" 
-        : "bg-gradient-to-r from-purple-700/90 to-blue-800/90 backdrop-blur-lg shadow-xl border-b border-purple-600/20"
+        ? "shadow-2xl" 
+        : "shadow-xl"
     }`}>
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center h-18">
@@ -89,20 +91,20 @@ const Navbar = () => {
                 
                 {/* Premium Dropdown for Courses */}
                 {link.href === "/courses" && (
-                  <div className={`absolute top-full left-0 mt-3 w-80 bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-purple-200 transition-all duration-300 transform ${
+                  <div className={`absolute top-full left-0 mt-3 w-80 bg-gradient-to-br from-slate-900/98 to-slate-950/98 backdrop-blur-xl rounded-2xl shadow-2xl border border-purple-500/30 transition-all duration-300 transform ${
                     isDropdownOpen ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible translate-y-4'
                   }`}
                   onMouseEnter={() => setIsDropdownOpen(true)}
                   onMouseLeave={() => setIsDropdownOpen(false)}>
                     <div className="p-4 space-y-2">
                       {courseCategories.map((category) => (
-                        <a key={category.href} href={category.href} className="flex items-center space-x-4 p-4 rounded-xl hover:bg-gradient-to-r hover:${category.hoverColor} transition-all duration-300 group">
+                        <a key={category.href} href={category.href} className="flex items-center space-x-4 p-4 rounded-xl hover:bg-gradient-to-r hover:from-purple-600/20 hover:to-indigo-600/20 transition-all duration-300 group">
                           <div className={`w-12 h-12 bg-gradient-to-r ${category.color} rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}>
                             {category.icon}
                           </div>
                           <div>
-                            <div className={`font-bold text-gray-900 group-hover:${category.textColor} transition-colors`}>{category.label}</div>
-                            <div className="text-sm text-gray-600">Professional training</div>
+                            <div className={`font-bold text-gray-100 group-hover:text-white transition-colors`}>{category.label}</div>
+                            <div className="text-sm text-gray-400">Professional training</div>
                           </div>
                         </a>
                       ))}
@@ -115,6 +117,7 @@ const Navbar = () => {
 
           {/* Premium Action Buttons */}
           <div className="hidden xl:flex items-center space-x-4">
+            <ThemeToggler />
             <button 
               onClick={() => setIsLoginModalOpen(true)}
               className="group flex items-center space-x-3 px-6 py-3 text-sm font-bold text-white border-2 border-white/50 rounded-xl hover:border-white hover:bg-white/10 hover:backdrop-blur-sm transition-all duration-300 transform hover:scale-105 hover:-translate-y-1"
@@ -144,31 +147,67 @@ const Navbar = () => {
 
         {/* Premium Mobile Menu */}
         {isMenuOpen && (
-          <div className="xl:hidden border-t border-gray-800 bg-[#1a1a2e] rounded-b-3xl shadow-2xl absolute top-full left-0 right-0 z-40">
-            <div className="px-6 py-6 space-y-3">
+          <div className="xl:hidden border-t border-purple-500/30 bg-gradient-to-b from-slate-900/98 to-slate-950/98 backdrop-blur-xl rounded-b-3xl shadow-2xl absolute top-full left-0 right-0 z-50">
+            <div className="px-4 py-6 space-y-2">
               {navLinks.map((link) => (
-                <a
-                  key={link.href}
-                  href={link.href}
-                  onClick={() => setIsMenuOpen(false)}
-                  className={`flex items-center space-x-4 px-5 py-4 rounded-2xl text-base font-bold transition-all duration-300 transform hover:scale-105 hover:-translate-x-2 ${
-                    isActive(link.href)
-                      ? "bg-purple-600 text-white shadow-lg"
-                      : "text-gray-300 hover:bg-purple-600/20 hover:text-white"
-                  }`}
-                >
-                  {link.icon && <span className="w-5 h-5 text-gray-400">{link.icon}</span>}
-                  <span>{link.label}</span>
-                </a>
+                <div key={link.href}>
+                  <a
+                    href={link.href}
+                    onClick={(e) => {
+                      if (link.href === "/courses") {
+                        e.preventDefault();
+                        setIsMobileCourseDropdownOpen(!isMobileCourseDropdownOpen);
+                      } else {
+                        setIsMenuOpen(false);
+                      }
+                    }}
+                    className={`flex items-center justify-between px-4 py-4 rounded-xl text-base font-bold transition-all duration-300 transform hover:scale-105 hover:-translate-x-1 ${
+                      isActive(link.href)
+                        ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-lg"
+                        : "text-gray-200 hover:bg-gradient-to-r hover:from-purple-600/20 hover:to-indigo-600/20 hover:text-white"
+                    }`}
+                  >
+                    <div className="flex items-center space-x-4">
+                      {link.icon && <span className="w-5 h-5 text-purple-400">{link.icon}</span>}
+                      <span>{link.label}</span>
+                    </div>
+                    {link.href === "/courses" && (
+                      <ChevronDown className={`w-5 h-5 transition-transform duration-300 ${isMobileCourseDropdownOpen ? 'rotate-180' : ''}`} />
+                    )}
+                  </a>
+                  
+                  {/* Mobile Course Dropdown */}
+                  {link.href === "/courses" && isMobileCourseDropdownOpen && (
+                    <div className="ml-4 mt-2 space-y-2 pl-4 border-l-2 border-purple-500/30">
+                      {courseCategories.map((category) => (
+                        <a
+                          key={category.href}
+                          href={category.href}
+                          onClick={() => setIsMenuOpen(false)}
+                          className="flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium text-gray-300 hover:bg-gradient-to-r hover:from-emerald-600/20 hover:to-teal-600/20 hover:text-white transition-all duration-300"
+                        >
+                          <div className={`w-8 h-8 bg-gradient-to-r ${category.color} rounded-lg flex items-center justify-center shadow-lg`}>
+                            {category.icon}
+                          </div>
+                          <span>{category.label}</span>
+                        </a>
+                      ))}
+                    </div>
+                  )}
+                </div>
               ))}
 
-              <div className="pt-6 mt-6 border-t border-gray-700">
+              <div className="pt-6 mt-6 border-t border-purple-500/30">
+                <div className="flex items-center justify-between mb-4 px-4">
+                  <span className="text-sm font-medium text-gray-400">Theme</span>
+                  <ThemeToggler />
+                </div>
                 <button
                   onClick={() => {
                     setIsLoginModalOpen(true);
                     setIsMenuOpen(false);
                   }}
-                  className="flex items-center justify-center space-x-3 w-full px-6 py-4 text-base font-bold bg-purple-600 text-white rounded-2xl hover:bg-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
+                  className="flex items-center justify-center space-x-3 w-full px-6 py-4 text-base font-bold bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl hover:from-purple-700 hover:to-indigo-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
                 >
                   <LogIn className="w-5 h-5" />
                   <span>Login</span>

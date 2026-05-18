@@ -553,15 +553,15 @@ export default function VideoManagementPage() {
   // Show access denied if not authenticated or not admin
   if (!isAuthenticated || !hasAdminAccess) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-50">
+      <div className="flex items-center justify-center min-h-screen bg-gray-900">
         <div className="text-center p-8">
-          <div className="w-24 h-24 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <AlertCircle className="w-12 h-12 text-red-500" />
+          <div className="w-24 h-24 bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
+            <AlertCircle className="w-12 h-12 text-red-400" />
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Access Denied</h2>
-          <p className="text-gray-600 mb-6">
-            {!isAuthenticated 
-              ? 'Please login to access this page' 
+          <h2 className="text-2xl font-bold text-white mb-4">Access Denied</h2>
+          <p className="text-gray-300 mb-6">
+            {!isAuthenticated
+              ? 'Please login to access this page'
               : 'You do not have permission to access this page. Admin access required.'
             }
           </p>

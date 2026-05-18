@@ -124,23 +124,23 @@ const AddMentorPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-900">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200">
+      <div className="bg-gray-800 border-b border-gray-700">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center gap-4">
             <Button
               variant="outline"
               onClick={() => router.push('/admin/mentors')}
-              className="flex items-center gap-2"
+              className="flex items-center gap-2 border-gray-600 text-gray-300 hover:bg-gray-700"
             >
               <ArrowLeft className="w-4 h-4" />
               Back to Mentors
             </Button>
-            
+
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Add New Mentor</h1>
-              <p className="text-gray-600">Create a new mentor account</p>
+              <h1 className="text-2xl font-bold text-white">Add New Mentor</h1>
+              <p className="text-gray-300">Create a new mentor account</p>
             </div>
           </div>
         </div>

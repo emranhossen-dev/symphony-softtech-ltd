@@ -29,7 +29,7 @@ async function checkCourseAccessHandler(request: NextRequest, { params }: { para
       where: {
         userId: user.id,
         courseId: courseId,
-        enrollmentStatus: 'APPROVED'
+        enrollmentStatus: 'ADMITTED'
       },
       include: {
         course: {

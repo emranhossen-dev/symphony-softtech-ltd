@@ -300,7 +300,10 @@ export default function AdvancedModuleCreator({
         title: m.title,
         videoUrl: m.videoUrl,
         homework: m.homework,
-        isLocked: m.isLocked
+        isLocked: m.isLocked,
+        description: m.description,
+        topics: m.topics,
+        order: m.order
       }))
     };
     
@@ -311,6 +314,45 @@ export default function AdvancedModuleCreator({
     a.download = `${courseTitle.replace(/\s+/g, '_')}_modules.json`;
     a.click();
     URL.revokeObjectURL(url);
+  };
+
+  const importModules = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const content = e.target?.result as string;
+        const data = JSON.parse(content);
+        
+        if (data.modules && Array.isArray(data.modules)) {
+          const importedModules: ModuleData[] = data.modules.map((m: any, index: number) => ({
+            id: Date.now().toString() + index,
+            title: m.title || '',
+            videoUrl: m.videoUrl || '',
+            homework: m.homework || '',
+            isLocked: m.isLocked !== undefined ? m.isLocked : index > 0,
+            order: m.order || index + 1,
+            description: m.description || '',
+            topics: m.topics || []
+          }));
+          
+          setModules(importedModules);
+          setExpandedModules(new Set(importedModules.map(m => m.id)));
+          toast.success(`Imported ${importedModules.length} modules successfully!`);
+        } else {
+          toast.error('Invalid file format. Expected modules array.');
+        }
+      } catch (error) {
+        console.error('Error parsing JSON:', error);
+        toast.error('Failed to parse JSON file');
+      }
+    };
+    reader.readAsText(file);
+    
+    // Reset file input
+    event.target.value = '';
   };
 
   return (
@@ -340,6 +382,22 @@ export default function AdvancedModuleCreator({
             </div>
             
             <div className="flex items-center gap-3">
+              <input
+                type="file"
+                accept=".json"
+                onChange={importModules}
+                className="hidden"
+                id="import-modules"
+              />
+              <Button
+                variant="outline"
+                onClick={() => document.getElementById('import-modules')?.click()}
+                className="flex items-center gap-2"
+              >
+                <Upload className="w-4 h-4" />
+                Import
+              </Button>
+              
               <Button
                 variant="outline"
                 onClick={exportModules}

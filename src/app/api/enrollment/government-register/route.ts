@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
         courseName: enrollmentData.courseName,
         courseId: enrollmentData.courseId,
         categoryId: enrollmentData.categoryId || null,
-        enrollmentStatus: 'APPROVED',
+        enrollmentStatus: 'ADMITTED',
       },
     });
 

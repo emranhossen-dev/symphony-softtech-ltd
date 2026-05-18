@@ -149,7 +149,7 @@ const EditModulePage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center">
         <div className="relative">
           <div className="animate-spin rounded-full h-20 w-20 border-4 border-gray-200"></div>
           <div className="animate-spin rounded-full h-20 w-20 border-4 border-blue-500 border-t-transparent absolute top-0"></div>
@@ -160,45 +160,45 @@ const EditModulePage = () => {
 
   if (!module || !course) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <span className="text-red-600 text-2xl">!</span>
+          <div className="w-16 h-16 bg-red-900/50 rounded-full flex items-center justify-center mx-auto mb-4">
+            <span className="text-red-400 text-2xl">!</span>
           </div>
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">Module Not Found</h2>
-          <p className="text-gray-600">The module you're looking for doesn't exist.</p>
+          <h2 className="text-xl font-semibold text-white mb-2">Module Not Found</h2>
+          <p className="text-gray-400">The module you're looking for doesn't exist.</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50">
+    <div>
       {/* Header */}
-      <div className="bg-white/95 backdrop-blur-lg border-b border-gray-200/60 shadow-sm mb-6">
+      <div className="bg-gray-800/95 backdrop-blur-lg border-b border-gray-700/60 shadow-sm mb-6">
         <div className="max-w-7xl mx-auto px-6 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <Button
                 variant="outline"
                 onClick={() => router.push(`/admin/category/${slug}/courses/${courseId}/modules`)}
-                className="flex items-center gap-2 bg-white/50 hover:bg-white border-gray-200/60"
+                className="flex items-center gap-2 bg-gray-700 hover:bg-gray-600 border-gray-600"
               >
                 <ArrowLeft className="w-4 h-4" />
                 Back to Modules
               </Button>
               
               <div>
-                <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
+                <h1 className="text-3xl font-bold text-white">
                   Edit Module
                 </h1>
                 <div className="flex items-center gap-3 mt-2">
-                  <span className="text-gray-600">
-                    Course: <span className="font-medium text-green-600">{course.title}</span>
+                  <span className="text-gray-400">
+                    Course: <span className="font-medium text-green-400">{course.title}</span>
                   </span>
                   <span className="text-gray-400">•</span>
-                  <span className="text-gray-600">
-                    Category: <span className="font-medium text-green-600">{getCategoryName(slug)}</span>
+                  <span className="text-gray-400">
+                    Category: <span className="font-medium text-green-400">{getCategoryName(slug)}</span>
                   </span>
                 </div>
               </div>
@@ -211,13 +211,13 @@ const EditModulePage = () => {
       <div className="max-w-4xl mx-auto p-6">
         <form onSubmit={handleSubmit} className="space-y-8">
           {/* Basic Information */}
-          <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8 space-y-6">
+          <div className="bg-gray-800 rounded-2xl shadow-xl border border-gray-700 p-8 space-y-6">
             <div>
-              <h2 className="text-xl font-bold text-gray-900 mb-2 flex items-center gap-2">
+              <h2 className="text-xl font-bold text-white mb-2 flex items-center gap-2">
                 <Video className="w-6 h-6 text-gray-600" />
                 Module Information
               </h2>
-              <p className="text-sm text-gray-600">Update the details of your module</p>
+              <p className="text-sm text-gray-400">Update the details of your module</p>
             </div>
 
             <div className="space-y-6">
@@ -229,7 +229,7 @@ const EditModulePage = () => {
                   placeholder="Enter module title"
                   label="Module Title *"
                   required
-                  className="text-gray-900 placeholder-gray-400"
+                  className="text-white placeholder-gray-400"
                 />
               </div>
 
@@ -241,7 +241,7 @@ const EditModulePage = () => {
                   placeholder="https://www.youtube.com/watch?v=..."
                   label="Video URL"
                   icon={<Video className="w-4 h-4 text-gray-400" />}
-                  className="text-gray-900 placeholder-gray-400"
+                  className="text-white placeholder-gray-400"
                 />
               </div>
 
@@ -254,28 +254,28 @@ const EditModulePage = () => {
                   rows={6}
                   label="Homework Instructions"
                   helperText="Detailed instructions for students to complete"
-                  className="text-gray-900 placeholder-gray-400"
+                  className="text-white placeholder-gray-400"
                 />
               </div>
             </div>
           </div>
 
           {/* Module Settings */}
-          <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8 space-y-6">
+          <div className="bg-gray-800 rounded-2xl shadow-xl border border-gray-700 p-8 space-y-6">
             <div>
-              <h2 className="text-xl font-bold text-gray-900 mb-2 flex items-center gap-2">
+              <h2 className="text-xl font-bold text-white mb-2 flex items-center gap-2">
                 <Lock className="w-6 h-6 text-gray-600" />
                 Module Settings
               </h2>
-              <p className="text-sm text-gray-600">Configure how this module behaves for students</p>
+              <p className="text-sm text-gray-400">Configure how this module behaves for students</p>
             </div>
 
             <div className="space-y-4">
               {/* Lock Status */}
               <div className="flex items-center justify-between py-3">
                 <div>
-                  <p className="font-medium text-gray-900">Module Locked</p>
-                  <p className="text-sm text-gray-600">Students must complete previous modules to access this</p>
+                  <p className="font-medium text-white">Module Locked</p>
+                  <p className="text-sm text-gray-400">Students must complete previous modules to access this</p>
                 </div>
                 <button
                   type="button"
@@ -307,12 +307,12 @@ const EditModulePage = () => {
           </div>
 
           {/* Form Actions */}
-          <div className="flex items-center justify-between pt-6 border-t border-gray-200">
+          <div className="flex items-center justify-between pt-6 border-t border-gray-700">
             <Button
               type="button"
               variant="outline"
               onClick={() => router.push(`/admin/category/${slug}/courses/${courseId}/modules`)}
-              className="flex items-center gap-2 bg-white/70 backdrop-blur-sm hover:bg-white border-gray-200/60"
+              className="flex items-center gap-2 bg-gray-700 hover:bg-gray-600 border-gray-600"
             >
               <ArrowLeft className="w-4 h-4" />
               Cancel

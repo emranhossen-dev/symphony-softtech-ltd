@@ -163,14 +163,14 @@ export default function NotificationManagement() {
   });
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-900">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200">
+      <div className="bg-gray-800 border-b border-gray-700">
         <div className="px-8 py-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-semibold text-gray-900">Notification Management</h1>
-              <p className="text-sm text-gray-500 mt-1">Send and manage system notifications</p>
+              <h1 className="text-2xl font-semibold text-white">Notification Management</h1>
+              <p className="text-sm text-gray-300 mt-1">Send and manage system notifications</p>
             </div>
             <Button 
               onClick={() => setShowCreateModal(true)}
@@ -186,43 +186,43 @@ export default function NotificationManagement() {
       <div className="p-8 space-y-6">
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <Card className="bg-white border-0 shadow-sm">
+          <Card className="bg-gray-800 border-0 shadow-sm">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Total Notifications</p>
-                  <p className="text-2xl font-bold text-gray-900 mt-1">{stats.totalNotifications}</p>
+                  <p className="text-sm font-medium text-gray-300">Total Notifications</p>
+                  <p className="text-2xl font-bold text-white mt-1">{stats.totalNotifications}</p>
                 </div>
-                <div className="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center">
-                  <Bell className="w-6 h-6 text-green-600" />
+                <div className="w-12 h-12 bg-green-900/30 rounded-xl flex items-center justify-center">
+                  <Bell className="w-6 h-6 text-green-400" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-white border-0 shadow-sm">
+          <Card className="bg-gray-800 border-0 shadow-sm">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Unread</p>
-                  <p className="text-2xl font-bold text-gray-900 mt-1">{stats.unreadNotifications}</p>
+                  <p className="text-sm font-medium text-gray-300">Unread</p>
+                  <p className="text-2xl font-bold text-white mt-1">{stats.unreadNotifications}</p>
                 </div>
-                <div className="w-12 h-12 bg-orange-50 rounded-xl flex items-center justify-center">
-                  <Mail className="w-6 h-6 text-orange-600" />
+                <div className="w-12 h-12 bg-orange-900/30 rounded-xl flex items-center justify-center">
+                  <Mail className="w-6 h-6 text-orange-400" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-white border-0 shadow-sm">
+          <Card className="bg-gray-800 border-0 shadow-sm">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Sent</p>
-                  <p className="text-2xl font-bold text-gray-900 mt-1">{stats.sentNotifications}</p>
+                  <p className="text-sm font-medium text-gray-300">Sent</p>
+                  <p className="text-2xl font-bold text-white mt-1">{stats.sentNotifications}</p>
                 </div>
-                <div className="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center">
-                  <Send className="w-6 h-6 text-green-600" />
+                <div className="w-12 h-12 bg-green-900/30 rounded-xl flex items-center justify-center">
+                  <Send className="w-6 h-6 text-green-400" />
                 </div>
               </div>
             </CardContent>

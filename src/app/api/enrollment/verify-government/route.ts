@@ -35,11 +35,11 @@ export async function POST(request: NextRequest) {
       }, { status: 404 });
     }
 
-    // Check if enrollment is approved
-    if (enrollment.enrollmentStatus !== 'APPROVED') {
+    // Check if enrollment is admitted
+    if (enrollment.enrollmentStatus !== 'ADMITTED') {
       return NextResponse.json({
         success: false,
-        error: 'Enrollment not approved yet'
+        error: 'Enrollment not admitted yet'
       }, { status: 400 });
     }
 

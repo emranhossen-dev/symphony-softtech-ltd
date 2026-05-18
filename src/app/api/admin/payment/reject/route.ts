@@ -23,11 +23,11 @@ export async function POST(request: NextRequest) {
       }
     });
 
-    // Update enrollment status back to PENDING_REVIEW
+    // Update enrollment status back to APPLIED
     if (updatedPayment.enrollmentId) {
       await prisma.enrollment.update({
         where: { id: updatedPayment.enrollmentId },
-      data: { enrollmentStatus: 'PENDING_REVIEW' }
+      data: { enrollmentStatus: 'APPLIED' }
     });
     }
 

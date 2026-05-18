@@ -109,7 +109,7 @@ model Enrollment {
   educationLevel     String?
   whyJoin            String?
   preferredBatchTime String?
-  enrollmentStatus   EnrollmentStatus @default(PENDING_REVIEW)
+  enrollmentStatus   EnrollmentStatus @default(APPLIED)
   paymentStatus      PaymentStatus    @default(PENDING)
   transactionId      String?
   metadata           Json?
@@ -273,11 +273,11 @@ model WhatsAppMessage {
 }
 
 enum EnrollmentStatus {
-  PENDING_REVIEW
-  PAYMENT_PENDING
-  APPROVED
+  APPLIED
+  ADMITTED
   REJECTED
-  PAYMENT_CANCELLED
+  WAITING
+  NEXT_BATCH
 }
 
 enum PaymentStatus {

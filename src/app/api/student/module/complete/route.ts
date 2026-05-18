@@ -49,7 +49,7 @@ export const POST = withRateLimit(
                   id: user.id
                 },
                 courseId: courseId,
-                enrollmentStatus: 'APPROVED'
+                enrollmentStatus: 'ADMITTED'
               }
             });
 

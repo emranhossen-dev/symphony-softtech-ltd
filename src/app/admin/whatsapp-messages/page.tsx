@@ -297,9 +297,9 @@ export default function WhatsAppMessages() {
   const highPriorityCount = messages.filter(m => m.priority === 'high').length;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-slate-900 to-indigo-950">
       {/* Header */}
-      <div className="bg-gradient-to-r from-slate-700 via-indigo-700 to-slate-800 shadow-2xl">
+      <div className="bg-gradient-to-r from-slate-800 via-indigo-800 to-slate-900 shadow-2xl">
         <div className="px-6 py-8">
           <div className="flex items-center justify-between mb-6">
             <div>

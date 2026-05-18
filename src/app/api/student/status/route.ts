@@ -37,7 +37,7 @@ export async function GET(request: NextRequest) {
     }
 
     const latestEnrollment = enrollments[0];
-    const isApproved = latestEnrollment.enrollmentStatus === 'APPROVED';
+    const isApproved = latestEnrollment.enrollmentStatus === 'ADMITTED';
     
     // Check if user exists in users table (has password)
     const user = await prisma?.user.findUnique({

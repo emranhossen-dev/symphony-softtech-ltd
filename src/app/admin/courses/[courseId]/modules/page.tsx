@@ -286,9 +286,9 @@ export default function ModuleManagement() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-900">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200">
+      <div className="bg-gray-800 border-b border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center">
@@ -296,15 +296,15 @@ export default function ModuleManagement() {
                 variant="ghost"
                 size="sm"
                 onClick={() => window.history.back()}
-                className="mr-4 text-gray-600 hover:text-gray-900"
+                className="mr-4 text-gray-300 hover:text-white"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back to Course
               </Button>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">Module Management</h1>
+                <h1 className="text-2xl font-bold text-white">Module Management</h1>
                 {course && (
-                  <p className="text-sm text-gray-500 mt-1">Course: {course.title}</p>
+                  <p className="text-sm text-gray-300 mt-1">Course: {course.title}</p>
                 )}
               </div>
             </div>

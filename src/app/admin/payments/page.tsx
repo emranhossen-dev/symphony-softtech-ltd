@@ -357,14 +357,14 @@ export default function PaymentManagement() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50/30">
+    <div className="min-h-screen bg-gray-900">
       {/* Header */}
-      <div className="bg-white border-b border-gray-100">
+      <div className="bg-gray-800 border-b border-gray-700">
         <div className="px-8 py-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-semibold text-gray-900">Payment Management</h1>
-              <p className="text-sm text-gray-500 mt-1">Manage and track all payment transactions</p>
+              <h1 className="text-2xl font-semibold text-white">Payment Management</h1>
+              <p className="text-sm text-gray-300 mt-1">Manage and track all payment transactions</p>
             </div>
             
             <div className="flex items-center space-x-3">
@@ -376,8 +376,8 @@ export default function PaymentManagement() {
                 Export CSV
               </Button>
               <Button 
-                variant="outline" 
-                className="border-gray-200 text-gray-700 hover:bg-gray-50"
+                variant="outline"
+                className="border-gray-600 text-gray-300 hover:bg-gray-700"
                 onClick={fetchPayments}
                 disabled={loading}
               >
@@ -392,12 +392,12 @@ export default function PaymentManagement() {
       <div className="p-8 space-y-6">
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <Card className="bg-white border-0 shadow-sm">
+          <Card className="bg-gray-800 border-0 shadow-sm">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Total Revenue</p>
-                  <p className="text-2xl font-bold text-gray-900 mt-1">{formatBDT(stats.totalRevenue)}</p>
+                  <p className="text-sm font-medium text-gray-300">Total Revenue</p>
+                  <p className="text-2xl font-bold text-white mt-1">{formatBDT(stats.totalRevenue)}</p>
                   <div className="flex items-center mt-2">
                     {stats.revenueGrowth >= 0 ? (
                       <ArrowUpRight className="w-4 h-4 text-green-600 mr-1" />
@@ -411,8 +411,8 @@ export default function PaymentManagement() {
                     </span>
                   </div>
                 </div>
-                <div className="w-12 h-12 bg-purple-50 rounded-xl flex items-center justify-center">
-                  <span className="text-2xl font-bold text-purple-600">৳</span>
+                <div className="w-12 h-12 bg-purple-900/30 rounded-xl flex items-center justify-center">
+                  <span className="text-2xl font-bold text-purple-400">৳</span>
                 </div>
               </div>
             </CardContent>

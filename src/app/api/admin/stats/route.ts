@@ -113,7 +113,7 @@ export async function GET(request: NextRequest) {
       // Pending applications
       prisma.enrollment.count({
         where: {
-          enrollmentStatus: 'PENDING_REVIEW'
+          enrollmentStatus: 'APPLIED'
         }
       }),
       

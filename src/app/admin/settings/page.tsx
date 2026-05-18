@@ -161,14 +161,14 @@ export default function SystemSettings() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-900">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200">
+      <div className="bg-gray-800 border-b border-gray-700">
         <div className="px-8 py-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-semibold text-gray-900">System Settings</h1>
-              <p className="text-sm text-gray-500 mt-1">Configure system-wide settings and preferences</p>
+              <h1 className="text-2xl font-semibold text-white">System Settings</h1>
+              <p className="text-sm text-gray-300 mt-1">Configure system-wide settings and preferences</p>
             </div>
             <Button 
               onClick={handleSaveSettings}
@@ -184,8 +184,8 @@ export default function SystemSettings() {
 
       <div className="p-8">
         {/* Tabs */}
-        <div className="bg-white rounded-lg shadow-sm mb-6">
-          <div className="border-b border-gray-200">
+        <div className="bg-gray-800 rounded-lg shadow-sm mb-6">
+          <div className="border-b border-gray-700">
             <nav className="flex space-x-8 px-6" aria-label="Tabs">
               {tabs.map((tab) => (
                 <button
@@ -193,8 +193,8 @@ export default function SystemSettings() {
                   onClick={() => setActiveTab(tab.id)}
                   className={`flex items-center px-1 py-4 border-b-2 font-medium text-sm ${
                     activeTab === tab.id
-                      ? 'border-green-500 text-green-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                      ? 'border-green-500 text-green-400'
+                      : 'border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-500'
                   }`}
                 >
                   {tab.icon}
@@ -209,19 +209,19 @@ export default function SystemSettings() {
             {activeTab === 'general' && (
               <div className="space-y-6">
                 <div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-4">Site Information</h3>
+                  <h3 className="text-lg font-medium text-white mb-4">Site Information</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Site Name</label>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">Site Name</label>
                       <input
                         type="text"
                         value={settings.siteName}
                         onChange={(e) => handleInputChange('', 'siteName', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                        className="w-full px-3 py-2 border border-gray-600 bg-gray-900 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Site URL</label>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">Site URL</label>
                       <input
                         type="url"
                         value={settings.siteUrl}

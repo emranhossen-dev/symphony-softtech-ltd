@@ -258,9 +258,7 @@ export default function LiveChatManagement() {
   };
 
   return (
-    <div className={`min-h-screen p-6 transition-colors duration-300 ${
-      darkMode ? 'bg-gray-950' : 'bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50'
-    }`}>
+    <div className={`min-h-screen p-6 transition-colors duration-300 bg-gray-950`}>
       {/* Header */}
       <div className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 shadow-2xl rounded-3xl p-8 mb-8 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/20 to-pink-500/20"></div>

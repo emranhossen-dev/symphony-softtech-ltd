@@ -14,7 +14,7 @@ export async function POST(
       where: { id: enrollmentId },
       data: {
         paymentStatus: 'CANCELLED',
-        enrollmentStatus: 'PAYMENT_CANCELLED',
+        enrollmentStatus: 'REJECTED',
         transactionId,
         metadata: {
           cancelledAt: new Date().toISOString(),

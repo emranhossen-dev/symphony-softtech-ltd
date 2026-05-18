@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { LogOut, User, ChevronDown, Target, Building, Monitor, FileText, PlayCircle, Bell } from "lucide-react";
+import { LogOut, User, ChevronDown, Target, Building, Monitor, FileText, PlayCircle, Bell, LayoutDashboard } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 
 interface AdminHeaderProps {
@@ -96,8 +96,23 @@ const AdminHeader = ({ onSidebarToggle, sidebarOpen, sidebarCollapsed = false, u
         <div className="flex items-center justify-between h-full">
           {/* Left side - Title and Category Navigation */}
           <div className="flex items-center space-x-6">
+            {/* Dashboard Button - Hide on dashboard page */}
+            {pathname !== '/admin/dashboard' && (
+              <button
+                onClick={() => router.push('/admin/dashboard')}
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 ${
+                  pathname === '/admin/dashboard'
+                    ? 'bg-green-600 text-white shadow-sm'
+                    : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                }`}
+              >
+                <LayoutDashboard className="w-4 h-4" />
+                <span>Dashboard</span>
+              </button>
+            )}
+
             <h1 className="text-xl font-semibold text-gray-900">{getPageTitle()}</h1>
-            
+
             {/* Category Navigation */}
             <div className="hidden md:flex items-center space-x-1">
               {categories.map((category) => (

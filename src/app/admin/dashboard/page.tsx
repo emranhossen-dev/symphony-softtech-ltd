@@ -198,13 +198,13 @@ export default function AdminDashboard() {
     subtitle?: string;
     loading?: boolean;
   }) => (
-    <Card className="group hover:shadow-2xl transition-all duration-500 border-0 bg-white/80 backdrop-blur-xl relative overflow-hidden">
+    <Card className="group hover:shadow-2xl transition-all duration-500 border-0 bg-slate-800/80 backdrop-blur-xl relative overflow-hidden">
       <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-white/20 to-transparent rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-700"></div>
       <CardContent className="p-6 relative">
         {loading ? (
           <div className="space-y-3">
-            <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
-            <div className="h-8 bg-gray-200 rounded animate-pulse"></div>
+            <div className="h-4 bg-slate-600 rounded animate-pulse"></div>
+            <div className="h-8 bg-slate-600 rounded animate-pulse"></div>
           </div>
         ) : (
           <>
@@ -214,9 +214,9 @@ export default function AdminDashboard() {
               </div>
               {change !== undefined && (
                 <div className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold shadow-sm ${
-                  trend === 'up' ? 'bg-green-100 text-green-700' : 
-                  trend === 'down' ? 'bg-red-100 text-red-700' : 
-                  'bg-gray-100 text-gray-700'
+                  trend === 'up' ? 'bg-green-500/20 text-green-400' : 
+                  trend === 'down' ? 'bg-red-500/20 text-red-400' : 
+                  'bg-slate-600 text-slate-300'
                 }`}>
                   {trend === 'up' ? <ArrowUp className="w-3 h-3" /> : 
                    trend === 'down' ? <ArrowDown className="w-3 h-3" /> : 
@@ -225,9 +225,9 @@ export default function AdminDashboard() {
                 </div>
               )}
             </div>
-            <p className="text-gray-600 text-xs font-semibold uppercase tracking-wider mb-1">{title}</p>
-            <p className="text-3xl font-bold text-gray-900 mb-1">{value}</p>
-            {subtitle && <p className="text-xs text-gray-500">{subtitle}</p>}
+            <p className="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-1">{title}</p>
+            <p className="text-3xl font-bold text-white mb-1">{value}</p>
+            {subtitle && <p className="text-xs text-slate-500">{subtitle}</p>}
           </>
         )}
       </CardContent>
@@ -235,9 +235,9 @@ export default function AdminDashboard() {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-100 via-blue-100 to-indigo-100">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-slate-900 to-indigo-950">
       {/* Header */}
-      <div className="bg-white/80 backdrop-blur-xl border-b border-white/60 shadow-sm mb-6">
+      <div className="bg-slate-900/90 backdrop-blur-xl border-b border-slate-700/60 shadow-sm mb-6">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -247,10 +247,10 @@ export default function AdminDashboard() {
                 </div>
               </div>
               <div className="min-w-0 flex-1">
-                <h1 className="text-xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent truncate">
+                <h1 className="text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent truncate">
                   Admin Dashboard
                 </h1>
-                <p className="text-sm text-gray-600">Training Centre Management System</p>
+                <p className="text-sm text-slate-400">Training Centre Management System</p>
               </div>
             </div>
             
@@ -259,7 +259,7 @@ export default function AdminDashboard() {
               <select
                 value={dateRange}
                 onChange={(e) => setDateRange(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm bg-white"
+                className="px-3 py-2 border border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm bg-slate-800 text-white"
               >
                 <option value="7d">Last 7 days</option>
                 <option value="30d">Last 30 days</option>
@@ -269,9 +269,9 @@ export default function AdminDashboard() {
               
               <Button
                 onClick={() => setShowFilters(!showFilters)}
-                className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                className="p-2 border border-slate-600 rounded-lg hover:bg-slate-700 transition-colors"
               >
-                <Filter className="w-4 h-4 text-gray-600" />
+                <Filter className="w-4 h-4 text-slate-300" />
               </Button>
               
               <Button
@@ -283,13 +283,13 @@ export default function AdminDashboard() {
               </Button>
               
               <div className="relative">
-                <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" />
                 <input
                   type="text"
                   placeholder="Search activities..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-9 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm w-40 lg:w-48"
+                  className="pl-9 pr-3 py-2 border border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm w-40 lg:w-48 bg-slate-800 text-white placeholder:text-slate-500"
                 />
               </div>
               <Button
@@ -452,15 +452,15 @@ export default function AdminDashboard() {
 
             {/* Quick Actions */}
             <div className="mb-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                <Sparkles className="w-6 h-6 text-purple-600" />
+              <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
+                <Sparkles className="w-6 h-6 text-purple-400" />
                 Quick Actions
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
                 {quickActions.map((action, index) => (
                   <Card 
                     key={index}
-                    className="group hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border-0 cursor-pointer overflow-hidden bg-white"
+                    className="group hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border-0 cursor-pointer overflow-hidden bg-slate-800/80 backdrop-blur-xl"
                     onClick={() => router.push(action.href)}
                   >
                     <div className={`h-1.5 bg-gradient-to-r ${action.color}`}></div>
@@ -468,10 +468,10 @@ export default function AdminDashboard() {
                       <div className={`w-14 h-14 rounded-2xl bg-gradient-to-r ${action.color} flex items-center justify-center text-white shadow-xl group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 mb-4`}>
                         {action.icon}
                       </div>
-                      <h3 className="font-bold text-gray-900 mb-2">{action.title}</h3>
-                      <p className="text-sm text-gray-600">{action.description}</p>
+                      <h3 className="font-bold text-white mb-2">{action.title}</h3>
+                      <p className="text-sm text-slate-400">{action.description}</p>
                       <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                        <ChevronRight className="w-5 h-5 text-gray-400" />
+                        <ChevronRight className="w-5 h-5 text-slate-400" />
                       </div>
                     </CardContent>
                   </Card>
@@ -480,14 +480,14 @@ export default function AdminDashboard() {
             </div>
 
             {/* Recent Activities */}
-            <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-xl">
-              <CardHeader className="bg-gradient-to-r from-gray-50 to-slate-50 border-b border-gray-200/60">
+            <Card className="border-0 shadow-xl bg-slate-800/80 backdrop-blur-xl">
+              <CardHeader className="bg-gradient-to-r from-slate-800 to-slate-700 border-b border-slate-600/60">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="flex items-center gap-2 text-gray-900">
-                    <Activity className="w-5 h-5 text-blue-600" />
+                  <CardTitle className="flex items-center gap-2 text-white">
+                    <Activity className="w-5 h-5 text-blue-400" />
                     Recent Activities
                   </CardTitle>
-                  <span className="text-sm text-gray-500 bg-white/60 px-3 py-1 rounded-full">
+                  <span className="text-sm text-slate-400 bg-slate-700/60 px-3 py-1 rounded-full">
                     {filteredActivities.length} of {recentActivities.length} activities
                   </span>
                 </div>
@@ -496,11 +496,11 @@ export default function AdminDashboard() {
                 <div className="space-y-3">
                   {filteredActivities.length === 0 ? (
                     <div className="text-center py-12">
-                      <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <Activity className="w-10 h-10 text-gray-400" />
+                      <div className="w-20 h-20 bg-slate-700 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <Activity className="w-10 h-10 text-slate-400" />
                       </div>
-                      <h3 className="text-lg font-semibold text-gray-900 mb-2">No activity yet</h3>
-                      <p className="text-gray-500 max-w-md mx-auto">
+                      <h3 className="text-lg font-semibold text-white mb-2">No activity yet</h3>
+                      <p className="text-slate-400 max-w-md mx-auto">
                         When students enroll, make payments, or when courses are created, activities will appear here.
                       </p>
                     </div>
@@ -508,7 +508,7 @@ export default function AdminDashboard() {
                     filteredActivities.slice(0, 10).map((activity) => (
                       <div
                         key={activity.id}
-                        className="flex items-start gap-4 p-4 rounded-2xl bg-gradient-to-r from-gray-50 to-white hover:from-blue-50 to-indigo-50 transition-all duration-300 group cursor-pointer border border-gray-100 hover:border-blue-200"
+                        className="flex items-start gap-4 p-4 rounded-2xl bg-gradient-to-r from-slate-700/50 to-slate-800/50 hover:from-blue-900/30 hover:to-indigo-900/30 transition-all duration-300 group cursor-pointer border border-slate-600 hover:border-blue-500/50"
                       >
                         <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 shadow-md group-hover:scale-110 transition-transform duration-300 ${
                           activity.type === 'enrollment' ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white' :
@@ -528,19 +528,19 @@ export default function AdminDashboard() {
                           <Activity className="w-6 h-6 text-white" />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-gray-900 font-semibold mb-1">{activity.description}</p>
+                          <p className="text-white font-semibold mb-1">{activity.description}</p>
                           <div className="flex items-center gap-4 flex-wrap">
-                            <span className="text-sm text-gray-600 flex items-center gap-1">
-                              <UserPlus className="w-3 h-3 text-gray-400" />
+                            <span className="text-sm text-slate-400 flex items-center gap-1">
+                              <UserPlus className="w-3 h-3 text-slate-500" />
                               {activity.user}
                             </span>
                             {activity.amount && (
-                              <span className="text-sm font-semibold text-green-600 flex items-center gap-1">
+                              <span className="text-sm font-semibold text-green-400 flex items-center gap-1">
                                 <DollarSign className="w-3 h-3" />
                                 {formatBDT(activity.amount)}
                               </span>
                             )}
-                            <span className="text-xs text-gray-400 flex items-center gap-1">
+                            <span className="text-xs text-slate-500 flex items-center gap-1">
                               <Clock className="w-3 h-3" />
                               {new Date(activity.timestamp).toLocaleString()}
                             </span>

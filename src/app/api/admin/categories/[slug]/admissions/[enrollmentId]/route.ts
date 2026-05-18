@@ -78,7 +78,7 @@ export async function PATCH(
     };
 
     // Update enrollment status if provided
-    if (body.status && ['PENDING_REVIEW', 'PAYMENT_PENDING', 'APPROVED', 'REJECTED'].includes(body.status)) {
+    if (body.status && ['APPLIED', 'ADMITTED', 'REJECTED', 'WAITING', 'NEXT_BATCH'].includes(body.status)) {
       updateData.enrollmentStatus = body.status;
     }
 

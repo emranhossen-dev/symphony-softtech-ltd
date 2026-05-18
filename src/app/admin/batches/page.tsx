@@ -430,14 +430,14 @@ export default function BatchManagement() {
   const totalCapacity = batches.reduce((sum, batch) => sum + batch.maxStudents, 0);
 
   return (
-    <div className="min-h-screen bg-gray-50/30">
+    <div className="min-h-screen bg-gray-900">
       {/* Header */}
-      <div className="bg-white border-b border-gray-100">
+      <div className="bg-gray-800 border-b border-gray-700">
         <div className="px-8 py-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-semibold text-gray-900">Batch Management</h1>
-              <p className="text-sm text-gray-500 mt-1">Manage course batches and schedules</p>
+              <h1 className="text-2xl font-semibold text-white">Batch Management</h1>
+              <p className="text-sm text-gray-300 mt-1">Manage course batches and schedules</p>
             </div>
             
             <div className="flex items-center space-x-3">
@@ -452,8 +452,8 @@ export default function BatchManagement() {
                 Create Batch
               </Button>
               <Button 
-                variant="outline" 
-                className="border-gray-200 text-gray-700 hover:bg-gray-50"
+                variant="outline"
+                className="border-gray-600 text-gray-300 hover:bg-gray-700"
                 onClick={fetchBatches}
                 disabled={loading}
               >
@@ -468,29 +468,29 @@ export default function BatchManagement() {
       <div className="p-8 space-y-6">
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Card className="bg-white border-0 shadow-sm">
+          <Card className="bg-gray-800 border-0 shadow-sm">
             <CardContent className="p-6">
               <div className="flex items-center">
-                <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center">
-                  <Calendar className="w-6 h-6 text-blue-600" />
+                <div className="w-12 h-12 bg-blue-900/30 rounded-xl flex items-center justify-center">
+                  <Calendar className="w-6 h-6 text-blue-400" />
                 </div>
                 <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">Total Batches</p>
-                  <p className="text-2xl font-semibold text-gray-900 mt-1">{batches.length}</p>
+                  <p className="text-sm font-medium text-gray-300">Total Batches</p>
+                  <p className="text-2xl font-semibold text-white mt-1">{batches.length}</p>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-white border-0 shadow-sm">
+          <Card className="bg-gray-800 border-0 shadow-sm">
             <CardContent className="p-6">
               <div className="flex items-center">
-                <div className="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center">
-                  <CheckCircle className="w-6 h-6 text-green-600" />
+                <div className="w-12 h-12 bg-green-900/30 rounded-xl flex items-center justify-center">
+                  <CheckCircle className="w-6 h-6 text-green-400" />
                 </div>
                 <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">Active Batches</p>
-                  <p className="text-2xl font-semibold text-gray-900 mt-1">{activeBatches}</p>
+                  <p className="text-sm font-medium text-gray-300">Active Batches</p>
+                  <p className="text-2xl font-semibold text-white mt-1">{activeBatches}</p>
                 </div>
               </div>
             </CardContent>

@@ -356,7 +356,7 @@ const ModulesPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center">
         <div className="text-center">
           <div className="relative inline-block">
             <div className="animate-spin rounded-full h-14 w-14 border-4 border-gray-200"></div>

@@ -115,23 +115,23 @@ const AdminDashboard = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
         <div className="text-center">
           <RefreshCw className="w-8 h-8 animate-spin text-gray-400 mx-auto mb-4" />
-          <p className="text-gray-600">Loading categories...</p>
+          <p className="text-gray-300">Loading categories...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-900">
       {/* Header without sidebar */}
-      <div className="bg-white border-b border-gray-200">
+      <div className="bg-gray-800 border-b border-gray-700">
         <div className="px-6 py-4 flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Training Control Center</h1>
-            <p className="text-gray-600">Select a category to manage admissions and training programs</p>
+            <h1 className="text-2xl font-bold text-white">Training Control Center</h1>
+            <p className="text-gray-300">Select a category to manage admissions and training programs</p>
           </div>
           <div className="flex items-center gap-3">
             <button
@@ -143,7 +143,7 @@ const AdminDashboard = () => {
             </button>
             <button
               onClick={handleRefresh}
-              className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              className="p-2 border border-gray-600 rounded-lg hover:bg-gray-700 transition-colors"
             >
               <RefreshCw className={`w-5 h-5 text-gray-600 ${refreshing ? 'animate-spin' : ''}`} />
             </button>
@@ -155,12 +155,12 @@ const AdminDashboard = () => {
       <div className="p-6">
         <div className="space-y-6">
           {categories.length === 0 && (
-            <div className="bg-white rounded-xl shadow-sm p-12 text-center">
+            <div className="bg-gray-800 rounded-xl shadow-sm p-12 text-center">
               <div className="text-gray-400 mb-4">
                 <Users className="w-16 h-16 mx-auto" />
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">No Categories Found</h3>
-              <p className="text-gray-600 mb-4">No training categories are available at the moment.</p>
+              <h3 className="text-xl font-semibold text-white mb-2">No Categories Found</h3>
+              <p className="text-gray-300 mb-4">No training categories are available at the moment.</p>
               <button
                 onClick={handleRefresh}
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
@@ -176,9 +176,9 @@ const AdminDashboard = () => {
                 {categories.map((category) => {
               const colors = getCategoryColor(category.color);
               return (
-                <div 
-                  key={category.id} 
-                  className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden group cursor-pointer"
+                <div
+                  key={category.id}
+                  className="bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden group cursor-pointer"
                   onClick={() => handleNavigation(`/admin/category/${category.slug}`)}
                 >
                   <div className={`${colors.bgLight} p-6 relative overflow-hidden`}>
@@ -189,48 +189,48 @@ const AdminDashboard = () => {
                       <div className={`${colors.bg} w-16 h-16 rounded-xl flex items-center justify-center text-white mb-4 group-hover:scale-105 transition-transform duration-200`}>
                         {getCategoryIcon(category.slug)}
                       </div>
-                      <h3 className="text-xl font-bold text-gray-900">{category.name}</h3>
-                      <p className="text-sm text-gray-600 mt-1">Training Programs</p>
+                      <h3 className="text-xl font-bold text-white">{category.name}</h3>
+                      <p className="text-sm text-gray-300 mt-1">Training Programs</p>
                     </div>
                   </div>
 
                   <div className="p-6 space-y-4">
                     <div className="grid grid-cols-2 gap-3">
                       <div className="text-center">
-                        <div className="text-lg font-bold text-gray-900">{category.stats.totalApplications}</div>
-                        <div className="text-xs text-gray-500">Applications</div>
+                        <div className="text-lg font-bold text-white">{category.stats?.totalApplications || 0}</div>
+                        <div className="text-xs text-gray-400">Applications</div>
                       </div>
                       <div className="text-center">
-                        <div className="text-lg font-bold text-blue-600">{category.stats.totalAdmitted}</div>
-                        <div className="text-xs text-gray-500">Admitted</div>
+                        <div className="text-lg font-bold text-blue-400">{category.stats?.totalAdmitted || 0}</div>
+                        <div className="text-xs text-gray-400">Admitted</div>
                       </div>
                       <div className="text-center">
-                        <div className="text-lg font-bold text-green-600">{category.stats.activeStudents}</div>
-                        <div className="text-xs text-gray-500">Active</div>
+                        <div className="text-lg font-bold text-green-400">{category.stats?.activeStudents || 0}</div>
+                        <div className="text-xs text-gray-400">Active</div>
                       </div>
                       <div className="text-center">
-                        <div className="text-lg font-bold text-orange-600">{formatBDT(category.stats.totalRevenue)}</div>
-                        <div className="text-xs text-gray-500">Revenue</div>
+                        <div className="text-lg font-bold text-orange-400">{formatBDT(category.stats?.totalRevenue || 0)}</div>
+                        <div className="text-xs text-gray-400">Revenue</div>
                       </div>
                       <div className="text-center">
-                        <div className="text-lg font-bold text-purple-600">{category.stats.assignedMentors}</div>
-                        <div className="text-xs text-gray-500">Mentors</div>
+                        <div className="text-lg font-bold text-purple-400">{category.stats?.assignedMentors || 0}</div>
+                        <div className="text-xs text-gray-400">Mentors</div>
                       </div>
                       <div className="text-center">
-                        <div className="text-lg font-bold text-red-600">{category.stats.totalRejected}</div>
-                        <div className="text-xs text-gray-500">Rejected</div>
+                        <div className="text-lg font-bold text-red-400">{category.stats?.totalRejected || 0}</div>
+                        <div className="text-xs text-gray-400">Rejected</div>
                       </div>
                     </div>
 
                     <div className="space-y-2">
-                      <div className="flex justify-between text-xs text-gray-600">
+                      <div className="flex justify-between text-xs text-gray-300">
                         <span>Admission Rate</span>
-                        <span>{category.stats.totalApplications > 0 ? Math.round((category.stats.totalAdmitted / category.stats.totalApplications) * 100) : 0}%</span>
+                        <span>{category.stats?.totalApplications > 0 ? Math.round((category.stats.totalAdmitted / category.stats.totalApplications) * 100) : 0}%</span>
                       </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div 
+                      <div className="w-full bg-gray-700 rounded-full h-2">
+                        <div
                           className={`${colors.bg} h-2 rounded-full transition-all duration-500`}
-                          style={{ width: `${category.stats.totalApplications > 0 ? (category.stats.totalAdmitted / category.stats.totalApplications) * 100 : 0}%` }}
+                          style={{ width: `${category.stats?.totalApplications > 0 ? (category.stats.totalAdmitted / category.stats.totalApplications) * 100 : 0}%` }}
                         ></div>
                       </div>
                     </div>
@@ -246,32 +246,32 @@ const AdminDashboard = () => {
           </div>
 
           {/* Quick Stats Overview */}
-          <div className="bg-white rounded-xl shadow-sm p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Overall Statistics</h2>
+          <div className="bg-gray-800 rounded-xl shadow-sm p-6">
+            <h2 className="text-lg font-semibold text-white mb-4">Overall Statistics</h2>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               <div className="text-center">
-                <div className="text-3xl font-bold text-blue-600">
-                  {categories.reduce((sum, cat) => sum + cat.stats.totalApplications, 0)}
+                <div className="text-3xl font-bold text-blue-400">
+                  {categories.reduce((sum, cat) => sum + (cat.stats?.totalApplications || 0), 0)}
                 </div>
-                <div className="text-sm text-gray-600 mt-1">Total Applications</div>
+                <div className="text-sm text-gray-300 mt-1">Total Applications</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-green-600">
-                  {categories.reduce((sum, cat) => sum + cat.stats.totalAdmitted, 0)}
+                <div className="text-3xl font-bold text-green-400">
+                  {categories.reduce((sum, cat) => sum + (cat.stats?.totalAdmitted || 0), 0)}
                 </div>
-                <div className="text-sm text-gray-600 mt-1">Total Admitted</div>
+                <div className="text-sm text-gray-300 mt-1">Total Admitted</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-purple-600">
-                  {categories.reduce((sum, cat) => sum + cat.stats.activeStudents, 0)}
+                <div className="text-3xl font-bold text-purple-400">
+                  {categories.reduce((sum, cat) => sum + (cat.stats?.activeStudents || 0), 0)}
                 </div>
-                <div className="text-sm text-gray-600 mt-1">Active Students</div>
+                <div className="text-sm text-gray-300 mt-1">Active Students</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-orange-600">
-                  {formatBDT(categories.reduce((sum, cat) => sum + cat.stats.totalRevenue, 0))}
+                <div className="text-3xl font-bold text-orange-400">
+                  {formatBDT(categories.reduce((sum, cat) => sum + (cat.stats?.totalRevenue || 0), 0))}
                 </div>
-                <div className="text-sm text-gray-600 mt-1">Total Revenue</div>
+                <div className="text-sm text-gray-300 mt-1">Total Revenue</div>
               </div>
             </div>
           </div>

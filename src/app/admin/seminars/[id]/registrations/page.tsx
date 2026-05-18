@@ -305,12 +305,12 @@ export default function SeminarRegistrationsPage() {
     a.click();
   };
 
-  if (loading) return <div className="min-h-screen flex items-center justify-center bg-slate-50 font-bold text-slate-400">Loading...</div>;
+  if (loading) return <div className="min-h-screen flex items-center justify-center bg-gray-900 font-bold text-gray-400">Loading...</div>;
 
   return (
-    <div className="min-h-screen bg-[#fcfdfe] pb-12 font-sans no-underline selection:bg-violet-100">
+    <div className="min-h-screen bg-gray-900 pb-12 font-sans no-underline selection:bg-violet-100">
       {/* Enhanced Header with Stats */}
-      <div className="bg-gradient-to-r from-white via-violet-50/30 to-white border-b border-slate-100/80 sticky top-0 z-[40] backdrop-blur-xl">
+      <div className="bg-gray-800 border-b border-gray-700 sticky top-0 z-[40] backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-6 py-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-4">

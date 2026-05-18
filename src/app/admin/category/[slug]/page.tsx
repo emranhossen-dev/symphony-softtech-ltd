@@ -266,10 +266,10 @@ const CategoryAdmissionControl = () => {
 
   const getCategoryAccentColor = () => {
     const colorMap: { [key: string]: string } = {
-      'green': 'border-green-500 text-green-600 bg-green-50',
-      'blue': 'border-blue-500 text-blue-600 bg-blue-50',
-      'purple': 'border-purple-500 text-purple-600 bg-purple-50',
-      'orange': 'border-orange-500 text-orange-600 bg-orange-50'
+      'green': 'border-green-500 text-green-400 bg-green-900/50',
+      'blue': 'border-blue-500 text-blue-400 bg-blue-900/50',
+      'purple': 'border-purple-500 text-purple-400 bg-purple-900/50',
+      'orange': 'border-orange-500 text-orange-400 bg-orange-900/50'
     };
     return colorMap[category?.color || 'green'] || colorMap['green'];
   };
@@ -316,7 +316,7 @@ const CategoryAdmissionControl = () => {
 
   if (!category) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-gray-50 p-6">
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-900 to-gray-900 p-6">
         <div className="max-w-7xl mx-auto">
           <div className="mb-8">
             <SkeletonLoader type="card" count={1} />
@@ -336,7 +336,7 @@ const CategoryAdmissionControl = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-900 to-gray-900">
       {/* Beautiful Header */}
       <div className={`bg-gradient-to-r ${getCategoryGradient()} text-white relative overflow-hidden`}>
         <div className="absolute inset-0 bg-black opacity-10"></div>
@@ -392,29 +392,29 @@ const CategoryAdmissionControl = () => {
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-2">
             <div className="h-1 w-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full"></div>
-            <h2 className="text-2xl font-bold text-gray-900">Category Overview</h2>
+            <h2 className="text-2xl font-bold text-white">Category Overview</h2>
           </div>
-          <p className="text-gray-600 ml-15">Key metrics and performance indicators for this category</p>
+          <p className="text-gray-400 ml-15">Key metrics and performance indicators for this category</p>
         </div>
 
         {/* Enhanced Stats Cards */}
         {stats && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             {/* Total Students Card */}
-            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-shadow">
+            <div className="bg-gray-800 rounded-2xl shadow-lg border border-gray-700 overflow-hidden hover:shadow-xl transition-shadow">
               <div className="p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <div className="p-3 bg-blue-100 rounded-xl">
-                    <Users className="w-6 h-6 text-blue-600" />
+                  <div className="p-3 bg-blue-900/50 rounded-xl">
+                    <Users className="w-6 h-6 text-blue-400" />
                   </div>
-                  <div className="flex items-center gap-1 text-green-600 text-sm font-medium">
+                  <div className="flex items-center gap-1 text-green-400 text-sm font-medium">
                     <ArrowUpRight className="w-4 h-4" />
                     {stats.monthlyGrowth || 0}%
                   </div>
                 </div>
                 <div className="space-y-1">
-                  <p className="text-gray-600 text-sm font-medium">Total Students</p>
-                  <p className="text-3xl font-bold text-gray-900">{stats.applied + stats.admitted || 0}</p>
+                  <p className="text-gray-400 text-sm font-medium">Total Students</p>
+                  <p className="text-3xl font-bold text-white">{stats.applied + stats.admitted || 0}</p>
                   <p className="text-gray-500 text-xs">Active enrollments</p>
                 </div>
               </div>
@@ -422,20 +422,20 @@ const CategoryAdmissionControl = () => {
             </div>
 
             {/* Revenue Card */}
-            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-shadow">
+            <div className="bg-gray-800 rounded-2xl shadow-lg border border-gray-700 overflow-hidden hover:shadow-xl transition-shadow">
               <div className="p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <div className="p-3 bg-green-100 rounded-xl">
-                    <span className="text-2xl text-green-600">৳</span>
+                  <div className="p-3 bg-green-900/50 rounded-xl">
+                    <span className="text-2xl text-green-400">৳</span>
                   </div>
-                  <div className="flex items-center gap-1 text-green-600 text-sm font-medium">
+                  <div className="flex items-center gap-1 text-green-400 text-sm font-medium">
                     <ArrowUpRight className="w-4 h-4" />
                     {stats.monthlyGrowth > 0 ? '+' : ''}{stats.monthlyGrowth}
                   </div>
                 </div>
                 <div className="space-y-1">
-                  <p className="text-gray-600 text-sm font-medium">Total Revenue</p>
-                  <p className="text-3xl font-bold text-gray-900">{formatCurrency(stats.totalRevenue || 0)}</p>
+                  <p className="text-gray-400 text-sm font-medium">Total Revenue</p>
+                  <p className="text-3xl font-bold text-white">{formatCurrency(stats.totalRevenue || 0)}</p>
                   <p className="text-gray-500 text-xs">This month</p>
                 </div>
               </div>
@@ -443,20 +443,20 @@ const CategoryAdmissionControl = () => {
             </div>
 
             {/* Pending Applications */}
-            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-shadow">
+            <div className="bg-gray-800 rounded-2xl shadow-lg border border-gray-700 overflow-hidden hover:shadow-xl transition-shadow">
               <div className="p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <div className="p-3 bg-yellow-100 rounded-xl">
-                    <Clock className="w-6 h-6 text-yellow-600" />
+                  <div className="p-3 bg-yellow-900/50 rounded-xl">
+                    <Clock className="w-6 h-6 text-yellow-400" />
                   </div>
-                  <div className="flex items-center gap-1 text-yellow-600 text-sm font-medium">
+                  <div className="flex items-center gap-1 text-yellow-400 text-sm font-medium">
                     <AlertCircle className="w-4 h-4" />
                     {stats.waiting || 0}
                   </div>
                 </div>
                 <div className="space-y-1">
-                  <p className="text-gray-600 text-sm font-medium">Pending Review</p>
-                  <p className="text-3xl font-bold text-gray-900">{stats.waiting || 0}</p>
+                  <p className="text-gray-400 text-sm font-medium">Pending Review</p>
+                  <p className="text-3xl font-bold text-white">{stats.waiting || 0}</p>
                   <p className="text-gray-500 text-xs">Need approval</p>
                 </div>
               </div>
@@ -464,20 +464,20 @@ const CategoryAdmissionControl = () => {
             </div>
 
             {/* Completion Rate */}
-            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-shadow">
+            <div className="bg-gray-800 rounded-2xl shadow-lg border border-gray-700 overflow-hidden hover:shadow-xl transition-shadow">
               <div className="p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <div className="p-3 bg-purple-100 rounded-xl">
-                    <Target className="w-6 h-6 text-purple-600" />
+                  <div className="p-3 bg-purple-900/50 rounded-xl">
+                    <Target className="w-6 h-6 text-purple-400" />
                   </div>
-                  <div className="flex items-center gap-1 text-green-600 text-sm font-medium">
+                  <div className="flex items-center gap-1 text-green-400 text-sm font-medium">
                     <ArrowUpRight className="w-4 h-4" />
                     {stats.completionRate || 0}%
                   </div>
                 </div>
                 <div className="space-y-1">
-                  <p className="text-gray-600 text-sm font-medium">Completion Rate</p>
-                  <p className="text-3xl font-bold text-gray-900">{stats.completionRate || 0}%</p>
+                  <p className="text-gray-400 text-sm font-medium">Completion Rate</p>
+                  <p className="text-3xl font-bold text-white">{stats.completionRate || 0}%</p>
                   <p className="text-gray-500 text-xs">Average completion</p>
                 </div>
               </div>
@@ -488,9 +488,9 @@ const CategoryAdmissionControl = () => {
 
         {/* Section Divider */}
         <div className="flex items-center gap-4 my-10">
-          <div className="h-px bg-gray-200 flex-1"></div>
+          <div className="h-px bg-gray-700 flex-1"></div>
           <div className="text-gray-400 text-sm font-medium">Analytics</div>
-          <div className="h-px bg-gray-200 flex-1"></div>
+          <div className="h-px bg-gray-700 flex-1"></div>
         </div>
 
         {/* Charts Section */}
@@ -522,24 +522,24 @@ const CategoryAdmissionControl = () => {
 
         {/* Section Divider */}
         <div className="flex items-center gap-4 my-10">
-          <div className="h-px bg-gray-200 flex-1"></div>
+          <div className="h-px bg-gray-700 flex-1"></div>
           <div className="text-gray-400 text-sm font-medium">Recent Activity</div>
-          <div className="h-px bg-gray-200 flex-1"></div>
+          <div className="h-px bg-gray-700 flex-1"></div>
         </div>
 
         {/* Recent Enrollments & Quick Actions */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
           {/* Recent Enrollments */}
-          <div className="lg:col-span-2 bg-white rounded-2xl shadow-lg border border-gray-100">
-            <div className="p-6 border-b border-gray-100">
+          <div className="lg:col-span-2 bg-gray-800 rounded-2xl shadow-lg border border-gray-700">
+            <div className="p-6 border-b border-gray-700">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900">Recent Enrollments</h3>
-                  <p className="text-sm text-gray-600">Latest student applications</p>
+                  <h3 className="text-lg font-semibold text-white">Recent Enrollments</h3>
+                  <p className="text-sm text-gray-400">Latest student applications</p>
                 </div>
                 <button
                   onClick={() => setShowRecentEnrollments(!showRecentEnrollments)}
-                  className="text-gray-400 hover:text-gray-600"
+                  className="text-gray-400 hover:text-white"
                 >
                   {showRecentEnrollments ? <Eye className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
@@ -549,7 +549,7 @@ const CategoryAdmissionControl = () => {
               {recentEnrollments.length > 0 ? (
                 <div className="space-y-4">
                   {recentEnrollments.map((enrollment) => (
-                    <div key={enrollment.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
+                    <div key={enrollment.id} className="flex items-center justify-between p-4 bg-gray-700 rounded-xl hover:bg-gray-600 transition-colors">
                       <div className="flex items-center gap-4">
                         <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center">
                           <span className="text-white font-semibold">
@@ -557,8 +557,8 @@ const CategoryAdmissionControl = () => {
                           </span>
                         </div>
                         <div>
-                          <p className="font-semibold text-gray-900">{enrollment.name}</p>
-                          <p className="text-sm text-gray-600">{enrollment.email}</p>
+                          <p className="font-semibold text-white">{enrollment.name}</p>
+                          <p className="text-sm text-gray-400">{enrollment.email}</p>
                         </div>
                       </div>
                       <div className="text-right">
@@ -586,31 +586,31 @@ const CategoryAdmissionControl = () => {
           </div>
 
           {/* Quick Actions */}
-          <div className="bg-white rounded-2xl shadow-lg border border-gray-100">
-            <div className="p-6 border-b border-gray-100">
-              <h3 className="text-lg font-semibold text-gray-900">Quick Actions</h3>
-              <p className="text-sm text-gray-600">Common tasks</p>
+          <div className="bg-gray-800 rounded-2xl shadow-lg border border-gray-700">
+            <div className="p-6 border-b border-gray-700">
+              <h3 className="text-lg font-semibold text-white">Quick Actions</h3>
+              <p className="text-sm text-gray-400">Common tasks</p>
             </div>
             <div className="p-6 space-y-3">
               <button
                 onClick={() => router.push(`/admin/category/${categoryId}/enrollment`)}
-                className="w-full flex items-center gap-3 p-4 bg-blue-50 text-blue-700 rounded-xl hover:bg-blue-100 transition-colors group"
+                className="w-full flex items-center gap-3 p-4 bg-blue-900/50 text-blue-400 rounded-xl hover:bg-blue-900/70 transition-colors group"
               >
                 <UserPlus className="w-5 h-5 group-hover:scale-110 transition-transform" />
                 <span className="font-medium">Add New Enrollment</span>
                 <ArrowRight className="w-4 h-4 ml-auto" />
               </button>
-              <button className="w-full flex items-center gap-3 p-4 bg-green-50 text-green-700 rounded-xl hover:bg-green-100 transition-colors group">
+              <button className="w-full flex items-center gap-3 p-4 bg-green-900/50 text-green-400 rounded-xl hover:bg-green-900/70 transition-colors group">
                 <Download className="w-5 h-5 group-hover:scale-110 transition-transform" />
                 <span className="font-medium">Export Data</span>
                 <ArrowRight className="w-4 h-4 ml-auto" />
               </button>
-              <button className="w-full flex items-center gap-3 p-4 bg-purple-50 text-purple-700 rounded-xl hover:bg-purple-100 transition-colors group">
+              <button className="w-full flex items-center gap-3 p-4 bg-purple-900/50 text-purple-400 rounded-xl hover:bg-purple-900/70 transition-colors group">
                 <BarChart3 className="w-5 h-5 group-hover:scale-110 transition-transform" />
                 <span className="font-medium">View Analytics</span>
                 <ArrowRight className="w-4 h-4 ml-auto" />
               </button>
-              <button className="w-full flex items-center gap-3 p-4 bg-yellow-50 text-yellow-700 rounded-xl hover:bg-yellow-100 transition-colors group">
+              <button className="w-full flex items-center gap-3 p-4 bg-yellow-900/50 text-yellow-400 rounded-xl hover:bg-yellow-900/70 transition-colors group">
                 <Settings className="w-5 h-5 group-hover:scale-110 transition-transform" />
                 <span className="font-medium">Category Settings</span>
                 <ArrowRight className="w-4 h-4 ml-auto" />

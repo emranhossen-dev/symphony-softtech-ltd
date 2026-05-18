@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
     // Fetch students enrolled in mentor's courses
     const enrollments = await prisma.enrollment.findMany({
       where: {
-        enrollmentStatus: 'APPROVED'
+        enrollmentStatus: 'ADMITTED'
       }
     });
 

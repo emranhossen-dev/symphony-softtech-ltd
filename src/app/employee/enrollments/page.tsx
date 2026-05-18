@@ -36,7 +36,7 @@ interface Enrollment {
   phone: string;
   course: string;
   category: string;
-  status: 'pending' | 'approved' | 'rejected' | 'completed';
+  status: 'applied' | 'admitted' | 'rejected' | 'waiting' | 'next_batch';
   email?: string;
   address?: string;
   enrollmentDate?: string;
@@ -46,9 +46,11 @@ interface Enrollment {
 
 interface Stats {
   total: number;
-  pending: number;
-  approved: number;
+  applied: number;
+  admitted: number;
   rejected: number;
+  waiting: number;
+  next_batch: number;
 }
 
 interface NewEnrollment {
@@ -63,11 +65,28 @@ interface NewEnrollment {
   paymentStatus: string;
 }
 
+const statusToDbMap = {
+  applied: 'PENDING_REVIEW',
+  admitted: 'APPROVED',
+  rejected: 'REJECTED',
+  waiting: 'PAYMENT_PENDING',
+  next_batch: 'PENDING_REVIEW'
+};
+
+const dbToStatusMap = {
+  'PENDING_REVIEW': 'applied',
+  'APPROVED': 'admitted',
+  'REJECTED': 'rejected',
+  'PAYMENT_PENDING': 'waiting',
+  'PAYMENT_CANCELLED': 'rejected'
+};
+
 const statusConfig = {
-  pending: { label: 'Pending', color: 'bg-yellow-100 text-yellow-800', icon: Clock },
-  approved: { label: 'Approved', color: 'bg-green-100 text-green-800', icon: CheckCircle },
+  applied: { label: 'Applied', color: 'bg-blue-100 text-blue-800', icon: Clock },
+  admitted: { label: 'Admitted', color: 'bg-green-100 text-green-800', icon: CheckCircle },
   rejected: { label: 'Rejected', color: 'bg-red-100 text-red-800', icon: X },
-  completed: { label: 'Completed', color: 'bg-blue-100 text-blue-800', icon: CheckCircle }
+  waiting: { label: 'Waiting', color: 'bg-yellow-100 text-yellow-800', icon: Clock },
+  next_batch: { label: 'Next Batch', color: 'bg-purple-100 text-purple-800', icon: Clock }
 };
 
 const categoryConfig = {
@@ -87,10 +106,11 @@ const categories = [
 
 const statuses = [
   { value: 'all', label: 'All Status' },
-  { value: 'pending', label: 'Pending' },
-  { value: 'approved', label: 'Approved' },
+  { value: 'applied', label: 'Applied' },
+  { value: 'admitted', label: 'Admitted' },
   { value: 'rejected', label: 'Rejected' },
-  { value: 'completed', label: 'Completed' }
+  { value: 'waiting', label: 'Waiting' },
+  { value: 'next_batch', label: 'Next Batch' }
 ];
 
 const availableCourses = [
@@ -109,125 +129,18 @@ function EmployeeEnrollmentsContent() {
   const action = searchParams.get('action');
   const [showNewForm, setShowNewForm] = useState(action === 'new');
   const [successMessage, setSuccessMessage] = useState('');
-  const [enrollments, setEnrollments] = useState<Enrollment[]>([
-    {
-      id: '1',
-      studentName: 'John Doe',
-      phone: '+1 (555) 123-4567',
-      email: 'john.doe@email.com',
-      course: 'Government Job Preparation',
-      category: 'GOVERNMENT',
-      status: 'pending',
-      enrollmentDate: '2024-01-15',
-      paymentStatus: 'pending'
-    },
-    {
-      id: '2',
-      studentName: 'Jane Smith',
-      phone: '+1 (555) 234-5678',
-      email: 'jane.smith@email.com',
-      course: 'Full Stack Web Development',
-      category: 'RECORDED',
-      status: 'approved',
-      enrollmentDate: '2024-01-14',
-      paymentStatus: 'completed'
-    },
-    {
-      id: '3',
-      studentName: 'Mike Johnson',
-      phone: '+1 (555) 345-6789',
-      email: 'mike.johnson@email.com',
-      course: 'Live Full Stack Bootcamp',
-      category: 'ONLINE',
-      status: 'pending',
-      enrollmentDate: '2024-01-13',
-      paymentStatus: 'pending'
-    },
-    {
-      id: '4',
-      studentName: 'Sarah Wilson',
-      phone: '+1 (555) 456-7890',
-      email: 'sarah.wilson@email.com',
-      course: 'Classroom Full Stack Training',
-      category: 'OFFLINE',
-      status: 'rejected',
-      enrollmentDate: '2024-01-12',
-      paymentStatus: 'failed'
-    },
-    {
-      id: '5',
-      studentName: 'Tom Brown',
-      phone: '+1 (555) 567-8901',
-      email: 'tom.brown@email.com',
-      course: 'Civil Services Foundation',
-      category: 'GOVERNMENT',
-      status: 'approved',
-      enrollmentDate: '2024-01-11',
-      paymentStatus: 'completed'
-    },
-    {
-      id: '6',
-      studentName: 'Alice Davis',
-      phone: '+1 (555) 678-9012',
-      email: 'alice.davis@email.com',
-      course: 'Data Science & Machine Learning',
-      category: 'RECORDED',
-      status: 'pending',
-      enrollmentDate: '2024-01-10',
-      paymentStatus: 'pending'
-    },
-    {
-      id: '7',
-      studentName: 'Bob Miller',
-      phone: '+1 (555) 789-0123',
-      email: 'bob.miller@email.com',
-      course: 'Live Data Science Bootcamp',
-      category: 'ONLINE',
-      status: 'completed',
-      enrollmentDate: '2024-01-09',
-      paymentStatus: 'completed'
-    },
-    {
-      id: '8',
-      studentName: 'Charlie Garcia',
-      phone: '+1 (555) 890-1234',
-      email: 'charlie.garcia@email.com',
-      course: 'Mobile App Development',
-      category: 'RECORDED',
-      status: 'approved',
-      enrollmentDate: '2024-01-08',
-      paymentStatus: 'completed'
-    },
-    {
-      id: '9',
-      studentName: 'Diana Martinez',
-      phone: '+1 (555) 901-2345',
-      email: 'diana.martinez@email.com',
-      course: 'Live Mobile Development',
-      category: 'ONLINE',
-      status: 'pending',
-      enrollmentDate: '2024-01-07',
-      paymentStatus: 'pending'
-    },
-    {
-      id: '10',
-      studentName: 'Eva Rodriguez',
-      phone: '+1 (555) 012-3456',
-      email: 'eva.rodriguez@email.com',
-      course: 'Offline UI/UX Design',
-      category: 'OFFLINE',
-      status: 'approved',
-      enrollmentDate: '2024-01-06',
-      paymentStatus: 'completed'
-    }
-  ]);
+  const [loading, setLoading] = useState(true);
+  const [updatingStatus, setUpdatingStatus] = useState<string | null>(null);
+  const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
 
-  const [filteredEnrollments, setFilteredEnrollments] = useState<Enrollment[]>(enrollments);
+  const [filteredEnrollments, setFilteredEnrollments] = useState<Enrollment[]>([]);
   const [stats, setStats] = useState<Stats>({
-    total: enrollments.length,
-    pending: enrollments.filter(e => e.status === 'pending').length,
-    approved: enrollments.filter(e => e.status === 'approved').length,
-    rejected: enrollments.filter(e => e.status === 'rejected').length
+    total: 0,
+    applied: 0,
+    admitted: 0,
+    rejected: 0,
+    waiting: 0,
+    next_batch: 0
   });
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [filters, setFilters] = useState({
@@ -236,6 +149,49 @@ function EmployeeEnrollmentsContent() {
     category: 'all',
     paymentStatus: 'all'
   });
+
+  // Fetch enrollments from API
+  useEffect(() => {
+    fetchEnrollments();
+  }, []);
+
+  const fetchEnrollments = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch('/api/admin/enrollments');
+      const data = await response.json();
+      
+      if (data.success) {
+        // Transform API data to match our interface
+        const transformedEnrollments = data.enrollments.map((e: any) => ({
+          id: e.id,
+          studentName: e.fullName,
+          phone: e.phoneNumber,
+          email: e.email,
+          course: e.courseName,
+          category: e.course?.category || 'OFFLINE',
+          status: (dbToStatusMap as any)[e.enrollmentStatus] || 'applied' as Enrollment['status'],
+          enrollmentDate: e.createdAt,
+          paymentStatus: e.payments?.[0]?.paymentStatus?.toLowerCase() || 'pending'
+        }));
+        setEnrollments(transformedEnrollments);
+        
+        // Update stats
+        setStats({
+          total: transformedEnrollments.length,
+          applied: transformedEnrollments.filter((e: Enrollment) => e.status === 'applied').length,
+          admitted: transformedEnrollments.filter((e: Enrollment) => e.status === 'admitted').length,
+          rejected: transformedEnrollments.filter((e: Enrollment) => e.status === 'rejected').length,
+          waiting: transformedEnrollments.filter((e: Enrollment) => e.status === 'waiting').length,
+          next_batch: transformedEnrollments.filter((e: Enrollment) => e.status === 'next_batch').length
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching enrollments:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // New enrollment form state
   const [newEnrollment, setNewEnrollment] = useState<NewEnrollment>({
@@ -285,24 +241,60 @@ function EmployeeEnrollmentsContent() {
     setFilteredEnrollments(filtered);
   };
 
-  const handleStatusUpdate = (enrollmentId: string, newStatus: string) => {
-    setEnrollments(prev => 
-      prev.map(enrollment => 
-        enrollment.id === enrollmentId 
-          ? { ...enrollment, status: newStatus as Enrollment['status'] }
-          : enrollment
-      )
-    );
-    
-    // Update stats
-    setStats(prev => ({
-      ...prev,
-      pending: newStatus === 'pending' ? prev.pending + 1 : prev.pending - 1,
-      approved: newStatus === 'approved' ? prev.approved + 1 : prev.approved - 1,
-      rejected: newStatus === 'rejected' ? prev.rejected + 1 : prev.rejected - 1
-    }));
-    
-    console.log(`Enrollment ${enrollmentId} status updated to ${newStatus}`);
+  const handleStatusUpdate = async (enrollmentId: string, newStatus: string) => {
+    try {
+      setUpdatingStatus(enrollmentId);
+      const token = localStorage.getItem('auth-token');
+      
+      console.log('Updating status:', { enrollmentId, newStatus, hasToken: !!token });
+      
+      const response = await fetch('/api/admin/enrollments', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          enrollmentId,
+          status: (statusToDbMap as any)[newStatus] || 'PENDING_REVIEW'
+        })
+      });
+      
+      const data = await response.json();
+      console.log('API response:', data);
+      
+      if (data.success) {
+        // Update local state
+        setEnrollments(prev => 
+          prev.map(enrollment => 
+            enrollment.id === enrollmentId 
+              ? { ...enrollment, status: newStatus as Enrollment['status'] }
+              : enrollment
+          )
+        );
+        
+        // Update stats
+        setStats(prev => ({
+          ...prev,
+          applied: newStatus === 'applied' ? prev.applied + 1 : prev.applied - 1,
+          admitted: newStatus === 'admitted' ? prev.admitted + 1 : prev.admitted - 1,
+          rejected: newStatus === 'rejected' ? prev.rejected + 1 : prev.rejected - 1,
+          waiting: newStatus === 'waiting' ? prev.waiting + 1 : prev.waiting - 1,
+          next_batch: newStatus === 'next_batch' ? prev.next_batch + 1 : prev.next_batch - 1
+        }));
+        
+        setSuccessMessage(`Status updated to ${newStatus}!`);
+        setTimeout(() => setSuccessMessage(''), 3000);
+      } else {
+        console.error('API error:', data.error);
+        alert('Failed to update status: ' + (data.error || 'Unknown error'));
+      }
+    } catch (error) {
+      console.error('Error updating status:', error);
+      alert('Failed to update status. Please try again.');
+    } finally {
+      setUpdatingStatus(null);
+    }
   };
 
   const handleAddNote = (enrollmentId: string) => {
@@ -317,7 +309,7 @@ function EmployeeEnrollmentsContent() {
     const enrollment: Enrollment = {
       id: Date.now().toString(),
       ...newEnrollment,
-      status: 'pending'
+      status: 'applied'
     };
     
     // Add to enrollments
@@ -613,7 +605,7 @@ function EmployeeEnrollmentsContent() {
 
       {/* Stats Section */}
       <div className="mb-2 px-0">
-        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
         <div className="bg-gradient-to-br from-blue-700 to-purple-800 text-white rounded-2xl shadow-lg p-4 sm:p-6 flex items-center justify-between border border-blue-600/30">
           <div>
             <p className="text-gray-200 text-sm sm:text-lg">Total</p>
@@ -625,10 +617,21 @@ function EmployeeEnrollmentsContent() {
           </div>
         </div>
         
-        <div className="bg-gradient-to-br from-green-600 to-teal-700 text-white rounded-2xl shadow-lg p-4 sm:p-6 flex items-center justify-between border border-green-600/30">
+        <div className="bg-gradient-to-br from-blue-600 to-teal-700 text-white rounded-2xl shadow-lg p-4 sm:p-6 flex items-center justify-between border border-blue-600/30">
           <div>
-            <p className="text-gray-200 text-sm sm:text-lg">Approved</p>
-            <h2 className="text-3xl sm:text-5xl font-bold">{stats.approved}</h2>
+            <p className="text-gray-200 text-sm sm:text-lg">Applied</p>
+            <h2 className="text-3xl sm:text-5xl font-bold">{stats.applied}</h2>
+            <p className="text-gray-300 text-xs sm:text-sm">New applications</p>
+          </div>
+          <div className="w-12 h-12 sm:w-16 sm:h-16 bg-white/20 rounded-full flex items-center justify-center text-2xl sm:text-3xl font-bold">
+            <Clock className="w-6 h-6 sm:w-8 sm:h-8" />
+          </div>
+        </div>
+        
+        <div className="bg-gradient-to-br from-green-600 to-emerald-700 text-white rounded-2xl shadow-lg p-4 sm:p-6 flex items-center justify-between border border-green-600/30">
+          <div>
+            <p className="text-gray-200 text-sm sm:text-lg">Admitted</p>
+            <h2 className="text-3xl sm:text-5xl font-bold">{stats.admitted}</h2>
             <p className="text-gray-300 text-xs sm:text-sm">Confirmed</p>
           </div>
           <div className="w-12 h-12 sm:w-16 sm:h-16 bg-white/20 rounded-full flex items-center justify-center text-2xl sm:text-3xl font-bold">
@@ -636,14 +639,25 @@ function EmployeeEnrollmentsContent() {
           </div>
         </div>
         
-        <div className="bg-gradient-to-br from-orange-600 to-red-700 text-white rounded-2xl shadow-lg p-4 sm:p-6 flex items-center justify-between border border-orange-600/30">
+        <div className="bg-gradient-to-br from-yellow-600 to-orange-700 text-white rounded-2xl shadow-lg p-4 sm:p-6 flex items-center justify-between border border-yellow-600/30">
           <div>
-            <p className="text-gray-200 text-sm sm:text-lg">Pending</p>
-            <h2 className="text-3xl sm:text-5xl font-bold">{stats.pending}</h2>
-            <p className="text-gray-300 text-xs sm:text-sm">Waiting review</p>
+            <p className="text-gray-200 text-sm sm:text-lg">Waiting</p>
+            <h2 className="text-3xl sm:text-5xl font-bold">{stats.waiting}</h2>
+            <p className="text-gray-300 text-xs sm:text-sm">Waiting list</p>
           </div>
           <div className="w-12 h-12 sm:w-16 sm:h-16 bg-white/20 rounded-full flex items-center justify-center text-2xl sm:text-3xl font-bold">
             <Clock className="w-6 h-6 sm:w-8 sm:h-8" />
+          </div>
+        </div>
+        
+        <div className="bg-gradient-to-br from-purple-600 to-indigo-700 text-white rounded-2xl shadow-lg p-4 sm:p-6 flex items-center justify-between border border-purple-600/30">
+          <div>
+            <p className="text-gray-200 text-sm sm:text-lg">Next Batch</p>
+            <h2 className="text-3xl sm:text-5xl font-bold">{stats.next_batch}</h2>
+            <p className="text-gray-300 text-xs sm:text-sm">Upcoming batch</p>
+          </div>
+          <div className="w-12 h-12 sm:w-16 sm:h-16 bg-white/20 rounded-full flex items-center justify-center text-2xl sm:text-3xl font-bold">
+            <Calendar className="w-6 h-6 sm:w-8 sm:h-8" />
           </div>
         </div>
         
@@ -709,10 +723,10 @@ function EmployeeEnrollmentsContent() {
               <select
                 value={filters.category}
                 onChange={(e) => setFilters(prev => ({ ...prev, category: e.target.value }))}
-                className="bg-gray-700/50 border border-gray-600 text-white rounded-xl px-4 py-2 sm:py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-sm sm:text-base"
+                className="bg-gray-700 text-white border border-gray-600 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-sm sm:text-base cursor-pointer"
               >
                 {categories.map((category) => (
-                  <option key={category.value} value={category.value} className="bg-gray-800">
+                  <option key={category.value} value={category.value} className="bg-gray-800 text-white">
                     {category.label}
                   </option>
                 ))}
@@ -721,10 +735,10 @@ function EmployeeEnrollmentsContent() {
               <select
                 value={filters.status}
                 onChange={(e) => setFilters(prev => ({ ...prev, status: e.target.value }))}
-                className="bg-gray-700/50 border border-gray-600 text-white rounded-xl px-4 py-2 sm:py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-sm sm:text-base"
+                className="bg-gray-700 text-white border border-gray-600 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-sm sm:text-base cursor-pointer"
               >
                 {statuses.map((status) => (
-                  <option key={status.value} value={status.value} className="bg-gray-800">
+                  <option key={status.value} value={status.value} className="bg-gray-800 text-white">
                     {status.label}
                   </option>
                 ))}
@@ -733,12 +747,12 @@ function EmployeeEnrollmentsContent() {
               <select
                 value={filters.paymentStatus}
                 onChange={(e) => setFilters(prev => ({ ...prev, paymentStatus: e.target.value }))}
-                className="bg-gray-700/50 border border-gray-600 text-white rounded-xl px-4 py-2 sm:py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-sm sm:text-base"
+                className="bg-gray-700 text-white border border-gray-600 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-sm sm:text-base cursor-pointer"
               >
-                <option value="all" className="bg-gray-800">All Payment Status</option>
-                <option value="completed" className="bg-gray-800">Completed</option>
-                <option value="pending" className="bg-gray-800">Pending</option>
-                <option value="failed" className="bg-gray-800">Failed</option>
+                <option value="all" className="bg-gray-800 text-white">All Payment Status</option>
+                <option value="completed" className="bg-gray-800 text-white">Completed</option>
+                <option value="pending" className="bg-gray-800 text-white">Pending</option>
+                <option value="failed" className="bg-gray-800 text-white">Failed</option>
               </select>
             </div>
           </div>
@@ -747,7 +761,7 @@ function EmployeeEnrollmentsContent() {
 
       {/* Enrollments Table */}
       <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl border border-gray-700">
-        <div className="p-0 border-b border-gray-700">
+        <div className="p-4 sm:p-6 border-b border-gray-700">
           <div className="flex items-center justify-between">
             <h2 className="text-lg sm:text-xl font-semibold text-white">All Enrollments</h2>
             <div className="text-gray-400 text-sm">
@@ -761,13 +775,13 @@ function EmployeeEnrollmentsContent() {
             <table className="w-full min-w-[1000px]">
               <thead className="hidden sm:table-header-group">
                 <tr className="border-b border-gray-700 bg-gray-900/50">
-                  <th className="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Student</th>
-                  <th className="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider hidden sm:table-cell">Contact</th>
-                  <th className="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Course</th>
-                  <th className="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider hidden sm:table-cell">Category</th>
-                  <th className="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider hidden sm:table-cell">Status</th>
-                  <th className="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Payment</th>
-                  <th className="px-2 sm:px-4 py-2 sm:py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
+                  <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Student</th>
+                  <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider hidden sm:table-cell">Contact</th>
+                  <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Course</th>
+                  <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider hidden sm:table-cell">Category</th>
+                  <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider hidden sm:table-cell">Status</th>
+                  <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Payment</th>
+                  <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-700">
@@ -775,7 +789,7 @@ function EmployeeEnrollmentsContent() {
                   <tr key={enrollment.id} className="hover:bg-gray-700/50 transition-colors border-b border-gray-700">
                     {/* Mobile Card View */}
                     <td className="sm:hidden" colSpan={6}>
-                      <div className="p-4 space-y-3">
+                      <div className="p-4 sm:p-6 space-y-3">
                         <div className="flex items-center justify-between mb-3">
                           <div className="flex items-center">
                             <div className="w-10 h-10 bg-gray-600 rounded-full flex items-center justify-center mr-3">
@@ -809,13 +823,18 @@ function EmployeeEnrollmentsContent() {
                             <select
                               value={enrollment.status}
                               onChange={(e) => handleStatusUpdate(enrollment.id, e.target.value)}
-                              className={`px-3 py-1 rounded-full text-xs font-medium border-0 focus:ring-2 focus:ring-blue-500 ${statusConfig[enrollment.status].color}`}
+                              disabled={updatingStatus === enrollment.id}
+                              className="px-3 py-1.5 rounded-lg text-xs font-medium bg-gray-700 text-white border border-gray-600 focus:ring-2 focus:ring-blue-500 focus:outline-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                             >
-                              <option value="pending">Pending</option>
-                              <option value="approved">Approved</option>
+                              <option value="applied">Applied</option>
+                              <option value="admitted">Admitted</option>
                               <option value="rejected">Rejected</option>
-                              <option value="completed">Completed</option>
+                              <option value="waiting">Waiting</option>
+                              <option value="next_batch">Next Batch</option>
                             </select>
+                            {updatingStatus === enrollment.id && (
+                              <span className="ml-2 text-xs text-gray-400">Updating...</span>
+                            )}
                           </div>
                           
                           <span className={`px-3 py-1 rounded-full text-xs font-medium ${
@@ -849,7 +868,7 @@ function EmployeeEnrollmentsContent() {
                     
                     {/* Desktop Table View */}
                     <>
-                      <td className="hidden sm:table-cell px-2 sm:px-4 py-2 sm:py-4 whitespace-nowrap">
+                      <td className="hidden sm:table-cell px-4 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
                         <div className="flex items-center">
                           <div className="w-10 h-10 bg-gray-600 rounded-full flex items-center justify-center mr-3">
                             <User className="w-5 h-5 text-gray-300" />
@@ -862,16 +881,16 @@ function EmployeeEnrollmentsContent() {
                           </div>
                         </div>
                       </td>
-                      <td className="hidden sm:table-cell px-2 sm:px-4 py-2 sm:py-4 whitespace-nowrap">
+                      <td className="hidden sm:table-cell px-4 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
                         <div className="flex items-center text-sm text-gray-300">
                           <Phone className="w-4 h-4 mr-2 text-gray-400" />
                           {enrollment.phone}
                         </div>
                       </td>
-                      <td className="hidden sm:table-cell px-2 sm:px-4 py-2 sm:py-4 whitespace-nowrap">
+                      <td className="hidden sm:table-cell px-4 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
                         <div className="text-sm text-white">{enrollment.course}</div>
                       </td>
-                      <td className="hidden sm:table-cell px-2 sm:px-4 py-2 sm:py-4 whitespace-nowrap">
+                      <td className="hidden sm:table-cell px-4 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
                         <div className="flex items-center">
                           <div className={`flex items-center px-3 py-1 rounded-full text-xs font-medium ${categoryConfig[enrollment.category as keyof typeof categoryConfig]?.color || 'bg-gray-100 text-gray-700'}`}>
                             {getCategoryIcon(enrollment.category)}
@@ -879,19 +898,24 @@ function EmployeeEnrollmentsContent() {
                           </div>
                         </div>
                       </td>
-                      <td className="hidden sm:table-cell px-2 sm:px-4 py-2 sm:py-4 whitespace-nowrap">
+                      <td className="hidden sm:table-cell px-4 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
                         <select
                           value={enrollment.status}
                           onChange={(e) => handleStatusUpdate(enrollment.id, e.target.value)}
-                          className={`px-3 py-1 rounded-full text-xs font-medium border-0 focus:ring-2 focus:ring-blue-500 ${statusConfig[enrollment.status].color}`}
+                          disabled={updatingStatus === enrollment.id}
+                          className="px-3 py-1.5 rounded-lg text-xs font-medium bg-gray-700 text-white border border-gray-600 focus:ring-2 focus:ring-blue-500 focus:outline-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                          <option value="pending">Pending</option>
-                          <option value="approved">Approved</option>
+                          <option value="applied">Applied</option>
+                          <option value="admitted">Admitted</option>
                           <option value="rejected">Rejected</option>
-                          <option value="completed">Completed</option>
+                          <option value="waiting">Waiting</option>
+                          <option value="next_batch">Next Batch</option>
                         </select>
+                        {updatingStatus === enrollment.id && (
+                          <span className="ml-2 text-xs text-gray-400">Updating...</span>
+                        )}
                       </td>
-                      <td className="hidden sm:table-cell px-2 sm:px-4 py-2 sm:py-4 whitespace-nowrap">
+                      <td className="hidden sm:table-cell px-4 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
                         <span className={`px-3 py-1 rounded-full text-xs font-medium ${
                           enrollment.paymentStatus === 'completed' ? 'bg-green-100 text-green-800' :
                           enrollment.paymentStatus === 'pending' ? 'bg-yellow-100 text-yellow-800' :
@@ -901,7 +925,7 @@ function EmployeeEnrollmentsContent() {
                           {enrollment.paymentStatus || 'N/A'}
                         </span>
                       </td>
-                      <td className="hidden sm:table-cell px-2 sm:px-4 py-2 sm:py-4 whitespace-nowrap text-sm font-medium">
+                      <td className="hidden sm:table-cell px-4 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-sm font-medium">
                         <div className="flex items-center gap-2">
                           <button
                             onClick={() => handleAddNote(enrollment.id)}

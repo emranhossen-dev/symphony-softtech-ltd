@@ -108,7 +108,7 @@ export async function GET(request: NextRequest) {
       return sum + pendingAmount;
     }, 0);
 
-    const completedEnrollments = enrollments.filter(e => e.enrollmentStatus === 'APPROVED').length;
+    const completedEnrollments = enrollments.filter(e => e.enrollmentStatus === 'ADMITTED').length;
     const totalEnrollmentsForRate = enrollments.length;
     const completionRate = totalEnrollmentsForRate > 0 ? Math.round((completedEnrollments / totalEnrollmentsForRate) * 100) : 0;
 
@@ -121,10 +121,12 @@ export async function GET(request: NextRequest) {
     }).length;
 
     const stats = {
-      totalEnrollments: totalCount, // Total count from database, not just current page
-      pendingEnrollments: enrollments.filter(e => e.enrollmentStatus === 'PENDING_REVIEW').length,
-      approvedEnrollments: enrollments.filter(e => e.enrollmentStatus === 'APPROVED').length,
+      totalEnrollments: totalCount,
+      pendingEnrollments: enrollments.filter(e => e.enrollmentStatus === 'APPLIED').length,
+      approvedEnrollments: enrollments.filter(e => e.enrollmentStatus === 'ADMITTED').length,
       rejectedEnrollments: enrollments.filter(e => e.enrollmentStatus === 'REJECTED').length,
+      paymentPendingEnrollments: enrollments.filter(e => e.enrollmentStatus === 'WAITING').length,
+      
       completedEnrollments,
       totalRevenue,
       pendingRevenue,
@@ -232,10 +234,10 @@ export async function PATCH(request: NextRequest) {
 
     console.log('Update successful:', enrollment);
 
-    // If approved, send email notification
-    if (status === 'APPROVED') {
+    // If admitted, send email notification
+    if (status === 'ADMITTED') {
       // TODO: Send email with password setup link
-      console.log(`Enrollment ${enrollmentId} approved. Email should be sent to ${enrollment.email}`);
+      console.log(`Enrollment ${enrollmentId} admitted. Email should be sent to ${enrollment.email}`);
     }
 
     return NextResponse.json({
@@ -265,3 +267,4 @@ export async function PATCH(request: NextRequest) {
     );
   }
 }
+

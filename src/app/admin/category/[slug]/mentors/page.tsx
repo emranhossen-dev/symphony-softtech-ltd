@@ -154,26 +154,26 @@ const MentorsPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
         <div className="text-center">
           <div className="w-12 h-12 border-4 border-green-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading mentors...</p>
+          <p className="text-gray-300">Loading mentors...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-900">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200">
+      <div className="bg-gray-800 border-b border-gray-700">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <Button
                 variant="outline"
                 onClick={() => router.push(`/admin/category/${slug}`)}
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 border-gray-600 text-gray-300 hover:bg-gray-700"
               >
                 <ArrowLeft className="w-4 h-4" />
                 Back to {getCategoryName(slug)}
@@ -199,7 +199,7 @@ const MentorsPage = () => {
       </div>
 
       {/* Filters and Search */}
-      <div className="bg-white border-b border-gray-200">
+      <div className="bg-gray-800 border-b border-gray-700">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center gap-4">
             {/* Search */}
@@ -210,7 +210,7 @@ const MentorsPage = () => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search mentors..."
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-green-600"
+                className="w-full pl-10 pr-4 py-2 border border-gray-600 bg-gray-900 text-white rounded-lg focus:ring-2 focus:ring-green-600 focus:border-green-600"
               />
             </div>
 
