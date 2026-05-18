@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Auth Debug Test</title>
+</head>
+<body>
+    <h1>Authentication Debug Test</h1>
+    <button onclick="runTest()">Test Module Creation</button>
+    <div id="output"></div>
+    
+    <script>
+        async function runTest() {
+            const output = document.getElementById('output');
+            output.innerHTML = '<h2>Testing...</h2>';
+            
+            try {
+                // Get token the same way the page does
+                const cookieToken = document.cookie
+                    .split(';')
+                    .find(c => c.trim().startsWith('auth-token='))
+                    ?.split('=')[1];
+                
+                const localStorageToken = localStorage.getItem('auth-token');
+                const token = cookieToken || localStorageToken;
+                
+                let log = `<h2>Debug Results:</h2>`;
+                log += `<p><strong>Token found:</strong> ${!!token}</p>`;
+                log += `<p><strong>Token length:</strong> ${token?.length || 0}</p>`;
+                log += `<p><strong>Token preview:</strong> ${token?.substring(0, 50)}...</p>`;
+                
+                if (!token) {
+                    log += `<p style="color: red;">❌ No token found. Please login first.</p>`;
+                    output.innerHTML = log;
+                    return;
+                }
+                
+                // Test the exact same request as the page
+                const courseId = 'cmmh39nhd000flnx3e69ja0ob';
+                const testModule = {
+                    title: 'Test Module for Debug',
+                    videoUrl: '',
+                    homework: '',
+                    order: 1,
+                    isLocked: true
+                };
+                
+                log += `<p>🚀 Sending POST request...</p>`;
+                output.innerHTML = log;
+                
+                const response = await fetch(`/api/admin/courses/${courseId}/modules`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(testModule),
+                });
+                
+                log += `<p><strong>Response status:</strong> ${response.status}</p>`;
+                
+                const responseText = await response.text();
+                log += `<p><strong>Response body:</strong> <pre>${responseText}</pre></p>`;
+                
+                if (response.ok) {
+                    log += `<p style="color: green;">✅ Module creation successful!</p>`;
+                } else {
+                    log += `<p style="color: red;">❌ Module creation failed: ${response.status}</p>`;
+                }
+                
+                output.innerHTML = log;
+                
+            } catch (error) {
+                output.innerHTML = `<h2>Error:</h2><p style="color: red;">${error.message}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,61 @@
+// Call Logs Model for Admin Panel
+model CallLog {
+  id            String   @id @default(cuid())
+  applicantId   String   // Foreign key to applicant/student
+  employeeId    String   // Foreign key to employee who made the call
+  phoneNumber   String   // Phone number called
+  callStatus    String   // INITIATED, IN_PROGRESS, COMPLETED, FAILED, MISSED
+  callDirection String   // OUTGOING, INCOMING
+  callDuration  Int      @default(0) // Duration in seconds
+  recordingUrl  String?  // URL to Twilio recording
+  transcript    String?  // Call transcript (if available)
+  callResult    String?  // INTERESTED, NOT_INTERESTED, CALL_LATER, NO_ANSWER
+  notes         String?  // Additional notes about the call
+  twilioCallSid String?  // Twilio call SID for tracking
+  cost          Float    @default(0.00) // Call cost from Twilio
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  applicant     Applicant? @relation("ApplicantCalls", fields: [applicantId], references: [id])
+  employee      User?      @relation("EmployeeCalls", fields: [employeeId], references: [id])
+
+  @@map("call_logs")
+}
+
+// Update existing User model to include call logs
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  role          String    @default("USER") // USER, ADMIN, EMPLOYEE
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  // Relations
+  callLogsMade  CallLog[] // Calls made by this employee
+  enrollments    Enrollment[]
+  
+  @@map("users")
+}
+
+// Update or create Applicant model
+model Applicant {
+  id            String    @id @default(cuid())
+  name          String
+  email         String    @unique
+  phone         String
+  course        String    // Course interested in
+  category      String    // Course category
+  status        String    @default("PENDING") // PENDING, CONTACTED, ENROLLED, REJECTED
+  notes         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  // Relations
+  callLogs      CallLog[]  // Call history for this applicant
+  
+  @@map("applicants")
+}
