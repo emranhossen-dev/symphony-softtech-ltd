@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Poppins, Inter } from "next/font/google";
 import { Suspense } from "react";
 import "./globals.css";
 import { Toaster } from 'react-hot-toast';
@@ -8,18 +7,6 @@ import { ThemeProvider } from '@/contexts/ThemeContext';
 import { NotificationProvider } from '@/contexts/NotificationContext';
 import RouteLoading from '@/components/RouteLoading';
 import NeonBlobs from '@/components/NeonBlobs';
-
-const poppins = Poppins({
-  variable: "--font-poppins",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
-});
-
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-});
 
 export const metadata: Metadata = {
   title: "Symphony Institute of Technology",
@@ -41,10 +28,9 @@ export default function RootLayout({
       <ThemeProvider>
         <NotificationProvider>
           <html lang="en" suppressHydrationWarning>
-            <body
-              className={`${poppins.variable} ${inter.variable} antialiased`}
-            >
+            <body className="antialiased">
               <NeonBlobs />
+
               <div className="relative z-10">
                 <Suspense fallback={<div>Loading...</div>}>
                   {children}
@@ -54,7 +40,7 @@ export default function RootLayout({
               {/* Global Route Loading */}
               <RouteLoading />
 
-              {/* Show Toaster on all routes */}
+              {/* Global Toast */}
               <Toaster
                 position="top-right"
                 toastOptions={{
@@ -88,4 +74,3 @@ export default function RootLayout({
     </AuthProvider>
   );
 }
-
