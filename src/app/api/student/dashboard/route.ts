@@ -158,7 +158,7 @@ export const GET = withRateLimit(
             })
           );
 
-          // Calculate overall stats
+          // Calculate overall stats with real data
           const totalEnrolled = courses.length;
           const totalCompleted = courses.filter(c => c.progress === 100).length;
           const totalInProgress = courses.filter(c => c.progress > 0 && c.progress < 100).length;
@@ -166,16 +166,34 @@ export const GET = withRateLimit(
             ? Math.round(courses.reduce((sum, course) => sum + course.progress, 0) / totalEnrolled)
             : 0;
 
+          // Calculate additional stats
+          const totalModules = courses.reduce((sum, course) => sum + (course.totalModules || 0), 0);
+          const completedModules = courses.reduce((sum, course) => sum + (course.completedModules || 0), 0);
+          const totalHours = Math.round(totalModules * 0.5); // Assuming 30 min per module
+          const upcomingClasses = 0; // Would be calculated from attendance sessions
+
           const stats = {
             totalEnrolled,
             totalCompleted,
             totalInProgress,
-            averageProgress
+            averageProgress,
+            totalHours,
+            completedModules,
+            totalModules,
+            upcomingClasses
+          };
+
+          // Get user information
+          const userInfo = {
+            name: user.name,
+            email: user.email,
+            role: user.role
           };
 
           // Sanitize sensitive data before returning
           const sanitizedData = sanitizeSensitiveData({
             success: true,
+            user: userInfo,
             courses,
             stats
           });

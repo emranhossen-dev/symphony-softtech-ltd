@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
-import { Eye, EyeOff, Shield, Mail, Lock, Sparkles, ArrowRight } from 'lucide-react';
+import { Eye, EyeOff, Shield, Mail, Lock, Sparkles, ArrowRight, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 
 export default function LoginPage() {
@@ -73,8 +73,8 @@ export default function LoginPage() {
       // Use server-provided redirect URL
       setTimeout(() => {
         console.log('🔄 Redirecting to:', data.redirect || '/admin/dashboard');
-        // Use window.location for hard redirect to ensure middleware runs with new cookie
-        window.location.href = data.redirect || '/admin/dashboard';
+        // Use router.push for client-side navigation to avoid full page reload issues
+        router.push(data.redirect || '/admin/dashboard');
       }, 1500);
 
     } catch (err) {

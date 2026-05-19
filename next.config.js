@@ -16,6 +16,7 @@ const nextConfig = {
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
   },
   
+    
   // Reduce bundle size
   experimental: {
     optimizePackageImports: ['lucide-react', 'framer-motion'],
@@ -61,16 +62,7 @@ const nextConfig = {
           }
         ]
       },
-      {
-        source: '/_next/static/:path*',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable'
-          }
-        ]
-      }
-    ];
+          ]
   },
 };
 

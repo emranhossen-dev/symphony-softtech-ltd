@@ -15,7 +15,6 @@ export async function middleware(request: NextRequest) {
     '/api/auth/login',
     '/api/auth/register',
     '/api/auth/verify',
-    '/api/auth/logout',
     '/api/auth/me',
     '/api/public',
     '/seminar-registration',
@@ -23,10 +22,13 @@ export async function middleware(request: NextRequest) {
     '/favicon.ico'
   ];
 
-  // Check if path is public
-  const isPublicRoute = publicRoutes.some(route => 
-    pathname === route || pathname.startsWith(route)
-  );
+  // Check if path is public - exact match only for non-API routes
+  const isPublicRoute = publicRoutes.some(route => {
+    if (route.startsWith('/api')) {
+      return pathname.startsWith(route);
+    }
+    return pathname === route;
+  });
 
   // If it's a public route, allow access
   if (isPublicRoute) {

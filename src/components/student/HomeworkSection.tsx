@@ -186,79 +186,100 @@ export default function HomeworkSection({ homework, moduleId, courseId }: Homewo
           </div>
         )}
 
-        {/* Submission Form */}
-        {!submission || submission.status === 'REJECTED' ? (
-          <div className="p-6">
-            <h4 className="font-medium text-gray-900 mb-4">Submit Your Homework</h4>
-            
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {/* Code Textarea */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Code Solution
-                </label>
-                <textarea
-                  value={code}
-                  onChange={(e) => setCode(e.target.value)}
-                  placeholder="Paste your code here..."
-                  className="w-full h-32 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none font-mono text-sm"
-                />
-              </div>
+        {/* Submission Actions */}
+        <div className="p-6">
+          <div className="flex gap-4">
+            {/* Start Homework Button - Opens Playground */}
+            <button
+              onClick={() => {
+                if (moduleId && courseId) {
+                  // Create a homework ID based on moduleId
+                  const homeworkId = `hw-${moduleId}`;
+                  window.location.href = `/student/playground/${homeworkId}`;
+                }
+              }}
+              className="flex items-center gap-2 px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg transition-colors"
+            >
+              <FileText className="w-4 h-4" />
+              Start Homework in Playground
+            </button>
 
-              {/* File Upload */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  or Upload File
-                </label>
-                <div className="relative">
-                  <input
-                    type="file"
-                    onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
-                    className="hidden"
-                    id="file-upload"
-                  />
-                  <label
-                    htmlFor="file-upload"
-                    className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors"
-                  >
-                    <Upload className="w-4 h-4 text-gray-500" />
-                    <span className="text-sm text-gray-700">
-                      {selectedFile ? selectedFile.name : 'Choose file...'}
-                    </span>
-                  </label>
+            {/* Traditional Submit (for file uploads) */}
+            {!submission || submission.status === 'REJECTED' ? (
+              <details className="flex-1">
+                <summary className="cursor-pointer text-sm text-gray-600 hover:text-gray-800 mb-2">
+                  Or submit file/text instead
+                </summary>
+                <form onSubmit={handleSubmit} className="space-y-4 mt-4">
+                  {/* Code Textarea */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Code Solution
+                    </label>
+                    <textarea
+                      value={code}
+                      onChange={(e) => setCode(e.target.value)}
+                      placeholder="Paste your code here..."
+                      className="w-full h-32 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none font-mono text-sm"
+                    />
+                  </div>
+
+                  {/* File Upload */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      or Upload File
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="file"
+                        onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
+                        className="hidden"
+                        id="file-upload"
+                      />
+                      <label
+                        htmlFor="file-upload"
+                        className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors"
+                      >
+                        <Upload className="w-4 h-4 text-gray-500" />
+                        <span className="text-sm text-gray-700">
+                          {selectedFile ? selectedFile.name : 'Choose file...'}
+                        </span>
+                      </label>
+                    </div>
+                  </div>
+
+                  {/* Submit Button */}
+                  <div className="flex justify-end">
+                    <button
+                      type="submit"
+                      disabled={isSubmitting || (!code.trim() && !selectedFile)}
+                      className="flex items-center gap-2 px-6 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-medium rounded-lg transition-colors"
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                          Submitting...
+                        </>
+                      ) : (
+                        <>
+                          <Send className="w-4 h-4" />
+                          Submit Homework
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </form>
+              </details>
+            ) : (
+              <div className="flex-1 bg-green-50 p-4 rounded-lg">
+                <div className="flex items-center gap-2 text-green-800">
+                  <CheckCircle className="w-5 h-5" />
+                  <span className="font-medium">Homework submitted and awaiting review</span>
                 </div>
               </div>
-
-              {/* Submit Button */}
-              <div className="flex justify-end">
-                <button
-                  type="submit"
-                  disabled={isSubmitting || (!code.trim() && !selectedFile)}
-                  className="flex items-center gap-2 px-6 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-medium rounded-lg transition-colors"
-                >
-                  {isSubmitting ? (
-                    <>
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                      Submitting...
-                    </>
-                  ) : (
-                    <>
-                      <Send className="w-4 h-4" />
-                      Submit Homework
-                    </>
-                  )}
-                </button>
-              </div>
-            </form>
+            )}
           </div>
-        ) : (
-          <div className="p-6 bg-green-50">
-            <div className="flex items-center gap-2 text-green-800">
-              <CheckCircle className="w-5 h-5" />
-              <span className="font-medium">Homework submitted and awaiting review</span>
-            </div>
-          </div>
-        )}
+        </div>
       </div>
     </div>
   );

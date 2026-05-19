@@ -3,39 +3,31 @@
 import { useState, useEffect } from 'react';
 import { BookOpen, Clock, Calendar, Bell, TrendingUp, Award, Users, PlayCircle, CheckCircle, XCircle, AlertCircle, Video, FileText, Download, Star } from 'lucide-react';
 import toast from 'react-hot-toast';
+import EnhancedCourseCard from '@/components/student/EnhancedCourseCard';
 
 interface EnrolledCourse {
   id: string;
-  courseName: string;
-  category: string;
-  instructor: string;
-  thumbnail?: string;
+  title: string;
+  slug: string;
   description: string;
-  enrolledAt: string;
-  enrollmentStatus?: string;
-  progress: {
-    completedLessons: number;
-    totalLessons: number;
-    percentage: number;
-    lastAccessed: string;
-    timeSpent: number;
+  thumbnail?: string;
+  category: string;
+  duration: string;
+  progress: number;
+  completedModules: number;
+  totalModules: number;
+  attendancePercentage: number;
+  canReceiveCertificate: boolean;
+  certificateEligible: boolean;
+  certificate?: {
+    id: string;
+    certificateUrl: string;
+    verificationId: string;
+    issuedAt: string;
   };
-  upcomingClasses: Array<{
-    id: string;
-    title: string;
-    date: string;
-    time: string;
-    duration: number;
-    type: 'LIVE' | 'RECORDED' | 'QUIZ' | 'ASSIGNMENT';
-    meetingLink?: string;
-  }>;
-  materials: Array<{
-    id: string;
-    title: string;
-    type: 'VIDEO' | 'PDF' | 'DOCUMENT' | 'LINK';
-    url: string;
-    size?: string;
-  }>;
+  enrolledAt: string;
+  lastAccessed: string;
+  enrollmentStatus: string;
 }
 
 interface Notification {
@@ -70,67 +62,46 @@ export default function StudentDashboard() {
   });
   const [loading, setLoading] = useState(true);
   const [showNotifications, setShowNotifications] = useState(false);
-  const [enrollmentStatus, setEnrollmentStatus] = useState(null);
+  const [enrollmentStatus, setEnrollmentStatus] = useState<string>('');
   const [hasPassword, setHasPassword] = useState(false);
+  const [userName, setUserName] = useState('');
 
   useEffect(() => {
-    checkEnrollmentStatus();
+    fetchDashboardData();
   }, []);
-
-  const checkEnrollmentStatus = async () => {
-    try {
-      // Get email from localStorage or query params
-      const urlParams = new URLSearchParams(window.location.search);
-      const email = urlParams.get('email') || localStorage.getItem('studentEmail');
-      
-      if (!email) {
-        // If no email, redirect to home
-        window.location.href = '/';
-        return;
-      }
-      
-      // Check if student has approved enrollments and password
-      const statusResponse = await fetch(`/api/student/status?email=${encodeURIComponent(email)}`);
-      const statusData = await statusResponse.json();
-      
-      setEnrollmentStatus(statusData.enrollmentStatus);
-      setHasPassword(statusData.hasPassword);
-      
-      // If no approved enrollments or no password, show verification message
-      if (!statusData.hasApprovedEnrollment || !statusData.hasPassword) {
-        setLoading(false);
-        return;
-      }
-      
-      // If approved and has password, fetch dashboard data
-      fetchDashboardData();
-    } catch (error) {
-      console.error('Error checking enrollment status:', error);
-      setLoading(false);
-    }
-  };
 
   const fetchDashboardData = async () => {
     try {
-      // Fetch enrolled courses
-      const coursesResponse = await fetch('/api/student/courses');
-      const coursesData = await coursesResponse.json();
-      
-      // Fetch notifications
-      const notificationsResponse = await fetch('/api/student/notifications');
+      // Fetch dashboard data with user information
+      const dashboardResponse = await fetch('/api/student/dashboard', { credentials: 'include' });
+      const dashboardData = await dashboardResponse.json();
+
+      if (dashboardData.success) {
+        // Set user information
+        setUserName(dashboardData.user?.name || 'Student');
+        
+        // Set courses data
+        setEnrolledCourses(dashboardData.courses || []);
+        
+        // Set stats
+        setStats(dashboardData.stats || stats);
+        
+        // Set enrollment status based on first admitted course or default
+        const admittedCourse = dashboardData.courses?.find((c: any) => c.enrollmentStatus === 'ADMITTED');
+        setEnrollmentStatus(admittedCourse ? 'ADMITTED' : 'ADMITTED');
+        setHasPassword(true);
+      }
+
+      // Fetch notifications separately
+      const notificationsResponse = await fetch('/api/student/notifications', { credentials: 'include' });
       const notificationsData = await notificationsResponse.json();
-      
-      // Fetch stats
-      const statsResponse = await fetch('/api/student/stats');
-      const statsData = await statsResponse.json();
-      
-      setEnrolledCourses(coursesData.courses || []);
       setNotifications(notificationsData.notifications || []);
-      setStats(statsData.stats || stats);
+
+      setLoading(false);
+      console.log('Dashboard - Data loaded successfully');
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
       toast.error('Failed to load dashboard data');
-    } finally {
       setLoading(false);
     }
   };
@@ -171,9 +142,9 @@ export default function StudentDashboard() {
 
   const getStatusColor = (status?: string) => {
     switch (status) {
-      case 'APPROVED': return 'bg-green-100 text-green-800';
-      case 'PENDING_REVIEW': return 'bg-yellow-100 text-yellow-800';
-      case 'PAYMENT_PENDING': return 'bg-orange-100 text-orange-800';
+      case 'ADMITTED': return 'bg-green-100 text-green-800';
+      case 'APPLIED': return 'bg-yellow-100 text-yellow-800';
+      case 'WAITING': return 'bg-orange-100 text-orange-800';
       case 'REJECTED': return 'bg-red-100 text-red-800';
       default: return 'bg-gray-100 text-gray-800';
     }
@@ -181,9 +152,9 @@ export default function StudentDashboard() {
 
   const getStatusMessage = (status?: string) => {
     switch (status) {
-      case 'APPROVED': return 'Approved - You can access this course';
-      case 'PENDING_REVIEW': return 'Pending Admin Review';
-      case 'PAYMENT_PENDING': return 'Payment Required';
+      case 'ADMITTED': return 'Admitted - You can access this course';
+      case 'APPLIED': return 'Pending Admin Review';
+      case 'WAITING': return 'Payment Required';
       case 'REJECTED': return 'Enrollment Rejected';
       default: return 'Status Unknown';
     }
@@ -237,37 +208,36 @@ export default function StudentDashboard() {
   }
 
   // Show verification pending page if no approved enrollment or no password
-  if (!hasPassword || !enrollmentStatus || enrollmentStatus !== 'APPROVED') {
+  if (!hasPassword || !enrollmentStatus || enrollmentStatus !== 'ADMITTED') {
     return (
       <div className="max-w-2xl mx-auto">
         <div className="text-center py-12">
           <div className="w-20 h-20 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-6">
             <AlertCircle className="w-10 h-10 text-yellow-600" />
           </div>
-          
+
           <h1 className="text-3xl font-bold text-gray-900 mb-4">Verification Pending</h1>
-          
+
           <div className="bg-white rounded-lg shadow-lg p-8 text-left">
             <div className="space-y-4">
               <div className="flex items-start gap-3">
                 <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 ${
-                  enrollmentStatus === 'APPROVED' ? 'bg-green-100' : 'bg-gray-200'
+                  enrollmentStatus === 'ADMITTED' ? 'bg-green-100' : 'bg-gray-200'
                 }`}>
-                  {enrollmentStatus === 'APPROVED' && (
+                  {enrollmentStatus === 'ADMITTED' && (
                     <CheckCircle className="w-4 h-4 text-green-600" />
                   )}
                 </div>
                 <div className="flex-1">
                   <h3 className="font-semibold text-gray-900">Admin Approval</h3>
                   <p className="text-sm text-gray-600">
-                    {enrollmentStatus === 'APPROVED' 
+                    {enrollmentStatus === 'ADMITTED'
                       ? 'Your enrollment has been approved by admin.'
-                      : 'Waiting for admin to review and approve your enrollment.'
-                    }
+                      : 'Waiting for admin to review and approve your enrollment.'}
                   </p>
                 </div>
               </div>
-              
+
               <div className="flex items-start gap-3">
                 <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 ${
                   hasPassword ? 'bg-green-100' : 'bg-gray-200'
@@ -279,19 +249,18 @@ export default function StudentDashboard() {
                 <div className="flex-1">
                   <h3 className="font-semibold text-gray-900">Password Setup</h3>
                   <p className="text-sm text-gray-600">
-                    {hasPassword 
+                    {hasPassword
                       ? 'You have successfully set your password.'
-                      : 'You need to set your password to access the dashboard.'
-                    }
+                      : 'You need to set your password to access the dashboard.'}
                   </p>
                 </div>
               </div>
             </div>
-            
+
             <div className="mt-8 p-4 bg-blue-50 border border-blue-200 rounded-lg">
               <h4 className="font-semibold text-blue-800 mb-2">Next Steps:</h4>
               <ol className="text-sm text-blue-700 space-y-1">
-                {!enrollmentStatus || enrollmentStatus !== 'APPROVED' && (
+                {!enrollmentStatus || enrollmentStatus !== 'ADMITTED' && (
                   <li>• Wait for admin approval of your enrollment</li>
                 )}
                 {!hasPassword && (
@@ -300,7 +269,7 @@ export default function StudentDashboard() {
                 <li>• Complete both steps to access your dashboard</li>
               </ol>
             </div>
-            
+
             <div className="mt-6 flex gap-3 justify-center">
               <button
                 onClick={() => window.location.href = '/'}
@@ -308,14 +277,6 @@ export default function StudentDashboard() {
               >
                 Back to Home
               </button>
-              {!hasPassword && (
-                <button
-                  onClick={() => window.location.href = '/login'}
-                  className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                >
-                  Set Password
-                </button>
-              )}
             </div>
           </div>
         </div>
@@ -328,7 +289,7 @@ export default function StudentDashboard() {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Student Dashboard</h1>
+          <h1 className="text-3xl font-bold text-gray-900">Welcome, {userName}!</h1>
           <p className="text-gray-600 mt-1">Track your learning progress and upcoming activities</p>
         </div>
         <div className="relative">
@@ -460,83 +421,11 @@ export default function StudentDashboard() {
           <h2 className="text-xl font-bold text-gray-900 mb-4">Enrolled Courses</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {enrolledCourses.map((course) => (
-              <div key={course.id} className="bg-white rounded-lg shadow overflow-hidden hover:shadow-lg transition-shadow">
-                <div className="h-48 bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center relative">
-                  <BookOpen className="w-16 h-16 text-white" />
-                  {course.enrollmentStatus && course.enrollmentStatus !== 'APPROVED' && (
-                    <div className="absolute top-2 right-2">
-                      <span className={`px-2 py-1 text-xs rounded-full ${getStatusColor(course.enrollmentStatus)}`}>
-                        {getStatusMessage(course.enrollmentStatus)}
-                      </span>
-                    </div>
-                  )}
-                </div>
-                <div className="p-6">
-                  <h3 className="font-semibold text-gray-900 mb-2">{course.courseName}</h3>
-                  <p className="text-sm text-gray-600 mb-4">{course.category}</p>
-                  
-                  {course.enrollmentStatus === 'PENDING_REVIEW' && (
-                    <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                      <div className="flex items-center gap-2 text-yellow-800">
-                        <AlertCircle className="w-4 h-4" />
-                        <span className="text-sm font-medium">Your enrollment is under review</span>
-                      </div>
-                      <p className="text-xs text-yellow-700 mt-1">
-                        Admin will review and approve your enrollment shortly
-                      </p>
-                    </div>
-                  )}
-
-                  {course.enrollmentStatus === 'PAYMENT_PENDING' && (
-                    <div className="mb-4 p-3 bg-orange-50 border border-orange-200 rounded-lg">
-                      <div className="flex items-center gap-2 text-orange-800">
-                        <AlertCircle className="w-4 h-4" />
-                        <span className="text-sm font-medium">Payment required</span>
-                      </div>
-                      <p className="text-xs text-orange-700 mt-1">
-                        Complete payment to access this course
-                      </p>
-                    </div>
-                  )}
-
-                  {course.enrollmentStatus === 'REJECTED' && (
-                    <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-                      <div className="flex items-center gap-2 text-red-800">
-                        <XCircle className="w-4 h-4" />
-                        <span className="text-sm font-medium">Enrollment rejected</span>
-                      </div>
-                      <p className="text-xs text-red-700 mt-1">
-                        Please contact support for more information
-                      </p>
-                    </div>
-                  )}
-
-                  {course.enrollmentStatus === 'APPROVED' && (
-                    <div className="mb-4">
-                      <div className="flex justify-between text-sm mb-2">
-                        <span className="text-gray-600">Progress</span>
-                        <span className="font-medium">{course.progress.percentage}%</span>
-                      </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div
-                          className={`h-2 rounded-full transition-all duration-300 ${getProgressColor(course.progress.percentage)}`}
-                          style={{ width: `${course.progress.percentage}%` }}
-                        ></div>
-                      </div>
-                      <div className="text-xs text-gray-500 mt-1">
-                        {course.progress.completedLessons} of {course.progress.totalLessons} lessons completed
-                      </div>
-                    </div>
-                  )}
-                  
-                  <div className="flex justify-between items-center text-sm">
-                    <span className="text-gray-600">Instructor: {course.instructor}</span>
-                    {course.enrollmentStatus === 'APPROVED' && (
-                      <span className="text-gray-500">{course.progress.timeSpent}h spent</span>
-                    )}
-                  </div>
-                </div>
-              </div>
+              <EnhancedCourseCard
+                key={course.id}
+                course={course}
+                onContinue={(courseId) => window.location.href = `/student/learn/${courseId}/split`}
+              />
             ))}
           </div>
         </div>
@@ -555,20 +444,20 @@ export default function StudentDashboard() {
                       <BookOpen className="w-5 h-5 text-blue-600" />
                     </div>
                     <div>
-                      <h3 className="font-medium text-gray-900">{course.courseName}</h3>
+                      <h3 className="font-medium text-gray-900">{course.title}</h3>
                       <p className="text-sm text-gray-600">
-                        Last accessed {new Date(course.progress.lastAccessed).toLocaleDateString()}
+                        Last accessed {new Date(course.lastAccessed).toLocaleDateString()}
                       </p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
                     <div className="text-sm text-gray-600">
-                      {course.progress.percentage}% complete
+                      {course.progress}% complete
                     </div>
                     <div className="w-16 bg-gray-200 rounded-full h-2">
                       <div
-                        className={`h-2 rounded-full ${getProgressColor(course.progress.percentage)}`}
-                        style={{ width: `${course.progress.percentage}%` }}
+                        className={`h-2 rounded-full ${getProgressColor(course.progress)}`}
+                        style={{ width: `${course.progress}%` }}
                       ></div>
                     </div>
                   </div>

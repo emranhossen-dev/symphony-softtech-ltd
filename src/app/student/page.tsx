@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
+import { useAuth } from '@/contexts/AuthContext';
 import { 
   BookOpen, 
   Play, 
@@ -29,6 +30,10 @@ interface Course {
   totalModules: number;
   enrolledAt: string;
   lastAccessed?: string;
+  enrollmentStatus?: string;
+  attendancePercentage?: number;
+  certificateEligible?: boolean;
+  certificate?: any;
 }
 
 interface StudentStats {
@@ -36,15 +41,24 @@ interface StudentStats {
   totalCompleted: number;
   totalInProgress: number;
   averageProgress: number;
+  totalHours: number;
+  completedModules: number;
+  totalModules: number;
+  upcomingClasses: number;
 }
 
 export default function StudentDashboard() {
+  const { user } = useAuth();
   const [courses, setCourses] = useState<Course[]>([]);
   const [stats, setStats] = useState<StudentStats>({
     totalEnrolled: 0,
     totalCompleted: 0,
     totalInProgress: 0,
-    averageProgress: 0
+    averageProgress: 0,
+    totalHours: 0,
+    completedModules: 0,
+    totalModules: 0,
+    upcomingClasses: 0
   });
   const [loading, setLoading] = useState(true);
 
@@ -89,8 +103,8 @@ export default function StudentDashboard() {
   };
 
   const continueCourse = (courseSlug: string) => {
-    // Navigate to course page
-    window.location.href = `/student/courses/${courseSlug}`;
+    // Navigate to course player page
+    window.location.href = `/student/course/${courseSlug}`;
   };
 
   if (loading) {
@@ -116,7 +130,7 @@ export default function StudentDashboard() {
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-gray-900">Student Dashboard</h1>
-                <p className="text-sm text-gray-500">Welcome back! Continue your learning journey</p>
+                <p className="text-sm text-gray-500">Welcome back, {user?.name || 'Student'}! Continue your learning journey</p>
               </div>
             </div>
             <div className="flex items-center space-x-4">
@@ -137,20 +151,20 @@ export default function StudentDashboard() {
         <div className="bg-gradient-to-r from-green-600 to-emerald-600 rounded-2xl p-8 mb-8 text-white shadow-xl">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-3xl font-bold mb-2">Welcome to Your Learning Journey!</h2>
+              <h2 className="text-3xl font-bold mb-2">Welcome to Your Learning Journey, {user?.name || 'Student'}!</h2>
               <p className="text-green-100 mb-4">You're making great progress. Keep up the excellent work!</p>
               <div className="flex items-center space-x-6">
                 <div>
-                  <p className="text-green-100 text-sm">Current Streak</p>
-                  <p className="text-2xl font-bold">7 Days 🔥</p>
+                  <p className="text-green-100 text-sm">Learning Hours</p>
+                  <p className="text-2xl font-bold">{stats.totalHours}h</p>
                 </div>
                 <div>
-                  <p className="text-green-100 text-sm">Total Points</p>
-                  <p className="text-2xl font-bold">1,250</p>
+                  <p className="text-green-100 text-sm">Modules Completed</p>
+                  <p className="text-2xl font-bold">{stats.completedModules}/{stats.totalModules}</p>
                 </div>
                 <div>
-                  <p className="text-green-100 text-sm">Level</p>
-                  <p className="text-2xl font-bold">Intermediate</p>
+                  <p className="text-green-100 text-sm">Avg Progress</p>
+                  <p className="text-2xl font-bold">{stats.averageProgress}%</p>
                 </div>
               </div>
             </div>
@@ -275,11 +289,23 @@ export default function StudentDashboard() {
                         {course.category.replace('_', ' ')}
                       </Badge>
                     </div>
-                    {course.progress >= 80 && (
+                    {course.enrollmentStatus === 'ADMITTED' && course.progress >= 80 && (
                       <div className="absolute top-4 right-4">
                         <div className="bg-green-500 text-white px-3 py-1 rounded-full text-xs font-semibold flex items-center">
                           <Award className="w-3 h-3 mr-1" />
                           Almost Done
+                        </div>
+                      </div>
+                    )}
+                    {course.enrollmentStatus !== 'ADMITTED' && (
+                      <div className="absolute top-4 right-4">
+                        <div className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                          course.enrollmentStatus === 'APPLIED' ? 'bg-yellow-500 text-white' :
+                          course.enrollmentStatus === 'WAITING' ? 'bg-orange-500 text-white' :
+                          course.enrollmentStatus === 'REJECTED' ? 'bg-red-500 text-white' :
+                          'bg-gray-500 text-white'
+                        }`}>
+                          {course.enrollmentStatus}
                         </div>
                       </div>
                     )}
@@ -296,34 +322,52 @@ export default function StudentDashboard() {
                       </div>
                       <div className="flex items-center justify-between text-sm text-gray-600 mb-4">
                         <div>
-                          <span className="font-medium">{course.completedModules}/{course.totalModules}</span>
-                          <span className="text-gray-400 ml-1">modules</span>
+                          {course.enrollmentStatus === 'ADMITTED' ? (
+                            <>
+                              <span className="font-medium">{course.completedModules}/{course.totalModules}</span>
+                              <span className="text-gray-400 ml-1">modules</span>
+                            </>
+                          ) : (
+                            <span className="text-gray-500">Status: {course.enrollmentStatus}</span>
+                          )}
                         </div>
-                        <div className="flex items-center">
-                          <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
-                          <span className="font-medium text-green-600">{course.progress}% complete</span>
-                        </div>
+                        {course.enrollmentStatus === 'ADMITTED' && (
+                          <div className="flex items-center">
+                            <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
+                            <span className="font-medium text-green-600">{course.progress}% complete</span>
+                          </div>
+                        )}
                       </div>
                     </div>
 
-                    {/* Progress Bar */}
-                    <div className="mb-6">
-                      <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
-                        <div 
-                          className={`h-3 rounded-full transition-all duration-500 ${getProgressColor(course.progress)}`}
-                          style={{ width: `${course.progress}%` }}
-                        />
+                    {/* Progress Bar - Only show for admitted courses */}
+                    {course.enrollmentStatus === 'ADMITTED' && (
+                      <div className="mb-6">
+                        <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                          <div 
+                            className={`h-3 rounded-full transition-all duration-500 ${getProgressColor(course.progress)}`}
+                            style={{ width: `${course.progress}%` }}
+                          />
+                        </div>
                       </div>
-                    </div>
+                    )}
 
-                    {/* Continue Button */}
-                    <Button 
-                      onClick={() => continueCourse(course.slug)}
-                      className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white py-3 font-medium shadow-lg hover:shadow-xl transition-all duration-300"
-                    >
-                      <Play className="w-5 h-5 mr-2" />
-                      {course.progress > 0 ? 'Continue Learning' : 'Start Course'}
-                    </Button>
+                    {/* Continue Button - Only show for admitted courses */}
+                    {course.enrollmentStatus === 'ADMITTED' ? (
+                      <Button 
+                        onClick={() => continueCourse(course.slug)}
+                        className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white py-3 font-medium shadow-lg hover:shadow-xl transition-all duration-300"
+                      >
+                        <Play className="w-5 h-5 mr-2" />
+                        {course.progress > 0 ? 'Continue Learning' : 'Start Course'}
+                      </Button>
+                    ) : (
+                      <div className="w-full p-3 bg-gray-100 text-gray-600 rounded-lg text-center text-sm">
+                        {course.enrollmentStatus === 'APPLIED' && 'Application under review'}
+                        {course.enrollmentStatus === 'WAITING' && 'Payment required'}
+                        {course.enrollmentStatus === 'REJECTED' && 'Enrollment rejected'}
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               ))}

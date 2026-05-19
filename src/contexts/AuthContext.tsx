@@ -27,19 +27,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Remove the console.log to reduce noise in development
-  // console.log('AuthContext - Provider rendered');
-
   const checkAuth = useCallback(async () => {
     try {
-      // Use the /api/auth/me endpoint which can read httpOnly cookies server-side
       console.log('AuthContext - Checking auth via /api/auth/me...');
       
       const response = await fetch('/api/auth/me', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json'
-        }
+        },
+        credentials: 'include'
       });
 
       if (response.ok) {
@@ -48,9 +45,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(data.user);
       } else {
         console.log('AuthContext - Auth check failed:', response.status);
+        setUser(null);
       }
     } catch (error) {
       console.error('AuthContext - Auth check failed:', error);
+      setUser(null);
     } finally {
       setLoading(false);
     }
@@ -58,8 +57,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // Check authentication on mount
   useEffect(() => {
-    console.log('AuthContext - useEffect triggered');
-    checkAuth();
+    if (typeof window !== 'undefined') {
+      console.log('AuthContext - useEffect triggered');
+      checkAuth();
+    }
   }, [checkAuth]);
 
   const login = useCallback(async (email: string, password: string) => {

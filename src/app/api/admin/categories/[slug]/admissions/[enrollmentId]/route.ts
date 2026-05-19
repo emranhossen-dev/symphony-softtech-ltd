@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { createStudentUser } from '@/lib/auth';
+import { sendAdmissionEmail } from '@/lib/email';
 
 // Map slugs to category strings
 const slugToCategory: Record<string, string> = {
@@ -80,6 +82,48 @@ export async function PATCH(
     // Update enrollment status if provided
     if (body.status && ['APPLIED', 'ADMITTED', 'REJECTED', 'WAITING', 'NEXT_BATCH'].includes(body.status)) {
       updateData.enrollmentStatus = body.status;
+      
+      // If status is being changed to ADMITTED, create user account and send email
+      if (body.status === 'ADMITTED' && enrollment.enrollmentStatus !== 'ADMITTED') {
+        console.log(`Admitting student ${enrollmentId}, creating user account and sending email...`);
+        
+        try {
+          // Create student user with temporary password
+          const { user, tempPassword } = await createStudentUser({
+            fullName: enrollment.fullName,
+            email: enrollment.email,
+            phoneNumber: enrollment.phoneNumber
+          });
+
+          console.log(`Created user ${user.id} for student ${enrollmentId}`);
+
+          // Link user to enrollment
+          updateData.userId = user.id;
+
+          // Send admission email with password
+          if (tempPassword) {
+            const emailResult = await sendAdmissionEmail({
+              to: enrollment.email,
+              fullName: enrollment.fullName,
+              courseName: enrollment.courseName || enrollment.course?.title || 'Course',
+              email: enrollment.email,
+              password: tempPassword,
+              loginUrl: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/login`
+            });
+
+            if (emailResult.success) {
+              console.log(`Admission email sent to ${enrollment.email}`);
+            } else {
+              console.error(`Failed to send admission email: ${emailResult.error}`);
+            }
+          } else {
+            console.log(`User already exists for ${enrollment.email}, skipping email`);
+          }
+        } catch (error) {
+          console.error('Error creating user or sending email:', error);
+          // Don't fail the admission if email fails, just log the error
+        }
+      }
     }
 
     // Update payment status if provided

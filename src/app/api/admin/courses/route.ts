@@ -490,9 +490,8 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    // Validate required fields only if they are being updated (not for status toggle)
-    const isStatusOnlyUpdate = isActive !== undefined && title === undefined && description === undefined;
-    if (!isStatusOnlyUpdate && (!title || !description)) {
+    // Validate required fields
+    if (!title || !description) {
       return NextResponse.json(
         { success: false, error: 'Title and description are required' },
         { status: 400 }
@@ -507,27 +506,20 @@ export async function PUT(request: NextRequest) {
     }
 
     // Update the course
-    const updateData: any = {
-      ...(isActive !== undefined && { isActive })
-    };
-    
-    if (title !== undefined) updateData.title = title;
-    if (description !== undefined) updateData.description = description;
-    if (shortDescription !== undefined) updateData.shortDescription = shortDescription;
-    if (offerPrice !== undefined || regularPrice !== undefined || price !== undefined) {
-      updateData.price = Number(offerPrice || regularPrice || price || 0);
-    }
-    if (duration !== undefined) updateData.duration = duration;
-    if (thumbnail !== undefined) updateData.thumbnail = thumbnail;
-    if (mentorId !== undefined) updateData.mentorId = mentorId || null;
-    if (categoryId !== undefined) {
-      updateData.categoryId = categoryId || null;
-      updateData.category = categoryName;
-    }
-
     const updatedCourse = await prisma.course.update({
       where: { id },
-      data: updateData,
+      data: {
+        title,
+        description,
+        shortDescription,
+        price: Number(offerPrice || regularPrice || price || 0),
+        duration,
+        thumbnail,
+        mentorId: mentorId || null,
+        categoryId: categoryId || null,
+        category: categoryName,
+        isActive: isActive !== undefined ? isActive : true
+      },
       include: {
         mentor: {
           select: {

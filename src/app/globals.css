@@ -1332,32 +1332,6 @@ body {
 }
 
 /* Mobile First Responsive Design */
-
-/* Custom scrollbar for students page - Dark Theme */
-.students-custom-scroll::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-.students-custom-scroll::-webkit-scrollbar-track {
-  background: rgba(15, 23, 42, 0.5);
-  border-radius: 3px;
-}
-
-.students-custom-scroll::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #3b82f6 0%, #8b5cf6 100%);
-  border-radius: 3px;
-  border: 1px solid rgba(139, 92, 246, 0.3);
-}
-
-.students-custom-scroll::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, #2563eb 0%, #7c3aed 100%);
-}
-
-.students-custom-scroll {
-  scrollbar-width: thin;
-  scrollbar-color: #3b82f6 rgba(15, 23, 42, 0.5);
-}
 @media (max-width: 640px) {
   .employee-header {
     padding: 0 0.5rem;
