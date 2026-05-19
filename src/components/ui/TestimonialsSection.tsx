@@ -293,7 +293,7 @@ const TestimonialsSection = () => {
           ].map((stat, index) => (
             <div
               key={index}
-              className="glass-card p-4 sm:p-6 text-center hover:scale-[103] transition-all duration-300 rounded-xl border border-white/5 bg-white/5 backdrop-blur-sm"
+              className="glass-card p-4 sm:p-6 text-center hover:scale-105 hover:border-blue-500/50 hover:bg-blue-900/30 transition-all duration-300 rounded-xl border border-white/5 bg-white/5 backdrop-blur-sm"
             >
               <stat.icon className="h-5 w-5 sm:h-7 sm:w-7 text-blue-400 mx-auto mb-1 sm:mb-2.5" />
               <div className="text-lg sm:text-2xl md:text-3xl font-extrabold text-white mb-0.5 sm:mb-1 tracking-tight">
