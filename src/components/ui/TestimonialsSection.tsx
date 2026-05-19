@@ -89,8 +89,8 @@ const TestimonialsSection = () => {
   };
 
   return (
-    <section className="relative min-h-screen overflow-hidden w-full">
-      <div className="relative z-10 container mx-auto px-4 py-12 md:py-20 w-full">
+    <section className="relative min-h-screen overflow-hidden w-full" suppressHydrationWarning>
+      <div className="relative z-10 container mx-auto px-4 py-12 md:py-20 w-full" suppressHydrationWarning>
         
         {/* Header Section */}
         <div className={`text-center mb-8 md:mb-16 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
@@ -138,9 +138,9 @@ const TestimonialsSection = () => {
 
         {/* Carousel Layout Mode */}
         {viewMode === 'carousel' ? (
-          <div className="relative max-w-4xl lg:max-w-5xl mx-auto px-1 sm:px-4">
+          <div className="relative max-w-4xl lg:max-w-5xl mx-auto px-1 sm:px-4" suppressHydrationWarning>
             {/* Wrapper wrapper height configuration dynamic based on viewports */}
-            <div className="relative h-[520px] sm:h-[480px] md:h-[520px] lg:h-[580px] flex items-center justify-center w-full">
+            <div className="relative h-[520px] sm:h-[480px] md:h-[520px] lg:h-[580px] flex items-center justify-center w-full" suppressHydrationWarning>
               
               {/* Left Arrow Button */}
               <button

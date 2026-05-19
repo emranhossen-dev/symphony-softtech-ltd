@@ -89,12 +89,12 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 overflow-visible ${
       isScrolled 
-        ? "bg-slate-900/95 backdrop-blur-sm shadow-2xl" 
-        : "bg-slate-900/95 backdrop-blur-sm shadow-xl"
+        ? "bg-slate-900 shadow-2xl" 
+        : "bg-slate-900 shadow-xl"
     }`}>
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto px-4 overflow-visible">
         <div className="flex justify-between items-center h-18">
           {/* Premium Logo Section */}
           <div className="flex-shrink-0">
@@ -123,8 +123,8 @@ const Navbar = () => {
                   href={link.href}
                   className={`flex items-center space-x-2 px-6 py-3 rounded-xl text-sm font-bold transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 ${
                     isActive(link.href)
-                      ? "bg-white/20 backdrop-blur-sm text-white shadow-lg border border-white/30"
-                      : "text-white/90 hover:bg-white/10 hover:text-white hover:backdrop-blur-sm border border-transparent hover:border-white/20"
+                      ? "bg-white/20 text-white shadow-lg border border-white/30"
+                      : "text-white/90 hover:bg-white/10 hover:text-white border border-transparent hover:border-white/20"
                   }`}
                   onMouseEnter={() => link.href === "/courses" && setIsDropdownOpen(true)}
                   onMouseLeave={() => link.href === "/courses" && setIsDropdownOpen(false)}
@@ -138,20 +138,22 @@ const Navbar = () => {
                 
                 {/* Premium Dropdown for Courses */}
                 {link.href === "/courses" && (
-                  <div className={`absolute top-full left-0 mt-3 w-80 bg-gradient-to-br from-slate-900/98 to-slate-950/98 backdrop-blur-xl rounded-2xl shadow-2xl border border-purple-500/30 transition-all duration-300 transform ${
-                    isDropdownOpen ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible translate-y-4'
-                  }`}
-                  onMouseEnter={() => setIsDropdownOpen(true)}
-                  onMouseLeave={() => setIsDropdownOpen(false)}>
-                    <div className="p-4 space-y-2">
+                  <div 
+                    className={`absolute top-full left-0 mt-3 w-80 rounded-2xl shadow-2xl z-50 transition-all duration-300 transform ${
+                      isDropdownOpen ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible translate-y-4'
+                    }`}
+                    style={{ backgroundColor: '#000000' }}
+                    onMouseEnter={() => setIsDropdownOpen(true)}
+                    onMouseLeave={() => setIsDropdownOpen(false)}>
+                    <div className="p-3 space-y-1 bg-black rounded-2xl w-full">
                       {courseCategories.map((category) => (
-                        <a key={category.href} href={category.href} className="flex items-center space-x-4 p-4 rounded-xl hover:bg-gradient-to-r hover:from-purple-600/20 hover:to-indigo-600/20 transition-all duration-300 group">
-                          <div className={`w-12 h-12 bg-gradient-to-r ${category.color} rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+                        <a key={category.href} href={category.href} className="flex items-start space-x-3 p-3 rounded-xl hover:bg-gradient-to-r hover:from-purple-600/20 hover:to-indigo-600/20 transition-all duration-300 group">
+                          <div className={`w-10 h-10 bg-gradient-to-r ${category.color} rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300 flex-shrink-0`}>
                             {category.icon}
                           </div>
-                          <div>
-                            <div className={`font-bold text-gray-100 group-hover:text-white transition-colors`}>{category.label}</div>
-                            <div className="text-sm text-gray-400">Professional training</div>
+                          <div className="min-w-0 flex-1">
+                            <div className={`font-bold text-gray-100 group-hover:text-white transition-colors text-sm`}>{category.label}</div>
+                            <div className="text-xs text-gray-400 mt-0.5">Professional training</div>
                           </div>
                         </a>
                       ))}
@@ -167,7 +169,7 @@ const Navbar = () => {
             <ThemeToggler />
             <button 
               onClick={() => setIsLoginModalOpen(true)}
-              className="group flex items-center space-x-3 px-6 py-3 text-sm font-bold text-white border-2 border-white/50 rounded-xl hover:border-white hover:bg-white/10 hover:backdrop-blur-sm transition-all duration-300 transform hover:scale-105 hover:-translate-y-1"
+              className="group flex items-center space-x-3 px-6 py-3 text-sm font-bold text-white border-2 border-white/50 rounded-xl hover:border-white hover:bg-white/10 transition-all duration-300 transform hover:scale-105 hover:-translate-y-1"
             >
               <LogIn className="w-5 h-5 group-hover:rotate-12 transition-transform duration-300" />
               <span>Login</span>
@@ -178,7 +180,7 @@ const Navbar = () => {
           <div className="xl:hidden">
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="relative p-3 rounded-xl text-white hover:bg-white/10 hover:backdrop-blur-sm focus:outline-none transition-all duration-300 transform hover:scale-105 z-50"
+              className="relative p-3 rounded-xl text-white hover:bg-white/10 focus:outline-none transition-all duration-300 transform hover:scale-105 z-50"
             >
               <div className="relative w-7 h-7">
                 {isMenuOpen ? (

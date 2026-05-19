@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
     const filepath = join(uploadsDir, filename);
     await writeFile(filepath, buffer);
 
-    // Return the URL of the uploaded file
+    // Return the URL of the uploaded file with absolute path
     const fileUrl = `/uploads/${filename}`;
     
     return NextResponse.json({

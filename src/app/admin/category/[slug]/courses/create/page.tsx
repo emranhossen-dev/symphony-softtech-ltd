@@ -129,6 +129,7 @@ const CreateCoursePage = () => {
       let thumbnailUrl = '';
       
       if (thumbnailFile) {
+        console.log('Uploading thumbnail file:', thumbnailFile.name);
         const formDataUpload = new FormData();
         formDataUpload.append('file', thumbnailFile);
         
@@ -140,8 +141,11 @@ const CreateCoursePage = () => {
         if (uploadResponse.ok) {
           const uploadData = await uploadResponse.json();
           thumbnailUrl = uploadData.url;
+          console.log('Thumbnail uploaded successfully:', thumbnailUrl);
         } else {
-          toast.error('Failed to upload thumbnail');
+          const errorData = await uploadResponse.json();
+          console.error('Upload failed:', errorData);
+          toast.error('Failed to upload thumbnail: ' + (errorData.error || 'Unknown error'));
           setSaving(false);
           return;
         }
@@ -151,6 +155,8 @@ const CreateCoursePage = () => {
         ...formData,
         thumbnail: thumbnailUrl
       };
+
+      console.log('Creating course with data:', { ...courseData, thumbnail: thumbnailUrl || 'no thumbnail' });
 
       const response = await fetch('/api/admin/courses', {
         method: 'POST',
@@ -162,6 +168,8 @@ const CreateCoursePage = () => {
 
       const responseText = await response.text();
       const data = responseText ? JSON.parse(responseText) : { success: false, error: 'Empty server response' };
+
+      console.log('Course creation response:', data);
 
       if (data.success) {
         toast.success('Course created successfully!');
