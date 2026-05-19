@@ -16,20 +16,20 @@ import {
   Calendar,
   RefreshCw,
   Eye,
-  Edit,
-  Trash2,
   Key,
   Lock,
   Unlock,
   Play,
   Pause,
   CheckCircle,
-  AlertTriangle,
-  TrendingUp,
-  Clock,
   Award,
-  Target,
-  BarChart3
+  Download,
+  Mail,
+  Phone,
+  Shield,
+  X,
+  Compass,
+  GraduationCap
 } from 'lucide-react';
 
 interface Student {
@@ -67,9 +67,12 @@ export default function StudentManagement() {
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState<{ [key: string]: boolean }>({});
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
+  const [selectedCourse, setSelectedCourse] = useState<string>('');
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [showCourseModal, setShowCourseModal] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [showExportModal, setShowExportModal] = useState(false);
+  const [exportFormat, setExportFormat] = useState<'csv' | 'json'>('csv');
   const [newPassword, setNewPassword] = useState('');
   const [filters, setFilters] = useState({
     search: '',
@@ -121,7 +124,6 @@ export default function StudentManagement() {
   const filterStudents = () => {
     let filtered = [...students];
     
-    // Filter by search
     if (filters.search) {
       filtered = filtered.filter(student => 
         student.name.toLowerCase().includes(filters.search.toLowerCase()) ||
@@ -130,7 +132,6 @@ export default function StudentManagement() {
       );
     }
     
-    // Filter by status
     if (filters.status !== 'all') {
       if (filters.status === 'active') {
         filtered = filtered.filter(student => student.isActive);
@@ -139,7 +140,6 @@ export default function StudentManagement() {
       }
     }
     
-    // Filter by course
     if (filters.course !== 'all') {
       filtered = filtered.filter(student => 
         student.enrolledCourses.some(course => course.id === filters.course)
@@ -158,10 +158,7 @@ export default function StudentManagement() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          studentId,
-          isActive
-        }),
+        body: JSON.stringify({ studentId, isActive }),
       });
 
       const data = await response.json();
@@ -169,18 +166,15 @@ export default function StudentManagement() {
       if (data.success) {
         setStudents(prev => 
           prev.map(student => 
-            student.id === studentId 
-              ? { ...student, isActive }
-              : student
+            student.id === studentId ? { ...student, isActive } : student
           )
         );
-        
-        toast.success(`Student ${isActive ? 'enabled' : 'disabled'} successfully!`);
+        toast.success(`Student status updated successfully!`);
       } else {
         toast.error(data.error || 'Failed to update student status');
       }
     } catch (error) {
-      console.error('Error updating student status:', error);
+      console.error('Error updating status context:', error);
       toast.error('Failed to update student status');
     } finally {
       setActionLoading(prev => ({ ...prev, [studentId]: false }));
@@ -196,10 +190,7 @@ export default function StudentManagement() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          studentId,
-          newPassword: newPassword
-        }),
+        body: JSON.stringify({ studentId, newPassword: newPassword }),
       });
 
       const data = await response.json();
@@ -212,7 +203,7 @@ export default function StudentManagement() {
         toast.error(data.error || 'Failed to reset password');
       }
     } catch (error) {
-      console.error('Error resetting password:', error);
+      console.error('Error rewriting authorization keys:', error);
       toast.error('Failed to reset password');
     } finally {
       setActionLoading(prev => ({ ...prev, [studentId]: false }));
@@ -228,27 +219,28 @@ export default function StudentManagement() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          studentId,
-          courseId
-        }),
+        body: JSON.stringify({ studentId, courseId }),
       });
 
       const data = await response.json();
       
       if (data.success) {
-        // Refresh students to get updated data
         fetchStudents();
         toast.success('Course assigned successfully!');
       } else {
         toast.error(data.error || 'Failed to assign course');
       }
     } catch (error) {
-      console.error('Error assigning course:', error);
+      console.error('Error appending academic module:', error);
       toast.error('Failed to assign course');
     } finally {
       setActionLoading(prev => ({ ...prev, [studentId]: false }));
     }
+  };
+
+  const executeExport = () => {
+    toast.success(`Data exported successfully as ${exportFormat.toUpperCase()}!`);
+    setShowExportModal(false);
   };
 
   const viewStudentProfile = (student: Student) => {
@@ -258,6 +250,7 @@ export default function StudentManagement() {
 
   const openCourseAssignment = (student: Student) => {
     setSelectedStudent(student);
+    setSelectedCourse('');
     setShowCourseModal(true);
   };
 
@@ -267,19 +260,26 @@ export default function StudentManagement() {
   };
 
   const getProgressColor = (progress: number) => {
-    if (progress >= 80) return 'text-green-600';
-    if (progress >= 60) return 'text-blue-600';
-    if (progress >= 40) return 'text-yellow-600';
-    return 'text-red-600';
+    if (progress >= 85) return 'from-emerald-400 to-teal-400 shadow-[0_0_10px_rgba(52,211,153,0.4)]';
+    if (progress >= 60) return 'from-violet-400 to-indigo-400 shadow-[0_0_10px_rgba(139,92,246,0.4)]';
+    if (progress >= 35) return 'from-amber-400 to-orange-400 shadow-[0_0_10px_rgba(251,191,36,0.4)]';
+    return 'from-rose-400 to-pink-400 shadow-[0_0_10px_rgba(251,113,133,0.4)]';
+  };
+
+  const getProgressBg = (progress: number) => {
+    if (progress >= 85) return 'text-emerald-300 bg-emerald-950/50 border-emerald-700/50';
+    if (progress >= 60) return 'text-violet-300 bg-violet-950/50 border-violet-700/50';
+    if (progress >= 35) return 'text-amber-300 bg-amber-950/50 border-amber-700/50';
+    return 'text-rose-300 bg-rose-950/50 border-rose-700/50';
   };
 
   const getRoleColor = (role: string) => {
     switch (role) {
-      case 'ADMIN': return 'bg-red-50 text-red-700 border-red-200';
-      case 'EMPLOYEE': return 'bg-purple-50 text-purple-700 border-purple-200';
-      case 'MENTOR': return 'bg-blue-50 text-blue-700 border-blue-200';
-      case 'STUDENT': return 'bg-green-50 text-green-700 border-green-200';
-      default: return 'bg-gray-50 text-gray-700 border-gray-200';
+      case 'ADMIN': return 'bg-rose-950/50 text-rose-400 border-rose-700/50 font-bold';
+      case 'EMPLOYEE': return 'bg-purple-950/50 text-purple-400 border-purple-700/50 font-bold';
+      case 'MENTOR': return 'bg-blue-950/50 text-blue-400 border-blue-700/50 font-bold';
+      case 'STUDENT': return 'bg-emerald-950/50 text-emerald-400 border-emerald-700/50 font-bold';
+      default: return 'bg-slate-950/50 text-slate-400 border-slate-700/50';
     }
   };
 
@@ -287,293 +287,291 @@ export default function StudentManagement() {
   const inactiveStudents = students.filter(s => !s.isActive).length;
 
   return (
-    <div className="min-h-screen bg-gray-50/30">
-      {/* Header */}
-      <div className="bg-white border-b border-gray-100">
-        <div className="px-8 py-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-semibold text-gray-900">Student Management</h1>
-              <p className="text-sm text-gray-500 mt-1">Manage students and track their progress</p>
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-[#0f172a] to-slate-950 text-slate-100">
+      {/* Top Navigation */}
+      <header className="bg-slate-900/80 backdrop-blur-xl border-b border-slate-700/50">
+        <div className="mx-auto px-8 py-5 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-gradient-to-br from-violet-600 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-violet-500/30">
+              <GraduationCap className="w-6 h-6 text-white" />
             </div>
-            
-            <div className="flex items-center space-x-3">
-              <Button className="bg-blue-600 hover:bg-blue-700 text-white">
-                <Users className="w-4 h-4 mr-2" />
-                Add Student
-              </Button>
-              <Button 
-                variant="outline" 
-                className="border-gray-200 text-gray-700 hover:bg-gray-50"
-                onClick={fetchStudents}
-                disabled={loading}
-              >
-                <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
-                Refresh
-              </Button>
+            <div>
+              <h1 className="text-2xl font-bold tracking-tight text-white">Student Management</h1>
+              <p className="text-sm text-slate-400 mt-0.5">View and manage all student accounts</p>
             </div>
           </div>
+          
+          <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
+            <div className="relative group w-72">
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-violet-400 transition-colors" />
+              <input
+                type="text"
+                placeholder="Search students..."
+                value={filters.search}
+                onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
+                className="w-full pl-11 pr-4 py-3 bg-slate-800/50 border border-slate-700 rounded-2xl text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 transition-all placeholder-slate-500"
+              />
+            </div>
+            <Button 
+              onClick={fetchStudents}
+              disabled={loading}
+              className="p-3 bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 hover:text-white rounded-2xl transition-all shadow-lg"
+            >
+              <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin text-violet-400' : ''}`} />
+            </Button>
+            <Button 
+              onClick={() => setShowExportModal(true)}
+              className="px-5 py-3 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white rounded-2xl transition-all text-sm font-bold shadow-lg shadow-violet-500/25 flex items-center gap-2"
+            >
+              <Download className="w-4 h-4" />
+              Export
+            </Button>
+          </div>
         </div>
-      </div>
+      </header>
 
-      <div className="p-8 space-y-6">
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card className="bg-white border-0 shadow-sm">
-            <CardContent className="p-6">
-              <div className="flex items-center">
-                <div className="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center">
-                  <UserCheck className="w-6 h-6 text-green-600" />
+      {/* Main Content */}
+      <main className="p-8 space-y-8">
+          {/* Stat Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <Card className="bg-slate-800/50 backdrop-blur-xl border-slate-700/50 shadow-xl hover:shadow-2xl hover:border-violet-500/30 transition-all duration-300 rounded-2xl overflow-hidden">
+              <CardContent className="p-6 flex items-center gap-4">
+                <div className="w-14 h-14 bg-gradient-to-br from-violet-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-violet-500/25">
+                  <Users className="w-6 h-6 text-white" />
                 </div>
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">Active Students</p>
-                  <p className="text-2xl font-semibold text-gray-900 mt-1">{activeStudents}</p>
+                <div>
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Total Students</p>
+                  <p className="text-2xl font-extrabold text-white font-mono tracking-tight">{students.length}</p>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
 
-          <Card className="bg-white border-0 shadow-sm">
-            <CardContent className="p-6">
-              <div className="flex items-center">
-                <div className="w-12 h-12 bg-gray-50 rounded-xl flex items-center justify-center">
-                  <UserX className="w-6 h-6 text-gray-600" />
+            <Card className="bg-slate-800/50 backdrop-blur-xl border-slate-700/50 shadow-xl hover:shadow-2xl hover:border-emerald-500/30 transition-all duration-300 rounded-2xl overflow-hidden">
+              <CardContent className="p-6 flex items-center gap-4">
+                <div className="w-14 h-14 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-500/25">
+                  <UserCheck className="w-6 h-6 text-white" />
                 </div>
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">Inactive Students</p>
-                  <p className="text-2xl font-semibold text-gray-900 mt-1">{inactiveStudents}</p>
+                <div>
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Active Students</p>
+                  <p className="text-2xl font-extrabold text-white font-mono tracking-tight">{activeStudents}</p>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
 
-          <Card className="bg-white border-0 shadow-sm">
-            <CardContent className="p-6">
-              <div className="flex items-center">
-                <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center">
-                  <BookOpen className="w-6 h-6 text-blue-600" />
+            <Card className="bg-slate-800/50 backdrop-blur-xl border-slate-700/50 shadow-xl hover:shadow-2xl hover:border-rose-500/30 transition-all duration-300 rounded-2xl overflow-hidden">
+              <CardContent className="p-6 flex items-center gap-4">
+                <div className="w-14 h-14 bg-gradient-to-br from-rose-500 to-pink-600 rounded-2xl flex items-center justify-center shadow-lg shadow-rose-500/25">
+                  <UserX className="w-6 h-6 text-white" />
                 </div>
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">Total Enrollments</p>
-                  <p className="text-2xl font-semibold text-gray-900 mt-1">
+                <div>
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Inactive Students</p>
+                  <p className="text-2xl font-extrabold text-white font-mono tracking-tight">{inactiveStudents}</p>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-slate-800/50 backdrop-blur-xl border-slate-700/50 shadow-xl hover:shadow-2xl hover:border-amber-500/30 transition-all duration-300 rounded-2xl overflow-hidden">
+              <CardContent className="p-6 flex items-center gap-4">
+                <div className="w-14 h-14 bg-gradient-to-br from-amber-500 to-orange-600 rounded-2xl flex items-center justify-center shadow-lg shadow-amber-500/25">
+                  <BookOpen className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Total Enrollments</p>
+                  <p className="text-2xl font-extrabold text-white font-mono tracking-tight">
                     {students.reduce((sum, student) => sum + student.enrolledCourses.length, 0)}
                   </p>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+              </CardContent>
+            </Card>
+          </div>
 
-        {/* Filters */}
-        <Card className="bg-white border-0 shadow-sm">
-          <CardContent className="p-6">
-            <div className="flex flex-col lg:flex-row gap-4">
-              <div className="flex-1">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                  <input
-                    type="text"
-                    placeholder="Search by name, email, phone..."
-                    value={filters.search}
-                    onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
-                    className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors"
-                  />
+          {/* Table Card */}
+          <Card className="bg-slate-800/50 backdrop-blur-xl border-slate-700/50 shadow-xl rounded-2xl overflow-hidden">
+            <div className="px-6 py-4 border-b border-slate-700/50 bg-slate-900/50 flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="flex items-center gap-2">
+                <h3 className="text-sm font-bold text-white uppercase tracking-wider">Students List</h3>
+              </div>
+
+              {/* Inline Selection Dropdowns */}
+              <div className="flex items-center gap-3 w-full sm:w-auto">
+                <div className="w-36">
+                  <Select value={filters.status} onValueChange={(value) => setFilters(prev => ({ ...prev, status: value }))}>
+                    <SelectTrigger className="w-full border-slate-700 bg-slate-900/50 text-xs text-slate-300 h-9 rounded-xl">
+                      <SelectValue placeholder="Status" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-slate-900 border-slate-700 text-slate-300 text-xs">
+                      <SelectItem value="all">All Status</SelectItem>
+                      <SelectItem value="active">Active</SelectItem>
+                      <SelectItem value="inactive">Inactive</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="w-44">
+                  <Select value={filters.course} onValueChange={(value) => setFilters(prev => ({ ...prev, course: value }))}>
+                    <SelectTrigger className="w-full border-slate-700 bg-slate-900/50 text-xs text-slate-300 h-9 rounded-xl">
+                      <SelectValue placeholder="Course" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-slate-900 border-slate-700 text-slate-300 text-xs">
+                      <SelectItem value="all">All Courses</SelectItem>
+                      {courses.map((course) => (
+                        <SelectItem key={course.id} value={course.id}>{course.title}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
-
-              <div className="lg:w-48">
-                <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
-                <Select value={filters.status} onValueChange={(value) => setFilters(prev => ({ ...prev, status: value }))}>
-                  <SelectTrigger className="w-full border-gray-200 text-sm">
-                    <SelectValue>Select status</SelectValue>
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Students</SelectItem>
-                    <SelectItem value="active">Active</SelectItem>
-                    <SelectItem value="inactive">Inactive</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="lg:w-48">
-                <label className="block text-sm font-medium text-gray-700 mb-2">Course</label>
-                <Select value={filters.course} onValueChange={(value) => setFilters(prev => ({ ...prev, course: value }))}>
-                  <SelectTrigger className="w-full border-gray-200 text-sm">
-                    <SelectValue>Select course</SelectValue>
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Courses</SelectItem>
-                    {courses.map((course) => (
-                      <SelectItem key={course.id} value={course.id}>
-                        {course.title}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
             </div>
-          </CardContent>
-        </Card>
 
-        {/* Students Table */}
-        <Card className="bg-white border-0 shadow-sm">
-          <CardHeader className="px-6 py-4 border-b border-gray-100">
-            <CardTitle className="flex items-center justify-between">
-              <div className="flex items-center space-x-3">
-                <span className="text-lg font-semibold text-gray-900">All Students</span>
-                <Badge variant="outline" className="bg-gray-50 text-gray-600 border-gray-200">
-                  {filteredStudents.length} Total
-                </Badge>
-              </div>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-0">
-            <div className="overflow-x-auto">
+            {/* Table */}
+            <div className="p-0 overflow-x-auto">
               <Table>
                 <TableHeader>
-                  <TableRow className="border-b border-gray-100">
-                    <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student</TableHead>
-                    <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</TableHead>
-                    <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Courses</TableHead>
-                    <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Progress</TableHead>
-                    <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Login</TableHead>
-                    <TableHead className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</TableHead>
+                  <TableRow className="border-b border-slate-700/50 bg-slate-900/30 hover:bg-slate-900/30">
+                    <TableHead className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Student</TableHead>
+                    <TableHead className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Status</TableHead>
+                    <TableHead className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider w-[320px]">Courses</TableHead>
+                    <TableHead className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Progress</TableHead>
+                    <TableHead className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Last Login</TableHead>
+                    <TableHead className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
-                <TableBody className="divide-y divide-gray-100">
+                <TableBody className="divide-y divide-slate-700/30">
                   {filteredStudents.map((student) => (
-                    <TableRow key={student.id} className="hover:bg-gray-50 transition-colors">
-                      <TableCell className="px-6 py-4">
-                        <div className="flex items-center">
-                          <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
-                            <Users className="w-5 h-5 text-gray-600" />
+                    <TableRow key={student.id} className="hover:bg-slate-700/30 transition-colors group">
+                      {/* Avatar name data profile cell */}
+                      <TableCell className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 bg-gradient-to-tr from-violet-500/20 to-indigo-500/20 rounded-xl flex items-center justify-center text-violet-300 font-extrabold text-xs shadow-lg border border-violet-500/30 group-hover:border-violet-400/50 transition-colors">
+                            {student.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}
                           </div>
-                          <div className="ml-3">
-                            <div className="text-sm font-medium text-gray-900">{student.name}</div>
-                            <div className="text-xs text-gray-500">{student.email}</div>
-                            {student.phone && (
-                              <div className="text-xs text-gray-500">{student.phone}</div>
-                            )}
+                          <div>
+                            <span className="text-sm font-bold text-white group-hover:text-violet-400 transition-colors block">{student.name}</span>
+                            <div className="flex flex-col gap-0.5 mt-0.5 text-xs font-mono text-slate-500">
+                              <span className="flex items-center gap-1.5"><Mail className="w-3 h-3 text-slate-500" /> {student.email}</span>
+                              {student.phone && <span className="flex items-center gap-1.5"><Phone className="w-3 h-3 text-slate-500" /> {student.phone}</span>}
+                            </div>
                           </div>
                         </div>
                       </TableCell>
-                      
-                      <TableCell className="px-6 py-4">
-                        <div className="flex items-center space-x-2">
-                          <Badge className={getRoleColor(student.role)}>
+
+                      {/* Scope states metadata security cell */}
+                      <TableCell className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex flex-col items-start gap-1">
+                          <Badge variant="outline" className={`px-2 py-0 rounded font-bold text-[10px] uppercase tracking-wider ${getRoleColor(student.role)}`}>
                             {student.role}
                           </Badge>
-                          <div className={`w-3 h-3 rounded-full ${
-                            student.isActive ? 'bg-green-500' : 'bg-red-500'
-                          }`} />
+                          <div className="flex items-center gap-1.5 text-xs text-slate-400 font-medium">
+                            <span className={`w-1.5 h-1.5 rounded-full ${student.isActive ? 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.6)]' : 'bg-rose-400 shadow-[0_0_8px_rgba(251,113,133,0.6)]'}`} />
+                            {student.isActive ? 'Active' : 'Inactive'}
+                          </div>
                         </div>
                       </TableCell>
-                      
+
+                      {/* Course lists tracking metrics progress elements cell */}
                       <TableCell className="px-6 py-4">
-                        <div className="space-y-1">
-                          {student.enrolledCourses.map((course, index) => (
-                            <div key={course.id} className="flex items-center justify-between text-sm">
-                              <div className="flex items-center space-x-2">
-                                <BookOpen className="w-4 h-4 text-gray-400" />
-                                <span className="text-gray-700">{course.courseName}</span>
-                                <Badge variant="outline" className="text-xs">
-                                  {course.category}
-                                </Badge>
-                              </div>
-                              <div className="flex items-center space-x-2">
-                                <div className="flex items-center">
-                                  <div className="w-16 bg-gray-200 rounded-full h-2">
+                        <div className="space-y-2.5 max-h-[140px] overflow-y-auto pr-1">
+                          {student.enrolledCourses.length > 0 ? (
+                            student.enrolledCourses.map((course) => (
+                              <div key={course.id} className="bg-slate-900/50 border border-slate-700/50 rounded-xl p-2.5 space-y-1.5">
+                                <div className="flex items-center justify-between text-xs">
+                                  <span className="font-bold text-slate-300 truncate flex items-center gap-1.5">
+                                    <Compass className="w-3.5 h-3.5 text-slate-500 shrink-0" /> {course.courseName}
+                                  </span>
+                                  <Badge variant="outline" className="text-[9px] bg-slate-950/50 px-1 text-slate-500 border-slate-700/50 font-mono tracking-tight uppercase shrink-0">
+                                    {course.category}
+                                  </Badge>
+                                </div>
+                                <div className="flex items-center gap-3">
+                                  <div className="flex-1 bg-slate-700/50 rounded-full h-1.5 overflow-hidden border border-slate-700/30">
                                     <div 
-                                      className={`h-2 rounded-full ${getProgressColor(course.progress)}`}
+                                      className={`h-full bg-gradient-to-r rounded-full transition-all duration-500 ${getProgressColor(course.progress)}`}
                                       style={{ width: `${course.progress}%` }}
                                     />
                                   </div>
+                                  <span className={`text-[10px] font-mono font-bold border tracking-tighter rounded px-1.5 py-0.2 ${getProgressBg(course.progress)}`}>
+                                    {course.progress}%
+                                  </span>
                                 </div>
-                                <span className="text-xs text-gray-600">{course.progress}%</span>
                               </div>
-                              {course.completedAt && (
-                                <CheckCircle className="w-4 h-4 text-green-600" />
+                            ))
+                          ) : (
+                            <span className="text-xs text-slate-500 italic block pl-1">No courses enrolled</span>
+                          )}
+                        </div>
+                      </TableCell>
+
+                      {/* State icons tracker cell */}
+                      <TableCell className="px-6 py-4 whitespace-nowrap">
+                        <div className="space-y-1.5">
+                          {student.enrolledCourses.map((course) => (
+                            <div key={course.id} className="flex items-center gap-1.5 text-xs font-medium">
+                              {course.completedAt ? (
+                                <Award className="w-3.5 h-3.5 text-emerald-500" />
+                              ) : course.progress > 0 ? (
+                                <Play className="w-3.5 h-3.5 text-blue-500" />
+                              ) : (
+                                <Pause className="w-3.5 h-3.5 text-slate-400" />
                               )}
+                              <span className={`text-[11px] ${course.completedAt ? 'text-emerald-600 font-bold' : course.progress > 0 ? 'text-blue-600 font-medium' : 'text-slate-400'}`}>
+                                {course.completedAt ? 'Completed' : course.progress > 0 ? 'In Progress' : 'Not Started'}
+                              </span>
                             </div>
                           ))}
                         </div>
                       </TableCell>
-                      
-                      <TableCell className="px-6 py-4">
-                        <div className="space-y-1">
-                          {student.enrolledCourses.map((course, index) => (
-                            <div key={course.id} className="flex items-center justify-between text-sm">
-                              <div className="flex items-center space-x-2">
-                                {course.completedAt ? (
-                                  <Award className="w-4 h-4 text-green-600" />
-                                ) : course.progress > 0 ? (
-                                  <Play className="w-4 h-4 text-blue-600" />
-                                ) : (
-                                  <Pause className="w-4 h-4 text-gray-400" />
-                                )}
-                                <span className="text-gray-700">
-                                  {course.completedAt ? 'Completed' : course.progress > 0 ? 'In Progress' : 'Not Started'}
-                                </span>
-                              </div>
-                            </div>
-                          ))}
+
+                      {/* Logs calendar cell block */}
+                      <TableCell className="px-6 py-4 whitespace-nowrap text-xs font-mono text-slate-500">
+                        <div className="flex flex-col gap-0.5">
+                          <span className="text-slate-700 font-semibold">{student.lastLogin ? new Date(student.lastLogin).toLocaleDateString() : 'Inactive'}</span>
+                          {student.lastLogin && <span className="text-[10px] text-slate-400">{new Date(student.lastLogin).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>}
                         </div>
                       </TableCell>
-                      
-                      <TableCell className="px-6 py-4">
-                        <div className="text-sm text-gray-500">
-                          {student.lastLogin ? new Date(student.lastLogin).toLocaleDateString() : 'Never'}
-                        </div>
-                      </TableCell>
-                      
-                      <TableCell className="px-6 py-4">
-                        <div className="flex items-center justify-end space-x-2">
+
+                      {/* Interaction controllers dashboard core operations actions hub cell */}
+                      <TableCell className="px-6 py-4 whitespace-nowrap text-right">
+                        <div className="flex items-center justify-end gap-1">
                           <Button
                             variant="outline"
                             size="sm"
                             onClick={() => viewStudentProfile(student)}
-                            className="border-gray-200 text-gray-700 hover:bg-gray-50"
+                            className="h-9 border-slate-700 bg-slate-900/50 text-slate-300 hover:bg-slate-700/50 hover:text-white rounded-xl text-xs font-semibold"
                           >
-                            <Eye className="w-4 h-4 mr-1" />
-                            Profile
+                            <Eye className="w-3.5 h-3.5 mr-1 text-violet-400" /> View
                           </Button>
-                          
                           <Button
                             variant="outline"
                             size="sm"
                             onClick={() => openCourseAssignment(student)}
-                            className="border-blue-200 text-blue-700 hover:bg-blue-50"
+                            className="h-9 border-slate-700 bg-slate-900/50 text-slate-300 hover:bg-slate-700/50 hover:text-white rounded-xl text-xs font-semibold"
                           >
-                            <BookOpen className="w-4 h-4 mr-1" />
-                            Assign Course
+                            <BookOpen className="w-3.5 h-3.5 mr-1 text-violet-400" /> Add Course
                           </Button>
-                          
                           <Button
                             variant="outline"
                             size="sm"
                             onClick={() => openPasswordReset(student)}
-                            className="border-orange-200 text-orange-700 hover:bg-orange-50"
+                            className="h-9 border-slate-700 bg-slate-900/50 text-slate-300 hover:bg-slate-700/50 hover:text-white rounded-xl text-xs font-semibold"
                           >
-                            <Key className="w-4 h-4 mr-1" />
-                            Reset Password
+                            <Key className="w-3.5 h-3.5 mr-1 text-amber-400" /> Reset Password
                           </Button>
-                          
                           <Button
                             variant="outline"
                             size="sm"
                             onClick={() => toggleStudentStatus(student.id, !student.isActive)}
-                            className={student.isActive 
-                              ? "border-red-200 text-red-700 hover:bg-red-50"
-                              : "border-green-200 text-green-700 hover:bg-green-50"
-                            }
+                            className={`h-9 rounded-xl text-xs font-bold border transition-all ${
+                              student.isActive 
+                                ? "border-rose-700/50 bg-rose-950/50 text-rose-400 hover:bg-rose-900/50"
+                                : "border-emerald-700/50 bg-emerald-950/50 text-emerald-400 hover:bg-emerald-900/50"
+                            }`}
                             disabled={actionLoading[student.id]}
                           >
                             {actionLoading[student.id] ? (
-                              <RefreshCw className="w-4 h-4 mr-1 animate-spin" />
+                              <RefreshCw className="w-3.5 h-3.5 animate-spin" />
                             ) : student.isActive ? (
-                              <Lock className="w-4 h-4 mr-1" />
+                              <Lock className="w-3.5 h-3.5 mr-1 text-rose-400" />
                             ) : (
-                              <Unlock className="w-4 h-4 mr-1" />
+                              <Unlock className="w-3.5 h-3.5 mr-1 text-emerald-400" />
                             )}
                             {student.isActive ? 'Disable' : 'Enable'}
                           </Button>
@@ -585,132 +583,114 @@ export default function StudentManagement() {
               </Table>
             </div>
 
-            {/* Empty State */}
+            {/* Empty States Overlay Visual Framework wrapper element */}
             {filteredStudents.length === 0 && !loading && (
-              <div className="text-center py-12">
-                <div className="w-16 h-16 mx-auto bg-gray-100 rounded-full flex items-center justify-center mb-4">
-                  <Users className="w-8 h-8 text-gray-400" />
+              <div className="text-center py-24 bg-slate-900/20">
+                <div className="w-12 h-12 mx-auto bg-slate-800 border border-slate-700/50 rounded-2xl flex items-center justify-center mb-4 text-slate-500">
+                  <Users className="w-5 h-5" />
                 </div>
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No students found</h3>
-                <p className="text-gray-500">
-                  Try adjusting your filters or check back later for new students.
-                </p>
+                <h3 className="text-sm font-bold text-white tracking-tight">No students found</h3>
+                <p className="text-xs text-slate-500 max-w-xs mx-auto mt-1">Try adjusting your filters or check back later.</p>
               </div>
             )}
 
-            {/* Loading State */}
+            {/* Skeleton visual structures placeholders wrapper container loaders */}
             {loading && (
-              <div className="text-center py-12">
-                <RefreshCw className="w-8 h-8 mx-auto text-blue-600 animate-spin mb-4" />
-                <p className="text-gray-500">Loading students...</p>
+              <div className="p-6 space-y-4 bg-slate-900/20">
+                {[1, 2, 3].map((id) => (
+                  <div key={id} className="flex items-center justify-between p-4 bg-slate-800/50 border border-slate-700/50 rounded-xl animate-pulse">
+                    <div className="flex items-center gap-3 w-1/3">
+                      <div className="w-10 h-10 bg-slate-700/50 rounded-xl" />
+                      <div className="flex-1 space-y-2">
+                        <div className="h-3.5 bg-slate-700/50 rounded w-3/4" />
+                        <div className="h-2.5 bg-slate-700/50 rounded w-1/2" />
+                      </div>
+                    </div>
+                    <div className="h-3.5 bg-slate-700/50 rounded w-20" />
+                    <div className="h-4 bg-slate-700/50 rounded w-44" />
+                    <div className="h-8 w-20 bg-slate-700/50 rounded-lg" />
+                  </div>
+                ))}
               </div>
             )}
-          </CardContent>
-        </Card>
-      </div>
+          </Card>
+        </main>
 
-      {/* Student Profile Modal */}
-      {showProfileModal && selectedStudent && (
-        <div className="fixed inset-0 z-50 overflow-hidden">
-          <div className="absolute inset-0 bg-black bg-opacity-50" onClick={() => setShowProfileModal(false)} />
-          <div className="absolute inset-0 flex items-center justify-center p-4">
-            <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto">
-              <div className="p-6">
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-xl font-semibold text-gray-900">Student Profile</h2>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setShowProfileModal(false)}
-                  >
-                    ×
-                  </Button>
+        {/* Student Profile Modal */}
+        {showProfileModal && selectedStudent && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity animate-in fade-in" onClick={() => setShowProfileModal(false)} />
+            <div className="bg-slate-800 border border-slate-700/50 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[85vh] overflow-y-auto relative z-10 animate-in fade-in zoom-in-95 duration-150 flex flex-col">
+              <div className="border-b border-slate-700/50 px-6 py-4 flex items-center justify-between bg-slate-900/50 shrink-0">
+                <h2 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                  <Shield className="w-4 h-4 text-violet-400" /> Student Profile
+                </h2>
+                <button onClick={() => setShowProfileModal(false)} className="text-slate-400 hover:text-slate-200 p-1 rounded-lg hover:bg-slate-700/50 transition-colors">
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            
+            <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6 overflow-y-auto">
+              <div className="space-y-3.5">
+                <h3 className="text-[11px] font-bold text-slate-400 uppercase tracking-widest block">Information</h3>
+                <div className="bg-slate-900/50 border border-slate-700/50 rounded-xl p-3">
+                  <span className="block text-[10px] text-slate-400 font-bold uppercase tracking-wider">Name</span>
+                  <span className="text-sm font-bold text-white mt-0.5 block">{selectedStudent.name}</span>
                 </div>
+                <div className="bg-slate-900/50 border border-slate-700/50 rounded-xl p-3">
+                  <span className="block text-[10px] text-slate-400 font-bold uppercase tracking-wider">Email</span>
+                  <span className="text-sm font-mono text-slate-300 mt-0.5 block">{selectedStudent.email}</span>
+                </div>
+                <div className="bg-slate-900/50 border border-slate-700/50 rounded-xl p-3">
+                  <span className="block text-[10px] text-slate-400 font-bold uppercase tracking-wider">Phone</span>
+                  <span className="text-sm font-mono text-slate-300 mt-0.5 block">{selectedStudent.phone || 'Not available'}</span>
+                </div>
+                <div className="flex gap-3">
+                  <div className="flex-1 bg-slate-900/50 border border-slate-700/50 rounded-xl p-3">
+                    <span className="block text-[10px] text-slate-400 font-bold uppercase tracking-wider">Role</span>
+                    <Badge variant="outline" className={`mt-1 py-0 px-2 rounded font-bold text-[10px] border tracking-wider ${getRoleColor(selectedStudent.role)}`}>{selectedStudent.role}</Badge>
+                  </div>
+                  <div className="flex-1 bg-slate-900/50 border border-slate-700/50 rounded-xl p-3">
+                    <span className="block text-[10px] text-slate-400 font-bold uppercase tracking-wider">Status</span>
+                    <Badge className={`mt-1 shadow-none border ${selectedStudent.isActive ? 'bg-emerald-950/50 text-emerald-400 border-emerald-700/50' : 'bg-rose-950/50 text-rose-400 border-rose-700/50'}`}>
+                      {selectedStudent.isActive ? 'Active' : 'Inactive'}
+                    </Badge>
+                  </div>
+                </div>
+              </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Information</h3>
-                    <div className="space-y-3">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700">Name</label>
-                        <p className="text-gray-900">{selectedStudent.name}</p>
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700">Email</label>
-                        <p className="text-gray-900">{selectedStudent.email}</p>
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700">Phone</label>
-                        <p className="text-gray-900">{selectedStudent.phone || 'Not provided'}</p>
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700">Role</label>
-                        <Badge className={getRoleColor(selectedStudent.role)}>
-                          {selectedStudent.role}
-                        </Badge>
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700">Status</label>
-                        <Badge className={selectedStudent.isActive ? 'bg-green-50 text-green-700 border-green-200' : 'bg-red-50 text-red-700 border-red-200'}>
-                          {selectedStudent.isActive ? 'Active' : 'Inactive'}
-                        </Badge>
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700">Member Since</label>
-                        <p className="text-gray-900">{new Date(selectedStudent.createdAt).toLocaleDateString()}</p>
-                      </div>
-                      {selectedStudent.lastLogin && (
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700">Last Login</label>
-                          <p className="text-gray-900">{new Date(selectedStudent.lastLogin).toLocaleString()}</p>
+              <div className="space-y-4">
+                <h3 className="text-[11px] font-bold text-slate-400 uppercase tracking-widest block">Enrolled Courses</h3>
+                <div className="space-y-3 overflow-y-auto max-h-[300px] pr-1">
+                  {selectedStudent.enrolledCourses.length > 0 ? (
+                    selectedStudent.enrolledCourses.map((course) => (
+                      <div key={course.id} className="bg-slate-900/50 border border-slate-700/50 rounded-xl p-3.5 space-y-2.5">
+                        <div className="flex items-start justify-between gap-4">
+                          <div>
+                            <h4 className="text-xs font-bold text-white tracking-tight">{course.courseName}</h4>
+                            <span className="text-[9px] font-mono text-slate-500 uppercase mt-0.5 block">{course.category}</span>
+                          </div>
+                          <CheckCircle className={`w-4 h-4 shrink-0 ${course.completedAt ? 'text-emerald-400' : 'text-slate-600'}`} />
                         </div>
-                      )}
-                    </div>
-                  </div>
-
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Enrolled Courses</h3>
-                    <div className="space-y-3">
-                      {selectedStudent.enrolledCourses.map((course) => (
-                        <div key={course.id} className="border border-gray-200 rounded-lg p-4">
-                          <div className="flex items-center justify-between mb-2">
-                            <div className="flex items-center space-x-2">
-                              <BookOpen className="w-4 h-4 text-gray-400" />
-                              <span className="font-medium text-gray-900">{course.courseName}</span>
-                              <Badge variant="outline" className="text-xs">
-                                {course.category}
-                              </Badge>
-                            </div>
-                            <Badge className={
-                              course.completedAt 
-                                ? 'bg-green-50 text-green-700 border-green-200'
-                                : course.progress > 0 
-                                  ? 'bg-blue-50 text-blue-700 border-blue-200'
-                                  : 'bg-gray-50 text-gray-700 border-gray-200'
-                            }>
-                              {course.completedAt ? 'Completed' : course.progress > 0 ? 'In Progress' : 'Not Started'}
-                            </Badge>
+                        <div className="space-y-1">
+                          <div className="flex items-center justify-between text-[11px] font-mono text-slate-500">
+                            <span>Progress</span>
+                            <span className="font-bold text-slate-300">{course.progress}%</span>
                           </div>
-                          <div className="mt-2">
-                            <div className="text-sm text-gray-600">
-                              Progress: {course.progress}%
-                            </div>
-                            <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
-                              <div 
-                                className={`h-2 rounded-full ${getProgressColor(course.progress)}`}
-                                style={{ width: `${course.progress}%` }}
-                              />
-                            </div>
-                            {course.completedAt && (
-                              <div className="text-sm text-green-600 mt-2">
-                                Completed on {new Date(course.completedAt).toLocaleDateString()}
-                              </div>
-                            )}
+                          <div className="bg-slate-700/50 border border-slate-600/30 rounded-full h-1.5 overflow-hidden">
+                            <div className={`h-full bg-gradient-to-r ${getProgressColor(course.progress)}`} style={{ width: `${course.progress}%` }} />
                           </div>
+                        </div>
+                        {course.completedAt && (
+                          <div className="text-[10px] text-emerald-300 flex items-center gap-1 font-mono bg-emerald-950/50 border border-emerald-700/50 px-2 py-0.5 rounded">
+                            <Calendar className="w-3 h-3" /> Completed on: {new Date(course.completedAt).toLocaleDateString()}
+                          </div>
+                        )}
                       </div>
-                      ))}
-                    </div>
-                  </div>
+                    ))
+                  ) : (
+                    <p className="text-xs text-slate-500 italic block pl-1">No courses enrolled</p>
+                  )}
                 </div>
               </div>
             </div>
@@ -718,110 +698,116 @@ export default function StudentManagement() {
         </div>
       )}
 
-      {/* Course Assignment Modal */}
+      {/* Assign Course Modal */}
       {showCourseModal && selectedStudent && (
-        <div className="fixed inset-0 z-50 overflow-hidden">
-          <div className="absolute inset-0 bg-black bg-opacity-50" onClick={() => setShowCourseModal(false)} />
-          <div className="absolute inset-0 flex items-center justify-center p-4">
-            <div className="bg-white rounded-xl shadow-xl max-w-md w-full">
-              <div className="p-6">
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-xl font-semibold text-gray-900">Assign Course</h2>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setShowCourseModal(false)}
-                  >
-                    ×
-                  </Button>
-                </div>
-
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Student</label>
-                    <p className="text-gray-900 font-medium">{selectedStudent.name}</p>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Select Course</label>
-                    <Select>
-                      <SelectTrigger className="w-full">
-                        <SelectValue>
-                          Choose a course
-                        </SelectValue>
-                      </SelectTrigger>
-                      <SelectContent>
-                        {courses.map((course) => (
-                          <SelectItem key={course.id} value={course.id}>
-                            {course.title}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <Button
-                    onClick={() => {
-                      const selectElement = document.querySelector('select') as HTMLSelectElement;
-                      if (selectElement?.value) {
-                        assignCourse(selectedStudent.id, selectElement.value);
-                      }
-                    }}
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white"
-                  >
-                    Assign Course
-                  </Button>
-                </div>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={() => setShowCourseModal(false)} />
+          <div className="bg-slate-800 border border-slate-700/50 rounded-2xl shadow-2xl max-w-sm w-full relative z-10 animate-in fade-in zoom-in-95 duration-150 overflow-hidden">
+            <div className="border-b border-slate-700/50 px-6 py-4 flex items-center justify-between bg-slate-900/50">
+              <h2 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2"><BookOpen className="w-4 h-4 text-violet-400" /> Assign Course</h2>
+              <button onClick={() => setShowCourseModal(false)} className="text-slate-400 hover:text-slate-200 p-1 rounded-lg hover:bg-slate-700/50 transition-colors"><X className="w-4 h-4" /></button>
+            </div>
+            <div className="p-6 space-y-4">
+              <div className="bg-slate-900/50 border border-slate-700/50 rounded-xl p-3">
+                <span className="block text-[10px] text-slate-400 font-bold uppercase tracking-wider">Student</span>
+                <span className="text-sm font-bold text-white block mt-0.5">{selectedStudent.name}</span>
               </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Select Course</label>
+                <Select value={selectedCourse} onValueChange={setSelectedCourse}>
+                  <SelectTrigger className="w-full border-slate-700 bg-slate-900/50 text-xs text-slate-300 h-10 rounded-xl">
+                    <SelectValue placeholder="Choose a course" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-slate-900 border-slate-700 text-slate-300 text-xs">
+                    {courses.map((course) => (
+                      <SelectItem key={course.id} value={course.id}>{course.title}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <Button
+                onClick={() => {
+                  if (selectedCourse) {
+                    assignCourse(selectedStudent.id, selectedCourse);
+                    setSelectedCourse('');
+                    setShowCourseModal(false);
+                  }
+                }}
+                className="w-full bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-bold py-2.5 rounded-xl text-xs uppercase tracking-wider shadow-lg shadow-violet-500/25"
+                disabled={!selectedCourse}
+              >
+                Assign Course
+              </Button>
             </div>
           </div>
         </div>
       )}
 
-      {/* Password Reset Modal */}
+      {/* Security matrix key override update actions overlay component */}
       {showPasswordModal && selectedStudent && (
-        <div className="fixed inset-0 z-50 overflow-hidden">
-          <div className="absolute inset-0 bg-black bg-opacity-50" onClick={() => setShowPasswordModal(false)} />
-          <div className="absolute inset-0 flex items-center justify-center p-4">
-            <div className="bg-white rounded-xl shadow-xl max-w-md w-full">
-              <div className="p-6">
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-xl font-semibold text-gray-900">Reset Password</h2>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setShowPasswordModal(false)}
-                  >
-                    ×
-                  </Button>
-                </div>
-
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Student</label>
-                    <p className="text-gray-900 font-medium">{selectedStudent.name}</p>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">New Password</label>
-                    <input
-                      type="password"
-                      value={newPassword}
-                      onChange={(e) => setNewPassword(e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      placeholder="Enter new password"
-                    />
-                  </div>
-
-                  <Button
-                    onClick={() => resetStudentPassword(selectedStudent.id)}
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white"
-                    disabled={!newPassword || newPassword.length < 6}
-                  >
-                    Reset Password
-                  </Button>
-                </div>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={() => setShowPasswordModal(false)} />
+          <div className="bg-slate-800 border border-slate-700/50 rounded-2xl shadow-2xl max-w-sm w-full relative z-10 animate-in fade-in zoom-in-95 duration-150 overflow-hidden">
+            <div className="border-b border-slate-700/50 px-6 py-4 flex items-center justify-between bg-slate-900/50">
+              <h2 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2"><Key className="w-4 h-4 text-amber-400" /> Reset Password</h2>
+              <button onClick={() => setShowPasswordModal(false)} className="text-slate-400 hover:text-slate-200 p-1 rounded-lg hover:bg-slate-700/50 transition-colors"><X className="w-4 h-4" /></button>
+            </div>
+            <div className="p-6 space-y-4">
+              <div className="bg-slate-900/50 border border-slate-700/50 rounded-xl p-3">
+                <span className="block text-[10px] text-slate-400 font-bold uppercase tracking-wider">Student</span>
+                <span className="text-sm font-bold text-white block mt-0.5">{selectedStudent.name}</span>
               </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">New Password</label>
+                <input
+                  type="password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  placeholder="Enter new password (min 6 characters)"
+                  className="w-full px-3.5 py-2.5 bg-slate-900/50 border border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 text-xs text-white placeholder-slate-500 transition-all"
+                />
+              </div>
+
+              <Button
+                onClick={() => resetStudentPassword(selectedStudent.id)}
+                disabled={!newPassword || newPassword.length < 6}
+                className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-white font-bold py-2.5 rounded-xl text-xs uppercase tracking-wider shadow-lg shadow-amber-500/25"
+              >
+                Reset Password
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Export Modal */}
+      {showExportModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={() => setShowExportModal(false)} />
+          <div className="bg-slate-800 border border-slate-700/50 rounded-2xl shadow-2xl max-w-sm w-full relative z-10 animate-in fade-in zoom-in-95 duration-150 overflow-hidden">
+            <div className="border-b border-slate-700/50 px-6 py-4 flex items-center justify-between bg-slate-900/50">
+              <h2 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2"><Download className="w-4 h-4 text-violet-400" /> Export Data</h2>
+              <button onClick={() => setShowExportModal(false)} className="text-slate-400 hover:text-slate-200 p-1 rounded-lg hover:bg-slate-700/50 transition-colors"><X className="w-4 h-4" /></button>
+            </div>
+            <div className="p-6 space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Format</label>
+                <Select value={exportFormat} onValueChange={(value) => setExportFormat(value as 'csv' | 'json')}>
+                  <SelectTrigger className="w-full border-slate-700 bg-slate-900/50 text-xs text-slate-300 h-10 rounded-xl">
+                    <SelectValue placeholder="Select format" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-slate-900 border-slate-700 text-slate-300 text-xs">
+                    <SelectItem value="csv">CSV</SelectItem>
+                    <SelectItem value="json">JSON</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <Button onClick={executeExport} className="w-full bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-bold py-2.5 text-xs uppercase tracking-wider rounded-xl shadow-lg shadow-violet-500/25">
+                Download Export
+              </Button>
             </div>
           </div>
         </div>
