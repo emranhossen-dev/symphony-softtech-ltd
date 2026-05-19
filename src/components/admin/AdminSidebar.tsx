@@ -43,7 +43,8 @@ import {
   Shield,
   User,
   Phone,
-  MessageCircle
+  MessageCircle,
+  Quote
 } from 'lucide-react';
 
 interface MenuItem {
@@ -389,6 +390,11 @@ const AdminSidebar = ({ isOpen, onClose, isMobile, isCollapsed = false, onToggle
       title: 'Live Chat',
       href: '/admin/live-chat',
       icon: <MessageCircle className="w-4 h-4" />
+    },
+    {
+      title: 'Success Stories',
+      href: '/admin/testimonials',
+      icon: <Quote className="w-4 h-4" />
     },
     {
       title: 'User Management',

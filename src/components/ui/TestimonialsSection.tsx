@@ -14,65 +14,36 @@ const TestimonialsSection = () => {
   const [currentTestimonialIndex, setCurrentTestimonialIndex] = useState(0);
   const [isAutoPlay, setIsAutoPlay] = useState(true);
   const [viewMode, setViewMode] = useState<'grid' | 'carousel'>('carousel');
+  const [testimonials, setTestimonials] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [mounted, setMounted] = useState(false);
 
-  const testimonials = [
-    {
-      name: "Sarah Johnson",
-      role: "Frontend Developer",
-      content: `The training at ${siteConfig.name} transformed my career completely. The practical approach and expert mentors helped me land my dream job. I couldn't be happier with my progress!`,
-      rating: 5,
-      avatar: "SJ",
-      company: "Google",
-      location: "San Francisco, CA",
-      course: "Full Stack Web Development",
-      image: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face",
-      graduationYear: "2024",
-      achievement: "Promoted to Senior Developer"
-    },
-    {
-      name: "Michael Chen",
-      role: "Full Stack Developer",
-      content: `Best investment I made in my career! The comprehensive curriculum and hands-on projects gave me confidence to tackle real-world challenges. Highly recommend to anyone serious about tech.`,
-      rating: 5,
-      avatar: "MC",
-      company: "Microsoft",
-      location: "Seattle, WA",
-      course: "Data Science & ML",
-      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
-      graduationYear: "2024",
-      achievement: "Salary increased by 60%"
-    },
-    {
-      name: "Emily Rodriguez",
-      role: "React Developer",
-      content: `The live support and personalized attention made all the difference. I went from knowing basic HTML to building complex React applications in just a few months.`,
-      rating: 4,
-      avatar: "ER",
-      company: "Meta",
-      location: "New York, NY",
-      course: "Mobile App Development",
-      image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
-      graduationYear: "2023",
-      achievement: "Built 5+ production apps"
-    },
-    {
-      name: "David Kim",
-      role: "Software Engineer",
-      content: `The certification I earned opened doors to amazing opportunities. The training quality exceeded my expectations and was worth every penny. Thank you ${siteConfig.name} team!`,
-      rating: 5,
-      avatar: "DK",
-      company: "Amazon",
-      location: "Austin, TX",
-      course: "Cloud Computing",
-      image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
-      graduationYear: "2024",
-      achievement: "AWS Certified Solutions Architect"
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
+    fetchTestimonials();
+  }, [mounted]);
+
+  const fetchTestimonials = async () => {
+    try {
+      const response = await fetch('/api/testimonials');
+      const data = await response.json();
+      if (data.success) {
+        setTestimonials(data.testimonials);
+      }
+    } catch (error) {
+      console.error('Error fetching testimonials:', error);
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
 
   useEffect(() => {
     setIsVisible(true);
-    if (isAutoPlay && viewMode === 'carousel') {
+    if (isAutoPlay && viewMode === 'carousel' && testimonials.length > 0) {
       const interval = setInterval(() => {
         setCurrentTestimonialIndex((prev) => (prev + 1) % testimonials.length);
       }, 5000);
@@ -136,8 +107,20 @@ const TestimonialsSection = () => {
           </div>
         </div>
 
-        {/* Carousel Layout Mode */}
-        {viewMode === 'carousel' ? (
+        {/* Loading State */}
+        {!mounted ? (
+          <div className="text-center py-20">
+            <div className="text-gray-400 text-lg">Loading success stories...</div>
+          </div>
+        ) : loading ? (
+          <div className="text-center py-20">
+            <div className="text-gray-400 text-lg">Loading success stories...</div>
+          </div>
+        ) : testimonials.length === 0 ? (
+          <div className="text-center py-20">
+            <div className="text-gray-400 text-lg">No success stories yet</div>
+          </div>
+        ) : viewMode === 'carousel' ? (
           <div className="relative max-w-4xl lg:max-w-5xl mx-auto px-1 sm:px-4" suppressHydrationWarning>
             {/* Wrapper wrapper height configuration dynamic based on viewports */}
             <div className="relative h-[520px] sm:h-[480px] md:h-[520px] lg:h-[580px] flex items-center justify-center w-full" suppressHydrationWarning>
@@ -188,7 +171,7 @@ const TestimonialsSection = () => {
                         <div className="flex items-center gap-4 text-center sm:text-left">
                           <div className="w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 rounded-full overflow-hidden ring-2 ring-blue-500/30 shrink-0">
                             <img
-                              src={testimonial.image}
+                              src={testimonial.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(testimonial.name)}&background=random`}
                               alt={testimonial.name}
                               className="w-full h-full object-cover"
                             />
@@ -266,7 +249,7 @@ const TestimonialsSection = () => {
                   <div className="flex items-center gap-3 pt-3 border-t border-white/5 mb-2">
                     <div className="w-9 h-9 rounded-full overflow-hidden ring-2 ring-blue-500/20 shrink-0">
                       <img
-                        src={testimonial.image}
+                        src={testimonial.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(testimonial.name)}&background=random`}
                         alt={testimonial.name}
                         className="w-full h-full object-cover"
                       />

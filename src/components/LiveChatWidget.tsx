@@ -68,6 +68,18 @@ const LiveChatWidget = ({ children }: { children?: React.ReactNode }) => {
   useEffect(() => {
     if (isOpen) setShowGreeting(false);
   }, [isOpen]);
+
+  // Prevent scrollbar when chat is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
   const [userInfo, setUserInfo] = useState<UserInfo>({ name: '', phone: '', email: '' });
@@ -206,8 +218,8 @@ const LiveChatWidget = ({ children }: { children?: React.ReactNode }) => {
         {children}
         {/* Greeting Popup Bubble */}
         {showGreeting && !greetingDismissed && (
-          <div className="fixed bottom-24 right-6 z-50 animate-in slide-in-from-bottom-3 fade-in duration-500">
-            <div className="relative bg-white rounded-2xl shadow-2xl border border-gray-200 p-4 max-w-[260px]" style={{ boxShadow: '0 8px 30px rgba(0,0,0,0.12)' }}>
+          <div className="fixed bottom-24 right-6 z-50 animate-in slide-in-from-bottom-3 fade-in duration-500 pointer-events-auto">
+            <div className="relative bg-white rounded-2xl shadow-2xl border border-gray-200 p-4 max-w-[min(260px,calc(100vw-3rem))]" style={{ boxShadow: '0 8px 30px rgba(0,0,0,0.12)' }}>
               <button
                 onClick={(e) => { e.stopPropagation(); setGreetingDismissed(true); setShowGreeting(false); }}
                 className="absolute -top-2 -right-2 w-6 h-6 bg-gray-200 hover:bg-red-500 hover:text-white text-gray-500 rounded-full flex items-center justify-center transition-all duration-200 shadow-md text-xs font-bold"
@@ -231,7 +243,7 @@ const LiveChatWidget = ({ children }: { children?: React.ReactNode }) => {
 
         <button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-r from-slate-700 to-indigo-700 rounded-full shadow-2xl hover:shadow-indigo-500/40 transition-all duration-300 hover:scale-110 flex items-center justify-center group z-50"
+          className="fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-r from-slate-700 to-indigo-700 rounded-full shadow-2xl hover:shadow-indigo-500/40 transition-all duration-300 hover:scale-110 flex items-center justify-center group z-50 pointer-events-auto"
         >
           <MessageCircle className="w-6 h-6 text-white" />
           <span className="absolute inset-0 rounded-full bg-indigo-400 animate-ping opacity-20"></span>
@@ -249,9 +261,9 @@ const LiveChatWidget = ({ children }: { children?: React.ReactNode }) => {
   return (
     <LiveChatContext.Provider value={{ openChat, closeChat }}>
       {children}
-      <div className="fixed bottom-6 right-6 z-50">
+      <div className="fixed bottom-6 right-6 z-50 pointer-events-none">
       {!isMinimized && (
-        <div className="absolute bottom-16 right-0 w-80 bg-gradient-to-br from-slate-800 via-indigo-900 to-slate-900 rounded-2xl shadow-2xl overflow-hidden border border-indigo-500 animate-in slide-in-from-bottom-5 duration-300 flex flex-col" style={{ height: showForm ? '400px' : '500px' }}>
+        <div className="absolute bottom-16 right-0 w-80 max-w-[min(320px,calc(100vw-3rem))] bg-gradient-to-br from-slate-800 via-indigo-900 to-slate-900 rounded-2xl shadow-2xl overflow-hidden border border-indigo-500/50 animate-in slide-in-from-bottom-5 duration-300 flex flex-col pointer-events-auto" style={{ height: showForm ? '400px' : '500px' }}>
           {/* Header */}
           <div className="bg-gradient-to-r from-slate-700 to-indigo-700 p-4 text-white">
             <div className="flex items-center justify-between">
@@ -379,7 +391,7 @@ const LiveChatWidget = ({ children }: { children?: React.ReactNode }) => {
               </div>
 
               {/* Input */}
-              <div className="p-4 bg-slate-900 border-t border-indigo-500">
+              <div className="p-4 bg-slate-900 border-t border-indigo-500/30">
                 <div className="flex items-center gap-2">
                   <input
                     type="text"
@@ -407,7 +419,7 @@ const LiveChatWidget = ({ children }: { children?: React.ReactNode }) => {
       {isMinimized && (
         <button
           onClick={() => setIsMinimized(false)}
-          className="absolute bottom-16 right-0 bg-gradient-to-r from-slate-700 to-indigo-700 text-white px-4 py-2 rounded-full shadow-lg hover:shadow-indigo-500/40 transition-all flex items-center gap-2"
+          className="absolute bottom-16 right-0 bg-gradient-to-r from-slate-700 to-indigo-700 text-white px-4 py-2 rounded-full shadow-lg hover:shadow-indigo-500/40 transition-all flex items-center gap-2 pointer-events-auto"
         >
           <MessageCircle className="w-4 h-4" />
           <span className="text-sm font-medium">Chat</span>
@@ -418,7 +430,7 @@ const LiveChatWidget = ({ children }: { children?: React.ReactNode }) => {
       {/* Main Toggle Button (when chat is open) */}
       <button
         onClick={() => setIsOpen(false)}
-        className="w-14 h-14 bg-gradient-to-r from-slate-700 to-indigo-700 rounded-full shadow-2xl hover:shadow-indigo-500/40 transition-all duration-300 hover:scale-110 flex items-center justify-center"
+        className="w-14 h-14 bg-gradient-to-r from-slate-700 to-indigo-700 rounded-full shadow-2xl hover:shadow-indigo-500/40 transition-all duration-300 hover:scale-110 flex items-center justify-center pointer-events-auto"
       >
         <X className="w-6 h-6 text-white" />
       </button>

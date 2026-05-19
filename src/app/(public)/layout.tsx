@@ -20,11 +20,12 @@ export default function PublicLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <LiveChatWidget>
+    <>
       <Navbar />
       <main className="flex-1 pt-18">{children}</main>
       <Footer />
-    </LiveChatWidget>
+      <LiveChatWidget />
+    </>
   );
 }
 

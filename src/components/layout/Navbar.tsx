@@ -138,22 +138,21 @@ const Navbar = () => {
                 
                 {/* Premium Dropdown for Courses */}
                 {link.href === "/courses" && (
-                  <div 
-                    className={`absolute top-full left-0 mt-3 w-80 rounded-2xl shadow-2xl z-50 transition-all duration-300 transform ${
+                  <div
+                    className={`absolute top-full left-0 mt-2 w-56 rounded-xl shadow-2xl z-50 transition-all duration-300 transform ${
                       isDropdownOpen ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible translate-y-4'
                     }`}
                     style={{ backgroundColor: '#000000' }}
                     onMouseEnter={() => setIsDropdownOpen(true)}
                     onMouseLeave={() => setIsDropdownOpen(false)}>
-                    <div className="p-3 space-y-1 bg-black rounded-2xl w-full">
+                    <div className="p-2 space-y-1 bg-black rounded-xl w-full">
                       {courseCategories.map((category) => (
-                        <a key={category.href} href={category.href} className="flex items-start space-x-3 p-3 rounded-xl hover:bg-gradient-to-r hover:from-purple-600/20 hover:to-indigo-600/20 transition-all duration-300 group">
-                          <div className={`w-10 h-10 bg-gradient-to-r ${category.color} rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300 flex-shrink-0`}>
+                        <a key={category.href} href={category.href} className="flex items-center space-x-2 p-2 rounded-lg hover:bg-gradient-to-r hover:from-purple-600/20 hover:to-indigo-600/20 transition-all duration-300 group">
+                          <div className={`w-7 h-7 bg-gradient-to-r ${category.color} rounded-lg flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300 flex-shrink-0`}>
                             {category.icon}
                           </div>
                           <div className="min-w-0 flex-1">
-                            <div className={`font-bold text-gray-100 group-hover:text-white transition-colors text-sm`}>{category.label}</div>
-                            <div className="text-xs text-gray-400 mt-0.5">Professional training</div>
+                            <div className={`font-semibold text-gray-100 group-hover:text-white transition-colors text-xs`}>{category.label}</div>
                           </div>
                         </a>
                       ))}
