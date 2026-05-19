@@ -45,13 +45,13 @@ export default function CategorySwitcher({
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-8">
+    <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl shadow-lg border border-gray-700 p-8">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h3 className="text-xl font-bold text-gray-900 dark:text-white">{title}</h3>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{description}</p>
+          <h3 className="text-xl font-bold text-white">{title}</h3>
+          <p className="text-sm text-gray-400 mt-1">{description}</p>
         </div>
-        <div className="text-base font-medium text-gray-700 dark:text-gray-300">
+        <div className="text-base font-medium text-gray-300">
           {categories.length} categories
         </div>
       </div>
@@ -69,7 +69,7 @@ export default function CategorySwitcher({
               className={`group relative p-6 rounded-2xl border-2 transition-all duration-300 ${
                 isActive
                   ? 'shadow-xl'
-                  : 'border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800'
+                  : 'border-gray-700 bg-gray-800'
               }`}
               style={{
                 borderColor: isActive ? categoryColor : '',
@@ -96,8 +96,8 @@ export default function CategorySwitcher({
                 <div 
                   className={`p-5 rounded-2xl transition-all duration-300 flex items-center justify-center ${
                     isActive 
-                      ? 'bg-white dark:bg-gray-700 shadow-xl scale-110' 
-                      : 'bg-gray-100 dark:bg-gray-700 group-hover:scale-110 group-hover:shadow-lg'
+                      ? 'bg-gray-700 shadow-xl scale-110' 
+                      : 'bg-gray-900 group-hover:scale-110 group-hover:shadow-lg'
                   }`}
                   style={{ color: isActive ? categoryColor : '#6B7280' }}
                 >
@@ -106,18 +106,18 @@ export default function CategorySwitcher({
                 <div className="text-center w-full">
                   <span className={`font-bold text-lg block ${
                     isActive 
-                      ? 'text-gray-900 dark:text-white' 
-                      : 'text-gray-900 dark:text-white'
+                      ? 'text-white' 
+                      : 'text-white'
                   }`}>
                     {cat.name}
                   </span>
                   <span className="text-sm mt-2 block font-medium flex items-center justify-center gap-2">
                     {isActive ? (
-                      <span className="text-gray-600 dark:text-gray-400">Currently Active</span>
+                      <span className="text-gray-400">Currently Active</span>
                     ) : (
                       <>
-                        <span className="text-gray-500 dark:text-gray-500">Click to View</span>
-                        <ArrowRight className="w-4 h-4 text-gray-400 dark:text-gray-500 group-hover:text-blue-500 dark:group-hover:text-blue-400 group-hover:translate-x-1 transition-all" />
+                        <span className="text-gray-500">Click to View</span>
+                        <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-blue-400 group-hover:translate-x-1 transition-all" />
                       </>
                     )}
                   </span>

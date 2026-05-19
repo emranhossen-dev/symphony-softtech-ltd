@@ -120,32 +120,32 @@ const HeroSection = () => {
           {/* Trust Indicators */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6 p-4 md:p-8 max-w-5xl mx-auto rounded-[20px] border border-[rgba(99,102,241,0.3)] backdrop-blur-[16px]" style={{background: 'rgba(26, 31, 76, 0.9)', boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)'}}>
             <div className="flex items-center justify-center gap-3 md:gap-4 group">
-              <div className="w-10 h-10 md:w-12 md:h-12 bg-green-100 rounded-xl flex items-center justify-center shrink-0">
-                <CheckCircle className="w-5 h-5 md:w-6 md:h-6 text-green-600 group-hover:scale-110 transition-transform" />
+              <div className="w-10 h-10 md:w-12 md:h-12 bg-green-500/20 rounded-xl flex items-center justify-center shrink-0">
+                <CheckCircle className="w-5 h-5 md:w-6 md:h-6 text-green-400 group-hover:scale-110 transition-transform" />
               </div>
               <div className="text-left">
-                <div className="font-bold text-gray-900 text-sm md:text-base">Certified Programs</div>
-                <div className="text-xs md:text-sm text-gray-500">Industry recognized</div>
+                <div className="font-bold text-white text-sm md:text-base">Certified Programs</div>
+                <div className="text-xs md:text-sm text-gray-300">Industry recognized</div>
               </div>
             </div>
 
             <div className="flex items-center justify-center gap-3 md:gap-4 group">
-              <div className="w-10 h-10 md:w-12 md:h-12 bg-orange-100 rounded-xl flex items-center justify-center shrink-0">
-                <Award className="w-5 h-5 md:w-6 md:h-6 text-orange-600 group-hover:scale-110 transition-transform" />
+              <div className="w-10 h-10 md:w-12 md:h-12 bg-orange-500/20 rounded-xl flex items-center justify-center shrink-0">
+                <Award className="w-5 h-5 md:w-6 md:h-6 text-orange-400 group-hover:scale-110 transition-transform" />
               </div>
               <div className="text-left">
-                <div className="font-bold text-gray-900 text-sm md:text-base">Expert Mentors</div>
-                <div className="text-xs md:text-sm text-gray-500">10+ years experience</div>
+                <div className="font-bold text-white text-sm md:text-base">Expert Mentors</div>
+                <div className="text-xs md:text-sm text-gray-300">10+ years experience</div>
               </div>
             </div>
 
             <div className="flex items-center justify-center gap-3 md:gap-4 group">
-              <div className="w-10 h-10 md:w-12 md:h-12 bg-blue-100 rounded-xl flex items-center justify-center shrink-0">
-                <Clock className="w-5 h-5 md:w-6 md:h-6 text-blue-600 group-hover:scale-110 transition-transform" />
+              <div className="w-10 h-10 md:w-12 md:h-12 bg-blue-500/20 rounded-xl flex items-center justify-center shrink-0">
+                <Clock className="w-5 h-5 md:w-6 md:h-6 text-blue-400 group-hover:scale-110 transition-transform" />
               </div>
               <div className="text-left">
-                <div className="font-bold text-gray-900 text-sm md:text-base">Lifetime Support</div>
-                <div className="text-xs md:text-sm text-gray-500">24/7 assistance</div>
+                <div className="font-bold text-white text-sm md:text-base">Lifetime Support</div>
+                <div className="text-xs md:text-sm text-gray-300">24/7 assistance</div>
               </div>
             </div>
           </div>

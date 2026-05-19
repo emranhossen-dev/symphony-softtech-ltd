@@ -7,8 +7,13 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     const body = await request.json();
     const { status } = body;
 
+    console.log('PATCH /api/admin/enrollments/[enrollmentId]/status');
+    console.log('Enrollment ID:', enrollmentId);
+    console.log('New status:', status);
+
     // Check if database is available
     if (!prisma) {
+      console.log('Database not available, returning mock response');
       return NextResponse.json({
         success: true,
         message: 'Status updated successfully (mock)'
@@ -24,6 +29,8 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
         updatedAt: new Date()
       }
     });
+
+    console.log('Updated enrollment:', updatedEnrollment);
 
     return NextResponse.json({
       success: true,

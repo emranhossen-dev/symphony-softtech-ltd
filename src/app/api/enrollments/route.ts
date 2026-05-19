@@ -90,18 +90,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Determine enrollment status based on payment method and course category
-    const categorySlug = course.categoryRelation?.slug?.toLowerCase() || '';
+    // Always set status to APPLIED for new registrations
     let enrollmentStatus: 'APPLIED' | 'ADMITTED' | 'REJECTED' | 'WAITING' | 'NEXT_BATCH' = 'APPLIED';
-
-    // Government courses - applied status
-    if (categorySlug === 'government' || categorySlug.includes('government')) {
-      enrollmentStatus = 'APPLIED';
-    }
-    // Cash and online payment - waiting for payment
-    else if (paymentMethod === 'cash' || paymentMethod === 'online') {
-      enrollmentStatus = 'WAITING';
-    }
 
     // Create enrollment
     const enrollment = await prisma?.enrollment.create({

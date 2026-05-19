@@ -60,6 +60,9 @@ const config: Config = {
           to: { opacity: '1', transform: 'scale(1)' }
         }
       },
+      spacing: {
+        '18': '4.5rem',
+      },
       screens: {
         'xs': '475px',
       },

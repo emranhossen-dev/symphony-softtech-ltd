@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { Menu, X, User, LogIn, ChevronDown, BookOpen, Users, Phone, GraduationCap, Sparkles, Star } from "lucide-react";
 import { usePathname } from "next/navigation";
+import Link from 'next/link';
 import LoginModal from "@/components/auth/LoginModal";
 import ThemeToggler from "@/components/ThemeToggler";
 
@@ -12,14 +13,60 @@ const Navbar = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMobileCourseDropdownOpen, setIsMobileCourseDropdownOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
 
   useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10);
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
+  }, [mounted]);
+
+  // Lock body scroll when mobile menu is open
+  useEffect(() => {
+    if (isMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isMenuOpen]);
+
+  // Close mobile menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const nav = document.querySelector('nav');
+      if (nav && !nav.contains(event.target as Node)) {
+        setIsMenuOpen(false);
+        setIsMobileCourseDropdownOpen(false);
+      }
+    };
+
+    if (isMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isMenuOpen]);
+
+  // Close mobile menu on resize to desktop
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 1280) {
+        setIsMenuOpen(false);
+        setIsMobileCourseDropdownOpen(false);
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   const isActive = (path: string) => {
@@ -42,28 +89,28 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 glass-nav ${
+    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
       isScrolled 
-        ? "shadow-2xl" 
-        : "shadow-xl"
+        ? "bg-slate-900/95 backdrop-blur-sm shadow-2xl" 
+        : "bg-slate-900/95 backdrop-blur-sm shadow-xl"
     }`}>
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center h-18">
           {/* Premium Logo Section */}
           <div className="flex-shrink-0">
-            <a href="/" className="flex items-center space-x-3 group">
+            <a href="/" className="flex items-center space-x-2 md:space-x-3 group">
               <div className="relative">
                 <img
                   src="/Logo.jpeg"
                   alt="Symphony Institute of Technology"
-                  className="h-14 w-auto object-contain rounded-lg shadow-lg bg-white p-1"
+                  className="h-10 md:h-14 w-auto object-contain rounded-lg shadow-lg bg-white p-0.5 md:p-1"
                 />
               </div>
-              <div className="hidden lg:block">
-                <div className="text-lg font-bold text-white group-hover:text-emerald-200 transition-all duration-300">
+              <div className="hidden sm:block">
+                <div className="text-sm md:text-lg font-bold text-white group-hover:text-emerald-200 transition-all duration-300 leading-tight">
                   Symphony Institute
                 </div>
-                <div className="text-xs text-gray-300 font-medium tracking-wide">of Technology</div>
+                <div className="text-[10px] md:text-xs text-gray-300 font-medium tracking-wide">of Technology</div>
               </div>
             </a>
           </div>
@@ -147,7 +194,7 @@ const Navbar = () => {
 
         {/* Premium Mobile Menu */}
         {isMenuOpen && (
-          <div className="xl:hidden border-t border-purple-500/30 bg-gradient-to-b from-slate-900/98 to-slate-950/98 backdrop-blur-xl rounded-b-3xl shadow-2xl absolute top-full left-0 right-0 z-50">
+          <div className="xl:hidden border-t border-purple-500/30 bg-black rounded-b-3xl shadow-2xl absolute top-full left-0 right-0 z-50">
             <div className="px-4 py-6 space-y-2">
               {navLinks.map((link) => (
                 <div key={link.href}>

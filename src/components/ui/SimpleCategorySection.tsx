@@ -129,11 +129,11 @@ const SimpleCategorySection = () => {
         </div>
 
         {/* Category Cards Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 lg:gap-8 w-full">
           {categories.map((category, index) => (
             <div
               key={index}
-              className="group cursor-pointer transform transition-all duration-500 hover:scale-105"
+              className="group cursor-pointer transform transition-all duration-500 hover:scale-105 w-full"
               onClick={() => handleCategoryClick(category.slug)}
             >
               <div className="relative h-full">

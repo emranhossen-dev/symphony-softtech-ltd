@@ -165,7 +165,7 @@ const customStyles = `
   }
 
   .custom-scrollbar::-webkit-scrollbar {
-    width: 8px;
+    width: 10px;
   }
 
   .custom-scrollbar::-webkit-scrollbar-track {
@@ -176,10 +176,16 @@ const customStyles = `
   .custom-scrollbar::-webkit-scrollbar-thumb {
     background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
     border-radius: 4px;
+    border: 2px solid rgba(30, 41, 59, 0.5);
   }
 
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background: linear-gradient(180deg, #5a67d8 0%, #6b46c1 100%);
+  }
+
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: #667eea #1e293b;
   }
 
   .glass-button {
@@ -215,6 +221,8 @@ interface Course {
   description: string;
   shortDescription?: string;
   price: number;
+  originalPrice?: number;
+  discountPercent?: number;
   duration?: string;
   thumbnail?: string;
   category: string;
@@ -869,7 +877,7 @@ const CourseDetailPage = () => {
                 
                 {/* Smart Description */}
                 <p className="text-lg text-white/90 mb-8 leading-relaxed">
-                  {course.shortDescription || course.description.substring(0, 200) + '...'}
+                  {course.shortDescription || course.description}
                 </p>
                 
                 {/* Advanced Stats */}
@@ -940,8 +948,8 @@ const CourseDetailPage = () => {
                       </div>
                       <div className="text-right">
                         <div className="text-sm text-gray-400 mb-1">Original Price</div>
-                        <div className="text-xl font-semibold text-white/50 line-through">
-                          ৳{course.originalPrice ? course.originalPrice.toLocaleString() : (course.price * 1.5).toLocaleString()}
+                        <div className="text-xl font-semibold text-white/50">
+                          <s>৳{course.originalPrice ? course.originalPrice.toLocaleString() : (course.price * 1.5).toLocaleString()}</s>
                         </div>
                       </div>
                       <div className="text-right">
@@ -1044,7 +1052,7 @@ const CourseDetailPage = () => {
             </p>
           </div>
           
-          <div className="glass-card overflow-hidden max-h-[1000px] overflow-y-auto bg-gradient-to-br from-slate-900/95 to-slate-950/95 backdrop-blur-xl" style={{scrollbarWidth: 'thin', scrollbarColor: '#667eea #1e293b'}}>
+          <div className="overflow-y-auto bg-slate-900 border-2 border-purple-500 rounded-lg module-scroll" style={{height: '550px'}}>
             {modules.length === 0 ? (
               <div className="text-center py-16">
                 <div className="w-16 h-16 bg-gray-700/50 rounded-full mx-auto mb-4 flex items-center justify-center">

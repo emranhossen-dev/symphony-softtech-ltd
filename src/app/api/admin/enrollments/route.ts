@@ -268,3 +268,124 @@ export async function PATCH(request: NextRequest) {
   }
 }
 
+// PUT /api/admin/enrollments - Update enrollment status (alternative to PATCH)
+export async function PUT(request: NextRequest) {
+  try {
+    console.log('PUT request received');
+    
+    const token = request.headers.get('Authorization')?.replace('Bearer ', '');
+    const cookieToken = request.cookies.get('auth-token')?.value;
+    const authToken = token || cookieToken;
+    
+    if (!authToken) {
+      console.log('No token provided');
+      throw new AuthError('Authentication required', 401);
+    }
+
+    console.log('Token found, verifying...');
+    const payload = verifyToken(authToken);
+    if (!hasRole(payload.role, 'ADMIN') && !hasRole(payload.role, 'EMPLOYEE')) {
+      console.log('Invalid role:', payload.role);
+      throw new AuthError('Insufficient permissions', 403);
+    }
+
+    console.log('Authentication successful, parsing body...');
+    const body = await request.json();
+    const { id, enrollmentStatus } = body;
+
+    console.log('Parsed body:', { id, enrollmentStatus });
+
+    if (!id || !enrollmentStatus) {
+      console.log('Missing required fields');
+      return NextResponse.json(
+        { success: false, error: 'Enrollment ID and status are required' },
+        { status: 400 }
+      );
+    }
+
+    console.log('Checking Prisma client...');
+    if (!prisma) {
+      console.log('Prisma client not available');
+      return NextResponse.json(
+        { success: false, error: 'Database not available' },
+        { status: 500 }
+      );
+    }
+
+    console.log('Updating enrollment:', { id, enrollmentStatus });
+    
+    // Update enrollment status
+    const enrollment = await prisma.enrollment.update({
+      where: { id },
+      data: { enrollmentStatus },
+      include: {
+        payments: true,
+        course: {
+          include: {
+            mentor: {
+              select: {
+                name: true
+              }
+            }
+          }
+        },
+        category: true,
+        user: {
+          select: {
+            name: true,
+            email: true,
+            phone: true
+          }
+        }
+      }
+    });
+
+    console.log('Update successful:', enrollment);
+
+    // If admitted, send email notification
+    if (enrollmentStatus === 'ADMITTED') {
+      // TODO: Send email with password setup link
+      console.log(`Enrollment ${id} admitted. Email should be sent to ${enrollment.email}`);
+    }
+
+    // Calculate counts for response
+    const pendingApprovals = await prisma.enrollment.count({
+      where: { enrollmentStatus: 'APPLIED' }
+    });
+    
+    const pendingPayments = await prisma.enrollment.count({
+      where: { enrollmentStatus: 'WAITING' }
+    });
+
+    return NextResponse.json({
+      success: true,
+      enrollment,
+      counts: {
+        pendingApprovals,
+        pendingPayments
+      },
+      message: `Enrollment ${enrollmentStatus.toLowerCase()} successfully`
+    });
+
+  } catch (error: any) {
+    console.error('Error updating enrollment:', error);
+    console.error('Error details:', {
+      message: error.message,
+      stack: error.stack,
+      name: error.name
+    });
+    
+    if (error instanceof AuthError) {
+      return NextResponse.json(
+        { success: false, error: error.message },
+        { status: error.statusCode }
+      );
+    }
+    
+    return NextResponse.json(
+      { success: false, error: error.message || 'Failed to update enrollment' },
+      { status: 500 }
+    );
+  }
+}
+

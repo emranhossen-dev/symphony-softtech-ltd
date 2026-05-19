@@ -48,10 +48,10 @@ export default function StudentDetailModal({ student, onClose, onSave }: Student
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'APPROVED': return 'bg-green-100 text-green-800 border-green-200';
-      case 'REJECTED': return 'bg-red-100 text-red-800 border-red-200';
-      case 'PENDING_REVIEW': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+      case 'APPROVED': return 'bg-green-900/50 text-green-400 border-green-700';
+      case 'REJECTED': return 'bg-red-900/50 text-red-400 border-red-700';
+      case 'PENDING_REVIEW': return 'bg-yellow-900/50 text-yellow-400 border-yellow-700';
+      default: return 'bg-gray-800 text-gray-300 border-gray-600';
     }
   };
 
@@ -104,9 +104,9 @@ export default function StudentDetailModal({ student, onClose, onSave }: Student
               {currentStudent.status}
             </span>
             <span className={`inline-flex items-center gap-1 px-3 py-1.5 text-sm font-semibold rounded-full border ${
-              currentStudent.paymentStatus === 'PAID' ? 'bg-green-100 text-green-800 border-green-200' :
-              currentStudent.paymentStatus === 'PENDING' ? 'bg-yellow-100 text-yellow-800 border-yellow-200' :
-              'bg-gray-100 text-gray-800 border-gray-200'
+              currentStudent.paymentStatus === 'PAID' ? 'bg-green-900/50 text-green-400 border-green-700' :
+              currentStudent.paymentStatus === 'PENDING' ? 'bg-yellow-900/50 text-yellow-400 border-yellow-700' :
+              'bg-gray-800 text-gray-300 border-gray-600'
             }`}>
               <DollarSign className="w-4 h-4" />
               {currentStudent.paymentStatus}

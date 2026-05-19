@@ -196,11 +196,11 @@ const FeaturedCourses = () => {
 
         {/* Courses Carousel */}
         {filteredCourses.length > 0 ? (
-          <div className="relative">
+          <div className="relative w-full overflow-hidden">
             {/* Course Grid - 3 column layout */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8 w-full">
               {filteredCourses.slice(currentIndex, currentIndex + itemsPerPage).map((course, index) => (
-                <div key={course.id}>
+                <div key={course.id} className="w-full">
                   <CourseCard
                     id={course.id}
                     title={course.title}
@@ -254,13 +254,13 @@ const FeaturedCourses = () => {
 
             {/* Carousel Indicators */}
             {filteredCourses.length > itemsPerPage && (
-              <div className="flex justify-center gap-2 mt-8">
-                {Array.from({ length: Math.ceil(filteredCourses.length / 3) }).map((_, index) => (
+              <div className="flex justify-center gap-2 mt-6 md:mt-8">
+                {Array.from({ length: Math.ceil(filteredCourses.length / itemsPerPage) }).map((_, index) => (
                   <button
                     key={index}
-                    onClick={() => setCurrentIndex(index * 3)}
+                    onClick={() => setCurrentIndex(index * itemsPerPage)}
                     className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                      currentIndex === index * 3
+                      currentIndex === index * itemsPerPage
                         ? "bg-blue-500 w-8"
                         : "bg-gray-600 hover:bg-gray-500"
                     }`}

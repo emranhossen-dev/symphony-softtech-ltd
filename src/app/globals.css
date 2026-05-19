@@ -2,6 +2,51 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Responsive fixes */
+html {
+  overflow-x: hidden;
+}
+
+body {
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100%;
+}
+
+* {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Module Scrollbar */
+.module-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+
+.module-scroll::-webkit-scrollbar-track {
+  background: rgba(30, 41, 59, 0.5);
+  border-radius: 4px;
+}
+
+.module-scroll::-webkit-scrollbar-thumb {
+  background: #667eea;
+  border-radius: 4px;
+}
+
+.module-scroll::-webkit-scrollbar-thumb:hover {
+  background: #764ba2;
+}
+
+.module-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #667eea rgba(30, 41, 59, 0.5);
+}
+
 /* Modern Dark Blue Gradient Glassmorphism Theme */
 :root {
   --glass-bg-dark: rgba(13, 27, 62, 0.85);
@@ -1091,13 +1136,13 @@ a:hover, button:hover, .link:hover, .clickable:hover {
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* Fix duplicate focus styles */
+/* Fix duplicate focus styles - Dark Mode */
 input:focus, textarea:focus, select:focus {
-  color: #111827 !important;
-  background-color: #ffffff !important;
+  color: #f1f5f9 !important;
+  background-color: rgba(51, 65, 85, 0.9) !important;
   outline: none;
-  border-color: #16a34a;
-  box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.1);
+  border-color: rgba(102, 126, 234, 0.6) !important;
+  box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
 }
 
 /* Custom scrollbar for sidebar */
@@ -1263,12 +1308,6 @@ body {
     overflow-x: hidden;
     width: 100%;
   }
-  
-  /* Responsive text sizes */
-  h1 { font-size: 1.5rem; }
-  h2 { font-size: 1.25rem; }
-  h3 { font-size: 1.125rem; }
-  p { font-size: 0.875rem; }
 }
 
 /* Tablet responsive fixes */

@@ -62,24 +62,24 @@ const FAQSection = () => {
   };
 
   return (
-    <section className="relative py-24 overflow-hidden">
+    <section className="relative py-12 md:py-20 lg:py-24 overflow-hidden">
       <div className="container mx-auto px-4 relative z-10">
         {/* Enhanced Header */}
-        <div className="text-center mb-20">
-          <div className="inline-flex items-center gap-3 glass-button px-6 py-3 rounded-full text-blue-400 mb-8 border border-blue-500/30">
-            <HelpCircle className="w-5 h-5 text-yellow-400" />
-            <span className="font-bold">FAQ</span>
-            <Zap className="w-5 h-5 text-yellow-400" />
+        <div className="text-center mb-12 md:mb-16 lg:mb-20">
+          <div className="inline-flex items-center gap-2 md:gap-3 glass-button px-4 md:px-6 py-2 md:py-3 rounded-full text-blue-400 mb-4 md:mb-8 border border-blue-500/30">
+            <HelpCircle className="w-4 h-4 md:w-5 md:h-5 text-yellow-400" />
+            <span className="font-bold text-xs md:text-sm">FAQ</span>
+            <Zap className="w-4 h-4 md:w-5 md:h-5 text-yellow-400" />
           </div>
-          
-          <h2 className="text-5xl md:text-6xl font-bold text-white mb-6">
+
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 md:mb-6">
             Frequently Asked
             <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">
               Questions
             </span>
           </h2>
-          
-          <p className="text-xl text-gray-300 max-w-4xl mx-auto leading-relaxed">
+
+          <p className="text-base md:text-xl text-gray-300 max-w-4xl mx-auto leading-relaxed px-4">
             Got questions? We've got answers. Find everything you need to know about our training programs.
           </p>
         </div>
@@ -143,9 +143,9 @@ const FAQSection = () => {
                     activeIndex === index ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
                   }`}
                 >
-                  <div className="px-8 pb-6">
-                    <div className="pl-16">
-                      <p className="text-gray-300 leading-relaxed text-lg">
+                  <div className="px-4 md:px-8 pb-4 md:pb-6">
+                    <div className="pl-4 md:pl-12 lg:pl-16">
+                      <p className="text-gray-300 leading-relaxed text-sm md:text-base lg:text-lg">
                         {faq.answer}
                       </p>
                       
@@ -170,61 +170,61 @@ const FAQSection = () => {
           </div>
 
           {/* Enhanced Help Section */}
-          <div className="mt-20">
-            <div className="glass-card p-12">
+          <div className="mt-12 md:mt-20">
+            <div className="glass-card p-6 md:p-8 lg:p-12">
               <div className="text-center">
-                <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-3xl flex items-center justify-center mx-auto mb-8">
-                  <HelpCircle className="h-12 w-12 text-white" />
+                <div className="w-16 h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl md:rounded-3xl flex items-center justify-center mx-auto mb-4 md:mb-8">
+                  <HelpCircle className="h-8 w-8 md:h-10 md:w-10 lg:h-12 lg:w-12 text-white" />
                 </div>
-                
-                <h3 className="text-3xl md:text-4xl font-bold text-white mb-6">
+
+                <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4 md:mb-6">
                   Still have
                   <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">
                     questions?
                   </span>
                 </h3>
-                <p className="text-xl text-gray-300 mb-10 max-w-3xl mx-auto leading-relaxed">
+                <p className="text-base md:text-xl text-gray-300 mb-6 md:mb-10 max-w-3xl mx-auto leading-relaxed px-4">
                   Our support team is here to help you with any queries you might have about our programs, admission process, or career guidance.
                 </p>
-                
-                <div className="flex flex-col sm:flex-row gap-6 justify-center mb-10">
-                  <button className="glass-button px-8 py-4 rounded-full font-bold hover:scale-105 transition-all duration-300 text-blue-400 border-2 border-blue-500/50" onClick={openChat}>
-                    <MessageCircle className="inline-block mr-3 h-5 w-5" />
+
+                <div className="flex flex-col sm:flex-row gap-3 md:gap-6 justify-center mb-6 md:mb-10 px-4">
+                  <button className="glass-button px-4 md:px-8 py-3 md:py-4 rounded-full font-bold hover:scale-105 transition-all duration-300 text-blue-400 border-2 border-blue-500/50 text-sm md:text-base" onClick={openChat}>
+                    <MessageCircle className="inline-block mr-2 md:mr-3 h-4 w-4 md:h-5 md:w-5" />
                     Live Chat Support
                   </button>
-                  <button className="glass-button px-8 py-4 rounded-full font-bold hover:scale-105 transition-all duration-300 text-blue-400 border-2 border-blue-500/50" onClick={() => window.location.href = `tel:${contactInfo.phone}`}>
-                    <Phone className="inline-block mr-3 h-5 w-5" />
+                  <button className="glass-button px-4 md:px-8 py-3 md:py-4 rounded-full font-bold hover:scale-105 transition-all duration-300 text-blue-400 border-2 border-blue-500/50 text-sm md:text-base" onClick={() => window.location.href = `tel:${contactInfo.phone}`}>
+                    <Phone className="inline-block mr-2 md:mr-3 h-4 w-4 md:h-5 md:w-5" />
                     Call Us Now
                   </button>
                 </div>
 
                 {/* Enhanced Contact info */}
-                <div className="flex flex-wrap justify-center gap-10 text-gray-400">
+                <div className="flex flex-col sm:flex-row flex-wrap justify-center gap-4 md:gap-6 lg:gap-10 text-gray-400 px-4">
                   <div className="flex items-center gap-3 group">
-                    <div className="w-10 h-10 glass-button rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <div className="w-10 h-10 glass-button rounded-full flex items-center justify-center group-hover:scale-110 transition-transform shrink-0">
                       <Mail className="h-5 w-5 text-blue-400" />
                     </div>
-                    <div className="text-left">
+                    <div className="text-left min-w-0">
                       <div className="text-xs text-blue-400 font-semibold">Email</div>
-                      <div className="font-medium text-white">{contactInfo.email}</div>
+                      <div className="font-medium text-white text-sm truncate">{contactInfo.email}</div>
                     </div>
                   </div>
                   <div className="flex items-center gap-3 group">
-                    <div className="w-10 h-10 glass-button rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <div className="w-10 h-10 glass-button rounded-full flex items-center justify-center group-hover:scale-110 transition-transform shrink-0">
                       <Phone className="h-5 w-5 text-blue-400" />
                     </div>
-                    <div className="text-left">
+                    <div className="text-left min-w-0">
                       <div className="text-xs text-blue-400 font-semibold">Phone</div>
-                      <div className="font-medium text-white">{contactInfo.phone}</div>
+                      <div className="font-medium text-white text-sm truncate">{contactInfo.phone}</div>
                     </div>
                   </div>
                   <div className="flex items-center gap-3 group">
-                    <div className="w-10 h-10 glass-button rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <div className="w-10 h-10 glass-button rounded-full flex items-center justify-center group-hover:scale-110 transition-transform shrink-0">
                       <MessageCircle className="h-5 w-5 text-blue-400" />
                     </div>
-                    <div className="text-left">
+                    <div className="text-left min-w-0">
                       <div className="text-xs text-blue-400 font-semibold">Availability</div>
-                      <div className="font-medium text-white">24/7 Support</div>
+                      <div className="font-medium text-white text-sm">24/7 Support</div>
                     </div>
                   </div>
                 </div>

@@ -1,20 +1,37 @@
 import type { Metadata } from "next";
-import { Suspense } from "react";
+import { Suspense, lazy } from "react";
 import "./globals.css";
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import { NotificationProvider } from '@/contexts/NotificationContext';
 import RouteLoading from '@/components/RouteLoading';
-import NeonBlobs from '@/components/NeonBlobs';
+
+const NeonBlobs = lazy(() => import('@/components/NeonBlobs'));
 
 export const metadata: Metadata = {
-  title: "Symphony Institute of Technology",
-  description: "Professional Training & Certification",
+  title: "Symphony Institute of Technology - Professional Training & Certification",
+  description: "Symphony Institute of Technology offers professional training and certification programs in Bangladesh. Get industry-standard education in technology, IT, and more.",
+  keywords: ["training institute", "IT training", "professional certification", "technology education", "Bangladesh"],
   icons: {
     icon: "/Logo.jpeg",
     shortcut: "/Logo.jpeg",
     apple: "/Logo.jpeg",
+  },
+  viewport: {
+    width: "device-width",
+    initialScale: 1,
+    maximumScale: 5,
+    userScalable: true,
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+  openGraph: {
+    title: "Symphony Institute of Technology",
+    description: "Professional Training & Certification",
+    type: "website",
   },
 };
 
@@ -29,7 +46,9 @@ export default function RootLayout({
         <NotificationProvider>
           <html lang="en" suppressHydrationWarning>
             <body className="antialiased">
-              <NeonBlobs />
+              <Suspense fallback={null}>
+                <NeonBlobs />
+              </Suspense>
 
               <div className="relative z-10">
                 <Suspense fallback={<div>Loading...</div>}>

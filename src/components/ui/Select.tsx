@@ -26,42 +26,53 @@ const Select = React.forwardRef<
     onValueChange?.(newValue);
   };
 
+  // Recursively clone children to inject props into nested SelectItem components
+  const cloneChildren = (childNodes: React.ReactNode): React.ReactNode => {
+    return React.Children.map(childNodes, (child) => {
+      if (!React.isValidElement(child)) return child;
+
+      const childType = child.type as any;
+
+      if (childType === SelectTrigger) {
+        return React.cloneElement(child as React.ReactElement<any>, {
+          isOpen,
+          setIsOpen,
+          value: selectedValue,
+          ...(child.props as any)
+        });
+      }
+
+      if (childType === SelectContent) {
+        return React.cloneElement(child as React.ReactElement<any>, {
+          isOpen,
+          setIsOpen,
+          ...(child.props as any),
+          children: cloneChildren(child.props.children)
+        });
+      }
+
+      if (childType === SelectItem) {
+        return React.cloneElement(child as React.ReactElement<any>, {
+          onValueChange: handleValueChange,
+          ...(child.props as any)
+        });
+      }
+
+      // For other elements, recursively process their children
+      if (child.props.children) {
+        return React.cloneElement(child as React.ReactElement<any>, {
+          ...(child.props as any),
+          children: cloneChildren(child.props.children)
+        });
+      }
+
+      return child;
+    });
+  };
+
   return (
     <div className="relative" ref={ref} {...props}>
-      {React.Children.map(children, (child) => {
-        if (React.isValidElement(child)) {
-          const childType = child.type as any;
-          
-          // Pass props to specific child components
-          if (childType === SelectTrigger) {
-            return React.cloneElement(child as React.ReactElement<any>, {
-              isOpen,
-              setIsOpen,
-              value: selectedValue,
-              ...(child.props as any)
-            });
-          }
-          
-          if (childType === SelectContent) {
-            return React.cloneElement(child as React.ReactElement<any>, {
-              isOpen,
-              setIsOpen,
-              ...(child.props as any)
-            });
-          }
-          
-          if (childType === SelectItem) {
-            return React.cloneElement(child as React.ReactElement<any>, {
-              onValueChange: handleValueChange,
-              ...(child.props as any)
-            });
-          }
-          
-          // For other children, pass through original props
-          return child;
-        }
-        return child;
-      })}
+      {cloneChildren(children)}
     </div>
   );
 });
@@ -86,8 +97,9 @@ const SelectValue = React.forwardRef<
     value?: string;
   }
 >(({ className, children, placeholder, value, ...props }, ref) => {
-  const displayValue = children || value;
-  
+  // Prioritize value from parent (SelectTrigger) over children
+  const displayValue = value || children;
+
   return (
     <span
       ref={ref}
@@ -116,6 +128,14 @@ const SelectTrigger = React.forwardRef<
     setIsOpen?.(!isOpen);
   };
 
+  // Pass value to SelectValue children
+  const childrenWithValue = React.Children.map(children, (child) => {
+    if (React.isValidElement(child) && child.type === SelectValue) {
+      return React.cloneElement(child as React.ReactElement<any>, { value });
+    }
+    return child;
+  });
+
   return (
     <button
       type="button"
@@ -128,7 +148,7 @@ const SelectTrigger = React.forwardRef<
       {...props}
     >
       <span className="flex-1 text-left">
-        {children}
+        {childrenWithValue}
       </span>
       <ChevronDown className="h-4 w-4 text-gray-500 ml-2" />
     </button>

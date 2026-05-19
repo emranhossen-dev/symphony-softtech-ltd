@@ -251,7 +251,7 @@ const LiveChatWidget = ({ children }: { children?: React.ReactNode }) => {
       {children}
       <div className="fixed bottom-6 right-6 z-50">
       {!isMinimized && (
-        <div className="absolute bottom-16 right-0 w-80 bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-200 animate-in slide-in-from-bottom-5 duration-300 flex flex-col" style={{ height: showForm ? '400px' : '500px' }}>
+        <div className="absolute bottom-16 right-0 w-80 bg-gradient-to-br from-slate-800 via-indigo-900 to-slate-900 rounded-2xl shadow-2xl overflow-hidden border border-indigo-500 animate-in slide-in-from-bottom-5 duration-300 flex flex-col" style={{ height: showForm ? '400px' : '500px' }}>
           {/* Header */}
           <div className="bg-gradient-to-r from-slate-700 to-indigo-700 p-4 text-white">
             <div className="flex items-center justify-between">
@@ -286,42 +286,42 @@ const LiveChatWidget = ({ children }: { children?: React.ReactNode }) => {
 
           {/* Form - Show first */}
           {showForm ? (
-            <div className="flex-1 p-4 bg-gray-50 overflow-y-auto">
-              <p className="text-sm font-semibold text-gray-700 mb-3">Please provide your details</p>
+            <div className="flex-1 p-4 bg-slate-900 overflow-y-auto">
+              <p className="text-sm font-semibold text-white mb-3">Please provide your details</p>
               <form onSubmit={handleFormSubmit} className="space-y-3">
                 <div className="relative">
-                  <User className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
+                  <User className="absolute left-3 top-2.5 w-4 h-4 text-indigo-300" />
                   <input
                     type="text"
                     value={userInfo.name}
                     onChange={(e) => setUserInfo(prev => ({ ...prev, name: e.target.value }))}
                     placeholder="Your Name *"
                     required
-                    className="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm bg-white shadow-sm"
+                    className="w-full pl-9 pr-3 py-2 border border-indigo-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm bg-slate-800 text-white shadow-sm placeholder-gray-400"
                   />
                 </div>
 
                 <div className="relative">
-                  <Phone className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
+                  <Phone className="absolute left-3 top-2.5 w-4 h-4 text-indigo-300" />
                   <input
                     type="tel"
                     value={userInfo.phone}
                     onChange={(e) => setUserInfo(prev => ({ ...prev, phone: e.target.value }))}
                     placeholder="Your Phone *"
                     required
-                    className="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm bg-white shadow-sm"
+                    className="w-full pl-9 pr-3 py-2 border border-indigo-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm bg-slate-800 text-white shadow-sm placeholder-gray-400"
                   />
                 </div>
 
                 <div className="relative">
-                  <Mail className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
+                  <Mail className="absolute left-3 top-2.5 w-4 h-4 text-indigo-300" />
                   <input
                     type="email"
                     value={userInfo.email}
                     onChange={(e) => setUserInfo(prev => ({ ...prev, email: e.target.value }))}
                     placeholder="Your Email *"
                     required
-                    className="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm bg-white shadow-sm"
+                    className="w-full pl-9 pr-3 py-2 border border-indigo-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm bg-slate-800 text-white shadow-sm placeholder-gray-400"
                   />
                 </div>
 
@@ -337,15 +337,15 @@ const LiveChatWidget = ({ children }: { children?: React.ReactNode }) => {
           ) : (
             <>
               {/* Messages */}
-              <div className="flex-1 overflow-y-auto p-4 bg-gray-50">
+              <div className="flex-1 overflow-y-auto p-4 bg-slate-900">
                 <div className="space-y-4">
                   {/* Welcome Message */}
                   <div className="flex justify-start">
-                    <div className="bg-white border border-gray-200 rounded-2xl rounded-bl-none px-4 py-2 max-w-[80%] shadow-sm">
-                      <p className="text-sm text-gray-800">
+                    <div className="bg-indigo-600 border border-indigo-500 rounded-2xl rounded-bl-none px-4 py-2 max-w-[80%] shadow-sm">
+                      <p className="text-sm text-white">
                         👋 Hello {userInfo.name}! Welcome to Symphony Institute. How can I help you today?
                       </p>
-                      <div className="flex items-center gap-1 mt-1 text-xs text-gray-400">
+                      <div className="flex items-center gap-1 mt-1 text-xs text-indigo-200">
                         <Clock className="w-2 h-2" />
                         <span>Just now</span>
                       </div>
@@ -360,8 +360,8 @@ const LiveChatWidget = ({ children }: { children?: React.ReactNode }) => {
                       <div
                         className={`max-w-[80%] rounded-2xl px-4 py-2 ${
                           msg.sender === 'user'
-                            ? 'bg-gradient-to-r from-slate-700 to-indigo-700 text-white rounded-br-sm'
-                            : 'bg-white border border-gray-200 text-gray-800 rounded-bl-sm shadow-sm'
+                            ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-br-sm'
+                            : 'bg-indigo-800 border border-indigo-500 text-white rounded-bl-sm shadow-sm'
                         }`}
                       >
                         <p className="text-sm leading-relaxed">{msg.text}</p>
@@ -379,7 +379,7 @@ const LiveChatWidget = ({ children }: { children?: React.ReactNode }) => {
               </div>
 
               {/* Input */}
-              <div className="p-4 bg-white border-t border-gray-200">
+              <div className="p-4 bg-slate-900 border-t border-indigo-500">
                 <div className="flex items-center gap-2">
                   <input
                     type="text"
@@ -387,7 +387,7 @@ const LiveChatWidget = ({ children }: { children?: React.ReactNode }) => {
                     onChange={(e) => setMessage(e.target.value)}
                     onKeyPress={handleKeyPress}
                     placeholder="Type your message..."
-                    className="flex-1 px-4 py-2 bg-gray-100 rounded-full focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
+                    className="flex-1 px-4 py-2 bg-slate-800 text-white rounded-full focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm placeholder-gray-400 border border-indigo-500"
                   />
                   <button
                     onClick={handleSendMessage}

@@ -126,19 +126,20 @@ interface StudentProfile {
 
 interface Stats {
   total: number;
-  pendingReview: number;
-  paymentPending: number;
-  approved: number;
+  applied: number;
+  admitted: number;
   rejected: number;
+  waiting: number;
+  nextBatch: number;
+  paymentPending: number;
 }
 
 const statusConfig = {
-  PENDING_REVIEW: { label: 'Pending Review', color: 'badge-secondary', icon: Clock },
-  PAYMENT_PENDING: { label: 'Payment Pending', color: 'badge-secondary', icon: Clock },
-  APPROVED: { label: 'Approved', color: 'badge-primary', icon: CheckCircle },
+  APPLIED: { label: 'Applied', color: 'badge-secondary', icon: Clock },
+  WAITING: { label: 'Waiting', color: 'badge-secondary', icon: Clock },
+  ADMITTED: { label: 'Admitted', color: 'badge-primary', icon: CheckCircle },
   REJECTED: { label: 'Rejected', color: 'badge-danger', icon: X },
-  ENROLLED: { label: 'Enrolled', color: 'badge-primary', icon: CheckCircle },
-  COMPLETED: { label: 'Completed', color: 'badge-primary', icon: CheckCircle }
+  NEXT_BATCH: { label: 'Next Batch', color: 'badge-primary', icon: CheckCircle }
 };
 
 const paymentConfig = {
@@ -165,10 +166,11 @@ const categories = [
 
 const statuses = [
   { value: 'all', label: 'All Status' },
-  { value: 'PENDING_REVIEW', label: 'Pending Review' },
-  { value: 'PAYMENT_PENDING', label: 'Payment Pending' },
-  { value: 'APPROVED', label: 'Approved' },
-  { value: 'REJECTED', label: 'Rejected' }
+  { value: 'APPLIED', label: 'Applied' },
+  { value: 'WAITING', label: 'Waiting' },
+  { value: 'ADMITTED', label: 'Admitted' },
+  { value: 'REJECTED', label: 'Rejected' },
+  { value: 'NEXT_BATCH', label: 'Next Batch' }
 ];
 
 export default function EnrollmentManagementSystem() {
@@ -176,10 +178,12 @@ export default function EnrollmentManagementSystem() {
   const [filteredEnrollments, setFilteredEnrollments] = useState<Enrollment[]>([]);
   const [stats, setStats] = useState<Stats>({
     total: 0,
-    pendingReview: 0,
-    paymentPending: 0,
-    approved: 0,
-    rejected: 0
+    applied: 0,
+    admitted: 0,
+    rejected: 0,
+    waiting: 0,
+    nextBatch: 0,
+    paymentPending: 0
   });
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState<{ [key: string]: boolean }>({});
@@ -222,25 +226,66 @@ export default function EnrollmentManagementSystem() {
   const fetchEnrollments = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
-      const headers: Record<string, string> = {};
-      if (token) headers['Authorization'] = `Bearer ${token}`;
-      
       const response = await fetch('/api/admin/enrollments', {
         method: 'GET',
-        headers,
+        headers: { 'Content-Type': 'application/json' },
         credentials: 'include'
       });
-      
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      
+
       const data = await response.json();
-      
+
       if (data.success) {
-        setEnrollments(data.enrollments);
-        setStats(data.stats);
+        // Transform API response to match frontend interface
+        const transformedEnrollments = data.enrollments.map((e: any) => ({
+          id: e.id,
+          fullName: e.fullName || e.user?.name || '',
+          email: e.email || e.user?.email || '',
+          phoneNumber: e.phoneNumber || '',
+          address: e.address || '',
+          courseName: e.courseName || e.course?.title || '',
+          category: e.category || e.course?.category || '',
+          enrollmentStatus: e.enrollmentStatus,
+          paymentStatus: e.paymentStatus || (e.payments?.[0]?.paymentStatus) || '',
+          educationLevel: e.educationLevel,
+          whyJoin: e.whyJoin,
+          preferredBatchTime: e.preferredBatchTime,
+          createdAt: e.createdAt,
+          updatedAt: e.updatedAt,
+          lastActivity: e.lastActivity,
+          notes: e.notes,
+          callHistory: e.callHistory,
+          communicationLogs: e.communicationLogs
+        }));
+
+        console.log('Transformed enrollments:', transformedEnrollments);
+        setEnrollments(transformedEnrollments);
+
+        // Map API stats to our Stats interface
+        const mappedStats: Stats = {
+          total: data.stats?.totalEnrollments || transformedEnrollments.length || 0,
+          applied: data.stats?.pendingEnrollments || 0,
+          admitted: data.stats?.approvedEnrollments || 0,
+          rejected: data.stats?.rejectedEnrollments || 0,
+          waiting: data.stats?.paymentPendingEnrollments || 0,
+          nextBatch: 0, // API doesn't provide this, calculate from enrollments
+          paymentPending: data.stats?.paymentPendingEnrollments || 0
+        };
+
+        // Calculate nextBatch from enrollments if not provided
+        if (transformedEnrollments) {
+          mappedStats.nextBatch = transformedEnrollments.filter((e: any) => e.enrollmentStatus === 'NEXT_BATCH').length;
+          // Also calculate other stats from enrollments for accuracy
+          mappedStats.applied = transformedEnrollments.filter((e: any) => e.enrollmentStatus === 'APPLIED').length;
+          mappedStats.admitted = transformedEnrollments.filter((e: any) => e.enrollmentStatus === 'ADMITTED').length;
+          mappedStats.rejected = transformedEnrollments.filter((e: any) => e.enrollmentStatus === 'REJECTED').length;
+          mappedStats.waiting = transformedEnrollments.filter((e: any) => e.enrollmentStatus === 'WAITING').length;
+        }
+
+        setStats(mappedStats);
       } else {
         toast.error(data.error || 'Failed to fetch enrollments');
       }
@@ -253,43 +298,52 @@ export default function EnrollmentManagementSystem() {
   };
 
   const filterEnrollments = () => {
+    console.log('filterEnrollments called with filters:', filters);
+    console.log('Total enrollments:', enrollments.length);
+
     let filtered = [...enrollments];
-    
+
     // Filter by search
     if (filters.search) {
-      filtered = filtered.filter(enrollment => 
+      console.log('Filtering by search:', filters.search);
+      filtered = filtered.filter(enrollment =>
         enrollment.fullName.toLowerCase().includes(filters.search.toLowerCase()) ||
         enrollment.email.toLowerCase().includes(filters.search.toLowerCase()) ||
         enrollment.phoneNumber.includes(filters.search) ||
         enrollment.courseName.toLowerCase().includes(filters.search.toLowerCase())
       );
     }
-    
+
     // Filter by category
     if (filters.category !== 'all') {
+      console.log('Filtering by category:', filters.category);
       filtered = filtered.filter(enrollment => enrollment.category === filters.category);
     }
-    
+
     // Filter by status
     if (filters.status !== 'all') {
+      console.log('Filtering by status:', filters.status);
       filtered = filtered.filter(enrollment => enrollment.enrollmentStatus === filters.status);
     }
 
     // Filter by payment status
     if (filters.paymentStatus !== 'all') {
+      console.log('Filtering by payment status:', filters.paymentStatus);
       filtered = filtered.filter(enrollment => enrollment.paymentStatus === filters.paymentStatus);
     }
 
     // Filter by education level
     if (filters.educationLevel !== 'all') {
+      console.log('Filtering by education level:', filters.educationLevel);
       filtered = filtered.filter(enrollment => enrollment.educationLevel === filters.educationLevel);
     }
 
     // Filter by date range
     if (filters.dateRange !== 'all') {
+      console.log('Filtering by date range:', filters.dateRange);
       const now = new Date();
       const filterDate = new Date();
-      
+
       switch (filters.dateRange) {
         case 'today':
           filterDate.setHours(0, 0, 0, 0);
@@ -307,20 +361,22 @@ export default function EnrollmentManagementSystem() {
           filterDate.setFullYear(now.getFullYear() - 1);
           break;
       }
-      
-      filtered = filtered.filter(enrollment => 
+
+      filtered = filtered.filter(enrollment =>
         new Date(enrollment.createdAt) >= filterDate
       );
     }
 
     // Filter by notes
     if (filters.hasNotes) {
+      console.log('Filtering by has notes');
       filtered = filtered.filter(enrollment => enrollment.notes && enrollment.notes.trim() !== '');
     }
 
     // Filter by call history
     if (filters.hasCallHistory) {
-      filtered = filtered.filter(enrollment => 
+      console.log('Filtering by has call history');
+      filtered = filtered.filter(enrollment =>
         enrollment.callHistory && enrollment.callHistory.length > 0
       );
     }
@@ -329,9 +385,9 @@ export default function EnrollmentManagementSystem() {
     filtered.sort((a, b) => {
       const aValue = a[sortBy as keyof Enrollment];
       const bValue = b[sortBy as keyof Enrollment];
-      
+
       if (aValue === undefined || bValue === undefined) return 0;
-      
+
       let comparison = 0;
       if (typeof aValue === 'string' && typeof bValue === 'string') {
         comparison = aValue.localeCompare(bValue);
@@ -340,60 +396,79 @@ export default function EnrollmentManagementSystem() {
       } else {
         comparison = String(aValue).localeCompare(String(bValue));
       }
-      
+
       return sortOrder === 'asc' ? comparison : -comparison;
     });
-    
+
+    console.log('Filtered enrollments count:', filtered.length);
     setFilteredEnrollments(filtered);
   };
 
   const updateEnrollmentStatus = async (enrollmentId: string, newStatus: string) => {
+    console.log('updateEnrollmentStatus called with:', { enrollmentId, newStatus });
+
+    if (!newStatus) {
+      console.log('No new status provided, returning');
+      return;
+    }
+    if (!enrollmentId) {
+      console.log('No enrollmentId provided, returning');
+      return;
+    }
+
+    console.log('Updating enrollment status:', { enrollmentId, newStatus });
+
+    // Store old enrollments for revert on error
+    const oldEnrollments = [...enrollments];
+
     try {
+      // Optimistic update - update UI immediately
+      console.log('Doing optimistic update...');
+      setEnrollments(prev =>
+        prev.map(enrollment =>
+          enrollment.id === enrollmentId
+            ? { ...enrollment, enrollmentStatus: newStatus }
+            : enrollment
+        )
+      );
+
       setActionLoading(prev => ({ ...prev, [enrollmentId]: true }));
-      
-      const token = localStorage.getItem('token');
-      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-      if (token) headers['Authorization'] = `Bearer ${token}`;
-      
+
+      const requestBody = {
+        id: enrollmentId,
+        enrollmentStatus: newStatus
+      };
+      console.log('Sending request to /api/admin/enrollments with body:', requestBody);
+
       const response = await fetch('/api/admin/enrollments', {
         method: 'PUT',
-        headers,
+        headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({
-          id: enrollmentId,
-          enrollmentStatus: newStatus
-        })
+        body: JSON.stringify(requestBody)
       });
 
+      console.log('Response status:', response.status);
+      console.log('Response ok:', response.ok);
+
       if (!response.ok) {
+        // Revert optimistic update on error
+        console.log('Response not ok, reverting...');
+        setEnrollments(oldEnrollments);
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
       const data = await response.json();
-      
+      console.log('Response data:', data);
+
       if (data.success) {
-        // Update local state
-        setEnrollments(prev => 
-          prev.map(enrollment => 
-            enrollment.id === enrollmentId 
-              ? { ...enrollment, enrollmentStatus: newStatus }
-              : enrollment
-          )
-        );
+        console.log('Update successful, refreshing enrollments...');
+        // Refresh from server to ensure state is consistent
+        await fetchEnrollments();
 
-        // Update stats
-        if (data.counts) {
-          setStats(prev => ({
-            ...prev,
-            pendingReview: data.counts.pendingApprovals,
-            paymentPending: data.counts.pendingPayments
-          }));
-        }
-
-        const action = status === 'APPROVED' ? 'approved' : status === 'REJECTED' ? 'rejected' : 'updated';
+        const action = newStatus === 'ADMITTED' ? 'admitted' : newStatus === 'REJECTED' ? 'rejected' : 'updated';
         toast.success(`Enrollment ${action} successfully!`);
 
-        // Update sidebar badge counts
+        // Dispatch event to update sidebar counts
         window.dispatchEvent(new CustomEvent('updateSidebarCounts', {
           detail: {
             pendingApprovals: data.counts?.pendingApprovals || 0,
@@ -401,10 +476,13 @@ export default function EnrollmentManagementSystem() {
           }
         }));
       } else {
+        console.log('Update failed, reverting...');
+        setEnrollments(oldEnrollments);
         toast.error(data.error || 'Failed to update enrollment');
       }
     } catch (error) {
       console.error('Error updating enrollment:', error);
+      setEnrollments(oldEnrollments);
       toast.error('Failed to update enrollment. Please try again.');
     } finally {
       setActionLoading(prev => ({ ...prev, [enrollmentId]: false }));
@@ -412,7 +490,7 @@ export default function EnrollmentManagementSystem() {
   };
 
   const handleApprove = (enrollmentId: string) => {
-    updateEnrollmentStatus(enrollmentId, 'APPROVED');
+    updateEnrollmentStatus(enrollmentId, 'ADMITTED');
   };
 
   const handleReject = (enrollmentId: string) => {
@@ -420,7 +498,7 @@ export default function EnrollmentManagementSystem() {
   };
 
   const handleVerifyPayment = (enrollmentId: string) => {
-    updateEnrollmentStatus(enrollmentId, 'APPROVED');
+    updateEnrollmentStatus(enrollmentId, 'ADMITTED');
   };
 
   const handleStartCall = (enrollment: Enrollment) => {
@@ -535,11 +613,11 @@ export default function EnrollmentManagementSystem() {
           setEnrollments(prev => 
             prev.map(enrollment => 
               selectedEnrollments.includes(enrollment.id)
-                ? { ...enrollment, enrollmentStatus: 'APPROVED' }
+                ? { ...enrollment, enrollmentStatus: 'ADMITTED' }
                 : enrollment
             )
           );
-          toast.success(`${selectedEnrollments.length} enrollments approved`);
+          toast.success(`${selectedEnrollments.length} enrollments admitted`);
           break;
         case 'reject':
           setEnrollments(prev => 
@@ -647,36 +725,48 @@ export default function EnrollmentManagementSystem() {
       </div>
 
       {/* Stats Section */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <Card className="bg-gradient-to-br from-blue-700 to-purple-800 text-white rounded-2xl shadow-lg p-6 flex items-center justify-between border border-blue-600/30">
-          <div>
-            <p className="text-gray-200 text-lg">Total</p>
-            <h2 className="text-5xl font-bold">{stats.total}</h2>
-            <p className="text-gray-300">All applicants</p>
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
+        <Card className="bg-gradient-to-br from-blue-700 to-purple-800 text-white rounded-2xl shadow-lg p-4 flex flex-col items-center justify-center border border-blue-600/30">
+          <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center mb-2">
+            <Users className="w-6 h-6" />
           </div>
-          <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center text-3xl font-bold">
-            <Users className="w-8 h-8" />
-          </div>
+          <h2 className="text-3xl font-bold">{stats.total}</h2>
+          <p className="text-gray-200 text-sm">Total</p>
         </Card>
-        <Card className="bg-gradient-to-br from-green-600 to-teal-700 text-white rounded-2xl shadow-lg p-6 flex items-center justify-between border border-green-600/30">
-          <div>
-            <p className="text-gray-200 text-lg">Admitted</p>
-            <h2 className="text-5xl font-bold">{stats.approved}</h2>
-            <p className="text-gray-300">Accepted applicants</p>
+        <Card className="bg-gradient-to-br from-cyan-600 to-blue-700 text-white rounded-2xl shadow-lg p-4 flex flex-col items-center justify-center border border-cyan-600/30">
+          <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center mb-2">
+            <Clock className="w-6 h-6" />
           </div>
-          <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center text-3xl font-bold">
-            <CheckCircle className="w-8 h-8" />
-          </div>
+          <h2 className="text-3xl font-bold">{stats.applied}</h2>
+          <p className="text-gray-200 text-sm">Applied</p>
         </Card>
-        <Card className="bg-gradient-to-br from-orange-600 to-red-700 text-white rounded-2xl shadow-lg p-6 flex items-center justify-between border border-orange-600/30">
-          <div>
-            <p className="text-gray-200 text-lg">Waiting</p>
-            <h2 className="text-5xl font-bold">{stats.pendingReview}</h2>
-            <p className="text-gray-300">Pending review</p>
+        <Card className="bg-gradient-to-br from-green-600 to-teal-700 text-white rounded-2xl shadow-lg p-4 flex flex-col items-center justify-center border border-green-600/30">
+          <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center mb-2">
+            <CheckCircle className="w-6 h-6" />
           </div>
-          <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center text-3xl font-bold">
-            <Clock className="w-8 h-8" />
+          <h2 className="text-3xl font-bold">{stats.admitted}</h2>
+          <p className="text-gray-200 text-sm">Admitted</p>
+        </Card>
+        <Card className="bg-gradient-to-br from-orange-600 to-red-700 text-white rounded-2xl shadow-lg p-4 flex flex-col items-center justify-center border border-orange-600/30">
+          <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center mb-2">
+            <Clock className="w-6 h-6" />
           </div>
+          <h2 className="text-3xl font-bold">{stats.waiting}</h2>
+          <p className="text-gray-200 text-sm">Waiting</p>
+        </Card>
+        <Card className="bg-gradient-to-br from-red-600 to-pink-700 text-white rounded-2xl shadow-lg p-4 flex flex-col items-center justify-center border border-red-600/30">
+          <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center mb-2">
+            <X className="w-6 h-6" />
+          </div>
+          <h2 className="text-3xl font-bold">{stats.rejected}</h2>
+          <p className="text-gray-200 text-sm">Rejected</p>
+        </Card>
+        <Card className="bg-gradient-to-br from-purple-600 to-indigo-700 text-white rounded-2xl shadow-lg p-4 flex flex-col items-center justify-center border border-purple-600/30">
+          <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center mb-2">
+            <Calendar className="w-6 h-6" />
+          </div>
+          <h2 className="text-3xl font-bold">{stats.nextBatch}</h2>
+          <p className="text-gray-200 text-sm">Next Batch</p>
         </Card>
       </div>
 
@@ -988,17 +1078,23 @@ export default function EnrollmentManagementSystem() {
                   </td>
                   
                   <td className="px-4 py-3">
-                    <Select defaultValue={enrollment.enrollmentStatus}>
-                      <SelectTrigger className="bg-gray-700/50 border-gray-600 text-white text-sm">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent className="bg-gray-800 border-gray-700">
-                        <SelectItem value="PENDING_REVIEW" className="text-gray-100">Pending Review</SelectItem>
-                        <SelectItem value="APPROVED" className="text-gray-100">Approved</SelectItem>
-                        <SelectItem value="REJECTED" className="text-gray-100">Rejected</SelectItem>
-                        <SelectItem value="ENROLLED" className="text-gray-100">Enrolled</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <div className="flex items-center space-x-2">
+                      <Badge className={statusConfig[enrollment.enrollmentStatus as keyof typeof statusConfig]?.color || 'badge-secondary'}>
+                        {statusConfig[enrollment.enrollmentStatus as keyof typeof statusConfig]?.label || enrollment.enrollmentStatus}
+                      </Badge>
+                      <select
+                        value={enrollment.enrollmentStatus}
+                        onChange={(e) => updateEnrollmentStatus(enrollment.id, e.target.value)}
+                        disabled={actionLoading[enrollment.id]}
+                        className="w-32 rounded-md border border-gray-600 bg-gray-700/50 px-2 py-1 text-sm text-white focus:border-blue-400 focus:outline-none"
+                      >
+                        <option value="APPLIED">Applied</option>
+                        <option value="ADMITTED">Admitted</option>
+                        <option value="REJECTED">Rejected</option>
+                        <option value="WAITING">Waiting</option>
+                        <option value="NEXT_BATCH">Next Batch</option>
+                      </select>
+                    </div>
                   </td>
                   
                   <td className="px-4 py-3">

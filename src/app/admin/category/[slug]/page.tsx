@@ -254,14 +254,14 @@ const CategoryAdmissionControl = () => {
 
   const getStatusColor = (status: EnrollmentStatus) => {
     const colors: Record<EnrollmentStatus, string> = {
-      'PENDING_REVIEW': 'bg-blue-100 text-blue-800',
-      'PAYMENT_PENDING': 'bg-yellow-100 text-yellow-800',
-      'APPROVED': 'bg-green-100 text-green-800',
-      'ADMITTED': 'bg-green-100 text-green-800',
-      'WAITING': 'bg-yellow-100 text-yellow-800',
-      'REJECTED': 'bg-red-100 text-red-800'
+      'PENDING_REVIEW': 'bg-blue-900/50 text-blue-400 border-blue-700',
+      'PAYMENT_PENDING': 'bg-yellow-900/50 text-yellow-400 border-yellow-700',
+      'APPROVED': 'bg-green-900/50 text-green-400 border-green-700',
+      'ADMITTED': 'bg-green-900/50 text-green-400 border-green-700',
+      'WAITING': 'bg-yellow-900/50 text-yellow-400 border-yellow-700',
+      'REJECTED': 'bg-red-900/50 text-red-400 border-red-700'
     };
-    return colors[status] || 'bg-gray-100 text-gray-800';
+    return colors[status] || 'bg-gray-800 text-gray-300';
   };
 
   const getCategoryAccentColor = () => {
@@ -336,7 +336,7 @@ const CategoryAdmissionControl = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-900 to-gray-900">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-900 via-blue-950 to-gray-900">
       {/* Beautiful Header */}
       <div className={`bg-gradient-to-r ${getCategoryGradient()} text-white relative overflow-hidden`}>
         <div className="absolute inset-0 bg-black opacity-10"></div>
@@ -365,7 +365,7 @@ const CategoryAdmissionControl = () => {
             <div className="flex items-center gap-4">
               <button
                 onClick={() => router.push(`/admin/category/${categoryId}/enrollment`)}
-                className="flex items-center gap-2 px-6 py-3 bg-white text-gray-900 rounded-xl hover:bg-gray-100 transition-all transform hover:scale-105 font-medium shadow-lg"
+                className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all transform hover:scale-105 font-medium shadow-lg"
               >
                 <Users className="w-5 h-5" />
                 View All Enrollments
@@ -401,7 +401,7 @@ const CategoryAdmissionControl = () => {
         {stats && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             {/* Total Students Card */}
-            <div className="bg-gray-800 rounded-2xl shadow-lg border border-gray-700 overflow-hidden hover:shadow-xl transition-shadow">
+            <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl shadow-lg border border-gray-700 overflow-hidden hover:shadow-xl transition-shadow">
               <div className="p-6">
                 <div className="flex items-center justify-between mb-4">
                   <div className="p-3 bg-blue-900/50 rounded-xl">
@@ -422,7 +422,7 @@ const CategoryAdmissionControl = () => {
             </div>
 
             {/* Revenue Card */}
-            <div className="bg-gray-800 rounded-2xl shadow-lg border border-gray-700 overflow-hidden hover:shadow-xl transition-shadow">
+            <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl shadow-lg border border-gray-700 overflow-hidden hover:shadow-xl transition-shadow">
               <div className="p-6">
                 <div className="flex items-center justify-between mb-4">
                   <div className="p-3 bg-green-900/50 rounded-xl">
@@ -443,7 +443,7 @@ const CategoryAdmissionControl = () => {
             </div>
 
             {/* Pending Applications */}
-            <div className="bg-gray-800 rounded-2xl shadow-lg border border-gray-700 overflow-hidden hover:shadow-xl transition-shadow">
+            <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl shadow-lg border border-gray-700 overflow-hidden hover:shadow-xl transition-shadow">
               <div className="p-6">
                 <div className="flex items-center justify-between mb-4">
                   <div className="p-3 bg-yellow-900/50 rounded-xl">
@@ -464,7 +464,7 @@ const CategoryAdmissionControl = () => {
             </div>
 
             {/* Completion Rate */}
-            <div className="bg-gray-800 rounded-2xl shadow-lg border border-gray-700 overflow-hidden hover:shadow-xl transition-shadow">
+            <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl shadow-lg border border-gray-700 overflow-hidden hover:shadow-xl transition-shadow">
               <div className="p-6">
                 <div className="flex items-center justify-between mb-4">
                   <div className="p-3 bg-purple-900/50 rounded-xl">
@@ -586,7 +586,7 @@ const CategoryAdmissionControl = () => {
           </div>
 
           {/* Quick Actions */}
-          <div className="bg-gray-800 rounded-2xl shadow-lg border border-gray-700">
+          <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl shadow-lg border border-gray-700">
             <div className="p-6 border-b border-gray-700">
               <h3 className="text-lg font-semibold text-white">Quick Actions</h3>
               <p className="text-sm text-gray-400">Common tasks</p>
@@ -621,9 +621,9 @@ const CategoryAdmissionControl = () => {
 
         {/* Section Divider */}
         <div className="flex items-center gap-4 my-10">
-          <div className="h-px bg-gray-200 flex-1"></div>
+          <div className="h-px bg-gray-700 flex-1"></div>
           <div className="text-gray-400 text-sm font-medium">Category Navigation</div>
-          <div className="h-px bg-gray-200 flex-1"></div>
+          <div className="h-px bg-gray-700 flex-1"></div>
         </div>
 
         {/* Category Navigation */}

@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import { Play, Save, Send, Monitor, Code, FileText, Download, Upload, RefreshCw, Copy, CheckCircle, XCircle, Clock, Terminal, Settings, Globe, Smartphone, Plus } from 'lucide-react';
-import Editor from '@monaco-editor/react';
 import toast from 'react-hot-toast';
+
+const Editor = lazy(() => import('@monaco-editor/react'));
 
 interface File {
   id: string;
