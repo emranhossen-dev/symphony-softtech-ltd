@@ -464,7 +464,7 @@ const AdminSidebar = ({ isOpen, onClose, isMobile, isCollapsed = false, onToggle
           className={`flex items-center justify-between w-full px-3 py-2.5 text-sm rounded-xl transition-all duration-300 group ${
             isActive
               ? 'bg-gradient-to-r from-green-600 to-green-500 text-white shadow-lg shadow-green-500/30'
-              : 'text-gray-300 hover:bg-gradient-to-r hover:from-white/10 hover:to-transparent hover:text-white'
+              : 'text-gray-300 hover:text-white'
           }`}
           onClick={() => {
             if (hasChildren) {

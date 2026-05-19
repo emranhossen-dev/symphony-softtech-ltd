@@ -4,14 +4,25 @@ import { prisma } from '@/lib/prisma';
 export async function GET(request: NextRequest) {
   try {
     const categories = await prisma.category.findMany({
+      include: {
+        _count: {
+          select: { courses: true }
+        }
+      },
       orderBy: {
         createdAt: 'desc'
       }
     });
 
+    const categoriesWithCounts = categories.map(cat => ({
+      ...cat,
+      courseCount: cat._count.courses,
+      enrollmentCount: 0 // Can be calculated later if needed
+    }));
+
     return NextResponse.json({
       success: true,
-      categories: categories
+      data: categoriesWithCounts
     });
 
   } catch (error) {
@@ -42,6 +53,54 @@ export async function POST(request: NextRequest) {
       { error: 'Internal server error' },
       { status: 500 }
     )
+  }
+}
+
+export async function PUT(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const { id, ...updateData } = body;
+
+    if (!id) {
+      return NextResponse.json(
+        { error: 'Category ID is required' },
+        { status: 400 }
+      );
+    }
+
+    // Check if slug is being changed and if it conflicts
+    if (updateData.slug) {
+      const existing = await prisma.category.findFirst({
+        where: {
+          slug: updateData.slug,
+          id: { not: id }
+        }
+      });
+
+      if (existing) {
+        return NextResponse.json(
+          { error: 'Category with this slug already exists' },
+          { status: 400 }
+        );
+      }
+    }
+
+    const category = await prisma.category.update({
+      where: { id },
+      data: updateData
+    });
+
+    return NextResponse.json({
+      success: true,
+      data: category
+    });
+
+  } catch (error) {
+    console.error('Error updating category:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
   }
 }
 

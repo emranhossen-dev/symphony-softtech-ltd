@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Suspense, lazy } from "react";
 import "./globals.css";
 import { Toaster } from 'react-hot-toast';
@@ -18,12 +18,6 @@ export const metadata: Metadata = {
     shortcut: "/Logo.jpeg",
     apple: "/Logo.jpeg",
   },
-  viewport: {
-    width: "device-width",
-    initialScale: 1,
-    maximumScale: 5,
-    userScalable: true,
-  },
   robots: {
     index: true,
     follow: true,
@@ -33,6 +27,13 @@ export const metadata: Metadata = {
     description: "Professional Training & Certification",
     type: "website",
   },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
 };
 
 export default function RootLayout({
