@@ -1,28 +1,39 @@
 "use client";
 
-import dynamic from "next/dynamic";
-import { ReactNode } from "react";
-import { Loader2 } from "lucide-react";
-
-// Dynamically import the actual layout to prevent SSR hydration issues
-const StudentLayoutContent = dynamic(() => import("@/components/student/StudentLayoutContent"), { 
-  ssr: false,
-  loading: () => (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="text-center">
-        <Loader2 className="w-8 h-8 animate-spin text-green-600 mx-auto mb-4" />
-        <p className="text-gray-600">Loading...</p>
-      </div>
-    </div>
-  )
-});
+import { useState, ReactNode } from "react";
+import StudentSidebar from "@/components/student/StudentSidebar";
+import StudentHeader from "@/components/student/StudentHeader";
 
 interface StudentLayoutProps {
   children: ReactNode;
 }
 
 const StudentLayout = ({ children }: StudentLayoutProps) => {
-  return <StudentLayoutContent>{children}</StudentLayoutContent>;
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+
+  return (
+    <div className="min-h-screen bg-gray-50 flex">
+      {/* Sidebar */}
+      <StudentSidebar 
+        isOpen={sidebarOpen} 
+        onClose={() => setSidebarOpen(false)} 
+      />
+
+      {/* Main content area */}
+      <div className="flex-1 flex flex-col">
+        {/* Header */}
+        <StudentHeader 
+          onSidebarToggle={() => setSidebarOpen(!sidebarOpen)}
+          sidebarOpen={sidebarOpen}
+        />
+
+        {/* Page content */}
+        <main className="flex-1 p-3 sm:p-4 md:p-6 lg:p-8 overflow-auto">
+          {children}
+        </main>
+      </div>
+    </div>
+  );
 };
 
 export default StudentLayout;

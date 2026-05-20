@@ -479,3 +479,14 @@ enum NotificationType {
   COURSE_COMPLETED
   CERTIFICATE_AVAILABLE
 }
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  email     String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  used      Boolean  @default(false)
+
+  @@map("password_reset_tokens")
+}

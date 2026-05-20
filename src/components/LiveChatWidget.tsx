@@ -69,16 +69,18 @@ const LiveChatWidget = ({ children }: { children?: React.ReactNode }) => {
     if (isOpen) setShowGreeting(false);
   }, [isOpen]);
 
-  // Prevent scrollbar when chat is open
+  // Prevent scrollbar when chat is open using CSS class to avoid hydration mismatch
   useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
+    if (typeof window !== 'undefined') {
+      if (isOpen) {
+        document.body.classList.add('chat-open');
+      } else {
+        document.body.classList.remove('chat-open');
+      }
+      return () => {
+        document.body.classList.remove('chat-open');
+      };
     }
-    return () => {
-      document.body.style.overflow = '';
-    };
   }, [isOpen]);
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);

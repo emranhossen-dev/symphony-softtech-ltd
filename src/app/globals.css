@@ -13,6 +13,11 @@ body {
   max-width: 100%;
 }
 
+/* Chat open state - hide scrollbar to prevent layout shift */
+body.chat-open {
+  overflow: hidden;
+}
+
 * {
   max-width: 100%;
   box-sizing: border-box;

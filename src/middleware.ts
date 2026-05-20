@@ -16,6 +16,7 @@ export async function middleware(request: NextRequest) {
     '/api/auth/register',
     '/api/auth/verify',
     '/api/auth/me',
+    '/api/auth/reset-password',
     '/api/public',
     '/seminar-registration',
     '/_next',
@@ -33,6 +34,12 @@ export async function middleware(request: NextRequest) {
   // If it's a public route, allow access
   if (isPublicRoute) {
     console.log(`✅ Public route allowed: ${pathname}`);
+    return NextResponse.next();
+  }
+
+  // Skip middleware for API routes that aren't specifically protected
+  if (pathname.startsWith('/api/') && !pathname.startsWith('/api/admin/') && !pathname.startsWith('/api/student/') && !pathname.startsWith('/api/mentor/') && !pathname.startsWith('/api/employee/')) {
+    console.log(`✅ API route allowed: ${pathname}`);
     return NextResponse.next();
   }
 
@@ -156,6 +163,10 @@ export const config = {
     '/mentor/:path*',
     '/employee/:path*',
     '/login',
-    '/unauthorized'
+    '/unauthorized',
+    '/api/admin/:path*',
+    '/api/student/:path*',
+    '/api/mentor/:path*',
+    '/api/employee/:path*'
   ],
 };

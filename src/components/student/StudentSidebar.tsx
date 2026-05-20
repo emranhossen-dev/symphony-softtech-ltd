@@ -35,6 +35,7 @@ const studentSidebarItems: StudentSidebarItem[] = [
   { name: "My Courses", href: "/student/courses", icon: <BookOpen className="w-5 h-5" /> },
   { name: "Online Classes", href: "/student/online-classes", icon: <Video className="w-5 h-5" />, isOnlineClass: true, badge: "Live" },
   { name: "Homework", href: "/student/homework", icon: <FileText className="w-5 h-5" /> },
+  { name: "All Notes", href: "/student/notes", icon: <FileText className="w-5 h-5" /> },
   { name: "Certificates", href: "/student/certificates", icon: <Download className="w-5 h-5" /> },
   { name: "Notifications", href: "/student/notifications", icon: <Bell className="w-5 h-5" />, badge: "3" },
   { name: "Profile", href: "/student/profile", icon: <User className="w-5 h-5" /> },
@@ -122,7 +123,11 @@ const StudentSidebar = ({ isOpen = true, onClose }: StudentSidebarProps) => {
         {/* Navigation */}
         <nav className="flex-1 px-4 py-6 space-y-2">
           {studentSidebarItems.map((item) => {
-            const isActive = pathname === item.href || (item.href !== "/student" && pathname.startsWith(item.href));
+            // Enhanced active route detection
+            const isActive = 
+              pathname === item.href || 
+              (item.href === "/student/courses" && pathname.startsWith("/student/course")) ||
+              (item.href !== "/student" && pathname.startsWith(item.href));
             
             return (
               <Link

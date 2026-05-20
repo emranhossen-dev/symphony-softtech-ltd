@@ -46,7 +46,7 @@ export default function RootLayout({
       <ThemeProvider>
         <NotificationProvider>
           <html lang="en" suppressHydrationWarning>
-            <body className="antialiased">
+            <body className="antialiased" suppressHydrationWarning>
               <Suspense fallback={null}>
                 <NeonBlobs />
               </Suspense>

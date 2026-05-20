@@ -53,13 +53,19 @@ export default function SplitCoursePage() {
 
   const fetchCourse = async () => {
     try {
+      console.log('Fetching course for ID:', courseId);
       const response = await fetch(`/api/courses/${courseId}`, {
         credentials: 'include'
       });
       const data = await response.json();
       
+      console.log('Course API Response:', data);
+      
       if (data.success) {
+        console.log('Course found:', data.course);
         setCourse(data.course);
+      } else {
+        console.error('Course API Error:', data.error);
       }
     } catch (error) {
       console.error('Error fetching course:', error);
@@ -73,8 +79,12 @@ export default function SplitCoursePage() {
       });
       const data = await response.json();
       
+      console.log('Modules API Response:', data);
+      
       if (data.success) {
         const sortedModules = data.modules.sort((a: Module, b: Module) => a.order - b.order);
+        console.log('Sorted modules:', sortedModules);
+        console.log('First module videoUrl:', sortedModules[0]?.videoUrl);
         setModules(sortedModules);
       }
     } catch (error) {
