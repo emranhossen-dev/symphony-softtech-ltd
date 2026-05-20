@@ -104,13 +104,13 @@ const AdminSidebar = ({ isOpen, onClose, isMobile, isCollapsed = false, onToggle
     } else {
       setCategoryName('');
     }
-    
+
     // Fetch quick stats
     fetchQuickStats();
-    
+
     // Fetch user profile
     fetchUserProfile();
-    
+
     // Fetch notifications
     fetchNotifications();
   }, [pathname]);
@@ -178,9 +178,9 @@ const AdminSidebar = ({ isOpen, onClose, isMobile, isCollapsed = false, onToggle
       console.log('Fetching quick stats...');
       const response = await fetch('/api/admin/stats');
       const data = await response.json();
-      
+
       console.log('Stats response:', data);
-      
+
       if (data.success) {
         setQuickStats(data.stats.quickStats);
         setRecentActivities(data.stats.recentActivities);
@@ -202,7 +202,6 @@ const AdminSidebar = ({ isOpen, onClose, isMobile, isCollapsed = false, onToggle
     }
   };
 
-  
   const toggleSection = (section: string) => {
     setExpandedSections(prev =>
       prev.includes(section)
@@ -437,24 +436,7 @@ const AdminSidebar = ({ isOpen, onClose, isMobile, isCollapsed = false, onToggle
     {
       title: 'Settings',
       href: '/admin/settings',
-      icon: <Settings className="w-4 h-4" />,
-      children: [
-        {
-          title: 'General',
-          href: '/admin/settings',
-          icon: <Settings className="w-4 h-4" />
-        },
-        {
-          title: 'Users',
-          href: '/admin/settings/users',
-          icon: <Users className="w-4 h-4" />
-        },
-        {
-          title: 'System',
-          href: '/admin/settings/system',
-          icon: <Settings className="w-4 h-4" />
-        }
-      ]
+      icon: <Settings className="w-4 h-4" />
     }
   ];
 
@@ -515,7 +497,7 @@ const AdminSidebar = ({ isOpen, onClose, isMobile, isCollapsed = false, onToggle
   };
 
   return (
-    <div className={`sidebar-container fixed inset-y-0 left-0 z-40 bg-gradient-to-b from-gray-900 via-gray-900 to-gray-950 transform transition-all duration-500 ease-in-out flex flex-col shadow-2xl shadow-black/50 ${
+    <div className={`sidebar-container fixed inset-y-0 left-0 z-40 bg-gradient-to-b from-gray-900 via-gray-900 to-gray-950 h-full transform transition-all duration-500 ease-in-out flex flex-col shadow-2xl shadow-black/50 ${
       isCollapsed ? 'w-20' : 'w-72'
     } ${isOpen ? 'translate-x-0' : '-translate-x-full'
     } ${isMobile ? 'lg:hidden' : 'lg:translate-x-0'} border-r border-gray-800/50`}>
@@ -577,63 +559,64 @@ const AdminSidebar = ({ isOpen, onClose, isMobile, isCollapsed = false, onToggle
           )}
         </div>
 
-        {/* Quick Stats */}
-        {!isCollapsed && (
-          <div className="p-4 border-b border-gray-800/50 animate-in slide-in-from-left-2 duration-300">
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-white font-semibold text-sm">Quick Stats</h3>
-              {loading && (
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-lg shadow-green-500/50"></div>
-              )}
+        </div>
+
+      {/* Quick Stats */}
+      {!isCollapsed && (
+        <div className="p-4 border-b border-gray-800/50 animate-in slide-in-from-left-2 duration-300">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-white font-semibold text-sm">Quick Stats</h3>
+            {loading && (
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-lg shadow-green-500/50"></div>
+            )}
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-3 border border-gray-700/50 hover:border-gray-600/50 transition-all duration-300 group">
+              <div className="text-lg font-bold text-green-400 group-hover:scale-110 transition-transform duration-300">
+                {loading ? (
+                  <div className="w-8 h-4 bg-gray-700 rounded animate-pulse"></div>
+                ) : (
+                  quickStats.totalStudents.toLocaleString()
+                )}
+              </div>
+              <div className="text-xs text-gray-400">Students</div>
             </div>
-            <div className="grid grid-cols-2 gap-2">
-              <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-3 border border-gray-700/50 hover:border-gray-600/50 transition-all duration-300 group">
-                <div className="text-lg font-bold text-green-400 group-hover:scale-110 transition-transform duration-300">
-                  {loading ? (
-                    <div className="w-8 h-4 bg-gray-700 rounded animate-pulse"></div>
-                  ) : (
-                    quickStats.totalStudents.toLocaleString()
-                  )}
-                </div>
-                <div className="text-xs text-gray-400">Students</div>
+            <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-3 border border-gray-700/50 hover:border-gray-600/50 transition-all duration-300 group">
+              <div className="text-lg font-bold text-orange-400 group-hover:scale-110 transition-transform duration-300">
+                {loading ? (
+                  <div className="w-8 h-4 bg-gray-700 rounded animate-pulse"></div>
+                ) : (
+                  `৳${quickStats.totalRevenue.toLocaleString()}`
+                )}
               </div>
-              <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-3 border border-gray-700/50 hover:border-gray-600/50 transition-all duration-300 group">
-                <div className="text-lg font-bold text-orange-400 group-hover:scale-110 transition-transform duration-300">
-                  {loading ? (
-                    <div className="w-8 h-4 bg-gray-700 rounded animate-pulse"></div>
-                  ) : (
-                    `৳${quickStats.totalRevenue.toLocaleString()}`
-                  )}
-                </div>
-                <div className="text-xs text-gray-400">Revenue</div>
+              <div className="text-xs text-gray-400">Revenue</div>
+            </div>
+            <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-3 border border-gray-700/50 hover:border-gray-600/50 transition-all duration-300 group">
+              <div className="text-lg font-bold text-green-400 group-hover:scale-110 transition-transform duration-300">
+                {loading ? (
+                  <div className="w-8 h-4 bg-gray-700 rounded animate-pulse"></div>
+                ) : (
+                  quickStats.activeCourses
+                )}
               </div>
-              <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-3 border border-gray-700/50 hover:border-gray-600/50 transition-all duration-300 group">
-                <div className="text-lg font-bold text-green-400 group-hover:scale-110 transition-transform duration-300">
-                  {loading ? (
-                    <div className="w-8 h-4 bg-gray-700 rounded animate-pulse"></div>
-                  ) : (
-                    quickStats.activeCourses
-                  )}
-                </div>
-                <div className="text-xs text-gray-400">Courses</div>
+              <div className="text-xs text-gray-400">Courses</div>
+            </div>
+            <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-3 border border-gray-700/50 hover:border-gray-600/50 transition-all duration-300 group">
+              <div className="text-lg font-bold text-red-400 group-hover:scale-110 transition-transform duration-300">
+                {loading ? (
+                  <div className="w-8 h-4 bg-gray-700 rounded animate-pulse"></div>
+                ) : (
+                  quickStats.pendingApplications
+                )}
               </div>
-              <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-3 border border-gray-700/50 hover:border-gray-600/50 transition-all duration-300 group">
-                <div className="text-lg font-bold text-red-400 group-hover:scale-110 transition-transform duration-300">
-                  {loading ? (
-                    <div className="w-8 h-4 bg-gray-700 rounded animate-pulse"></div>
-                  ) : (
-                    quickStats.pendingApplications
-                  )}
-                </div>
-                <div className="text-xs text-gray-400">Pending</div>
-              </div>
+              <div className="text-xs text-gray-400">Pending</div>
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Scrollable Navigation */}
-      <nav className="sidebar-nav flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-900">
+      <nav className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-900 min-h-0">
         {/* Category Selection - Always visible */}
         <div className="space-y-2">
           <div className="flex items-center gap-2 px-3 py-2 text-xs font-medium text-gray-400 uppercase tracking-wider">
@@ -725,17 +708,16 @@ const AdminSidebar = ({ isOpen, onClose, isMobile, isCollapsed = false, onToggle
                 <Activity className="w-4 h-4" />
                 Recent Activities
               </div>
-              <button 
+              <button
                 onClick={fetchQuickStats}
                 className="text-gray-400 hover:text-white transition-colors"
               >
                 <RefreshCw className="w-3 h-3" />
               </button>
             </div>
-            <div className="space-y-2">
-              {loading ? (
-                // Loading skeleton
-                Array.from({ length: 3 }).map((_, index) => (
+            {loading ? (
+              <div className="space-y-2">
+                {Array.from({ length: 3 }).map((_, index) => (
                   <div key={index} className="flex items-start gap-3 p-2 rounded-xl bg-gray-800/50 border border-gray-700/30">
                     <div className="w-4 h-4 bg-gray-700 rounded animate-pulse"></div>
                     <div className="flex-1">
@@ -743,9 +725,11 @@ const AdminSidebar = ({ isOpen, onClose, isMobile, isCollapsed = false, onToggle
                       <div className="w-2/3 h-2 bg-gray-700 rounded animate-pulse"></div>
                     </div>
                   </div>
-                ))
-              ) : (
-                recentActivities.map((activity) => (
+                ))}
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {recentActivities.map((activity) => (
                   <div key={activity.id} className="flex items-start gap-3 p-2 rounded-xl bg-gray-800/50 border border-gray-700/30 hover:bg-gray-700/50 hover:border-gray-600/50 transition-all duration-300">
                     <div className="flex-shrink-0 mt-0.5">
                       <div className={`w-2 h-2 rounded-full ${
@@ -757,9 +741,9 @@ const AdminSidebar = ({ isOpen, onClose, isMobile, isCollapsed = false, onToggle
                       <p className="text-xs text-gray-500 mt-1">{new Date(activity.timestamp).toLocaleDateString()}</p>
                     </div>
                   </div>
-                ))
-              )}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
       </nav>
@@ -783,7 +767,7 @@ const AdminSidebar = ({ isOpen, onClose, isMobile, isCollapsed = false, onToggle
         </div>
       )}
 
-      {/* Fixed Footer */}
+      {/* Footer */}
       <div className="flex-shrink-0 border-t border-gray-800/50 p-4 bg-gradient-to-t from-gray-950 to-gray-900">
         <div className={`flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'}`}>
           {!isCollapsed && (

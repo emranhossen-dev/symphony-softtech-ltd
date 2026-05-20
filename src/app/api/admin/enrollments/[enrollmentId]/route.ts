@@ -138,7 +138,9 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
         id: enrollmentId
       },
       data: {
-        enrollmentStatus: body.status,
+        ...(body.status && { enrollmentStatus: body.status }),
+        ...(body.paymentStatus && { paymentStatus: body.paymentStatus }),
+        ...(body.notes !== undefined && { notes: body.notes }),
         updatedAt: new Date()
       },
       include: {
@@ -202,9 +204,10 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
       whyJoin: updatedEnrollment.whyJoin,
       preferredBatchTime: updatedEnrollment.preferredBatchTime,
       enrollmentStatus: updatedEnrollment.enrollmentStatus,
-      paymentStatus: updatedEnrollment.payments && updatedEnrollment.payments.length > 0 
-        ? updatedEnrollment.payments[0].paymentStatus 
+      paymentStatus: updatedEnrollment.payments && updatedEnrollment.payments.length > 0
+        ? updatedEnrollment.payments[0].paymentStatus
         : 'NOT_REQUIRED',
+      notes: updatedEnrollment.notes,
       assignedMentor: updatedEnrollment.course?.mentor?.name,
       createdAt: updatedEnrollment.createdAt.toISOString(),
       updatedAt: updatedEnrollment.updatedAt.toISOString(),
@@ -235,31 +238,17 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 export async function DELETE(request: NextRequest, { params }: { params: Promise<{ enrollmentId: string }> }) {
   try {
     const { enrollmentId } = await params;
-
-    // Check if database is available
-    if (!prisma) {
-      // For mock data, just return success
-      return NextResponse.json({
-        success: true,
-        message: 'Enrollment deleted successfully (mock)'
-      });
-    }
+    console.log('DELETE request for enrollmentId:', enrollmentId);
 
     // First check if enrollment exists
     const existingEnrollment = await prisma.enrollment.findUnique({
       where: { id: enrollmentId }
     });
 
+    console.log('Existing enrollment found:', existingEnrollment?.id);
+
     if (!existingEnrollment) {
-      // If enrollment not found in database, it might be a mock ID
-      // Return success for mock data consistency
-      if (enrollmentId.startsWith('enroll-')) {
-        return NextResponse.json({
-          success: true,
-          message: 'Enrollment deleted successfully (mock)'
-        });
-      }
-      
+      console.error('Enrollment not found with ID:', enrollmentId);
       return NextResponse.json(
         { success: false, error: 'Enrollment not found' },
         { status: 404 }
@@ -267,19 +256,24 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
     }
 
     // Delete the enrollment
-    await prisma.enrollment.delete({
+    console.log('Deleting enrollment with ID:', enrollmentId);
+    const deletedEnrollment = await prisma.enrollment.delete({
       where: { id: enrollmentId }
     });
 
+    console.log('Enrollment deleted successfully:', deletedEnrollment.id);
     return NextResponse.json({
       success: true,
-      message: 'Enrollment deleted successfully'
+      message: 'Enrollment deleted successfully',
+      deletedId: deletedEnrollment.id
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error deleting enrollment:', error);
+    console.error('Error details:', error.message);
+    console.error('Error code:', error.code);
     return NextResponse.json(
-      { success: false, error: 'Failed to delete enrollment' },
+      { success: false, error: error.message || 'Failed to delete enrollment' },
       { status: 500 }
     );
   }

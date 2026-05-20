@@ -35,7 +35,7 @@ interface User {
   id: string;
   name: string;
   email: string;
-  role: "ADMIN" | "EMPLOYEE" | "MENTOR" | "STUDENT";
+  role: "ADMIN" | "EMPLOYEE" | "MENTOR";
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
@@ -126,14 +126,14 @@ export default function UserManagement() {
 
   const filteredUsers = useMemo(() => {
     return users.filter((user) => {
-      const matchesSearch = 
+      const matchesSearch =
         user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         user.email.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesRole = filterRole === "all" || user.role === filterRole;
-      const matchesStatus = filterStatus === "all" || 
+      const matchesStatus = filterStatus === "all" ||
         (filterStatus === "active" && user.isActive) ||
         (filterStatus === "inactive" && !user.isActive);
-      
+
       return matchesSearch && matchesRole && matchesStatus;
     });
   }, [users, searchQuery, filterRole, filterStatus]);
@@ -263,8 +263,6 @@ export default function UserManagement() {
         return <Badge className="bg-blue-500/20 text-blue-300 border-blue-400/30">Employee</Badge>;
       case "MENTOR":
         return <Badge className="bg-green-500/20 text-green-300 border-green-400/30">Mentor</Badge>;
-      case "STUDENT":
-        return <Badge className="bg-gray-500/20 text-gray-300 border-gray-400/30">Student</Badge>;
       default:
         return <Badge className="bg-gray-500/20 text-gray-300 border-gray-400/30">Unknown</Badge>;
     }
@@ -274,7 +272,8 @@ export default function UserManagement() {
     totalUsers: users.length,
     activeUsers: users.filter(u => u.isActive).length,
     admins: users.filter(u => u.role === 'ADMIN').length,
-    mentors: users.filter(u => u.role === 'MENTOR').length
+    mentors: users.filter(u => u.role === 'MENTOR').length,
+    employees: users.filter(u => u.role === 'EMPLOYEE').length
   };
 
   return (
@@ -309,7 +308,7 @@ export default function UserManagement() {
               <h1 className="text-4xl font-bold text-white mb-2">
                 Manage Users
               </h1>
-              <p className="text-gray-300">Create and manage admin, employee, and mentor accounts</p>
+              <p className="text-gray-300">Create and manage admin, employee, and mentor accounts (Students managed separately)</p>
             </div>
             <div className="flex items-center gap-3">
               <Button
@@ -334,7 +333,7 @@ export default function UserManagement() {
 
       <div className="relative z-10 p-8 space-y-8">
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
           <Card className="bg-white/5 backdrop-blur-lg border border-white/10 hover:border-purple-400/30 transition-all duration-300 hover:scale-105 shadow-2xl">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
@@ -343,7 +342,7 @@ export default function UserManagement() {
                   <p className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">{stats.totalUsers}</p>
                   <div className="flex items-center gap-1 mt-2 text-xs text-green-400">
                     <TrendingUp className="w-3 h-3" />
-                    <span>All registered users</span>
+                    <span>Admin, Employee, Mentor</span>
                   </div>
                 </div>
                 <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-purple-500 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/25">
@@ -402,6 +401,24 @@ export default function UserManagement() {
                 </div>
                 <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/25">
                   <GraduationCap className="w-7 h-7 text-white" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white/5 backdrop-blur-lg border border-white/10 hover:border-orange-400/30 transition-all duration-300 hover:scale-105 shadow-2xl">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-400 mb-1">Employees</p>
+                  <p className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-400">{stats.employees}</p>
+                  <div className="flex items-center gap-1 mt-2 text-xs text-orange-400">
+                    <UserCheck className="w-3 h-3" />
+                    <span>Staff members</span>
+                  </div>
+                </div>
+                <div className="w-14 h-14 bg-gradient-to-br from-orange-500 to-amber-500 rounded-xl flex items-center justify-center shadow-lg shadow-orange-500/25">
+                  <UserCheck className="w-7 h-7 text-white" />
                 </div>
               </div>
             </CardContent>
@@ -469,7 +486,6 @@ export default function UserManagement() {
                 <option value="ADMIN" className="bg-gray-900 text-gray-300">Admin</option>
                 <option value="EMPLOYEE" className="bg-gray-900 text-gray-300">Employee</option>
                 <option value="MENTOR" className="bg-gray-900 text-gray-300">Mentor</option>
-                <option value="STUDENT" className="bg-gray-900 text-gray-300">Student</option>
               </select>
 
               <select
