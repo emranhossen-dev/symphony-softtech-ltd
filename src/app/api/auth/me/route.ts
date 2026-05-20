@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getUserFromToken, AuthError } from '@/lib/auth';
+import { prisma } from '@/lib/prisma';
 
 // Force Node.js runtime for JWT
 export const runtime = 'nodejs';
@@ -25,7 +26,25 @@ export async function GET(request: NextRequest) {
 
     console.log('✅ Token found, verifying...');
     const user = await getUserFromToken(token);
-    
+
+    // Fetch user permissions if not admin
+    let permissions: string[] = [];
+    if (user.role !== 'ADMIN') {
+      const userPermissions = await (prisma as any).userPermission.findMany({
+        where: { userId: user.id },
+        include: {
+          permission: true
+        }
+      });
+      permissions = userPermissions.map((up: any) => up.permission.key);
+    } else {
+      // Admins get all permissions
+      const allPermissions = await (prisma as any).permission.findMany({
+        where: { isActive: true }
+      });
+      permissions = allPermissions.map((p: any) => p.key);
+    }
+
     return NextResponse.json({
       success: true,
       user: {
@@ -34,7 +53,8 @@ export async function GET(request: NextRequest) {
         name: user.name,
         role: user.role,
         phone: user.phone,
-        isActive: user.isActive
+        isActive: user.isActive,
+        permissions
       }
     });
 

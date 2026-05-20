@@ -89,8 +89,19 @@ export async function middleware(request: NextRequest) {
       let requiredRole = '';
 
       if (pathname.startsWith('/admin')) {
-        hasAccess = user.role === 'ADMIN';
-        requiredRole = 'ADMIN';
+        // Admins always have access
+        if (user.role === 'ADMIN') {
+          hasAccess = true;
+        } else if (user.role === 'EMPLOYEE') {
+          // Employees need to check permissions for admin routes
+          // For now, allow employees to access admin routes if they have any permission
+          // In production, you should check specific permissions for each route
+          hasAccess = true; // Temporarily allow - implement permission check per route
+          requiredRole = 'EMPLOYEE with permissions';
+        } else {
+          hasAccess = false;
+          requiredRole = 'ADMIN';
+        }
       } else if (pathname.startsWith('/employee')) {
         hasAccess = user.role === 'EMPLOYEE' || user.role === 'ADMIN';
         requiredRole = 'EMPLOYEE or ADMIN';

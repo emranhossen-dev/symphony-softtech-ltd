@@ -298,10 +298,17 @@ export default function StudentManagement() {
             </div>
             
             <div className="flex items-center space-x-3">
-              <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+              <button
+                type="button"
+                onClick={() => {
+                  console.log('Add Student button clicked');
+                  // Add student modal logic here
+                }}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center cursor-pointer"
+              >
                 <Users className="w-4 h-4 mr-2" />
                 Add Student
-              </Button>
+              </button>
               <Button 
                 variant="outline" 
                 className="border-gray-200 text-gray-700 hover:bg-gray-50"

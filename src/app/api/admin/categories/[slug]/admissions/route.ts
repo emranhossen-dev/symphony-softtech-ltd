@@ -3,10 +3,10 @@ import { prisma } from '@/lib/prisma';
 
 // Map slugs to category strings
 const slugToCategory: Record<string, string> = {
-  'government': 'government',
-  'online': 'online',
-  'offline': 'offline-courses', // Fixed: database has 'offline-courses' not 'offline'
-  'recorded': 'recorded'
+  'government': 'GOVERNMENT',
+  'online': 'ONLINE',
+  'offline': 'OFFLINE',
+  'recorded': 'RECORDED'
 };
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
@@ -60,7 +60,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
     // First, find the category by slug to get its ID
     const categoryRecord = await prisma.category.findUnique({
-      where: { slug: categoryString } // Use categoryString instead of slug
+      where: { slug: categoryString.toLowerCase() }
     });
 
     console.log(`Category record for ${categoryString}:`, categoryRecord);
@@ -78,39 +78,37 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
     console.log(`Fetching enrollments for category: ${categoryString}, categoryId: ${categoryRecord?.id}`);
 
-    // Fetch enrollments for this category using multiple methods
+    // Fetch enrollments for this category - simpler query
+    // Check multiple ways: categoryId, category relation, and course category string
     const enrollments = await prisma.enrollment.findMany({
       where: {
         OR: [
           { categoryId: categoryRecord?.id },
-          { courseName: { contains: slug, mode: 'insensitive' } },
-          { 
-            course: {
-              categoryRelation: {
-                slug: slug
-              }
-            }
-          },
-          {
-            course: {
-              category: {
-                contains: categoryString,
-                mode: 'insensitive'
-              }
-            }
-          }
+          { category: { slug: categoryString.toLowerCase() } },
+          { course: { categoryRelation: { slug: categoryString.toLowerCase() } } },
+          { course: { category: categoryString } }
         ]
       },
       include: {
         payments: true,
         course: {
-          include: {
+          select: {
+            id: true,
+            title: true,
+            category: true,
             mentor: {
               select: {
                 name: true
               }
             },
             categoryRelation: true
+          }
+        },
+        category: {
+          select: {
+            id: true,
+            name: true,
+            slug: true
           }
         },
         user: {
@@ -174,23 +172,25 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     // Transform enrollments data to match expected format
     const transformedStudents = enrollments.map(enrollment => {
       console.log(`Enrollment ${enrollment.id} payments:`, enrollment.payments);
+      const categoryValue = enrollment.course?.category || enrollment.course?.categoryRelation?.slug || enrollment.category?.slug || categoryString;
       return {
         id: enrollment.id,
         name: enrollment.fullName,
         phone: enrollment.phoneNumber,
         email: enrollment.email,
         status: enrollment.enrollmentStatus as any,
-        paymentStatus: enrollment.payments && enrollment.payments.length > 0 
-          ? enrollment.payments[0].paymentStatus 
+        paymentStatus: enrollment.payments && enrollment.payments.length > 0
+          ? enrollment.payments[0].paymentStatus
           : 'NOT_REQUIRED',
         courseName: enrollment.courseName || enrollment.course?.title || 'Unknown Course',
-        amount: enrollment.payments && enrollment.payments.length > 0 
-          ? enrollment.payments[0].amount 
+        amount: enrollment.payments && enrollment.payments.length > 0
+          ? enrollment.payments[0].amount
           : 0,
         assignedMentor: enrollment.course?.mentor?.name,
         appliedDate: enrollment.createdAt.toISOString(),
         avatar: enrollment.fullName.charAt(0).toUpperCase(),
-        categoryId: slug
+        categoryId: slug,
+        category: categoryValue
       };
     });
 

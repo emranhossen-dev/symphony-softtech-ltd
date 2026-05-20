@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useParams, useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
+import { useAuth } from '@/contexts/AuthContext';
 import { 
   LayoutDashboard,
   Users,
@@ -53,6 +54,7 @@ interface MenuItem {
   icon: React.ReactNode;
   badge?: string | number;
   children?: MenuItem[];
+  permission?: string; // Permission key required to view this item
 }
 
 interface QuickStats {
@@ -81,6 +83,7 @@ interface AdminSidebarProps {
 const AdminSidebar = ({ isOpen, onClose, isMobile, isCollapsed = false, onToggleCollapse }: AdminSidebarProps) => {
   const router = useRouter();
   const pathname = usePathname();
+  const { user, hasPermission } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedSections, setExpandedSections] = useState<string[]>(['Categories']);
   const [categoriesDropdownOpen, setCategoriesDropdownOpen] = useState(false);
@@ -334,12 +337,14 @@ const AdminSidebar = ({ isOpen, onClose, isMobile, isCollapsed = false, onToggle
     {
       title: 'Dashboard',
       href: '/admin',
-      icon: <LayoutDashboard className="w-4 h-4" />
+      icon: <LayoutDashboard className="w-4 h-4" />,
+      permission: 'dashboard'
     },
     {
       title: 'Categories',
       href: '/admin/categories',
       icon: <Target className="w-4 h-4" />,
+      permission: 'categories',
       children: [
         {
           title: 'Government',
@@ -367,18 +372,21 @@ const AdminSidebar = ({ isOpen, onClose, isMobile, isCollapsed = false, onToggle
       title: 'Courses',
       href: '/admin/courses',
       icon: <BookOpen className="w-4 h-4" />,
+      permission: 'courses',
       badge: quickStats.activeCourses > 0 ? quickStats.activeCourses : undefined
     },
     {
       title: 'Students',
       href: '/admin/students',
       icon: <Users className="w-4 h-4" />,
+      permission: 'students',
       badge: quickStats.totalStudents > 0 ? quickStats.totalStudents : undefined
     },
     {
       title: 'Mentors',
       href: '/admin/mentors',
-      icon: <GraduationCap className="w-4 h-4" />
+      icon: <GraduationCap className="w-4 h-4" />,
+      permission: 'mentors'
     },
     {
       title: 'Calls',
@@ -398,7 +406,8 @@ const AdminSidebar = ({ isOpen, onClose, isMobile, isCollapsed = false, onToggle
     {
       title: 'User Management',
       href: '/admin/users',
-      icon: <Shield className="w-4 h-4" />
+      icon: <Shield className="w-4 h-4" />,
+      permission: 'users'
     },
     {
       title: 'Seminars',
@@ -409,12 +418,14 @@ const AdminSidebar = ({ isOpen, onClose, isMobile, isCollapsed = false, onToggle
       title: 'Enrollments',
       href: '/admin/enrollments',
       icon: <FileText className="w-4 h-4" />,
+      permission: 'enrollments',
       badge: quickStats.pendingApplications > 0 ? quickStats.pendingApplications : undefined
     },
     {
       title: 'Analytics',
       href: '/admin/analytics',
       icon: <BarChart3 className="w-4 h-4" />,
+      permission: 'reports',
       children: [
         {
           title: 'Overview',
@@ -432,13 +443,25 @@ const AdminSidebar = ({ isOpen, onClose, isMobile, isCollapsed = false, onToggle
           icon: <Award className="w-4 h-4" />
         }
       ]
-    },
-    {
-      title: 'Settings',
-      href: '/admin/settings',
-      icon: <Settings className="w-4 h-4" />
     }
   ];
+
+  // Filter menu items based on user permissions
+  const filteredMenuItems = useMemo(() => {
+    return mainMenuItems.filter(item => {
+      // If no permission required, show it
+      if (!item.permission) return true;
+      // If user has permission or is admin, show it
+      return hasPermission(item.permission);
+    }).map(item => ({
+      ...item,
+      // Also filter children if they exist
+      children: item.children?.filter(child => {
+        if (!child.permission) return true;
+        return hasPermission(child.permission);
+      })
+    }));
+  }, [mainMenuItems, hasPermission]);
 
   const renderMenuItem = (item: MenuItem, level: number = 0) => {
     const isActive = isActiveRoute(item.href);
@@ -516,7 +539,9 @@ const AdminSidebar = ({ isOpen, onClose, isMobile, isCollapsed = false, onToggle
       {!isMobile && onToggleCollapse && (
         <button
           onClick={onToggleCollapse}
-          className="absolute top-4 right-2 p-2 rounded-xl hover:bg-white/10 transition-all duration-300 z-10 group"
+          type="button"
+          className="absolute top-1/2 -right-3 p-1.5 rounded-full bg-gray-800 hover:bg-gray-700 border border-gray-700 hover:border-gray-600 transition-all duration-300 z-50 group shadow-lg"
+          style={{ transform: 'translateY(-50%)' }}
         >
           {isCollapsed ? (
             <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-white transition-transform duration-300" />
@@ -698,7 +723,7 @@ const AdminSidebar = ({ isOpen, onClose, isMobile, isCollapsed = false, onToggle
         )}
 
         {/* Main Menu */}
-        {!categoryName && mainMenuItems.map((item) => renderMenuItem(item))}
+        {!categoryName && filteredMenuItems.map((item) => renderMenuItem(item))}
 
         {/* Recent Activities */}
         {!isCollapsed && (

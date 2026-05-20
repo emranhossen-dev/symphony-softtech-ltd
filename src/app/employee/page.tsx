@@ -79,60 +79,7 @@ export default function EmployeeDashboard() {
   });
   const [recentActivities, setRecentActivities] = useState<Activity[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-
-  // Sample data
-  const enrollments: Enrollment[] = [
-    {
-      id: '1',
-      studentName: 'Rahul Kumar',
-      course: 'Government Job Preparation',
-      category: 'GOVERNMENT',
-      status: 'pending',
-      enrolledAt: '2024-01-15T10:30:00Z',
-      phone: '+880 1234-567890',
-      email: 'rahul@email.com'
-    },
-    {
-      id: '2',
-      studentName: 'Priya Sharma',
-      course: 'Full Stack Web Development',
-      category: 'RECORDED',
-      status: 'approved',
-      enrolledAt: '2024-01-15T09:15:00Z',
-      phone: '+880 2345-678901',
-      email: 'priya@email.com'
-    },
-    {
-      id: '3',
-      studentName: 'Amit Singh',
-      course: 'Live Full Stack Bootcamp',
-      category: 'ONLINE',
-      status: 'pending',
-      enrolledAt: '2024-01-14T16:45:00Z',
-      phone: '+880 3456-789012',
-      email: 'amit@email.com'
-    },
-    {
-      id: '4',
-      studentName: 'Neha Gupta',
-      course: 'Classroom Full Stack Training',
-      category: 'OFFLINE',
-      status: 'rejected',
-      enrolledAt: '2024-01-14T14:20:00Z',
-      phone: '+880 4567-890123',
-      email: 'neha@email.com'
-    },
-    {
-      id: '5',
-      studentName: 'Vikram Reddy',
-      course: 'Data Science & Machine Learning',
-      category: 'RECORDED',
-      status: 'approved',
-      enrolledAt: '2024-01-13T11:30:00Z',
-      phone: '+880 5678-901234',
-      email: 'vikram@email.com'
-    }
-  ];
+  const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
 
   useEffect(() => {
     setMounted(true);
@@ -143,54 +90,82 @@ export default function EmployeeDashboard() {
   }, []);
 
   useEffect(() => {
-    // Simulate loading data
-    setTimeout(() => {
-      setQuickStats({
-        totalEnrollments: 156,
-        pendingFollowups: 24,
-        todayCalls: 12,
-        completedCalls: 8,
-        monthlyRevenue: 2340000,
-        conversionRate: 68.5
-      });
+    // Fetch real data from admin stats API
+    const fetchStats = async () => {
+      try {
+        const token = localStorage.getItem('auth_token') ||
+                       localStorage.getItem('token') ||
+                       document.cookie.split(';').find(c => c.trim().startsWith('auth-token='))?.split('=')[1];
 
-      setRecentActivities([
-        {
-          id: '1',
-          type: 'enrollment',
-          title: 'New Enrollment',
-          description: 'Rahul Kumar enrolled in Government Job Preparation',
-          timestamp: '2 minutes ago',
-          icon: <Users className="w-4 h-4" />
-        },
-        {
-          id: '2',
-          type: 'call',
-          title: 'Call Completed',
-          description: 'Spoke with Priya Sharma about course details',
-          timestamp: '15 minutes ago',
-          icon: <Phone className="w-4 h-4" />
-        },
-        {
-          id: '3',
-          type: 'followup',
-          title: 'Follow-up Scheduled',
-          description: 'Follow-up with Amit Singh scheduled for tomorrow',
-          timestamp: '1 hour ago',
-          icon: <Calendar className="w-4 h-4" />
-        },
-        {
-          id: '4',
-          type: 'status_update',
-          title: 'Status Updated',
-          description: 'Neha Gupta application status updated',
-          timestamp: '2 hours ago',
-          icon: <CheckCircle className="w-4 h-4" />
+        const response = await fetch('/api/admin/stats', {
+          headers: {
+            'Authorization': token ? `Bearer ${token}` : '',
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log('Stats data:', data);
+          setQuickStats({
+            totalEnrollments: data.data?.totalStudents || data.totalStudents || 0,
+            pendingFollowups: data.data?.pendingApplications || data.pendingApplications || 0,
+            todayCalls: 0,
+            completedCalls: 0,
+            monthlyRevenue: data.data?.totalRevenue || data.totalRevenue || 0,
+            conversionRate: 0
+          });
         }
-      ]);
-      setIsLoading(false);
-    }, 1500);
+      } catch (error) {
+        console.error('Error fetching stats:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    // Fetch enrollments data
+    const fetchEnrollments = async () => {
+      try {
+        const token = localStorage.getItem('auth_token') ||
+                       localStorage.getItem('token') ||
+                       document.cookie.split(';').find(c => c.trim().startsWith('auth-token='))?.split('=')[1];
+
+        const response = await fetch('/api/admin/enrollments', {
+          headers: {
+            'Authorization': token ? `Bearer ${token}` : '',
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log('Enrollments data:', data);
+          // Map API response to Enrollment interface
+          const mappedEnrollments: Enrollment[] = data.enrollments?.map((e: any) => ({
+            id: e.id,
+            studentName: e.fullName || e.name,
+            course: e.courseName,
+            category: e.category,
+            status: e.enrollmentStatus?.toLowerCase() || 'pending',
+            enrolledAt: e.createdAt,
+            phone: e.phoneNumber,
+            email: e.email
+          })) || [];
+          setEnrollments(mappedEnrollments);
+        }
+      } catch (error) {
+        console.error('Error fetching enrollments:', error);
+      }
+    };
+
+    fetchStats();
+    fetchEnrollments();
   }, []);
+
+  const refreshStats = () => {
+    // Reload the page to refresh stats
+    window.location.reload();
+  };
 
   const getStatusBadge = (status: string) => {
     switch (status) {

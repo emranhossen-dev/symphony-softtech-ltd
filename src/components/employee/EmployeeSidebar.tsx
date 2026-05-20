@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
+import { useAuth } from "@/contexts/AuthContext";
 import { 
   Users, 
   Settings, 
@@ -27,12 +28,19 @@ interface EmployeeSidebarItem {
   name: string;
   href: string;
   icon: React.ReactNode;
+  permission?: string;
 }
 
 const employeeSidebarItems: EmployeeSidebarItem[] = [
-  { name: "Dashboard", href: "/employee", icon: <Home className="w-5 h-5" /> },
-  { name: "Enrollments", href: "/employee/enrollments", icon: <Briefcase className="w-5 h-5" /> },
-  { name: "Follow-up", href: "/employee/followup", icon: <Calendar className="w-5 h-5" /> },
+  { name: "Dashboard", href: "/employee", icon: <Home className="w-5 h-5" />, permission: 'dashboard' },
+  { name: "Admin Dashboard", href: "/admin", icon: <Home className="w-5 h-5" />, permission: 'dashboard' },
+  { name: "Enrollments", href: "/employee/enrollments", icon: <Briefcase className="w-5 h-5" />, permission: 'enrollments' },
+  { name: "Admin Enrollments", href: "/admin/enrollments", icon: <Briefcase className="w-5 h-5" />, permission: 'enrollments' },
+  { name: "Courses", href: "/admin/courses", icon: <FileText className="w-5 h-5" />, permission: 'courses' },
+  { name: "Students", href: "/admin/students", icon: <Users className="w-5 h-5" />, permission: 'students' },
+  { name: "Categories", href: "/admin/categories", icon: <Target className="w-5 h-5" />, permission: 'categories' },
+  { name: "Users", href: "/admin/users", icon: <Users className="w-5 h-5" />, permission: 'users' },
+  { name: "Follow-up", href: "/employee/followup", icon: <Calendar className="w-5 h-5" />, permission: 'enrollments' },
   { name: "Live Chat", href: "/admin/live-chat", icon: <MessageCircle className="w-5 h-5" /> },
   { name: "Profile", href: "/employee/profile", icon: <Users className="w-5 h-5" /> },
 ];
@@ -46,9 +54,18 @@ interface EmployeeSidebarProps {
 const EmployeeSidebar = ({ isOpen, onClose, isMobile = false }: EmployeeSidebarProps) => {
   const pathname = usePathname();
   const router = useRouter();
+  const { hasPermission } = useAuth();
   const [mounted, setMounted] = useState(false);
   const [categoriesDropdownOpen, setCategoriesDropdownOpen] = useState(false);
   const [categoryName, setCategoryName] = useState<string>('');
+
+  // Filter menu items based on permissions
+  const filteredSidebarItems = useMemo(() => {
+    return employeeSidebarItems.filter(item => {
+      if (!item.permission) return true;
+      return hasPermission(item.permission);
+    });
+  }, [employeeSidebarItems, hasPermission]);
 
   useEffect(() => {
     setMounted(true);
@@ -163,7 +180,7 @@ const EmployeeSidebar = ({ isOpen, onClose, isMobile = false }: EmployeeSidebarP
   };
 
   return (
-    <div className={`sidebar-container fixed inset-y-0 left-0 z-40 w-64 bg-gray-900 transform transition-transform duration-300 ease-in-out flex flex-col ${
+    <div className={`sidebar-container fixed inset-y-0 left-0 z-40 w-64 h-full bg-gray-900 transform transition-transform duration-300 ease-in-out flex flex-col ${
       isOpen ? 'translate-x-0' : '-translate-x-full'
     } ${isMobile ? 'lg:hidden' : 'lg:translate-x-0'}`}>
       
@@ -270,7 +287,7 @@ const EmployeeSidebar = ({ isOpen, onClose, isMobile = false }: EmployeeSidebarP
               <BarChart3 className="w-4 h-4" />
               Main Menu
             </div>
-            {employeeSidebarItems.map((item) => {
+            {filteredSidebarItems.map((item) => {
               const isActive = pathname === item.href || (item.href !== "/employee" && pathname.startsWith(item.href));
               
               return (
@@ -304,9 +321,9 @@ const EmployeeSidebar = ({ isOpen, onClose, isMobile = false }: EmployeeSidebarP
       </nav>
 
       {/* Fixed Footer */}
-      <div className="flex-shrink-0 border-t border-gray-800 p-4 bg-gray-900">
+      <div className="flex-shrink-0 border-t border-gray-800/50 p-4 bg-gradient-to-t from-gray-950 to-gray-900">
         <div className="flex items-center">
-          <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl flex items-center justify-center">
+          <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/25">
             <span className="text-white font-bold text-sm">EP</span>
           </div>
           <div className="ml-3">

@@ -9,16 +9,18 @@ interface User {
   name: string;
   role: 'ADMIN' | 'EMPLOYEE' | 'MENTOR' | 'STUDENT';
   phone?: string;
+  permissions?: string[];
 }
 
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<string>;
   logout: () => Promise<void>;
   isAuthenticated: boolean;
   hasRole: (role: string) => boolean;
   hasAnyRole: (roles: string[]) => boolean;
+  hasPermission: (permission: string) => boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -30,7 +32,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const checkAuth = useCallback(async () => {
     try {
       console.log('AuthContext - Checking auth via /api/auth/me...');
-      
+
       const response = await fetch('/api/auth/me', {
         method: 'GET',
         headers: {
@@ -39,16 +41,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         credentials: 'include'
       });
 
+      console.log('AuthContext - Response status:', response.status);
+      console.log('AuthContext - Response ok:', response.ok);
+
       if (response.ok) {
         const data = await response.json();
         console.log('AuthContext - User data received:', data.user);
         setUser(data.user);
       } else {
         console.log('AuthContext - Auth check failed:', response.status);
+        // Try to get error message from response
+        try {
+          const errorData = await response.text();
+          console.log('AuthContext - Error response:', errorData);
+        } catch (e) {
+          console.log('AuthContext - Could not read error response');
+        }
         setUser(null);
       }
     } catch (error) {
       console.error('AuthContext - Auth check failed:', error);
+      console.error('AuthContext - Error details:', error instanceof Error ? error.message : 'Unknown error');
       setUser(null);
     } finally {
       setLoading(false);
@@ -63,7 +76,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [checkAuth]);
 
-  const login = useCallback(async (email: string, password: string) => {
+  const login = useCallback(async (email: string, password: string): Promise<string> => {
     const response = await fetch('/api/auth/login', {
       method: 'POST',
       headers: {
@@ -83,6 +96,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Token is stored in HTTP-only cookie by the server
     // No need to store in localStorage
     console.log('AuthContext - Login successful, user:', data.user);
+    console.log('AuthContext - Redirect URL:', data.redirect);
+    
+    // Return redirect URL so the calling component can handle navigation
+    return data.redirect;
   }, []);
 
 
@@ -120,6 +137,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return roles.includes(user.role);
   }, [user]);
 
+  const hasPermission = useCallback((permission: string) => {
+    // Admins have all permissions
+    if (!user) return false;
+    if (user.role === 'ADMIN') return true;
+    // Check if user has the specific permission
+    console.log('hasPermission check:', permission, 'user permissions:', user.permissions);
+    return user.permissions?.includes(permission) || false;
+  }, [user]);
+
   const value = useMemo<AuthContextType>(() => ({
     user,
     loading,
@@ -128,7 +154,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     isAuthenticated: !!user,
     hasRole,
     hasAnyRole,
-  }), [user, loading, login, logout, hasRole, hasAnyRole]);
+    hasPermission,
+  }), [user, loading, login, logout, hasRole, hasAnyRole, hasPermission]);
 
   return (
     <AuthContext.Provider value={value}>

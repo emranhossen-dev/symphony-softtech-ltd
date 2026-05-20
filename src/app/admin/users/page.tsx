@@ -52,6 +52,7 @@ interface NewUser {
   password: string;
   role: "ADMIN" | "EMPLOYEE" | "MENTOR";
   phone?: string;
+  permissions?: string[];
 }
 
 export default function UserManagement() {
@@ -68,10 +69,51 @@ export default function UserManagement() {
     email: "",
     password: "",
     role: "EMPLOYEE",
+    permissions: [],
   });
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [availablePermissions, setAvailablePermissions] = useState<any>(null);
+  const [loadingPermissions, setLoadingPermissions] = useState(false);
+
+  const fetchPermissions = async () => {
+    try {
+      setLoadingPermissions(true);
+      const token = localStorage.getItem('auth_token') ||
+                     localStorage.getItem('token') ||
+                     document.cookie.split(';').find(c => c.trim().startsWith('auth-token='))?.split('=')[1];
+
+      console.log('Fetching permissions with token:', !!token);
+      const response = await fetch('/api/admin/permissions', {
+        headers: {
+          'Authorization': token ? `Bearer ${token}` : '',
+          'Content-Type': 'application/json'
+        }
+      });
+
+      console.log('Permissions response status:', response.status);
+      const data = await response.json();
+      console.log('Permissions data:', data);
+
+      if (response.ok) {
+        setAvailablePermissions(data.data);
+      } else {
+        console.error('Failed to fetch permissions:', data);
+      }
+    } catch (error) {
+      console.error('Error fetching permissions:', error);
+    } finally {
+      setLoadingPermissions(false);
+    }
+  };
+
+  // Fetch permissions when modal opens
+  useEffect(() => {
+    if (showCreateModal) {
+      fetchPermissions();
+    }
+  }, [showCreateModal]);
 
   const fetchUsers = async () => {
     try {
@@ -172,8 +214,20 @@ export default function UserManagement() {
       const data = await response.json();
 
       if (data.success) {
+        // Save permissions if role is EMPLOYEE
+        if (formData.role === 'EMPLOYEE' && formData.permissions && formData.permissions.length > 0) {
+          await fetch(`/api/admin/users/${data.user.id}/permissions`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': token ? `Bearer ${token}` : '',
+            },
+            body: JSON.stringify({ permissionKeys: formData.permissions }),
+          });
+        }
+
         setSuccess("User created successfully!");
-        setFormData({ name: "", email: "", password: "", role: "EMPLOYEE" });
+        setFormData({ name: "", email: "", password: "", role: "EMPLOYEE", permissions: [] });
         setShowCreateModal(false);
         fetchUsers();
       } else {
@@ -637,7 +691,7 @@ export default function UserManagement() {
             onClick={() => setShowCreateModal(false)}
           />
 
-          <div className="relative bg-slate-900/95 backdrop-blur-xl rounded-3xl p-8 w-full max-w-md shadow-2xl animate-in zoom-in duration-200 border-2 border-white/10">
+          <div className="relative bg-slate-900/95 backdrop-blur-xl rounded-3xl p-8 w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl animate-in zoom-in duration-200 border-2 border-white/10">
             <button
               onClick={() => setShowCreateModal(false)}
               className="absolute top-5 right-5 p-2 rounded-full hover:bg-white/10 transition-colors group"
@@ -655,7 +709,7 @@ export default function UserManagement() {
             </div>
             
             <form onSubmit={handleSubmit} className="flex flex-col flex-1 overflow-hidden">
-              <div className="flex-1 overflow-y-auto p-6 space-y-4">
+              <div className="flex-1 overflow-y-auto p-6 space-y-4 custom-scrollbar">
                 {/* Full Name Field */}
                 <div className="space-y-1.5">
                   <label className="flex items-center gap-2 text-xs font-semibold text-gray-300">
@@ -765,10 +819,70 @@ export default function UserManagement() {
                     </svg>
                   </div>
                 </div>
+
+                {/* Permissions Field - Only show for Employees */}
+                {(() => {
+                  console.log('Role:', formData.role, 'Should show permissions:', formData.role === 'EMPLOYEE');
+                  return formData.role === 'EMPLOYEE';
+                })() && (
+                  <div className="space-y-3">
+                    <label className="flex items-center gap-2 text-xs font-semibold text-gray-300">
+                      <Key className="w-3.5 h-3.5 text-purple-400" />
+                      Permissions
+                    </label>
+
+                    {loadingPermissions ? (
+                      <div className="flex items-center justify-center py-4">
+                        <RefreshCw className="w-5 h-5 animate-spin text-purple-400" />
+                      </div>
+                    ) : availablePermissions && Object.keys(availablePermissions).length > 0 ? (
+                      <div className="space-y-3 max-h-60 overflow-y-auto pr-2">
+                        {Object.entries(availablePermissions).map(([category, permissions]: [string, any]) => (
+                          <div key={category} className="space-y-2">
+                            <div className="text-xs font-semibold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+                              {category}
+                            </div>
+                            <div className="space-y-1.5">
+                              {permissions.map((permission: any) => (
+                                <label key={permission.key} className="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition-colors cursor-pointer group">
+                                  <input
+                                    type="checkbox"
+                                    checked={formData.permissions?.includes(permission.key) || false}
+                                    onChange={(e) => {
+                                      const newPermissions = e.target.checked
+                                        ? [...(formData.permissions || []), permission.key]
+                                        : (formData.permissions || []).filter(p => p !== permission.key);
+                                      setFormData({ ...formData, permissions: newPermissions });
+                                    }}
+                                    className="w-4 h-4 rounded border-gray-500 text-purple-600 focus:ring-purple-500 focus:ring-offset-gray-900 bg-gray-800"
+                                  />
+                                  <div className="flex-1">
+                                    <div className="text-sm text-gray-200 group-hover:text-white transition-colors">
+                                      {permission.name}
+                                    </div>
+                                    {permission.description && (
+                                      <div className="text-xs text-gray-500">
+                                        {permission.description}
+                                      </div>
+                                    )}
+                                  </div>
+                                </label>
+                              ))}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-xs text-gray-500 py-2">
+                        {loadingPermissions ? 'Loading...' : 'No permissions available'}
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
 
               {/* Action Buttons */}
-              <div className="flex gap-2 p-4 pt-0 flex-shrink-0">
+              <div className="flex gap-2 p-4 pt-4 border-t border-white/10 flex-shrink-0 bg-slate-900/95">
                 <Button
                   type="button"
                   variant="outline"

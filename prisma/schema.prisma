@@ -30,6 +30,7 @@ model User {
   notifications       Notification[]
   createdSeminars     Seminar[]
   callRecords         CallRecord[]
+  userPermissions     UserPermission[]
 
   @@map("users")
 }
@@ -48,6 +49,34 @@ model Category {
   enrollments Enrollment[] @relation("EnrollmentCategory")
 
   @@map("categories")
+}
+
+model Permission {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  name        String
+  description String?
+  category    String   // Management, Education, Finance, Analytics
+  icon        String?
+  route       String?  // Admin route path
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  userPermissions UserPermission[]
+
+  @@map("permissions")
+}
+
+model UserPermission {
+  id           String     @id @default(cuid())
+  userId       String
+  permissionId String
+  createdAt    DateTime   @default(now())
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, permissionId])
+  @@map("user_permissions")
 }
 
 model Course {

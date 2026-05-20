@@ -202,6 +202,18 @@ export default function EnrollmentManagementSystem() {
   const [isCallActive, setIsCallActive] = useState(false);
   const [enrollmentNotes, setEnrollmentNotes] = useState('');
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+  const [showNewApplicantModal, setShowNewApplicantModal] = useState(false);
+  const [newApplicant, setNewApplicant] = useState({
+    fullName: '',
+    email: '',
+    phoneNumber: '',
+    address: '',
+    courseName: '',
+    category: 'GOVERNMENT',
+    educationLevel: '',
+    whyJoin: '',
+    preferredBatchTime: ''
+  });
   const [sortBy, setSortBy] = useState('createdAt');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [currentPage, setCurrentPage] = useState(1);
@@ -953,6 +965,46 @@ export default function EnrollmentManagementSystem() {
     }
   };
 
+  const handleCreateApplicant = async () => {
+    try {
+      const token = localStorage.getItem('auth_token') ||
+                     localStorage.getItem('token') ||
+                     document.cookie.split(';').find(c => c.trim().startsWith('auth-token='))?.split('=')[1];
+
+      const response = await fetch('/api/admin/enrollments', {
+        method: 'POST',
+        headers: {
+          'Authorization': token ? `Bearer ${token}` : '',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(newApplicant)
+      });
+
+      if (response.ok) {
+        toast.success('Applicant created successfully!');
+        setShowNewApplicantModal(false);
+        setNewApplicant({
+          fullName: '',
+          email: '',
+          phoneNumber: '',
+          address: '',
+          courseName: '',
+          category: 'GOVERNMENT',
+          educationLevel: '',
+          whyJoin: '',
+          preferredBatchTime: ''
+        });
+        fetchEnrollments();
+      } else {
+        const data = await response.json();
+        toast.error(data.error || 'Failed to create applicant');
+      }
+    } catch (error) {
+      console.error('Error creating applicant:', error);
+      toast.error('Failed to create applicant');
+    }
+  };
+
   const getCategoryIcon = (category: string) => {
     switch (category) {
       case 'GOVERNMENT': return <GraduationCap className="w-4 h-4" />;
@@ -975,10 +1027,16 @@ export default function EnrollmentManagementSystem() {
           </p>
         </div>
         <div className="flex space-x-3">
-          <Button className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-6 py-3 rounded-xl text-lg font-semibold shadow-lg transition-all duration-200 transform hover:scale-105">
+          <button
+            onClick={() => {
+              console.log('New Applicant button clicked');
+              setShowNewApplicantModal(true);
+            }}
+            className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-6 py-3 rounded-xl text-lg font-semibold shadow-lg transition-all duration-200 transform hover:scale-105 flex items-center"
+          >
             <Plus className="w-5 h-5 mr-2" />
             New Applicant
-          </Button>
+          </button>
           <Button variant="outline" className="border-gray-600 text-gray-100 hover:bg-gray-800 px-6 py-3 rounded-xl text-lg font-semibold transition-all duration-200">
             <Download className="w-5 h-5 mr-2" />
             Export CSV
@@ -1915,6 +1973,174 @@ export default function EnrollmentManagementSystem() {
               >
                 <Save className="w-4 h-4 mr-2" />
                 Save Notes
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* New Applicant Modal */}
+      {showNewApplicantModal && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div
+            className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+            onClick={() => setShowNewApplicantModal(false)}
+          />
+          <div className="relative bg-slate-900/95 backdrop-blur-xl rounded-3xl p-8 w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl animate-in zoom-in duration-200 border-2 border-white/10">
+            <button
+              onClick={() => setShowNewApplicantModal(false)}
+              className="absolute top-5 right-5 p-2 rounded-full hover:bg-white/10 transition-colors group"
+            >
+              <X className="w-5 h-5 text-gray-400 group-hover:text-white transition-colors" />
+            </button>
+            <div className="flex items-center gap-3 mb-6 pr-8">
+              <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/25">
+                <UserPlus className="w-7 h-7 text-white" />
+              </div>
+              <div>
+                <h2 className="text-2xl font-bold text-white">New Applicant</h2>
+                <p className="text-sm text-gray-400">Add a new applicant to the system</p>
+              </div>
+            </div>
+            <form onSubmit={(e) => { e.preventDefault(); handleCreateApplicant(); }} className="flex flex-col flex-1 overflow-hidden">
+              <div className="flex-1 overflow-y-auto p-6 space-y-4 custom-scrollbar">
+              {/* Full Name */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-white">Full Name *</label>
+                <input
+                  type="text"
+                  value={newApplicant.fullName}
+                  onChange={(e) => setNewApplicant({ ...newApplicant, fullName: e.target.value })}
+                  className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Enter full name"
+                  required
+                />
+              </div>
+
+              {/* Email */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-white">Email *</label>
+                <input
+                  type="email"
+                  value={newApplicant.email}
+                  onChange={(e) => setNewApplicant({ ...newApplicant, email: e.target.value })}
+                  className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Enter email address"
+                  required
+                />
+              </div>
+
+              {/* Phone Number */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-white">Phone Number *</label>
+                <input
+                  type="tel"
+                  value={newApplicant.phoneNumber}
+                  onChange={(e) => setNewApplicant({ ...newApplicant, phoneNumber: e.target.value })}
+                  className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Enter phone number"
+                  required
+                />
+              </div>
+
+              {/* Address */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-white">Address *</label>
+                <textarea
+                  value={newApplicant.address}
+                  onChange={(e) => setNewApplicant({ ...newApplicant, address: e.target.value })}
+                  className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                  placeholder="Enter address"
+                  rows={2}
+                  required
+                />
+              </div>
+
+              {/* Course Name */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-white">Course Name *</label>
+                <input
+                  type="text"
+                  value={newApplicant.courseName}
+                  onChange={(e) => setNewApplicant({ ...newApplicant, courseName: e.target.value })}
+                  className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Enter course name"
+                  required
+                />
+              </div>
+
+              {/* Category */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-white">Category *</label>
+                <select
+                  value={newApplicant.category}
+                  onChange={(e) => setNewApplicant({ ...newApplicant, category: e.target.value })}
+                  className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                >
+                  <option value="GOVERNMENT">Government Job Preparation</option>
+                  <option value="ONLINE">Online Live Course</option>
+                  <option value="OFFLINE">Offline Classroom</option>
+                  <option value="RECORDED">Recorded Course</option>
+                </select>
+              </div>
+
+              {/* Education Level */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-white">Education Level</label>
+                <input
+                  type="text"
+                  value={newApplicant.educationLevel}
+                  onChange={(e) => setNewApplicant({ ...newApplicant, educationLevel: e.target.value })}
+                  className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Enter education level"
+                />
+              </div>
+
+              {/* Why Join */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-white">Why Join?</label>
+                <textarea
+                  value={newApplicant.whyJoin}
+                  onChange={(e) => setNewApplicant({ ...newApplicant, whyJoin: e.target.value })}
+                  className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                  placeholder="Why do you want to join this course?"
+                  rows={3}
+                />
+              </div>
+
+              {/* Preferred Batch Time */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-white">Preferred Batch Time</label>
+                <select
+                  value={newApplicant.preferredBatchTime}
+                  onChange={(e) => setNewApplicant({ ...newApplicant, preferredBatchTime: e.target.value })}
+                  className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">Select preference</option>
+                  <option value="Morning">Morning (9AM - 12PM)</option>
+                  <option value="Afternoon">Afternoon (12PM - 4PM)</option>
+                  <option value="Evening">Evening (4PM - 8PM)</option>
+                  <option value="Night">Night (8PM - 11PM)</option>
+                </select>
+              </div>
+            </div>
+            </form>
+            <div className="flex gap-2 p-4 pt-4 border-t border-white/10 flex-shrink-0 bg-slate-900/95">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setShowNewApplicantModal(false)}
+                className="flex-1 py-2 px-4 border-2 border-white/20 hover:bg-white/10 text-white font-semibold transition-all duration-200 text-sm"
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                className="flex-1 py-2 px-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-lg font-semibold shadow-lg shadow-blue-500/25 transition-all duration-200 text-sm"
+              >
+                <UserPlus className="w-3.5 h-3.5 mr-2" />
+                Create Applicant
               </Button>
             </div>
           </div>

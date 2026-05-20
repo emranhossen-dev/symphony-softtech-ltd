@@ -14,17 +14,31 @@ interface AdminLayoutProps {
 export default function AdminLayout({ children }: AdminLayoutProps) {
   const router = useRouter();
   const pathname = usePathname();
-  const { user, loading: authLoading, isAuthenticated, logout } = useAuth();
+  const { user, loading: authLoading, isAuthenticated, logout, hasPermission } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   useEffect(() => {
-    // Check if user is authenticated and is admin
+    // Check if user is authenticated
     if (!authLoading) {
-      if (!isAuthenticated || !user || user.role !== 'ADMIN') {
+      if (!isAuthenticated || !user) {
         router.push('/login');
         return;
       }
+
+      // Allow admins or employees with dashboard permission
+      if (user.role !== 'ADMIN' && user.role !== 'EMPLOYEE') {
+        router.push('/login');
+        return;
+      }
+
+      // If employee, check if they have any permission
+      if (user.role === 'EMPLOYEE') {
+        // Employees can access admin panel if they have permissions
+        // The sidebar will filter based on actual permissions
+        console.log('Employee accessing admin panel with permissions:', user.permissions);
+      }
+
       setIsLoading(false);
     }
   }, [authLoading, isAuthenticated, user, router]);

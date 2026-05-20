@@ -6,8 +6,10 @@ import Link from 'next/link';
 import toast from 'react-hot-toast';
 import { Eye, EyeOff, Shield, Mail, Lock, Sparkles, ArrowRight, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function LoginPage() {
+  const { login } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -33,36 +35,14 @@ export default function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!formData.email || !formData.password) {
-      setError('Please fill in all fields');
-      return;
-    }
-
-    setLoading(true);
     setError('');
+    setLoading(true);
 
     try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: formData.email,
-          password: formData.password,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Login failed');
-      }
-
-      // Set auth token in cookie (server already sets it, but we ensure consistency)
-      // The server sets 'auth_token' cookie, so we don't need to set it manually
-      console.log('Login successful, redirecting to:', data.redirect);
+      // Use AuthContext login function
+      const redirectUrl = await login(formData.email, formData.password);
+      
+      console.log('Login successful, redirecting to:', redirectUrl);
 
       // Show success toast
       toast.success('Login successful! Redirecting...', {
@@ -71,10 +51,9 @@ export default function LoginPage() {
       });
 
       // Use server-provided redirect URL
+      const finalRedirectUrl = redirectUrl || '/admin/dashboard';
       setTimeout(() => {
-        console.log('🔄 Redirecting to:', data.redirect || '/admin/dashboard');
-        // Use router.push for client-side navigation to avoid full page reload issues
-        router.push(data.redirect || '/admin/dashboard');
+        router.push(finalRedirectUrl);
       }, 1500);
 
     } catch (err) {

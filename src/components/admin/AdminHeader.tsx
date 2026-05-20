@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { createPortal } from "react-dom";
 import { LogOut, User, ChevronDown, Target, Building, Monitor, FileText, PlayCircle, Bell, LayoutDashboard } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 
@@ -16,7 +15,7 @@ interface AdminHeaderProps {
 const AdminHeader = ({ onSidebarToggle, sidebarOpen, sidebarCollapsed = false, user, onLogout }: AdminHeaderProps) => {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
-  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, right: 0 });
+  const [menuPosition, setMenuPosition] = useState({ top: 0, right: 0 });
   const pathname = usePathname();
   const router = useRouter();
   const menuRef = useRef<HTMLDivElement>(null);
@@ -96,7 +95,7 @@ const AdminHeader = ({ onSidebarToggle, sidebarOpen, sidebarCollapsed = false, u
   const handleMenuToggle = () => {
     if (!userMenuOpen && buttonRef.current) {
       const rect = buttonRef.current.getBoundingClientRect();
-      setDropdownPosition({
+      setMenuPosition({
         top: rect.bottom + 8,
         right: window.innerWidth - rect.right
       });
@@ -164,76 +163,87 @@ const AdminHeader = ({ onSidebarToggle, sidebarOpen, sidebarCollapsed = false, u
             {/* User menu */}
             <div className="relative" ref={menuRef}>
               <button
+                type="button"
                 ref={buttonRef}
-                onClick={handleMenuToggle}
-                className="flex items-center p-2 rounded-full text-gray-300 hover:text-white hover:bg-gray-800 transition-colors"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleMenuToggle();
+                }}
+                className="flex items-center p-2 rounded-full text-gray-300 hover:text-white hover:bg-gray-800 transition-colors cursor-pointer"
               >
                 <User className="w-5 h-5" />
                 <ChevronDown className="w-4 h-4 ml-1" />
               </button>
 
-              {/* User Dropdown Menu - Rendered with Portal */}
-              {userMenuOpen && typeof window !== 'undefined' && createPortal(
+              {/* User Dropdown Menu */}
+              {userMenuOpen && (
                 <div
-                  className="fixed w-72 bg-gray-900 rounded-lg shadow-xl py-2 z-[9999] border border-gray-700 overflow-hidden"
                   style={{
-                    top: `${dropdownPosition.top}px`,
-                    right: `${dropdownPosition.right}px`
+                    position: 'fixed',
+                    top: `${menuPosition.top}px`,
+                    right: `${menuPosition.right}px`,
                   }}
+                  className="w-[240px] bg-gray-900 rounded-lg shadow-xl py-2 z-[9999] border border-gray-700"
                 >
                   {/* Profile Header */}
                   <div className="px-4 py-3 border-b border-gray-700">
                     <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-gradient-to-br from-green-600 to-orange-500 rounded-full flex items-center justify-center">
-                        <span className="text-white font-bold text-sm">
+                      <div className="w-8 h-8 bg-gradient-to-br from-green-600 to-orange-500 rounded-full flex items-center justify-center">
+                        <span className="text-white font-bold text-xs">
                           {(user?.name || 'Admin').charAt(0).toUpperCase()}
                         </span>
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-white">{user?.name || 'Admin User'}</p>
-                        <p className="text-xs text-gray-400">{user?.email || 'admin@example.com'}</p>
-                        <p className="text-xs text-green-400 font-medium">Administrator</p>
+                        <p className="text-sm font-medium text-white truncate max-w-[140px]">{user?.name || 'Admin'}</p>
                       </div>
                     </div>
                   </div>
                   
                   {/* Profile Actions */}
-                  <div className="py-2">
-                    <a href="/admin/profile" className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-800 transition-colors">
+                  <div className="py-1">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        router.push('/admin/profile');
+                        setUserMenuOpen(false);
+                      }}
+                      className="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-800 transition-colors cursor-pointer"
+                    >
                       <div className="flex items-center">
-                        <User className="w-4 h-4 mr-2 text-gray-400" />
-                        <div>
-                          <div className="font-medium text-white">Profile</div>
-                          <div className="text-xs text-gray-500">Update personal information</div>
-                        </div>
+                        <User className="w-4 h-4 mr-3 text-gray-400" />
+                        <span className="font-medium text-white">Profile</span>
                       </div>
-                    </a>
-                    <a href="/admin/settings" className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-800 transition-colors">
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        router.push('/admin/settings');
+                        setUserMenuOpen(false);
+                      }}
+                      className="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-800 transition-colors cursor-pointer"
+                    >
                       <div className="flex items-center">
-                        <ChevronDown className="w-4 h-4 mr-2 text-gray-400" />
-                        <div>
-                          <div className="font-medium text-white">Settings</div>
-                          <div className="text-xs text-gray-500">System preferences</div>
-                        </div>
+                        <ChevronDown className="w-4 h-4 mr-3 text-gray-400" />
+                        <span className="font-medium text-white">Settings</span>
                       </div>
-                    </a>
+                    </button>
                   </div>
 
                   <hr className="my-2 border-gray-700" />
 
                   {/* Logout */}
                   <button
-                    onClick={handleLogoutClick}
-                    className="block w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-red-900/20 transition-colors flex items-center"
+                    type="button"
+                    onClick={() => {
+                      handleLogoutClick();
+                    }}
+                    className="block w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-red-900/20 transition-colors flex items-center cursor-pointer"
                   >
-                    <LogOut className="w-4 h-4 mr-2" />
-                    <div>
-                      <div className="font-medium text-white">Logout</div>
-                      <div className="text-xs text-red-300">Sign out of account</div>
-                    </div>
+                    <LogOut className="w-4 h-4 mr-3" />
+                    <span className="font-medium text-white">Logout</span>
                   </button>
-                </div>,
-                document.body
+                </div>
               )}
             </div>
           </div>
