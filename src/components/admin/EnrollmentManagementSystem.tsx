@@ -143,10 +143,11 @@ const statusConfig = {
 };
 
 const paymentConfig = {
-  PENDING: { label: 'Pending', color: 'badge-secondary' },
-  COMPLETED: { label: 'Completed', color: 'badge-primary' },
-  FAILED: { label: 'Failed', color: 'badge-danger' },
-  REFUNDED: { label: 'Refunded', color: 'badge-danger' }
+  PENDING: { label: 'Pending', color: 'badge-secondary', icon: Clock },
+  PAID: { label: 'Paid', color: 'badge-primary', icon: CheckCircle },
+  FAILED: { label: 'Failed', color: 'badge-danger', icon: X },
+  CANCELLED: { label: 'Cancelled', color: 'badge-danger', icon: X },
+  NOT_REQUIRED: { label: 'Not Required', color: 'badge-secondary', icon: DollarSign }
 };
 
 const categoryConfig = {
@@ -190,6 +191,7 @@ export default function EnrollmentManagementSystem() {
   const [selectedEnrollment, setSelectedEnrollment] = useState<Enrollment | null>(null);
   const [showProfileDrawer, setShowProfileDrawer] = useState(false);
   const [studentProfile, setStudentProfile] = useState<StudentProfile | null>(null);
+  const [newProfileNote, setNewProfileNote] = useState('');
   const [showEditModal, setShowEditModal] = useState(false);
   const [showCallModal, setShowCallModal] = useState(false);
   const [showNotesModal, setShowNotesModal] = useState(false);
@@ -501,6 +503,89 @@ export default function EnrollmentManagementSystem() {
     updateEnrollmentStatus(enrollmentId, 'ADMITTED');
   };
 
+  const updatePaymentStatus = async (enrollmentId: string, newPaymentStatus: string) => {
+    console.log('updatePaymentStatus called with:', { enrollmentId, newPaymentStatus });
+
+    if (!newPaymentStatus) {
+      console.log('No new payment status provided, returning');
+      return;
+    }
+    if (!enrollmentId) {
+      console.log('No enrollmentId provided, returning');
+      return;
+    }
+
+    console.log('Updating payment status:', { enrollmentId, newPaymentStatus });
+
+    // Store old enrollments for revert on error
+    const oldEnrollments = [...enrollments];
+
+    try {
+      // Optimistic update - update UI immediately
+      console.log('Doing optimistic update...');
+      setEnrollments(prev =>
+        prev.map(enrollment =>
+          enrollment.id === enrollmentId
+            ? { ...enrollment, paymentStatus: newPaymentStatus }
+            : enrollment
+        )
+      );
+
+      setActionLoading(prev => ({ ...prev, [enrollmentId]: true }));
+
+      const requestBody = {
+        paymentStatus: newPaymentStatus
+      };
+      console.log('Sending request to /api/admin/enrollments with body:', requestBody);
+
+      const response = await fetch(`/api/admin/enrollments/${enrollmentId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('auth_token') || localStorage.getItem('token')}`
+        },
+        body: JSON.stringify(requestBody)
+      });
+
+      console.log('Response status:', response.status);
+      console.log('Response ok:', response.ok);
+
+      if (!response.ok) {
+        // Revert optimistic update on error
+        console.log('Response not ok, reverting...');
+        setEnrollments(oldEnrollments);
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log('Response data:', data);
+
+      if (data.success) {
+        console.log('Update successful, refreshing enrollments...');
+        // Refresh from server to ensure state is consistent
+        await fetchEnrollments();
+
+        const statusText = newPaymentStatus === 'PAID' ? 'marked as paid' :
+                         newPaymentStatus === 'PENDING' ? 'marked as pending' :
+                         newPaymentStatus === 'FAILED' ? 'marked as failed' : 'updated';
+        toast.success(`Payment ${statusText} successfully!`);
+
+        // Dispatch event to update revenue analytics
+        window.dispatchEvent(new CustomEvent('updateRevenueAnalytics'));
+      } else {
+        console.log('Update failed, reverting...');
+        setEnrollments(oldEnrollments);
+        toast.error(data.error || 'Failed to update payment status');
+      }
+    } catch (error) {
+      console.error('Error updating payment status:', error);
+      setEnrollments(oldEnrollments);
+      toast.error('Failed to update payment status. Please try again.');
+    } finally {
+      setActionLoading(prev => ({ ...prev, [enrollmentId]: false }));
+    }
+  };
+
   const handleStartCall = (enrollment: Enrollment) => {
     setSelectedEnrollment(enrollment);
     setShowCallModal(true);
@@ -598,20 +683,69 @@ export default function EnrollmentManagementSystem() {
     }
   };
 
+  const handleDeleteEnrollment = async (enrollmentId: string) => {
+    if (!confirm('Are you sure you want to delete this enrollment?')) {
+      return;
+    }
+
+    const oldEnrollments = [...enrollments];
+
+    try {
+      // Optimistic update
+      setEnrollments(prev => prev.filter(e => e.id !== enrollmentId));
+      setActionLoading(prev => ({ ...prev, [enrollmentId]: true }));
+
+      console.log('Deleting enrollment:', enrollmentId);
+
+      const response = await fetch(`/api/admin/enrollments/${enrollmentId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('auth_token') || localStorage.getItem('token')}`
+        }
+      });
+
+      console.log('Response status:', response.status);
+
+      if (!response.ok) {
+        setEnrollments(oldEnrollments);
+        const errorData = await response.json();
+        console.error('Error response:', errorData);
+        throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log('Success response:', data);
+
+      if (data.success) {
+        toast.success(`Enrollment deleted successfully (ID: ${data.deletedId || enrollmentId})`);
+        await fetchEnrollments();
+      } else {
+        setEnrollments(oldEnrollments);
+        toast.error(data.error || 'Failed to delete enrollment');
+      }
+    } catch (error: any) {
+      console.error('Error deleting enrollment:', error);
+      setEnrollments(oldEnrollments);
+      toast.error(error.message || 'Failed to delete enrollment. Please try again.');
+    } finally {
+      setActionLoading(prev => ({ ...prev, [enrollmentId]: false }));
+    }
+  };
+
   const handleBulkAction = async (action: string) => {
     if (selectedEnrollments.length === 0) {
       toast.error('Please select enrollments first');
       return;
     }
-    
+
     try {
-      // Mock API call for bulk actions
       setActionLoading(prev => ({ ...prev, bulk: true }));
-      
+
       switch (action) {
         case 'approve':
-          setEnrollments(prev => 
-            prev.map(enrollment => 
+          setEnrollments(prev =>
+            prev.map(enrollment =>
               selectedEnrollments.includes(enrollment.id)
                 ? { ...enrollment, enrollmentStatus: 'ADMITTED' }
                 : enrollment
@@ -620,8 +754,8 @@ export default function EnrollmentManagementSystem() {
           toast.success(`${selectedEnrollments.length} enrollments admitted`);
           break;
         case 'reject':
-          setEnrollments(prev => 
-            prev.map(enrollment => 
+          setEnrollments(prev =>
+            prev.map(enrollment =>
               selectedEnrollments.includes(enrollment.id)
                 ? { ...enrollment, enrollmentStatus: 'REJECTED' }
                 : enrollment
@@ -630,18 +764,44 @@ export default function EnrollmentManagementSystem() {
           toast.success(`${selectedEnrollments.length} enrollments rejected`);
           break;
         case 'delete':
+          if (!confirm(`Are you sure you want to delete ${selectedEnrollments.length} enrollments?`)) {
+            return;
+          }
+
+          const oldEnrollments = [...enrollments];
           setEnrollments(prev => prev.filter(enrollment => !selectedEnrollments.includes(enrollment.id)));
-          toast.success(`${selectedEnrollments.length} enrollments deleted`);
+
+          // Delete each enrollment via API
+          const deletePromises = selectedEnrollments.map(id =>
+            fetch(`/api/admin/enrollments/${id}`, {
+              method: 'DELETE',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('auth_token') || localStorage.getItem('token')}`
+              }
+            })
+          );
+
+          const results = await Promise.allSettled(deletePromises);
+          const failed = results.filter(r => r.status === 'rejected' || (r.status === 'fulfilled' && !r.value.ok));
+
+          if (failed.length > 0) {
+            setEnrollments(oldEnrollments);
+            toast.error(`Failed to delete ${failed.length} enrollments`);
+          } else {
+            toast.success(`${selectedEnrollments.length} enrollments deleted successfully`);
+            await fetchEnrollments();
+          }
           break;
         case 'export':
-          // Export functionality will be implemented separately
           toast.success('Export started');
           break;
       }
-      
+
       setSelectedEnrollments([]);
       setShowBulkActions(false);
     } catch (error) {
+      console.error('Error performing bulk action:', error);
       toast.error('Failed to perform bulk action');
     } finally {
       setActionLoading(prev => ({ ...prev, bulk: false }));
@@ -671,23 +831,125 @@ export default function EnrollmentManagementSystem() {
 
   const viewStudentProfile = async (enrollment: Enrollment) => {
     try {
-      const response = await fetch(`/api/admin/enrollment/${enrollment.id}/profile`);
-      
+      // Directly use the enrollment data without API call
+      const profile: StudentProfile = {
+        enrollment: enrollment,
+        paymentHistory: []
+      };
+
+      setStudentProfile(profile);
+      setNewProfileNote('');
+      setShowProfileDrawer(true);
+    } catch (error) {
+      console.error('Error showing student profile:', error);
+      toast.error('Failed to show student profile. Please try again.');
+    }
+  };
+
+  const handleAddProfileNote = async () => {
+    if (!studentProfile || !newProfileNote.trim()) {
+      toast.error('Please enter a note');
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/admin/enrollments/${studentProfile.enrollment.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('auth_token') || localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({
+          notes: newProfileNote
+        })
+      });
+
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        throw new Error('Failed to save note');
       }
-      
+
       const data = await response.json();
-      
+
       if (data.success) {
-        setStudentProfile(data.profile);
-        setShowProfileDrawer(true);
+        toast.success('Note saved successfully');
+        setNewProfileNote('');
+
+        // Update the profile with new notes
+        if (studentProfile) {
+          setStudentProfile({
+            ...studentProfile,
+            enrollment: {
+              ...studentProfile.enrollment,
+              notes: newProfileNote
+            }
+          });
+        }
+
+        // Refresh enrollments to update the notes in the table
+        await fetchEnrollments();
       } else {
-        toast.error(data.error || 'Failed to fetch student profile');
+        toast.error(data.error || 'Failed to save note');
       }
     } catch (error) {
-      console.error('Error fetching student profile:', error);
-      toast.error('Failed to fetch student profile. Please try again.');
+      console.error('Error saving note:', error);
+      toast.error('Failed to save note. Please try again.');
+    }
+  };
+
+  const handleEditNote = () => {
+    if (studentProfile?.enrollment.notes) {
+      setNewProfileNote(studentProfile.enrollment.notes);
+    }
+  };
+
+  const handleDeleteNote = async () => {
+    if (!studentProfile) return;
+
+    if (!confirm('Are you sure you want to delete this note?')) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/admin/enrollments/${studentProfile.enrollment.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('auth_token') || localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({
+          notes: null
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete note');
+      }
+
+      const data = await response.json();
+
+      if (data.success) {
+        toast.success('Note deleted successfully');
+        setNewProfileNote('');
+
+        // Update the profile to remove notes
+        if (studentProfile) {
+          setStudentProfile({
+            ...studentProfile,
+            enrollment: {
+              ...studentProfile.enrollment,
+              notes: undefined
+            }
+          });
+        }
+
+        // Refresh enrollments to update the notes in the table
+        await fetchEnrollments();
+      } else {
+        toast.error(data.error || 'Failed to delete note');
+      }
+    } catch (error) {
+      console.error('Error deleting note:', error);
+      toast.error('Failed to delete note. Please try again.');
     }
   };
 
@@ -1001,6 +1263,7 @@ export default function EnrollmentManagementSystem() {
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">APPLICANT</th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">COURSE & DATE</th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">BATCH</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">PAYMENT</th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">NOTE</th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">SCORE</th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">SMS</th>
@@ -1045,17 +1308,41 @@ export default function EnrollmentManagementSystem() {
                   <td className="px-4 py-3">
                     <span className="text-sm text-gray-300">{enrollment.preferredBatchTime || 'N/A'}</span>
                   </td>
-                  
+
+                  <td className="px-4 py-3">
+                    <div className="flex items-center space-x-2">
+                      <Badge className={paymentConfig[enrollment.paymentStatus as keyof typeof paymentConfig]?.color || 'badge-secondary'}>
+                        {paymentConfig[enrollment.paymentStatus as keyof typeof paymentConfig]?.icon &&
+                          React.createElement(paymentConfig[enrollment.paymentStatus as keyof typeof paymentConfig].icon, { className: 'w-3 h-3 mr-1' })
+                        }
+                        {paymentConfig[enrollment.paymentStatus as keyof typeof paymentConfig]?.label || enrollment.paymentStatus || 'N/A'}
+                      </Badge>
+                      <select
+                        value={enrollment.paymentStatus || 'PENDING'}
+                        onChange={(e) => updatePaymentStatus(enrollment.id, e.target.value)}
+                        disabled={actionLoading[enrollment.id]}
+                        className="w-28 rounded-md border border-gray-600 bg-gray-700/50 px-2 py-1 text-sm text-white focus:border-blue-400 focus:outline-none"
+                      >
+                        <option value="PENDING">Pending</option>
+                        <option value="PAID">Paid</option>
+                        <option value="FAILED">Failed</option>
+                        <option value="CANCELLED">Cancelled</option>
+                        <option value="NOT_REQUIRED">Not Required</option>
+                      </select>
+                    </div>
+                  </td>
+
                   <td className="px-4 py-3">
                     <Button
                       variant="ghost"
-                      size="sm"
+                      size="icon"
                       onClick={() => {
                         setSelectedEnrollment(enrollment);
                         setEnrollmentNotes(enrollment.notes || '');
                         setShowNotesModal(true);
                       }}
-                      className="text-gray-400 hover:text-white hover:bg-gray-700 p-1"
+                      className="h-8 w-8 text-gray-400 hover:text-white hover:bg-gray-700"
+                      title="Notes"
                     >
                       <FileText className="w-4 h-4" />
                     </Button>
@@ -1101,33 +1388,38 @@ export default function EnrollmentManagementSystem() {
                     <div className="flex items-center justify-end space-x-2">
                       <Button
                         variant="ghost"
-                        size="sm"
+                        size="icon"
                         onClick={() => handleStartCall(enrollment)}
-                        className="text-gray-400 hover:text-green-400 hover:bg-gray-700 p-1"
+                        className="h-8 w-8 text-gray-400 hover:text-green-400 hover:bg-gray-700"
+                        title="Call"
                       >
                         <PhoneCall className="w-4 h-4" />
                       </Button>
                       <Button
                         variant="ghost"
-                        size="sm"
+                        size="icon"
                         onClick={() => viewStudentProfile(enrollment)}
-                        className="text-gray-400 hover:text-blue-400 hover:bg-gray-700 p-1"
+                        className="h-8 w-8 text-gray-400 hover:text-blue-400 hover:bg-gray-700"
+                        title="View Profile"
                       >
                         <Eye className="w-4 h-4" />
                       </Button>
                       <Button
                         variant="ghost"
-                        size="sm"
+                        size="icon"
                         onClick={() => handleEditEnrollment(enrollment)}
-                        className="text-gray-400 hover:text-purple-400 hover:bg-gray-700 p-1"
+                        className="h-8 w-8 text-gray-400 hover:text-purple-400 hover:bg-gray-700"
+                        title="Edit"
                       >
                         <Edit className="w-4 h-4" />
                       </Button>
                       <Button
                         variant="ghost"
-                        size="sm"
-                        onClick={() => handleBulkAction('delete')}
-                        className="text-gray-400 hover:text-red-400 hover:bg-gray-700 p-1"
+                        size="icon"
+                        onClick={() => handleDeleteEnrollment(enrollment.id)}
+                        disabled={actionLoading[enrollment.id]}
+                        className="h-8 w-8 text-gray-400 hover:text-red-400 hover:bg-gray-700"
+                        title="Delete"
                       >
                         <Trash2 className="w-4 h-4" />
                       </Button>
@@ -1313,6 +1605,217 @@ export default function EnrollmentManagementSystem() {
               >
                 <Save className="w-4 h-4 mr-2" />
                 Save Call Notes
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Profile Drawer */}
+      {showProfileDrawer && studentProfile && (
+        <div className="fixed inset-0 z-50 overflow-hidden">
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShowProfileDrawer(false)} />
+          <div className="absolute inset-4 md:inset-auto md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-full md:max-w-3xl bg-gray-800 rounded-2xl shadow-2xl flex flex-col max-h-[90vh] border border-gray-700">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-6 border-b border-gray-700">
+              <div className="flex items-center space-x-4">
+                <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl">
+                  <User className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-semibold text-white">Student Profile</h2>
+                  <p className="text-sm text-gray-300">{studentProfile.enrollment.fullName}</p>
+                </div>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowProfileDrawer(false)}
+                className="border-gray-600 text-gray-300 hover:bg-gray-700"
+              >
+                <CloseIcon className="w-4 h-4" />
+              </Button>
+            </div>
+
+            {/* Modal Content */}
+            <div className="flex-1 overflow-y-auto p-6">
+              <div className="space-y-6">
+                {/* Personal Information */}
+                <div className="bg-gray-700/50 rounded-xl p-6 border border-gray-600">
+                  <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
+                    <User className="w-5 h-5 mr-2 text-blue-400" />
+                    Personal Information
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-400 mb-1">Full Name</label>
+                      <p className="text-white">{studentProfile.enrollment.fullName}</p>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-400 mb-1">Email</label>
+                      <p className="text-white">{studentProfile.enrollment.email}</p>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-400 mb-1">Phone</label>
+                      <p className="text-white">{studentProfile.enrollment.phoneNumber}</p>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-400 mb-1">Address</label>
+                      <p className="text-white">{studentProfile.enrollment.address || 'N/A'}</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Course Information */}
+                <div className="bg-gray-700/50 rounded-xl p-6 border border-gray-600">
+                  <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
+                    <BookOpen className="w-5 h-5 mr-2 text-green-400" />
+                    Course Information
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-400 mb-1">Course</label>
+                      <p className="text-white">{studentProfile.enrollment.courseName}</p>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-400 mb-1">Category</label>
+                      <p className="text-white">{studentProfile.enrollment.category}</p>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-400 mb-1">Enrollment Status</label>
+                      <Badge className={statusConfig[studentProfile.enrollment.enrollmentStatus as keyof typeof statusConfig]?.color || 'badge-secondary'}>
+                        {statusConfig[studentProfile.enrollment.enrollmentStatus as keyof typeof statusConfig]?.label || studentProfile.enrollment.enrollmentStatus}
+                      </Badge>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-400 mb-1">Payment Status</label>
+                      <Badge className={paymentConfig[studentProfile.enrollment.paymentStatus as keyof typeof paymentConfig]?.color || 'badge-secondary'}>
+                        {paymentConfig[studentProfile.enrollment.paymentStatus as keyof typeof paymentConfig]?.label || studentProfile.enrollment.paymentStatus || 'N/A'}
+                      </Badge>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Additional Information */}
+                <div className="bg-gray-700/50 rounded-xl p-6 border border-gray-600">
+                  <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
+                    <FileText className="w-5 h-5 mr-2 text-purple-400" />
+                    Additional Information
+                  </h3>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-400 mb-1">Education Level</label>
+                      <p className="text-white">{studentProfile.enrollment.educationLevel || 'N/A'}</p>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-400 mb-1">Why Join</label>
+                      <p className="text-white">{studentProfile.enrollment.whyJoin || 'N/A'}</p>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-400 mb-1">Preferred Batch Time</label>
+                      <p className="text-white">{studentProfile.enrollment.preferredBatchTime || 'N/A'}</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Notes Section */}
+                <div className="bg-gray-700/50 rounded-xl p-6 border border-gray-600">
+                  <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
+                    <MessageSquare className="w-5 h-5 mr-2 text-blue-400" />
+                    Notes
+                  </h3>
+                  <div className="space-y-4">
+                    {/* Current Notes */}
+                    {studentProfile.enrollment.notes && (
+                      <div>
+                        <div className="flex items-center justify-between mb-2">
+                          <label className="block text-sm font-medium text-gray-400">Current Notes</label>
+                          <div className="flex items-center space-x-2">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={handleEditNote}
+                              className="h-7 px-2 text-blue-400 hover:text-blue-300 hover:bg-gray-700"
+                              title="Edit Note"
+                            >
+                              <Edit className="w-3 h-3 mr-1" />
+                              Edit
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={handleDeleteNote}
+                              className="h-7 px-2 text-red-400 hover:text-red-300 hover:bg-gray-700"
+                              title="Delete Note"
+                            >
+                              <Trash2 className="w-3 h-3 mr-1" />
+                              Delete
+                            </Button>
+                          </div>
+                        </div>
+                        <div className="bg-gray-800/50 rounded-xl p-4 border border-gray-600">
+                          <p className="text-white whitespace-pre-wrap">{studentProfile.enrollment.notes}</p>
+                          <p className="text-xs text-gray-500 mt-2">
+                            Last updated: {new Date(studentProfile.enrollment.updatedAt).toLocaleString()}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Add New Note */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-400 mb-2">
+                        {studentProfile.enrollment.notes ? 'Update Note' : 'Add New Note'}
+                      </label>
+                      <textarea
+                        value={newProfileNote}
+                        onChange={(e) => setNewProfileNote(e.target.value)}
+                        placeholder="Enter notes about this student..."
+                        rows={4}
+                        className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all duration-200 resize-none"
+                      />
+                    </div>
+
+                    {/* Save Button */}
+                    <Button
+                      onClick={handleAddProfileNote}
+                      disabled={!newProfileNote.trim()}
+                      className="bg-blue-600 hover:bg-blue-700 text-white w-full"
+                    >
+                      <Save className="w-4 h-4 mr-2" />
+                      {studentProfile.enrollment.notes ? 'Update Note' : 'Save Note'}
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Timestamps */}
+                <div className="bg-gray-700/50 rounded-xl p-6 border border-gray-600">
+                  <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
+                    <Calendar className="w-5 h-5 mr-2 text-yellow-400" />
+                    Timestamps
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-400 mb-1">Created At</label>
+                      <p className="text-white">{new Date(studentProfile.enrollment.createdAt).toLocaleString()}</p>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-400 mb-1">Updated At</label>
+                      <p className="text-white">{new Date(studentProfile.enrollment.updatedAt).toLocaleString()}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="flex items-center justify-end p-6 border-t border-gray-700">
+              <Button
+                variant="outline"
+                onClick={() => setShowProfileDrawer(false)}
+                className="border-gray-600 text-gray-300 hover:bg-gray-700"
+              >
+                Close
               </Button>
             </div>
           </div>

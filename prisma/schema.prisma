@@ -115,6 +115,7 @@ model Enrollment {
   paymentStatus      PaymentStatus    @default(PENDING)
   transactionId      String?
   metadata           Json?
+  notes              String?
   createdAt          DateTime         @default(now())
   updatedAt          DateTime         @updatedAt
   courseId           String?
