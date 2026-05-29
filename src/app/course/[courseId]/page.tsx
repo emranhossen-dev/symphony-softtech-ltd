@@ -495,10 +495,26 @@ const CourseDetailPage = () => {
   };
   
   const openVideoModal = (videoUrl: string, title: string, moduleIndex: number = 0) => {
+    console.log('Opening video modal with URL:', videoUrl);
+    console.log('Video title:', title);
+    console.log('Module index:', moduleIndex);
+    
+    // Validate and process video URL
+    if (!videoUrl) {
+      toast.error('No video URL provided');
+      return;
+    }
+    
+    // Check if it's a YouTube URL and convert to embed format
+    const embedUrl = getYouTubeEmbedUrl(videoUrl);
+    const finalVideoUrl = embedUrl || videoUrl;
+    
+    console.log('Final video URL to be used:', finalVideoUrl);
+    
     const previewModules = modules.filter((_, index) => isPreviewModule(modules[index], index));
     setVideoModal({
       isOpen: true,
-      videoUrl,
+      videoUrl: finalVideoUrl,
       title,
       currentModuleIndex: moduleIndex,
       playlist: previewModules,
@@ -610,9 +626,49 @@ const CourseDetailPage = () => {
     setIsVideoLoading(false);
   };
   
-  const handleVideoError = () => {
-    setIsVideoLoading(false);
-    toast.error('Failed to load video. The video URL might be invalid or inaccessible.');
+  const handleVideoError = (e: React.SyntheticEvent<HTMLVideoElement>) => {
+    const video = e.currentTarget;
+    
+    // Only log error if there's actually an error
+    if (video.error) {
+      console.error('Video error details:', {
+        error: video.error,
+        errorCode: video.error.code,
+        errorMessage: video.error.message,
+        networkState: video.networkState,
+        readyState: video.readyState,
+        currentSrc: video.currentSrc,
+        videoUrl: videoModal.videoUrl
+      });
+      
+      setIsVideoLoading(false);
+      
+      switch (video.error.code) {
+        case 1: // MEDIA_ERR_ABORTED
+          toast.error('Video loading was aborted.');
+          break;
+        case 2: // MEDIA_ERR_NETWORK
+          toast.error('Network error. Please check your internet connection and video URL.');
+          break;
+        case 3: // MEDIA_ERR_DECODE
+          toast.error('Video format not supported or file is corrupted.');
+          break;
+        case 4: // MEDIA_ERR_SRC_NOT_SUPPORTED
+          toast.error('Video format not supported or server not reachable.');
+          break;
+        default:
+          toast.error('Failed to load video. The video URL might be invalid or inaccessible.');
+      }
+    } else {
+      // This might be a false positive, just log for debugging
+      console.log('Video error event triggered but no error object found');
+      console.log('Video state:', {
+        networkState: video.networkState,
+        readyState: video.readyState,
+        currentSrc: video.currentSrc,
+        videoUrl: videoModal.videoUrl
+      });
+    }
   };
   
   const getYouTubeEmbedUrl = (url: string) => {
@@ -1168,17 +1224,51 @@ const CourseDetailPage = () => {
             </div>
             <div className="aspect-video bg-black">
               {videoModal.videoUrl ? (
-                <video
-                  src={videoModal.videoUrl}
-                  controls
-                  className="w-full h-full"
-                  autoPlay
-                />
+                (() => {
+                  const isYouTube = videoModal.videoUrl.includes('youtube.com/embed');
+                  if (isYouTube) {
+                    return (
+                      <iframe
+                        src={videoModal.videoUrl}
+                        className="w-full h-full"
+                        allowFullScreen
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        onLoad={() => setIsVideoLoading(false)}
+                        onError={() => {
+                          setIsVideoLoading(false);
+                          toast.error('Failed to load YouTube video');
+                        }}
+                      />
+                    );
+                  } else {
+                    return (
+                      <video
+                        ref={videoRef}
+                        src={videoModal.videoUrl}
+                        controls
+                        className="w-full h-full"
+                        autoPlay
+                        onLoadedData={handleVideoLoaded}
+                        onError={handleVideoError}
+                        onTimeUpdate={handleVideoTimeUpdate}
+                        playsInline
+                      />
+                    );
+                  }
+                })()
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-white">
                   <div className="text-center">
                     <PlayCircle className="w-16 h-16 mx-auto mb-4" />
                     <p>Video preview not available</p>
+                  </div>
+                </div>
+              )}
+              {isVideoLoading && (
+                <div className="absolute inset-0 flex items-center justify-center bg-black/50">
+                  <div className="text-white text-center">
+                    <div className="animate-spin rounded-full h-8 w-8 border-2 border-white border-t-transparent mx-auto mb-2"></div>
+                    <p>Loading video...</p>
                   </div>
                 </div>
               )}

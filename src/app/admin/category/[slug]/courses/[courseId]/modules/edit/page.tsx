@@ -14,7 +14,10 @@ import {
   Trash2 as TrashIcon,
   Unlock,
   Video,
-  Upload
+  Upload,
+  Edit,
+  Eye,
+  Trash
 } from 'lucide-react';
 
 interface ModuleFormData {
@@ -43,7 +46,7 @@ interface ExistingModule {
   order: number;
 }
 
-const CreateModulePage = () => {
+const EditModulesPage = () => {
   const params = useParams();
   const router = useRouter();
   const slug = params.slug as string;
@@ -55,8 +58,6 @@ const CreateModulePage = () => {
   const [mode, setMode] = useState<'individual' | 'bulk'>('individual');
   const [existingModules, setExistingModules] = useState<ExistingModule[]>([]);
   const [moduleForms, setModuleForms] = useState<ModuleFormData[]>([]);
-  
-  // Individual mode state - now handled by moduleForms
   
   // Bulk mode state
   const [bulkJson, setBulkJson] = useState('');
@@ -121,11 +122,11 @@ const CreateModulePage = () => {
 
   const fetchExistingModules = async () => {
     try {
-      // Use course slug if available, otherwise use courseId
-      const courseIdentifier = course?.slug || courseId;
-      console.log('Fetching modules for course:', courseIdentifier);
+      // Use course.id (database ID) for API calls, not courseId (slug)
+      const courseDbId = course?.id || courseId;
+      console.log('Fetching modules for course:', courseDbId);
       
-      const response = await fetch(`/api/admin/courses/${courseIdentifier}/modules`, {
+      const response = await fetch(`/api/admin/courses/${courseDbId}/modules`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
@@ -181,34 +182,6 @@ const CreateModulePage = () => {
     }
   };
 
-  const loadSampleData = () => {
-    const sampleData = {
-      courseTitle: course?.title || "Sample Course",
-      modules: [
-        {
-          title: "Module 1: Introduction",
-          videoUrl: "https://example.com/video1.mp4",
-          homework: "Complete the introduction assignment",
-          description: "Learn the basics",
-          topics: ["Topic 1", "Topic 2"],
-          isLocked: false,
-          order: 1
-        },
-        {
-          title: "Module 2: Advanced Concepts",
-          videoUrl: "https://example.com/video2.mp4",
-          homework: "Complete the advanced assignment",
-          description: "Deep dive into concepts",
-          topics: ["Topic 3", "Topic 4"],
-          isLocked: true,
-          order: 2
-        }
-      ]
-    };
-    setBulkJson(JSON.stringify(sampleData, null, 2));
-    toast.success('Sample data loaded');
-  };
-
   const addNewModuleForm = () => {
     setModuleForms(prev => [...prev, {
       title: '',
@@ -231,6 +204,37 @@ const CreateModulePage = () => {
     setModuleForms(prev => prev.filter((_, i) => i !== index));
   };
 
+  const deleteModule = async (moduleId: string, moduleTitle: string) => {
+    if (!confirm(`Are you sure you want to delete "${moduleTitle}"? This action cannot be undone.`)) {
+      return;
+    }
+
+    // Use course.id (database ID) for API calls, not courseId (slug)
+    const courseDbId = course?.id || courseId;
+    console.log('Deleting module for course:', courseDbId);
+
+    try {
+      const response = await fetch(`/api/admin/courses/${courseDbId}/modules/${moduleId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        toast.success('Module deleted successfully');
+        await fetchExistingModules();
+      } else {
+        toast.error(data.error || 'Failed to delete module');
+      }
+    } catch (error) {
+      console.error('Error deleting module:', error);
+      toast.error('Failed to delete module');
+    }
+  };
+
   const handleIndividualSubmit = async () => {
     // Validate all forms
     const validForms = moduleForms.filter(form => form.title.trim());
@@ -239,6 +243,10 @@ const CreateModulePage = () => {
       toast.error('Please add at least one module with a title');
       return;
     }
+
+    // Use course.id (database ID) for API calls, not courseId (slug)
+    const courseDbId = course?.id || courseId;
+    console.log('Saving modules for course:', courseDbId);
 
     setSaving(true);
 
@@ -249,7 +257,7 @@ const CreateModulePage = () => {
       // Process each form
       for (const formData of validForms) {
         try {
-          const response = await fetch(`/api/admin/courses/${courseId}/modules`, {
+          const response = await fetch(`/api/admin/courses/${courseDbId}/modules`, {
             method: formData.id ? 'PUT' : 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -308,12 +316,26 @@ const CreateModulePage = () => {
     setSaving(true);
 
     try {
+      console.log('Raw bulk JSON:', bulkJson);
       const data = JSON.parse(bulkJson);
+      console.log('Parsed data:', data);
+      console.log('Data.modules:', data.modules);
+      console.log('Is array?', Array.isArray(data.modules));
+      console.log('Length:', data.modules?.length);
       
       if (!data.modules || !Array.isArray(data.modules) || data.modules.length === 0) {
+        console.error('Validation failed:', {
+          hasModules: !!data.modules,
+          isArray: Array.isArray(data.modules),
+          length: data.modules?.length
+        });
         toast.error('Invalid format. Expected modules array.');
         return;
       }
+
+      // Use course.id (database ID) for API calls, not courseId (slug)
+      const courseDbId = course?.id || courseId;
+      console.log('Creating modules for course:', courseDbId);
 
       let successCount = 0;
       let errorCount = 0;
@@ -321,32 +343,39 @@ const CreateModulePage = () => {
       // Process each module individually
       for (const moduleData of data.modules) {
         try {
-          const response = await fetch(`/api/admin/courses/${courseId}/modules`, {
+          console.log('Creating module:', moduleData.title);
+          const requestBody = {
+            title: moduleData.title,
+            videoUrl: moduleData.videoUrl || '',
+            homework: moduleData.homework || '',
+            courseId: courseDbId,
+            isLocked: moduleData.isLocked || false
+          };
+          console.log('Request body:', requestBody);
+          
+          const response = await fetch(`/api/admin/courses/${courseDbId}/modules`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
               'Authorization': `Bearer ${localStorage.getItem('token')}`
             },
-            body: JSON.stringify({
-              title: moduleData.title,
-              videoUrl: moduleData.videoUrl || '',
-              homework: moduleData.homework || '',
-              courseId,
-              isLocked: moduleData.isLocked || false
-            })
+            body: JSON.stringify(requestBody)
           });
 
+          console.log('Response status:', response.status);
           const result = await response.json();
+          console.log('Response body:', result);
           
           if (result.success) {
             successCount++;
+            console.log('✅ Module created successfully:', moduleData.title);
           } else {
             errorCount++;
-            console.error('Failed to create module:', moduleData.title, result.error);
+            console.error('❌ Failed to create module:', moduleData.title, result.error);
           }
         } catch (error) {
           errorCount++;
-          console.error('Error creating module:', moduleData.title, error);
+          console.error('❌ Error creating module:', moduleData.title, error);
         }
       }
 
@@ -374,6 +403,62 @@ const CreateModulePage = () => {
     }
   };
 
+  const loadSampleData = () => {
+    const sampleData = {
+      courseTitle: course?.title || 'Sample Course',
+      modules: [
+        {
+          title: 'Introduction to the Course',
+          videoUrl: 'https://example.com/intro-video.mp4',
+          homework: 'Complete the course introduction quiz and read the first chapter.',
+          description: 'Get started with the basics and course overview',
+          topics: ['Introduction', 'Course Overview', 'Learning Objectives'],
+          isLocked: false,
+          order: 1
+        },
+        {
+          title: 'Module 2: Core Concepts',
+          videoUrl: 'https://example.com/core-concepts.mp4',
+          homework: 'Practice exercises 1-10 from the workbook',
+          description: 'Deep dive into fundamental concepts',
+          topics: ['Fundamentals', 'Theory', 'Practical Examples'],
+          isLocked: false,
+          order: 2
+        },
+        {
+          title: 'Module 3: Advanced Topics',
+          videoUrl: 'https://example.com/advanced-topics.mp4',
+          homework: 'Complete the advanced assignment and submit project',
+          description: 'Explore advanced concepts and applications',
+          topics: ['Advanced Theory', 'Case Studies', 'Best Practices'],
+          isLocked: true,
+          order: 3
+        },
+        {
+          title: 'Module 4: Practical Implementation',
+          videoUrl: 'https://example.com/practical-implementation.mp4',
+          homework: 'Build a complete project using learned concepts',
+          description: 'Apply knowledge to real-world scenarios',
+          topics: ['Hands-on Practice', 'Project Work', 'Troubleshooting'],
+          isLocked: true,
+          order: 4
+        },
+        {
+          title: 'Final Assessment',
+          videoUrl: 'https://example.com/final-assessment.mp4',
+          homework: 'Complete final exam and submit portfolio',
+          description: 'Final evaluation and certification',
+          topics: ['Final Exam', 'Portfolio Review', 'Certification'],
+          isLocked: true,
+          order: 5
+        }
+      ]
+    };
+    
+    setBulkJson(JSON.stringify(sampleData, null, 2));
+    toast.success('Sample data loaded successfully!');
+  };
+
   const handleCancel = () => {
     router.push(`/admin/category/${slug}/courses/${course?.slug || courseId}`);
   };
@@ -390,24 +475,35 @@ const CreateModulePage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-6">
-      <div className="max-w-4xl mx-auto">
-        {/* Header */}
-        <div className="mb-8">
-          <button
-            onClick={handleCancel}
-            className="mb-4 inline-flex items-center gap-2 text-sm font-bold text-gray-400 transition-colors hover:text-blue-400"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Back to Course
-          </button>
-          <h1 className="text-3xl font-bold text-white">{course?.title || 'Course'}</h1>
-          <p className="mt-2 text-gray-400">Add modules to this course</p>
+    <div className="min-h-screen bg-gray-900">
+      {/* Header */}
+      <div className="bg-gray-800 border-b border-gray-700">
+        <div className="max-w-7xl mx-auto px-4 py-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <button
+                onClick={handleCancel}
+                className="mb-4 inline-flex items-center gap-2 text-sm font-bold text-gray-400 transition-colors hover:text-blue-400"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                Back to Course
+              </button>
+              
+              <h1 className="text-2xl font-bold text-white mb-2">
+                Manage Modules
+              </h1>
+              <p className="text-gray-400">
+                {course?.title || 'Course'} — Add, edit, delete, and manage modules
+              </p>
+            </div>
+          </div>
         </div>
+      </div>
 
-        {/* Mode Toggle */}
-        <div className="mb-6">
-          <div className="flex gap-2 p-1 bg-gray-800 rounded-xl w-fit">
+      {/* Mode Toggle */}
+      <div className="bg-gray-800 border-b border-gray-700">
+        <div className="max-w-7xl mx-auto px-4 py-4">
+          <div className="flex items-center gap-4">
             <button
               onClick={() => setMode('individual')}
               className={`px-6 py-2 rounded-lg text-sm font-bold transition-colors ${
@@ -430,9 +526,11 @@ const CreateModulePage = () => {
             </button>
           </div>
         </div>
+      </div>
 
-        {/* Individual Mode */}
-        {mode === 'individual' && (
+      {/* Individual Mode */}
+      {mode === 'individual' && (
+        <div className="max-w-7xl mx-auto px-4 py-8">
           <div className="bg-gray-800 border border-gray-700 rounded-2xl p-6">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-bold text-white">
@@ -465,14 +563,26 @@ const CreateModulePage = () => {
                         </span>
                       )}
                     </h3>
-                    {moduleForms.length > 1 && (
-                      <button
-                        onClick={() => removeModuleForm(index)}
-                        className="text-red-400 hover:text-red-300 transition-colors"
-                      >
-                        <TrashIcon className="h-4 w-4" />
-                      </button>
-                    )}
+                    <div className="flex items-center gap-2">
+                      {!formData.isNew && (
+                        <button
+                          onClick={() => deleteModule(formData.id!, formData.title)}
+                          className="text-red-400 hover:text-red-300 transition-colors"
+                          title="Delete Module"
+                        >
+                          <Trash className="h-4 w-4" />
+                        </button>
+                      )}
+                      {moduleForms.length > 1 && (
+                        <button
+                          onClick={() => removeModuleForm(index)}
+                          className="text-red-400 hover:text-red-300 transition-colors"
+                          title="Remove Form"
+                        >
+                          <TrashIcon className="h-4 w-4" />
+                        </button>
+                      )}
+                    </div>
                   </div>
 
                   {/* Module Form Fields */}
@@ -562,26 +672,30 @@ const CreateModulePage = () => {
               </button>
             </div>
           </div>
-        )}
+        </div>
+      )}
 
-        {/* Bulk Mode */}
-        {mode === 'bulk' && (
+      {/* Bulk Mode */}
+      {mode === 'bulk' && (
+        <div className="max-w-7xl mx-auto px-4 py-8">
           <div className="bg-gray-800 border border-gray-700 rounded-2xl p-6">
             <h2 className="text-xl font-bold text-white mb-6">Bulk Upload Modules</h2>
             
             <div className="space-y-4">
-              <button
-                onClick={loadSampleData}
-                className="flex items-center gap-2 px-4 py-2 bg-gray-700 border border-gray-600 rounded-xl text-gray-300 hover:bg-gray-600 transition-colors"
-              >
-                <Download className="h-4 w-4" />
-                Load Sample Data
-              </button>
-
-              <div>
-                <label className="mb-2 block text-sm font-bold text-gray-300">
-                  Module Data (JSON)
+              <div className="flex items-center justify-between">
+                <label className="flex items-center gap-2 text-sm font-bold text-gray-300">
+                  <Upload className="h-4 w-4" />
+                  Module Data (JSON Format)
                 </label>
+                <button
+                  onClick={loadSampleData}
+                  className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-bold rounded-lg transition-colors"
+                >
+                  <Download className="h-4 w-4" />
+                  Load Sample Data
+                </button>
+              </div>
+              <div>
                 <textarea
                   value={bulkJson}
                   onChange={(e) => setBulkJson(e.target.value)}
@@ -592,9 +706,7 @@ const CreateModulePage = () => {
     {
       "title": "Module 1",
       "videoUrl": "https://example.com/video1.mp4",
-      "homework": "Complete assignment 1",
-      "description": "Introduction",
-      "topics": ["Topic 1"],
+      "homework": "Assignment details",
       "isLocked": false,
       "order": 1
     }
@@ -604,7 +716,7 @@ const CreateModulePage = () => {
                 />
               </div>
 
-              <div className="flex gap-3 pt-4">
+              <div className="flex gap-3">
                 <button
                   onClick={handleBulkSubmit}
                   disabled={saving}
@@ -613,12 +725,12 @@ const CreateModulePage = () => {
                   {saving ? (
                     <span className="flex items-center justify-center gap-2">
                       <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
-                      Saving...
+                      Processing...
                     </span>
                   ) : (
                     <span className="flex items-center justify-center gap-2">
                       <Upload className="h-4 w-4" />
-                      Save Modules
+                      Upload Modules
                     </span>
                   )}
                 </button>
@@ -659,10 +771,10 @@ const CreateModulePage = () => {
               )}
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };
 
-export default CreateModulePage;
+export default EditModulesPage;

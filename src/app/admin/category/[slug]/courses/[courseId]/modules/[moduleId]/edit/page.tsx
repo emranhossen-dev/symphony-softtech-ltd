@@ -131,7 +131,7 @@ const EditModulePage = () => {
 
       if (data.success) {
         toast.success('Module updated successfully!');
-        router.push(`/admin/category/${slug}/courses/${courseId}/modules`);
+        router.push(`/admin/category/${slug}/courses/${course?.slug || courseId}/modules`);
       } else {
         toast.error(data.error || 'Failed to update module');
       }

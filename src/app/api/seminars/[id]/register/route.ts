@@ -44,7 +44,7 @@ export async function POST(
       }, { status: 404 });
     }
 
-    if (seminar.status !== 'UPCOMING') {
+    if (seminar.status !== 'UPCOMING' && seminar.status !== 'ONGOING') {
       return NextResponse.json({
         success: false,
         error: 'This seminar is not open for registration'

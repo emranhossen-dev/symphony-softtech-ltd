@@ -117,6 +117,12 @@ const ModulesPage = () => {
       
       if (data.success) {
         setCourse(data.course);
+        
+        // If the URL uses ID but course has a slug, redirect to the slug URL
+        if (data.course.slug && courseId !== data.course.slug) {
+          router.replace(`/admin/category/${slug}/courses/${data.course.slug}/modules`);
+          return;
+        }
       }
     } catch (error) {
       console.error('Error fetching course:', error);
@@ -382,10 +388,19 @@ const ModulesPage = () => {
         <div className="max-w-7xl mx-auto px-6 py-8">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
             <div className="flex items-start sm:items-center gap-4">
-              <div className="relative group">
+              <div className="relative group z-10">
                 <button
-                  onClick={() => router.push(`/admin/category/${slug}/courses/${courseId}`)}
-                  className="flex items-center gap-2 px-4 py-2.5 bg-white/10 hover:bg-white/20 text-white rounded-xl transition-all duration-300 font-medium shadow-lg hover:shadow-xl hover:scale-105 border border-white/20"
+                  onClick={() => {
+                    console.log('Back button clicked, navigating to:', `/admin/category/${slug}/courses/${course?.slug || courseId}`);
+                    try {
+                      router.push(`/admin/category/${slug}/courses/${course?.slug || courseId}`);
+                    } catch (error) {
+                      console.error('Navigation error:', error);
+                      // Fallback to router.back()
+                      router.back();
+                    }
+                  }}
+                  className="flex items-center gap-2 px-4 py-2.5 bg-white/10 hover:bg-white/20 text-white rounded-xl transition-all duration-300 font-medium shadow-lg hover:shadow-xl hover:scale-105 border border-white/20 relative z-10"
                 >
                   <ArrowLeft className="w-4 h-4" />
                   Back
@@ -418,7 +433,7 @@ const ModulesPage = () => {
 
             <div className="relative group">
               <button
-                onClick={() => router.push(`/admin/category/${slug}/courses/${courseId}/modules/create`)}
+                onClick={() => router.push(`/admin/category/${slug}/courses/${course?.slug || courseId}/modules/edit`)}
                 className="flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white rounded-xl transition-all duration-300 font-bold shadow-2xl shadow-emerald-500/40 hover:scale-105 hover:shadow-emerald-500/60 backdrop-blur-sm border border-emerald-400/30"
               >
                 <Plus className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />

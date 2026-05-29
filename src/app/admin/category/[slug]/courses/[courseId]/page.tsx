@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import AdminVideoPlayer from '@/components/admin/AdminVideoPlayer';
 import { 
   Plus, 
   Edit, 
@@ -73,7 +74,7 @@ const CourseDetailsPage = () => {
       
       if (data.success) {
         setCourse(data.course);
-        fetchModules(data.course.id);
+        fetchModules(courseId); // Use the courseId parameter directly
       } else {
         setLoading(false);
       }
@@ -165,7 +166,7 @@ const CourseDetailsPage = () => {
             
             <div className="grid grid-cols-2 gap-2 sm:flex sm:items-center sm:gap-3">
               <button
-                onClick={() => router.push(`/admin/category/${slug}/courses/${course.id}/modules`)}
+                onClick={() => router.push(`/admin/category/${slug}/courses/${course.slug || course.id}/modules`)}
                 className="inline-flex items-center justify-center gap-2 rounded-xl border border-gray-600 bg-gray-800 px-4 py-2.5 text-sm font-bold text-gray-300 shadow-sm transition-all hover:border-blue-500 hover:bg-gray-700 hover:text-blue-400"
               >
                 <ClipboardList className="w-4 h-4" />
@@ -180,7 +181,7 @@ const CourseDetailsPage = () => {
               </button>
               
               <button
-                onClick={() => router.push(`/admin/category/${slug}/courses/${course.id}/modules/create`)}
+                onClick={() => router.push(`/admin/category/${slug}/courses/${course.slug || course.id}/modules/edit`)}
                 className="col-span-2 inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-blue-200 transition-all hover:bg-blue-700 sm:col-span-1"
               >
                 <Plus className="w-4 h-4" />
@@ -266,7 +267,7 @@ const CourseDetailsPage = () => {
                   </div>
                 </div>
                 <button
-                  onClick={() => router.push(`/admin/category/${slug}/courses/${course.id}/modules/create`)}
+                  onClick={() => router.push(`/admin/category/${slug}/courses/${course.slug || course.id}/modules/edit`)}
                   className="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-blue-100 transition-colors hover:bg-blue-700"
                 >
                   <Plus className="w-4 h-4" />
@@ -282,7 +283,7 @@ const CourseDetailsPage = () => {
                   <h3 className="text-xl font-black text-white">No modules yet</h3>
                   <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-gray-400">Create the first module with video, homework and lock settings so students can start learning step by step.</p>
                   <button
-                    onClick={() => router.push(`/admin/category/${slug}/courses/${course.id}/modules/create`)}
+                    onClick={() => router.push(`/admin/category/${slug}/courses/${course.slug || course.id}/modules/edit`)}
                     className="mt-6 inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-3 text-sm font-bold text-white shadow-lg shadow-blue-100 transition-colors hover:bg-blue-700"
                   >
                     <Plus className="h-4 w-4" />
@@ -307,13 +308,13 @@ const CourseDetailsPage = () => {
                             </div>
                             <div className="flex shrink-0 items-center gap-2">
                               <button
-                                onClick={() => router.push(`/admin/category/${slug}/courses/${course.id}/modules/${module.id}/edit`)}
+                                onClick={() => router.push(`/admin/category/${slug}/courses/${course.slug || course.id}/modules/${module.id}/edit`)}
                                 className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-gray-600 bg-gray-800 text-gray-300 transition-colors hover:border-blue-500 hover:bg-gray-700 hover:text-blue-400"
                               >
                                 <Edit className="w-4 h-4" />
                               </button>
                               <button
-                                onClick={() => router.push(`/admin/category/${slug}/courses/${course.id}/modules`)}
+                                onClick={() => router.push(`/admin/category/${slug}/courses/${course.slug || course.id}/modules`)}
                                 className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-gray-600 bg-gray-800 text-gray-300 transition-colors hover:border-purple-500 hover:bg-gray-700 hover:text-purple-400"
                               >
                                 <Eye className="w-4 h-4" />
@@ -347,6 +348,16 @@ const CourseDetailsPage = () => {
                           {module.homework && (
                             <div className="mt-4 rounded-xl bg-gray-700 p-4 text-sm leading-6 text-gray-400 line-clamp-3">
                               {module.homework}
+                            </div>
+                          )}
+
+                          {module.videoUrl && (
+                            <div className="mt-4">
+                              <h4 className="text-sm font-bold text-gray-300 mb-2">Video Content</h4>
+                              <AdminVideoPlayer 
+                                videoUrl={module.videoUrl} 
+                                title={module.title}
+                              />
                             </div>
                           )}
                         </div>
@@ -431,7 +442,7 @@ const CourseDetailsPage = () => {
               </div>
               <div className="grid gap-3">
                 <button
-                  onClick={() => router.push(`/admin/category/${slug}/courses/${courseId}/edit`)}
+                  onClick={() => router.push(`/admin/category/${slug}/courses/${course.slug || course.id}/edit`)}
                   className="flex w-full items-center justify-between rounded-2xl border border-gray-600 bg-gray-800 px-5 py-4 text-left font-bold text-gray-300 transition-all hover:border-blue-500 hover:bg-gray-700 hover:text-blue-400"
                 >
                   <span className="flex items-center gap-3">
@@ -441,7 +452,7 @@ const CourseDetailsPage = () => {
                   <ArrowUpRight className="h-4 w-4" />
                 </button>
                 <button
-                  onClick={() => router.push(`/admin/category/${slug}/courses/${course.id}/modules`)}
+                  onClick={() => router.push(`/admin/category/${slug}/courses/${course.slug || course.id}/modules`)}
                   className="flex w-full items-center justify-between rounded-2xl border border-gray-600 bg-gray-800 px-5 py-4 text-left font-bold text-gray-300 transition-all hover:border-purple-500 hover:bg-gray-700 hover:text-purple-400"
                 >
                   <span className="flex items-center gap-3">
@@ -451,7 +462,7 @@ const CourseDetailsPage = () => {
                   <ArrowUpRight className="h-4 w-4" />
                 </button>
                 <button
-                  onClick={() => router.push(`/admin/category/${slug}/courses/${course.id}/students`)}
+                  onClick={() => router.push(`/admin/category/${slug}/courses/${course.slug || course.id}/students`)}
                   className="flex w-full items-center justify-between rounded-2xl border border-gray-600 bg-gray-800 px-5 py-4 text-left font-bold text-gray-300 transition-all hover:border-emerald-500 hover:bg-gray-700 hover:text-emerald-400"
                 >
                   <span className="flex items-center gap-3">
@@ -461,7 +472,7 @@ const CourseDetailsPage = () => {
                   <ArrowUpRight className="h-4 w-4" />
                 </button>
                 <button
-                  onClick={() => window.open(`/student/course-view/${course.id}`, '_blank')}
+                  onClick={() => window.open(`/student/course-view/${course.slug || course.id}`, '_blank')}
                   className="flex w-full items-center justify-between rounded-2xl bg-slate-950 px-5 py-4 text-left font-bold text-white transition-all hover:bg-slate-800"
                 >
                   <span className="flex items-center gap-3">

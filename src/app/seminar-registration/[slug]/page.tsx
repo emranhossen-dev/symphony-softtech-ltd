@@ -276,26 +276,26 @@ export default function SeminarRegistrationPage() {
 
   if (submitted) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-green-100 flex items-center justify-center">
-        <div className="bg-white rounded-3xl shadow-2xl p-8 max-w-md text-center border border-green-100">
+      <div className="min-h-screen bg-gradient-to-br from-blue-900 via-indigo-900 to-purple-900 flex items-center justify-center">
+        <div className="bg-gradient-to-br from-blue-800/50 to-indigo-800/50 backdrop-blur-md rounded-3xl shadow-2xl p-8 max-w-md text-center border border-white/20">
           <div className="w-24 h-24 bg-gradient-to-br from-green-500 to-emerald-600 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-lg animate-bounce">
             <CheckCircle className="w-12 h-12 text-white" />
           </div>
-          <h2 className="text-3xl font-bold text-green-600 mb-4">Registration Successful!</h2>
-          <p className="text-gray-600 mb-8 text-lg leading-relaxed">
+          <h2 className="text-3xl font-bold text-white mb-4">Registration Successful!</h2>
+          <p className="text-blue-100 mb-8 text-lg leading-relaxed">
             Thank you for registering for "{seminar?.title}". We'll send you a confirmation email soon.
           </p>
           <div className="space-y-3">
             <Button 
               onClick={() => window.location.href = '/'}
-              className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-bold py-4 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg"
+              className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-bold py-4 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg"
             >
               Back to Home
             </Button>
             <Button 
               onClick={() => window.location.href = `/seminar-registration/${slug}`}
               variant="outline"
-              className="w-full border-2 border-green-600 text-green-600 hover:bg-green-50 font-bold py-4 rounded-xl transition-all duration-300"
+              className="w-full border-2 border-cyan-400 text-cyan-300 hover:bg-cyan-900/30 font-bold py-4 rounded-xl transition-all duration-300"
             >
               View Registration
             </Button>
@@ -307,12 +307,12 @@ export default function SeminarRegistrationPage() {
 
   if (!seminar) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-blue-900 via-indigo-900 to-purple-900 flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 bg-gradient-to-br from-gray-500 to-gray-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+          <div className="w-16 h-16 bg-gradient-to-br from-gray-600 to-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
             <Users className="w-8 h-8 text-white" />
           </div>
-          <div className="text-xl font-semibold text-gray-700">Seminar not found</div>
+          <div className="text-xl font-semibold text-white">Seminar not found</div>
         </div>
       </div>
     );
@@ -553,16 +553,16 @@ export default function SeminarRegistrationPage() {
               </div>
             </div>
             
-            <Card className="shadow-2xl border-0 overflow-hidden">
-              <div className="h-2 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"></div>
-              <CardHeader className="pb-6">
+            <Card className="shadow-2xl border-0 overflow-hidden bg-gradient-to-br from-blue-900/20 to-indigo-900/20 backdrop-blur-md border border-white/10">
+              <div className="h-2 bg-gradient-to-r from-blue-600 via-cyan-600 to-blue-700"></div>
+              <CardHeader className="pb-6 bg-gradient-to-br from-blue-900/30 to-indigo-900/30">
                 <div className="flex flex-col sm:flex-row items-start gap-6">
                   {seminar.imageUrl && (
                     <div className="relative group">
                       <img 
                         src={seminar.imageUrl} 
                         alt={seminar.title}
-                        className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl object-cover flex-shrink-0 transform group-hover:scale-105 transition-transform duration-200 shadow-lg"
+                        className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl object-cover flex-shrink-0 transform group-hover:scale-105 transition-transform duration-200 shadow-lg border border-white/20"
                       />
                       <div className="absolute -top-2 -right-2 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
                         <CheckCircle className="w-4 h-4 text-white" />
@@ -570,7 +570,7 @@ export default function SeminarRegistrationPage() {
                     </div>
                   )}
                   <div className="flex-1 min-w-0">
-                    <CardTitle className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3">
+                    <CardTitle className="text-2xl sm:text-3xl font-bold text-white mb-3">
                       {seminar.title}
                     </CardTitle>
                     <div className="flex flex-wrap items-center gap-3 mb-4">
@@ -582,27 +582,27 @@ export default function SeminarRegistrationPage() {
                       }`}>
                         {seminar.status}
                       </span>
-                      <div className="flex items-center gap-2 bg-gray-100 rounded-full px-3 py-1">
-                        <Users className="w-4 h-4 text-gray-600" />
-                        <span className="text-sm font-medium text-gray-700">
+                      <div className="flex items-center gap-2 bg-blue-800/50 rounded-full px-3 py-1 border border-blue-600/50">
+                        <Users className="w-4 h-4 text-cyan-400" />
+                        <span className="text-sm font-medium text-blue-200">
                           {seminar.currentRegistrations} / {seminar.maxParticipants}
                         </span>
                       </div>
                     </div>
-                    <p className="text-gray-600 leading-relaxed text-base line-clamp-3">{seminar.description}</p>
+                    <p className="text-blue-100 leading-relaxed text-base line-clamp-3">{seminar.description}</p>
                   </div>
                 </div>
               </CardHeader>
               
-              <CardContent className="space-y-8">
+              <CardContent className="space-y-8 bg-gradient-to-br from-blue-900/20 to-indigo-900/20">
                 {/* Event Details */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-100 p-6 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl">
-                    <div className="absolute top-0 right-0 w-20 h-20 bg-blue-200 rounded-full blur-2xl opacity-50 group-hover:opacity-70 transition-opacity"></div>
+                  <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-800/50 to-indigo-900/50 backdrop-blur-sm p-6 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl border border-white/10">
+                    <div className="absolute top-0 right-0 w-20 h-20 bg-blue-400/30 rounded-full blur-2xl opacity-50 group-hover:opacity-70 transition-opacity"></div>
                     <div className="relative z-10">
-                      <Calendar className="w-8 h-8 text-blue-600 mb-3" />
-                      <p className="text-sm font-semibold text-blue-600 uppercase tracking-wide mb-1">Date</p>
-                      <p className="text-lg font-bold text-gray-900">
+                      <Calendar className="w-8 h-8 text-cyan-400 mb-3" />
+                      <p className="text-sm font-semibold text-cyan-300 uppercase tracking-wide mb-1">Date</p>
+                      <p className="text-lg font-bold text-white">
                         {new Date(seminar.date).toLocaleDateString('en-US', { 
                           weekday: 'long', 
                           year: 'numeric', 
@@ -613,45 +613,45 @@ export default function SeminarRegistrationPage() {
                     </div>
                   </div>
                   
-                  <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-purple-50 to-pink-100 p-6 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl">
-                    <div className="absolute top-0 right-0 w-20 h-20 bg-purple-200 rounded-full blur-2xl opacity-50 group-hover:opacity-70 transition-opacity"></div>
+                  <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-purple-800/50 to-pink-900/50 backdrop-blur-sm p-6 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl border border-white/10">
+                    <div className="absolute top-0 right-0 w-20 h-20 bg-purple-400/30 rounded-full blur-2xl opacity-50 group-hover:opacity-70 transition-opacity"></div>
                     <div className="relative z-10">
-                      <Clock className="w-8 h-8 text-purple-600 mb-3" />
-                      <p className="text-sm font-semibold text-purple-600 uppercase tracking-wide mb-1">Time</p>
-                      <p className="text-lg font-bold text-gray-900">{seminar.time}</p>
+                      <Clock className="w-8 h-8 text-pink-400 mb-3" />
+                      <p className="text-sm font-semibold text-pink-300 uppercase tracking-wide mb-1">Time</p>
+                      <p className="text-lg font-bold text-white">{seminar.time}</p>
                     </div>
                   </div>
                   
-                  <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-red-50 to-orange-100 p-6 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl">
-                    <div className="absolute top-0 right-0 w-20 h-20 bg-red-200 rounded-full blur-2xl opacity-50 group-hover:opacity-70 transition-opacity"></div>
+                  <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-red-800/50 to-orange-900/50 backdrop-blur-sm p-6 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl border border-white/10">
+                    <div className="absolute top-0 right-0 w-20 h-20 bg-red-400/30 rounded-full blur-2xl opacity-50 group-hover:opacity-70 transition-opacity"></div>
                     <div className="relative z-10">
-                      <MapPin className="w-8 h-8 text-red-600 mb-3" />
-                      <p className="text-sm font-semibold text-red-600 uppercase tracking-wide mb-1">Location</p>
-                      <p className="text-lg font-bold text-gray-900">{seminar.location}</p>
+                      <MapPin className="w-8 h-8 text-orange-400 mb-3" />
+                      <p className="text-sm font-semibold text-orange-300 uppercase tracking-wide mb-1">Location</p>
+                      <p className="text-lg font-bold text-white">{seminar.location}</p>
                     </div>
                   </div>
                   
-                  <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-green-50 to-emerald-100 p-6 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl">
-                    <div className="absolute top-0 right-0 w-20 h-20 bg-green-200 rounded-full blur-2xl opacity-50 group-hover:opacity-70 transition-opacity"></div>
+                  <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-green-800/50 to-emerald-900/50 backdrop-blur-sm p-6 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl border border-white/10">
+                    <div className="absolute top-0 right-0 w-20 h-20 bg-green-400/30 rounded-full blur-2xl opacity-50 group-hover:opacity-70 transition-opacity"></div>
                     <div className="relative z-10">
-                      <Users className="w-8 h-8 text-green-600 mb-3" />
-                      <p className="text-sm font-semibold text-green-600 uppercase tracking-wide mb-1">Capacity</p>
-                      <p className="text-lg font-bold text-gray-900">{seminar.maxParticipants} participants</p>
+                      <Users className="w-8 h-8 text-emerald-400 mb-3" />
+                      <p className="text-sm font-semibold text-emerald-300 uppercase tracking-wide mb-1">Capacity</p>
+                      <p className="text-lg font-bold text-white">{seminar.maxParticipants} participants</p>
                     </div>
                   </div>
                 </div>
 
                 {/* Registration Progress */}
-                <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-6 shadow-inner">
+                <div className="bg-gradient-to-br from-blue-900/30 to-indigo-900/30 backdrop-blur-sm rounded-2xl p-6 shadow-inner border border-white/10">
                   <div className="flex justify-between items-center mb-4">
                     <div className="flex items-center gap-2">
-                      <TrendingUp className="w-5 h-5 text-indigo-600" />
-                      <span className="text-lg font-bold text-gray-900">Registration Progress</span>
+                      <TrendingUp className="w-5 h-5 text-cyan-400" />
+                      <span className="text-lg font-bold text-white">Registration Progress</span>
                     </div>
-                    <span className="text-lg font-bold text-indigo-600">{Math.round(registrationPercentage)}% full</span>
+                    <span className="text-lg font-bold text-cyan-400">{Math.round(registrationPercentage)}% full</span>
                   </div>
                   <div className="relative">
-                    <div className="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
+                    <div className="w-full bg-blue-800/30 rounded-full h-4 overflow-hidden border border-blue-700/50">
                       <div 
                         className={`h-4 rounded-full transition-all duration-700 ease-out relative overflow-hidden ${
                           isFull ? 'bg-gradient-to-r from-red-500 to-red-600' : 
@@ -664,11 +664,11 @@ export default function SeminarRegistrationPage() {
                     </div>
                   </div>
                   <div className="mt-4 flex items-center justify-between">
-                    <p className="text-sm font-medium text-gray-600">
-                      <span className="text-green-600 font-bold">{seminar.currentRegistrations}</span> registered
+                    <p className="text-sm font-medium text-blue-200">
+                      <span className="text-emerald-400 font-bold">{seminar.currentRegistrations}</span> registered
                     </p>
-                    <p className="text-sm font-medium text-gray-600">
-                      <span className="text-orange-600 font-bold">{seminar.maxParticipants - seminar.currentRegistrations}</span> spots available
+                    <p className="text-sm font-medium text-blue-200">
+                      <span className="text-orange-400 font-bold">{seminar.maxParticipants - seminar.currentRegistrations}</span> spots available
                     </p>
                   </div>
                 </div>
@@ -680,9 +680,10 @@ export default function SeminarRegistrationPage() {
           <div className="lg:col-span-1">
             <div className="sticky top-8">
               <Card className="shadow-2xl border-0 overflow-hidden group hover:shadow-3xl transition-all duration-500">
-                <div className="h-2 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 animate-gradient bg-300"></div>
-                <CardHeader className="bg-gradient-to-br from-gray-50 to-white pb-6 relative overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 via-transparent to-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                <div className="h-2 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 animate-gradient bg-300"></div>
+                <CardHeader className="bg-gradient-to-br from-blue-900/90 via-indigo-900/90 to-purple-900/90 backdrop-blur-md pb-6 relative overflow-hidden border border-white/10">
+                  <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-indigo-500/10 to-purple-500/10 opacity-50"></div>
+                  <div className="absolute inset-0 bg-white/5 backdrop-blur-sm"></div>
                   <div className="relative z-10 text-center">
                     <div className="relative inline-flex items-center justify-center mb-6">
                       <div className="w-20 h-20 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-3xl flex items-center justify-center shadow-2xl group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
@@ -690,21 +691,21 @@ export default function SeminarRegistrationPage() {
                       </div>
                       <div className="absolute inset-0 w-20 h-20 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-3xl animate-ping opacity-20"></div>
                     </div>
-                    <CardTitle className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-purple-600 bg-clip-text text-transparent mb-3">
+                    <CardTitle className="text-3xl font-bold bg-gradient-to-r from-white via-blue-200 to-white bg-clip-text text-transparent mb-3">
                       Register Now
                     </CardTitle>
-                    <p className="text-gray-600 font-medium">Secure your spot today!</p>
+                    <p className="text-blue-100 font-medium">Secure your spot today!</p>
                     
                     {/* Form Progress Indicator */}
                     <div className="mt-6">
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm font-semibold text-gray-700">Profile Completion</span>
-                        <span className="text-sm font-bold text-purple-600">{Math.round(formProgress)}%</span>
+                        <span className="text-sm font-semibold text-blue-200">Profile Completion</span>
+                        <span className="text-sm font-bold text-cyan-400">{Math.round(formProgress)}%</span>
                       </div>
                       <div className="relative">
-                        <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                        <div className="w-full bg-blue-800/30 rounded-full h-3 overflow-hidden border border-blue-700/50">
                           <div 
-                            className="h-3 rounded-full transition-all duration-700 ease-out relative overflow-hidden bg-gradient-to-r from-purple-500 to-pink-500"
+                            className="h-3 rounded-full transition-all duration-700 ease-out relative overflow-hidden bg-gradient-to-r from-blue-500 to-cyan-500"
                             style={{ width: `${formProgress}%` }}
                           >
                             <div className="absolute inset-0 bg-white/20 animate-pulse"></div>
@@ -715,7 +716,7 @@ export default function SeminarRegistrationPage() {
                   </div>
                 </CardHeader>
               
-                <CardContent className="p-6 relative">
+                <CardContent className="p-6 relative bg-gradient-to-br from-blue-900/80 via-indigo-900/80 to-purple-900/80 backdrop-blur-md border-t border-white/10">
                   {isFull ? (
                     <div className="text-center py-12">
                       <div className="relative inline-flex items-center justify-center mb-8">
@@ -724,8 +725,8 @@ export default function SeminarRegistrationPage() {
                         </div>
                         <div className="absolute inset-0 w-24 h-24 bg-gradient-to-br from-red-500 to-red-600 rounded-3xl animate-ping opacity-20"></div>
                       </div>
-                      <h3 className="text-3xl font-bold text-red-600 mb-4">Registration Full</h3>
-                      <p className="text-gray-600 mb-6 text-lg">This seminar is fully booked. Check back for future events!</p>
+                      <h3 className="text-3xl font-bold text-red-400 mb-4">Registration Full</h3>
+                      <p className="text-blue-100 mb-6 text-lg">This seminar is fully booked. Check back for future events!</p>
                       <Button 
                         onClick={() => window.location.href = '/'}
                         className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold py-4 px-8 rounded-2xl transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl"
@@ -736,8 +737,8 @@ export default function SeminarRegistrationPage() {
                   ) : (
                     <form onSubmit={handleSubmit} className="space-y-6">
                       <div className="space-y-2">
-                        <Label htmlFor="fullName" className="flex items-center gap-2 text-sm font-bold text-gray-700 group-hover:text-purple-600 transition-colors duration-200">
-                          <User className="w-4 h-4 text-indigo-600 group-hover:animate-pulse" />
+                        <Label htmlFor="fullName" className="flex items-center gap-2 text-sm font-bold text-blue-200 group-hover:text-cyan-300 transition-colors duration-200">
+                          <User className="w-4 h-4 text-cyan-400 group-hover:animate-pulse" />
                           Full Name *
                         </Label>
                         <div className="relative group">
@@ -750,10 +751,10 @@ export default function SeminarRegistrationPage() {
                             onBlur={() => setFocusedField(null)}
                             placeholder="Enter your full name"
                             required
-                            className={`border-2 ${focusedField === 'fullName' ? 'border-purple-500 ring-4 ring-purple-200/50 scale-105' : 'border-gray-200'} focus:border-purple-500 focus:ring-4 focus:ring-purple-200/50 rounded-2xl px-4 py-4 transition-all duration-300 bg-white/80 backdrop-blur-sm text-gray-700 placeholder-gray-400 shadow-sm hover:shadow-md`}
+                            className={`border-2 ${focusedField === 'fullName' ? 'border-cyan-500 ring-4 ring-cyan-400/30 scale-105' : 'border-blue-700/50'} focus:border-cyan-500 focus:ring-4 focus:ring-cyan-400/30 rounded-2xl px-4 py-4 transition-all duration-300 bg-blue-800/50 backdrop-blur-sm text-white placeholder-blue-300 shadow-sm hover:shadow-md hover:bg-blue-800/70`}
                           />
                           {focusedField === 'fullName' && (
-                            <div className="absolute -top-8 left-2 bg-purple-600 text-white text-xs px-2 py-1 rounded-lg animate-fade-in">
+                            <div className="absolute -top-8 left-2 bg-cyan-600 text-white text-xs px-2 py-1 rounded-lg animate-fade-in">
                               Enter your complete name
                             </div>
                           )}
@@ -761,8 +762,8 @@ export default function SeminarRegistrationPage() {
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="email" className="flex items-center gap-2 text-sm font-bold text-gray-700 group-hover:text-purple-600 transition-colors duration-200">
-                          <Mail className="w-4 h-4 text-indigo-600 group-hover:animate-pulse" />
+                        <Label htmlFor="email" className="flex items-center gap-2 text-sm font-bold text-blue-200 group-hover:text-cyan-300 transition-colors duration-200">
+                          <Mail className="w-4 h-4 text-cyan-400 group-hover:animate-pulse" />
                           Email *
                         </Label>
                         <div className="relative group">
@@ -776,10 +777,10 @@ export default function SeminarRegistrationPage() {
                             onBlur={() => setFocusedField(null)}
                             placeholder="Enter your email"
                             required
-                            className={`border-2 ${focusedField === 'email' ? 'border-purple-500 ring-4 ring-purple-200/50 scale-105' : 'border-gray-200'} focus:border-purple-500 focus:ring-4 focus:ring-purple-200/50 rounded-2xl px-4 py-4 transition-all duration-300 bg-white/80 backdrop-blur-sm text-gray-700 placeholder-gray-400 shadow-sm hover:shadow-md`}
+                            className={`border-2 ${focusedField === 'email' ? 'border-cyan-500 ring-4 ring-cyan-400/30 scale-105' : 'border-blue-700/50'} focus:border-cyan-500 focus:ring-4 focus:ring-cyan-400/30 rounded-2xl px-4 py-4 transition-all duration-300 bg-blue-800/50 backdrop-blur-sm text-white placeholder-blue-300 shadow-sm hover:shadow-md hover:bg-blue-800/70`}
                           />
                           {focusedField === 'email' && (
-                            <div className="absolute -top-8 left-2 bg-purple-600 text-white text-xs px-2 py-1 rounded-lg animate-fade-in">
+                            <div className="absolute -top-8 left-2 bg-cyan-600 text-white text-xs px-2 py-1 rounded-lg animate-fade-in">
                               We'll send confirmation here
                             </div>
                           )}
@@ -787,8 +788,8 @@ export default function SeminarRegistrationPage() {
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="phone" className="flex items-center gap-2 text-sm font-bold text-gray-700 group-hover:text-purple-600 transition-colors duration-200">
-                          <Phone className="w-4 h-4 text-indigo-600 group-hover:animate-pulse" />
+                        <Label htmlFor="phone" className="flex items-center gap-2 text-sm font-bold text-blue-200 group-hover:text-cyan-300 transition-colors duration-200">
+                          <Phone className="w-4 h-4 text-cyan-400 group-hover:animate-pulse" />
                           Phone *
                         </Label>
                         <div className="relative group">
@@ -801,10 +802,10 @@ export default function SeminarRegistrationPage() {
                             onBlur={() => setFocusedField(null)}
                             placeholder="Enter your phone number"
                             required
-                            className={`border-2 ${focusedField === 'phone' ? 'border-purple-500 ring-4 ring-purple-200/50 scale-105' : 'border-gray-200'} focus:border-purple-500 focus:ring-4 focus:ring-purple-200/50 rounded-2xl px-4 py-4 transition-all duration-300 bg-white/80 backdrop-blur-sm text-gray-700 placeholder-gray-400 shadow-sm hover:shadow-md`}
+                            className={`border-2 ${focusedField === 'phone' ? 'border-cyan-500 ring-4 ring-cyan-400/30 scale-105' : 'border-blue-700/50'} focus:border-cyan-500 focus:ring-4 focus:ring-cyan-400/30 rounded-2xl px-4 py-4 transition-all duration-300 bg-blue-800/50 backdrop-blur-sm text-white placeholder-blue-300 shadow-sm hover:shadow-md hover:bg-blue-800/70`}
                           />
                           {focusedField === 'phone' && (
-                            <div className="absolute -top-8 left-2 bg-purple-600 text-white text-xs px-2 py-1 rounded-lg animate-fade-in">
+                            <div className="absolute -top-8 left-2 bg-cyan-600 text-white text-xs px-2 py-1 rounded-lg animate-fade-in">
                               For important updates
                             </div>
                           )}
@@ -812,8 +813,8 @@ export default function SeminarRegistrationPage() {
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="education" className="flex items-center gap-2 text-sm font-bold text-gray-700 group-hover:text-purple-600 transition-colors duration-200">
-                          <BookOpen className="w-4 h-4 text-indigo-600 group-hover:animate-pulse" />
+                        <Label htmlFor="education" className="flex items-center gap-2 text-sm font-bold text-blue-200 group-hover:text-cyan-300 transition-colors duration-200">
+                          <BookOpen className="w-4 h-4 text-cyan-400 group-hover:animate-pulse" />
                           Education *
                         </Label>
                         <div className="relative group">
@@ -826,10 +827,10 @@ export default function SeminarRegistrationPage() {
                             onBlur={() => setFocusedField(null)}
                             placeholder="Your educational background"
                             required
-                            className={`border-2 ${focusedField === 'education' ? 'border-purple-500 ring-4 ring-purple-200/50 scale-105' : 'border-gray-200'} focus:border-purple-500 focus:ring-4 focus:ring-purple-200/50 rounded-2xl px-4 py-4 transition-all duration-300 bg-white/80 backdrop-blur-sm text-gray-700 placeholder-gray-400 shadow-sm hover:shadow-md`}
+                            className={`border-2 ${focusedField === 'education' ? 'border-cyan-500 ring-4 ring-cyan-400/30 scale-105' : 'border-blue-700/50'} focus:border-cyan-500 focus:ring-4 focus:ring-cyan-400/30 rounded-2xl px-4 py-4 transition-all duration-300 bg-blue-800/50 backdrop-blur-sm text-white placeholder-blue-300 shadow-sm hover:shadow-md hover:bg-blue-800/70`}
                           />
                           {focusedField === 'education' && (
-                            <div className="absolute -top-8 left-2 bg-purple-600 text-white text-xs px-2 py-1 rounded-lg animate-fade-in">
+                            <div className="absolute -top-8 left-2 bg-cyan-600 text-white text-xs px-2 py-1 rounded-lg animate-fade-in">
                               Tell us about your studies
                             </div>
                           )}
@@ -837,8 +838,8 @@ export default function SeminarRegistrationPage() {
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="whyJoin" className="flex items-center gap-2 text-sm font-bold text-gray-700 group-hover:text-purple-600 transition-colors duration-200">
-                          <Award className="w-4 h-4 text-indigo-600 group-hover:animate-pulse" />
+                        <Label htmlFor="whyJoin" className="flex items-center gap-2 text-sm font-bold text-blue-200 group-hover:text-cyan-300 transition-colors duration-200">
+                          <Award className="w-4 h-4 text-cyan-400 group-hover:animate-pulse" />
                           Why Join? *
                         </Label>
                         <div className="relative group">
@@ -852,10 +853,10 @@ export default function SeminarRegistrationPage() {
                             placeholder="Tell us why you want to join this seminar"
                             rows={3}
                             required
-                            className={`border-2 ${focusedField === 'whyJoin' ? 'border-purple-500 ring-4 ring-purple-200/50 scale-105' : 'border-gray-200'} focus:border-purple-500 focus:ring-4 focus:ring-purple-200/50 rounded-2xl px-4 py-4 transition-all duration-300 resize-none bg-white/80 backdrop-blur-sm text-gray-700 placeholder-gray-400 shadow-sm hover:shadow-md`}
+                            className={`border-2 ${focusedField === 'whyJoin' ? 'border-cyan-500 ring-4 ring-cyan-400/30 scale-105' : 'border-blue-700/50'} focus:border-cyan-500 focus:ring-4 focus:ring-cyan-400/30 rounded-2xl px-4 py-4 transition-all duration-300 resize-none bg-blue-800/50 backdrop-blur-sm text-white placeholder-blue-300 shadow-sm hover:shadow-md hover:bg-blue-800/70`}
                           />
                           {focusedField === 'whyJoin' && (
-                            <div className="absolute -top-8 left-2 bg-purple-600 text-white text-xs px-2 py-1 rounded-lg animate-fade-in">
+                            <div className="absolute -top-8 left-2 bg-cyan-600 text-white text-xs px-2 py-1 rounded-lg animate-fade-in">
                               What motivates you to join?
                             </div>
                           )}
@@ -863,8 +864,8 @@ export default function SeminarRegistrationPage() {
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="experience" className="flex items-center gap-2 text-sm font-bold text-gray-700 group-hover:text-purple-600 transition-colors duration-200">
-                          <Users className="w-4 h-4 text-indigo-600 group-hover:animate-pulse" />
+                        <Label htmlFor="experience" className="flex items-center gap-2 text-sm font-bold text-blue-200 group-hover:text-cyan-300 transition-colors duration-200">
+                          <Users className="w-4 h-4 text-cyan-400 group-hover:animate-pulse" />
                           Experience
                         </Label>
                         <div className="relative group">
@@ -877,10 +878,10 @@ export default function SeminarRegistrationPage() {
                             onBlur={() => setFocusedField(null)}
                             placeholder="Any relevant experience (optional)"
                             rows={2}
-                            className={`border-2 ${focusedField === 'experience' ? 'border-purple-500 ring-4 ring-purple-200/50 scale-105' : 'border-gray-200'} focus:border-purple-500 focus:ring-4 focus:ring-purple-200/50 rounded-2xl px-4 py-4 transition-all duration-300 resize-none bg-white/80 backdrop-blur-sm text-gray-700 placeholder-gray-400 shadow-sm hover:shadow-md`}
+                            className={`border-2 ${focusedField === 'experience' ? 'border-cyan-500 ring-4 ring-cyan-400/30 scale-105' : 'border-blue-700/50'} focus:border-cyan-500 focus:ring-4 focus:ring-cyan-400/30 rounded-2xl px-4 py-4 transition-all duration-300 resize-none bg-blue-800/50 backdrop-blur-sm text-white placeholder-blue-300 shadow-sm hover:shadow-md hover:bg-blue-800/70`}
                           />
                           {focusedField === 'experience' && (
-                            <div className="absolute -top-8 left-2 bg-purple-600 text-white text-xs px-2 py-1 rounded-lg animate-fade-in">
+                            <div className="absolute -top-8 left-2 bg-cyan-600 text-white text-xs px-2 py-1 rounded-lg animate-fade-in">
                               Share your background (optional)
                             </div>
                           )}
@@ -892,8 +893,8 @@ export default function SeminarRegistrationPage() {
                         disabled={submitting || !isFormValid}
                         className={`w-full font-bold py-5 rounded-2xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center gap-3 text-lg relative overflow-hidden group ${
                           isFormValid 
-                            ? 'bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:from-indigo-700 hover:via-purple-700 hover:to-pink-700 text-white' 
-                            : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                            ? 'bg-gradient-to-r from-blue-600 via-cyan-600 to-blue-700 hover:from-blue-700 hover:via-cyan-700 hover:to-blue-800 text-white' 
+                            : 'bg-gray-600 text-gray-400 cursor-not-allowed'
                         }`}
                       >
                         <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>

@@ -395,14 +395,14 @@ export default function CourseManagement() {
   const totalRevenue = courses.reduce((sum, course) => sum + (course.price * course._count.enrollments), 0);
 
   return (
-    <div className="min-h-screen bg-gray-900">
+    <div className="min-h-screen bg-gray-950">
       {/* Header */}
-      <div className="bg-gray-800 border-b border-gray-700">
+      <div className="bg-gray-900/80 backdrop-blur-lg border-b border-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div>
               <h1 className="text-2xl font-bold text-white">Course Management</h1>
-              <p className="text-sm text-gray-300 mt-1">Manage your training courses and programs</p>
+              <p className="text-sm text-slate-300 mt-1">Manage your training courses and programs</p>
             </div>
             <div className="flex items-center space-x-3">
               <Button
@@ -414,7 +414,7 @@ export default function CourseManagement() {
               </Button>
               <Button 
                 variant="outline"
-                className="border-gray-600 text-gray-300 hover:bg-gray-700"
+                className="border-gray-600 text-gray-300 hover:bg-gray-800/50"
                 onClick={fetchCourses}
                 disabled={loading}
               >
@@ -429,11 +429,11 @@ export default function CourseManagement() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card className="bg-gray-800 border-0 shadow-sm">
+          <Card className="bg-gray-900/40 backdrop-blur-md border border-gray-800">
             <CardContent className="p-6">
               <div className="flex items-center">
-                <div className="w-12 h-12 bg-blue-900/30 rounded-xl flex items-center justify-center">
-                  <BookOpen className="w-6 h-6 text-blue-400" />
+                <div className="w-12 h-12 bg-gray-800/60 rounded-xl flex items-center justify-center border border-gray-700">
+                  <BookOpen className="w-6 h-6 text-gray-400" />
                 </div>
                 <div className="ml-4">
                   <p className="text-sm font-medium text-gray-300">Total Courses</p>
@@ -443,11 +443,11 @@ export default function CourseManagement() {
             </CardContent>
           </Card>
 
-          <Card className="bg-gray-800 border-0 shadow-sm">
+          <Card className="bg-gray-900/40 backdrop-blur-md border border-gray-800">
             <CardContent className="p-6">
               <div className="flex items-center">
-                <div className="w-12 h-12 bg-green-900/30 rounded-xl flex items-center justify-center">
-                  <Eye className="w-6 h-6 text-green-400" />
+                <div className="w-12 h-12 bg-gray-800/60 rounded-xl flex items-center justify-center border border-gray-700">
+                  <Eye className="w-6 h-6 text-gray-400" />
                 </div>
                 <div className="ml-4">
                   <p className="text-sm font-medium text-gray-300">Active Courses</p>
@@ -457,29 +457,29 @@ export default function CourseManagement() {
             </CardContent>
           </Card>
 
-          <Card className="stat-card">
+          <Card className="bg-gray-900/40 backdrop-blur-md border border-gray-800">
             <CardContent className="p-6">
               <div className="flex items-center">
-                <div className="icon-wrapper">
-                  <EyeOff className="icon-secondary" />
+                <div className="w-12 h-12 bg-gray-800/60 rounded-xl flex items-center justify-center border border-gray-700">
+                  <EyeOff className="w-6 h-6 text-gray-400" />
                 </div>
                 <div className="ml-4">
-                  <p className="stat-label">Inactive Courses</p>
-                  <p className="stat-number">{inactiveCourses}</p>
+                  <p className="text-sm font-medium text-gray-300">Inactive Courses</p>
+                  <p className="text-2xl font-bold text-white">{inactiveCourses}</p>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="stat-card">
+          <Card className="bg-gray-900/40 backdrop-blur-md border border-gray-800">
             <CardContent className="p-6">
               <div className="flex items-center">
-                <div className="icon-wrapper">
-                  <span className="icon-secondary text-2xl font-bold">৳</span>
+                <div className="w-12 h-12 bg-gray-800/60 rounded-xl flex items-center justify-center border border-gray-700">
+                  <span className="text-2xl font-bold text-gray-300">৳</span>
                 </div>
                 <div className="ml-4">
-                  <p className="stat-label">Total Revenue</p>
-                  <p className="stat-number">{formatCurrency(totalRevenue)}</p>
+                  <p className="text-sm font-medium text-gray-300">Total Revenue</p>
+                  <p className="text-2xl font-bold text-white">{formatCurrency(totalRevenue)}</p>
                 </div>
               </div>
             </CardContent>
@@ -487,7 +487,7 @@ export default function CourseManagement() {
         </div>
 
         {/* Filters */}
-        <Card className="card-premium mb-8" style={{ overflow: 'visible' }}>
+        <Card className="bg-gray-900/40 backdrop-blur-md border border-gray-800 mb-8" style={{ overflow: 'visible' }}>
           <CardContent className="p-6" style={{ overflow: 'visible' }}>
             <div className="flex flex-col lg:flex-row gap-4">
               <div className="flex-1">
@@ -498,14 +498,14 @@ export default function CourseManagement() {
                     placeholder="Search courses..."
                     value={filters.search}
                     onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
-                    className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-colors"
+                    className="w-full pl-10 pr-4 py-2.5 border border-gray-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-600/30 focus:border-gray-600 transition-colors bg-gray-900/50 text-white placeholder-gray-400"
                   />
                 </div>
               </div>
 
               <div className="lg:w-48">
                 <SimpleSelect value={filters.category} onValueChange={(value) => setFilters(prev => ({ ...prev, category: value }))}>
-                  <SimpleSelectTrigger className="w-full border-gray-200 text-sm">
+                  <SimpleSelectTrigger className="w-full border-gray-700 text-sm bg-gray-900/50 text-white">
                     {filters.category ? categories.find(c => c.slug === filters.category)?.name : 'Category'}
                   </SimpleSelectTrigger>
                   <SimpleSelectContent>
@@ -521,7 +521,7 @@ export default function CourseManagement() {
 
               <div className="lg:w-48">
                 <SimpleSelect value={filters.isActive} onValueChange={(value) => setFilters(prev => ({ ...prev, isActive: value }))}>
-                  <SimpleSelectTrigger className="w-full border-gray-200 text-sm">
+                  <SimpleSelectTrigger className="w-full border-gray-700 text-sm bg-gray-900/50 text-white">
                     {filters.isActive === '' ? 'Status' : filters.isActive === 'true' ? 'Active' : 'Inactive'}
                   </SimpleSelectTrigger>
                   <SimpleSelectContent>
@@ -541,11 +541,11 @@ export default function CourseManagement() {
             <RefreshCw className="w-8 h-8 animate-spin text-gray-400" />
           </div>
         ) : filteredCourses.length === 0 ? (
-          <Card className="bg-white border-0 shadow-sm rounded-xl">
+          <Card className="bg-gray-900/40 backdrop-blur-md border border-gray-800 rounded-xl">
             <CardContent className="p-12 text-center">
               <BookOpen className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No courses found</h3>
-              <p className="text-gray-500 mb-4">Get started by creating your first course.</p>
+              <h3 className="text-lg font-medium text-white mb-2">No courses found</h3>
+              <p className="text-gray-300 mb-4">Get started by creating your first course.</p>
               <Button
                 onClick={() => setShowAddModal(true)}
                 className="btn-primary"
@@ -558,9 +558,9 @@ export default function CourseManagement() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredCourses.map((course) => (
-              <Card key={course.id} className="card-premium overflow-hidden">
+              <Card key={course.id} className="bg-gray-900/40 backdrop-blur-md border border-gray-800 overflow-hidden">
                 {/* Thumbnail */}
-                <div className="h-48 bg-gray-100 relative">
+                <div className="h-48 bg-gray-900/60 relative">
                   {course.thumbnail ? (
                     <img 
                       src={course.thumbnail} 
@@ -569,7 +569,7 @@ export default function CourseManagement() {
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
-                      <Image className="w-12 h-12 text-gray-400" />
+                      <Image className="w-12 h-12 text-gray-600" />
                     </div>
                   )}
                   
@@ -577,8 +577,8 @@ export default function CourseManagement() {
                   <div className="absolute top-3 right-3">
                     <Badge className={`${
                       course.isActive 
-                        ? 'bg-green-100 text-green-700 border-green-200' 
-                        : 'bg-gray-100 text-gray-700 border-gray-200'
+                        ? 'bg-gray-700/50 text-gray-300 border-gray-600' 
+                        : 'bg-gray-700/50 text-gray-300 border-gray-600'
                     }`}>
                       {course.isActive ? 'Active' : 'Inactive'}
                     </Badge>
@@ -588,49 +588,49 @@ export default function CourseManagement() {
                 <CardContent className="p-6">
                   {/* Title and Category */}
                   <div className="mb-3">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">{course.title}</h3>
-                    <Badge className="bg-purple-100 text-purple-700 border-purple-200">
+                    <h3 className="text-lg font-semibold text-white mb-2 line-clamp-2">{course.title}</h3>
+                    <Badge className="bg-gray-700/50 text-gray-300 border-gray-600">
                       {categories.find(c => c.slug === course.category.toLowerCase())?.name || course.category}
                     </Badge>
                   </div>
 
                   {/* Short Description */}
                   {course.shortDescription && (
-                    <p className="text-sm text-gray-600 mb-4 line-clamp-2">{course.shortDescription}</p>
+                    <p className="text-sm text-gray-300 mb-4 line-clamp-2">{course.shortDescription}</p>
                   )}
 
                   {/* Course Details */}
                   <div className="space-y-2 mb-4">
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-500">Price:</span>
-                      <span className="font-semibold text-gray-900">
+                      <span className="text-gray-400">Price:</span>
+                      <span className="font-semibold text-white">
                         {course.price === 0 ? 'Free' : formatCurrency(course.price)}
                       </span>
                     </div>
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-500">Duration:</span>
-                      <span className="text-gray-900">{course.duration}</span>
+                      <span className="text-gray-400">Duration:</span>
+                      <span className="text-white">{course.duration}</span>
                     </div>
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-500">Students:</span>
-                      <span className="text-gray-900">{course._count.enrollments}</span>
+                      <span className="text-gray-400">Students:</span>
+                      <span className="text-white">{course._count.enrollments}</span>
                     </div>
                     {course.mentor && (
                       <div className="flex items-center justify-between text-sm">
-                        <span className="text-gray-500">Mentor:</span>
-                        <span className="text-gray-900">{course.mentor.name}</span>
+                        <span className="text-gray-400">Mentor:</span>
+                        <span className="text-white">{course.mentor.name}</span>
                       </div>
                     )}
                   </div>
 
                   {/* Action Buttons */}
-                  <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                  <div className="flex items-center justify-between pt-4 border-t border-gray-800">
                     <div className="flex items-center space-x-2">
                       <Button
                         size="sm"
                         variant="outline"
                         onClick={() => openEditModal(course)}
-                        className="btn-secondary-outline"
+                        className="border-gray-600 text-gray-300 hover:bg-gray-800/50"
                       >
                         <Edit className="w-3 h-3 mr-1" />
                         Edit
@@ -639,7 +639,7 @@ export default function CourseManagement() {
                         size="sm"
                         variant="outline"
                         onClick={() => openDeleteModal(course)}
-                        className="border-red-200 text-red-700 hover:bg-red-50 badge-danger"
+                        className="border-gray-600 text-gray-300 hover:bg-gray-800/50"
                       >
                         <Trash2 className="w-3 h-3 mr-1" />
                         Delete
@@ -653,8 +653,8 @@ export default function CourseManagement() {
                       disabled={actionLoading[course.id]}
                       className={`${
                         course.isActive 
-                          ? 'border-gray-200 text-gray-700 hover:bg-gray-50' 
-                          : 'border-green-200 text-green-700 hover:bg-green-50'
+                          ? 'border-gray-600 text-gray-300 hover:bg-gray-800/50' 
+                          : 'border-gray-600 text-gray-300 hover:bg-gray-800/50'
                       }`}
                     >
                       {actionLoading[course.id] ? (
