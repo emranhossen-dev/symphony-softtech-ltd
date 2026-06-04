@@ -111,7 +111,7 @@ export default function StudentDashboard() {
 
   const continueCourse = (courseId: string, courseSlug: string) => {
     // Navigate directly to the course learning page using slug
-    window.location.href = `/student/learn/${courseSlug}/split`;
+    window.location.href = `/student/learn/${courseSlug}`;
   };
 
   if (loading) {

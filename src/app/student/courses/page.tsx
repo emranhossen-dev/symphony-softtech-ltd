@@ -94,12 +94,15 @@ export default function StudentCourses() {
   };
 
   const handleCourseAction = (courseId: string, enrollmentStatus: string) => {
-    if (enrollmentStatus === 'COMPLETED' || (enrollmentStatus === 'ADMITTED' && courses.find(c => c.id === courseId)?.progress === 100)) {
+    const course = courses.find(c => c.id === courseId);
+    const courseSlug = course?.slug || courseId;
+
+    if (enrollmentStatus === 'COMPLETED' || (enrollmentStatus === 'ADMITTED' && course?.progress === 100)) {
       // Navigate to certificates page or view certificate
       window.location.href = `/student/certificates`;
     } else if (enrollmentStatus === 'ADMITTED') {
-      // Navigate to split page for course content
-      window.location.href = `/student/learn/${courseId}/split`;
+      // Navigate to learn page for course content using slug
+      window.location.href = `/student/learn/${courseSlug}`;
     } else {
       // For applied/pending courses, show course details
       window.location.href = `/student/course/${courseId}`;

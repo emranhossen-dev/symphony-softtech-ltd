@@ -45,7 +45,7 @@ interface Course {
 
 interface EnhancedCourseCardProps {
   course: Course;
-  onContinue?: (courseId: string) => void;
+  onContinue?: (courseId: string, courseSlug: string) => void;
 }
 
 export default function EnhancedCourseCard({ course, onContinue }: EnhancedCourseCardProps) {
@@ -228,7 +228,7 @@ export default function EnhancedCourseCard({ course, onContinue }: EnhancedCours
         <div className="space-y-2">
           {course.enrollmentStatus === 'ADMITTED' ? (
             <button
-              onClick={() => onContinue?.(course.id)}
+              onClick={() => onContinue?.(course.id, course.slug)}
               className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
             >
               {nextModuleInfo.icon}

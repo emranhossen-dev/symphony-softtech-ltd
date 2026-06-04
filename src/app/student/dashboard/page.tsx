@@ -424,7 +424,7 @@ export default function StudentDashboard() {
               <EnhancedCourseCard
                 key={course.id}
                 course={course}
-                onContinue={(courseId) => window.location.href = `/student/learn/${courseId}/split`}
+                onContinue={(courseId, courseSlug) => window.location.href = `/student/learn/${courseSlug}`}
               />
             ))}
           </div>
