@@ -6,6 +6,7 @@ import CourseCard from "./CourseCard";
 
 interface Course {
   id: string;
+  slug: string;
   title: string;
   description: string;
   shortDescription?: string;
@@ -203,6 +204,7 @@ const FeaturedCourses = () => {
                 <div key={course.id} className="w-full">
                   <CourseCard
                     id={course.id}
+                    slug={course.slug}
                     title={course.title}
                     description={course.description}
                     shortDescription={course.shortDescription}

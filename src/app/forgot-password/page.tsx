@@ -16,7 +16,7 @@ export default function ForgotPasswordPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!email) {
       setError('Please enter your email address');
       return;
@@ -26,6 +26,7 @@ export default function ForgotPasswordPage() {
     setError('');
 
     try {
+      console.log('🚀 Sending forgot password request for:', email);
       const response = await fetch('/api/auth/forgot-password', {
         method: 'POST',
         headers: {
@@ -34,7 +35,9 @@ export default function ForgotPasswordPage() {
         body: JSON.stringify({ email }),
       });
 
+      console.log('📡 Response status:', response.status);
       const data = await response.json();
+      console.log('📬 Response data:', data);
 
       if (!response.ok) {
         throw new Error(data.error || 'Failed to send reset code');
@@ -48,6 +51,7 @@ export default function ForgotPasswordPage() {
 
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to send reset code';
+      console.error('❌ Forgot password error:', err);
       setError(errorMessage);
       toast.error(errorMessage, {
         duration: 4000,

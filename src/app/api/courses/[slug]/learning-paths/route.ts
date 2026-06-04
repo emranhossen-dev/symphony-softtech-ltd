@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
-// GET /api/courses/[courseId]/learning-paths - Get course learning paths
+// GET /api/courses/[slug]/learning-paths - Get course learning paths
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ courseId: string }> }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
-    const { courseId } = await params;
+    const { slug } = await params;
 
     // Mock learning paths data
     const paths = [

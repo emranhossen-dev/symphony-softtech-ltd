@@ -12,7 +12,8 @@ import {
   Clock,
   Eye,
   RefreshCw,
-  Users
+  Users,
+  BookOpen
 } from 'lucide-react';
 
 interface Course {
@@ -261,6 +262,10 @@ const CoursesPage = () => {
                         <span>{course.duration}</span>
                       </div>
                     )}
+                    <div className="flex items-center gap-1">
+                      <BookOpen className="w-4 h-4" />
+                      <span>{course._count?.modules || 0} modules</span>
+                    </div>
                     <div className="flex items-center gap-1">
                       <Users className="w-4 h-4" />
                       <span>{course._count?.enrollments || 0} students</span>

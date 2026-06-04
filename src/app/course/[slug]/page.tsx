@@ -289,7 +289,7 @@ interface Achievement {
 
 const CourseDetailPage = () => {
   const params = useParams();
-  const courseId = params.courseId as string;
+  const slug = params.slug as string;
 
   const [course, setCourse] = useState<Course | null>(null);
   const [modules, setModules] = useState<Module[]>([]);
@@ -364,7 +364,7 @@ const CourseDetailPage = () => {
     };
     
     initializePage();
-  }, [courseId]);
+  }, [slug]);
   
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
@@ -396,7 +396,7 @@ const CourseDetailPage = () => {
 
   const fetchCourse = async () => {
     try {
-      const response = await fetch(`/api/courses/${courseId}`);
+      const response = await fetch(`/api/courses/${slug}`);
       
       if (!response.ok) {
         console.error('Response not OK:', response.status, response.statusText);
@@ -432,7 +432,7 @@ const CourseDetailPage = () => {
 
   const fetchModules = async () => {
     try {
-      const response = await fetch(`/api/courses/${courseId}/modules`);
+      const response = await fetch(`/api/courses/${slug}/modules`);
       const data = await response.json();
       
       if (data.success) {
@@ -758,7 +758,7 @@ const CourseDetailPage = () => {
 
   const fetchCourseStats = async () => {
     try {
-      const response = await fetch(`/api/courses/${courseId}/stats`);
+      const response = await fetch(`/api/courses/${slug}/stats`);
       if (!response.ok) {
         console.warn('Failed to fetch course stats, using defaults');
         return;
@@ -785,7 +785,7 @@ const CourseDetailPage = () => {
   
   const fetchLearningPaths = async () => {
     try {
-      const response = await fetch(`/api/courses/${courseId}/learning-paths`);
+      const response = await fetch(`/api/courses/${slug}/learning-paths`);
       if (!response.ok) {
         console.warn('Failed to fetch learning paths, using defaults');
         return;
@@ -803,7 +803,7 @@ const CourseDetailPage = () => {
   
   const fetchAchievements = async () => {
     try {
-      const response = await fetch(`/api/courses/${courseId}/achievements`);
+      const response = await fetch(`/api/courses/${slug}/achievements`);
       if (!response.ok) {
         console.warn('Failed to fetch achievements, using defaults');
         return;

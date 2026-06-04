@@ -74,7 +74,7 @@ const CourseDetailsPage = () => {
       
       if (data.success) {
         setCourse(data.course);
-        fetchModules(courseId); // Use the courseId parameter directly
+        fetchModules(data.course.id); // Use the actual course ID from the database
       } else {
         setLoading(false);
       }

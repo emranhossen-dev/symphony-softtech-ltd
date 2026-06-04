@@ -7,6 +7,7 @@ import { formatBDT } from '@/lib/currency';
 
 interface Course {
   id: string;
+  slug: string;
   title: string;
   description: string;
   shortDescription?: string;
@@ -67,9 +68,9 @@ const FeaturedCoursesSection = () => {
     );
   };
 
-  const handleCourseClick = (courseId: string) => {
-    setNavigatingCourse(courseId);
-    router.push(`/course/${courseId}`);
+  const handleCourseClick = (slug: string) => {
+    setNavigatingCourse(slug);
+    router.push(`/course/${slug}`);
   };
 
   if (loading) {
@@ -143,7 +144,7 @@ const FeaturedCoursesSection = () => {
               key={course.id}
               className="group relative cursor-pointer pointer-events-auto"
               style={{ animationDelay: `${index * 100}ms` }}
-              onClick={() => handleCourseClick(course.id)}
+              onClick={() => handleCourseClick(course.slug)}
             >
               <div 
                 className="relative bg-gradient-to-br from-indigo-950 via-purple-950 to-black backdrop-blur-2xl rounded-3xl border border-purple-500/20 overflow-hidden hover:scale-[1.03] transition-all duration-700 shadow-2xl hover:shadow-purple-500/30 pointer-events-none"
@@ -260,10 +261,10 @@ const FeaturedCoursesSection = () => {
                         className="relative flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full hover:from-purple-500 hover:to-pink-500 transition-all duration-300 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleCourseClick(course.id);
+                          handleCourseClick(course.slug);
                         }}
                       >
-                        {navigatingCourse === course.id ? (
+                        {navigatingCourse === course.slug ? (
                           <>
                             <Loader2 className="w-4 h-4 animate-spin text-white" />
                             <span className="text-white font-bold">Loading...</span>

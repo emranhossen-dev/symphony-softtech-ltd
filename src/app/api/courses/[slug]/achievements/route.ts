@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
-// GET /api/courses/[courseId]/achievements - Get course achievements
+// GET /api/courses/[slug]/achievements - Get course achievements
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ courseId: string }> }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
-    const { courseId } = await params;
+    const { slug } = await params;
 
     // Mock achievements data
     const achievements = [

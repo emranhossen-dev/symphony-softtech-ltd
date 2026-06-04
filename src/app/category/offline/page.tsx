@@ -8,6 +8,7 @@ import { MapPin, Clock, Users, Award, Building, Coffee, Star, TrendingUp, Shield
 
 interface Course {
   id: string;
+  slug: string;
   title: string;
   description: string;
   shortDescription?: string;
@@ -345,7 +346,7 @@ const OfflineCategoryPage = () => {
                         </div>
                         <div className="flex gap-2">
                           <button 
-                            onClick={() => window.location.href = `/course/${course.id}`}
+                            onClick={() => window.location.href = `/course/${course.slug}`}
                             className="px-4 py-2 border border-gray-200 text-gray-600 rounded-xl hover:bg-gray-50 transition-all duration-300 transform hover:scale-105"
                           >
                             Details

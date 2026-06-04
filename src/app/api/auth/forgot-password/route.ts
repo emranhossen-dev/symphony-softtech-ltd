@@ -12,6 +12,14 @@ function generateOTP(): string {
 
 // Send email using nodemailer
 async function sendEmail(email: string, otp: string): Promise<void> {
+  console.log('📧 Sending email to:', email);
+  console.log('🔑 OTP:', otp);
+  console.log('⚙️ SMTP Config:', {
+    host: process.env.SMTP_HOST,
+    port: process.env.SMTP_PORT,
+    user: process.env.SMTP_USER,
+  });
+
   const transporter = nodemailer.createTransport({
     host: process.env.SMTP_HOST,
     port: parseInt(process.env.SMTP_PORT || '587'),
@@ -57,12 +65,18 @@ async function sendEmail(email: string, otp: string): Promise<void> {
     `,
   };
 
-  await transporter.sendMail(mailOptions);
+  const result = await transporter.sendMail(mailOptions);
+  console.log('✅ Email sent successfully:', result.messageId);
 }
 
 export async function POST(request: NextRequest) {
+  console.log('🚀 Forgot password API called');
   try {
-    const { email } = await request.json();
+    const body = await request.json();
+    console.log('📨 Request body:', body);
+    const { email } = body;
+
+    console.log('📧 Processing email:', email);
 
     if (!email) {
       return NextResponse.json(

@@ -1,22 +1,34 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
-// GET /api/courses/[courseId]/stats - Get course statistics (public)
+// GET /api/courses/[slug]/stats - Get course statistics (public)
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ courseId: string }> }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
-    const { courseId } = await params;
+    const { slug } = await params;
+
+    // Get course by slug to get courseId
+    const course = await prisma?.course.findUnique({
+      where: { slug }
+    });
+
+    if (!course) {
+      return NextResponse.json(
+        { success: false, error: 'Course not found' },
+        { status: 404 }
+      );
+    }
 
     // Get course enrollments count
     const totalEnrollments = await prisma?.enrollment.count({
-      where: { courseId }
+      where: { courseId: course.id }
     });
 
     // Get course modules count
     const totalModules = await prisma?.module.count({
-      where: { courseId }
+      where: { courseId: course.id }
     });
 
     // Get average rating (mock data for now)

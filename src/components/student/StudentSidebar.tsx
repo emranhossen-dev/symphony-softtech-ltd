@@ -31,7 +31,7 @@ interface StudentSidebarItem {
 }
 
 const studentSidebarItems: StudentSidebarItem[] = [
-  { name: "Dashboard", href: "/student", icon: <Home className="w-5 h-5" /> },
+  { name: "Dashboard", href: "/student/dashboard", icon: <Home className="w-5 h-5" /> },
   { name: "My Courses", href: "/student/courses", icon: <BookOpen className="w-5 h-5" /> },
   { name: "Online Classes", href: "/student/online-classes", icon: <Video className="w-5 h-5" />, isOnlineClass: true, badge: "Live" },
   { name: "Homework", href: "/student/homework", icon: <FileText className="w-5 h-5" /> },
@@ -76,14 +76,14 @@ const StudentSidebar = ({ isOpen = true, onClose }: StudentSidebarProps) => {
 
       {/* Sidebar */}
       <div className={`
-        fixed inset-y-0 left-0 z-50 w-64 sm:w-72 bg-gradient-to-b from-gray-900 to-gray-800 transform transition-transform duration-300 ease-in-out
+        fixed inset-y-0 left-0 z-50 w-64 sm:w-72 bg-gradient-to-b from-[#0a0e27] via-[#1a1f4c] to-[#0d1b3e] transform transition-transform duration-300 ease-in-out
         ${isOpen ? 'translate-x-0' : '-translate-x-full'}
         lg:relative lg:translate-x-0 lg:inset-y-0 lg:left-0
       `}>
         {/* Sidebar Header */}
-        <div className="flex items-center justify-between h-20 px-6 border-b border-gray-700">
+        <div className="flex items-center justify-between h-20 px-6 border-b border-purple-500/30">
           <div className="flex items-center">
-            <div className="w-12 h-12 bg-gradient-to-br from-green-400 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
+            <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
               <span className="text-white font-bold text-lg">ST</span>
             </div>
             <div className="ml-3">
@@ -126,8 +126,9 @@ const StudentSidebar = ({ isOpen = true, onClose }: StudentSidebarProps) => {
             // Enhanced active route detection
             const isActive = 
               pathname === item.href || 
+              (item.href === "/student/dashboard" && (pathname === "/student" || pathname === "/student/dashboard")) ||
               (item.href === "/student/courses" && pathname.startsWith("/student/course")) ||
-              (item.href !== "/student" && pathname.startsWith(item.href));
+              (item.href !== "/student/dashboard" && pathname.startsWith(item.href));
             
             return (
               <Link
@@ -136,7 +137,7 @@ const StudentSidebar = ({ isOpen = true, onClose }: StudentSidebarProps) => {
                 className={`
                   flex items-center justify-between px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 group
                   ${isActive 
-                    ? 'bg-gradient-to-r from-green-600 to-emerald-600 text-white shadow-lg' 
+                    ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-lg' 
                     : 'text-gray-300 hover:bg-gray-700/50 hover:text-white'
                   }
                 `}
@@ -167,8 +168,8 @@ const StudentSidebar = ({ isOpen = true, onClose }: StudentSidebarProps) => {
         </nav>
 
         {/* Sidebar Footer */}
-        <div className="p-4 border-t border-gray-700">
-          <div className="bg-gray-700/50 rounded-xl p-4">
+        <div className="p-4 border-t border-purple-500/30">
+          <div className="bg-gray-800/50 rounded-xl p-4">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center">
                 <Clock className="w-4 h-4 text-gray-400 mr-2" />
@@ -199,7 +200,7 @@ const StudentSidebar = ({ isOpen = true, onClose }: StudentSidebarProps) => {
           </div>
           
           <div className="flex items-center mt-4">
-            <div className="w-10 h-10 bg-gradient-to-br from-green-400 to-emerald-600 rounded-xl flex items-center justify-center">
+            <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl flex items-center justify-center">
               <span className="text-white font-bold text-sm">ST</span>
             </div>
             <div className="ml-3">

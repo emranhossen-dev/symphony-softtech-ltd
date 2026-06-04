@@ -9,6 +9,7 @@ import { Award, Users, Clock, Target, Star, TrendingUp, Shield, BookOpen, X } fr
 
 interface Course {
   id: string;
+  slug: string;
   title: string;
   description: string;
   shortDescription?: string;
@@ -46,8 +47,8 @@ const GovernmentCategoryPage = () => {
     setSelectedCourse(null);
   };
 
-  const handleCourseClick = (courseId: string) => {
-    router.push(`/course/${courseId}`);
+  const handleCourseClick = (slug: string) => {
+    router.push(`/course/${slug}`);
   };
 
   const fetchGovernmentCourses = async () => {

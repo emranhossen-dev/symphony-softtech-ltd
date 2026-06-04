@@ -113,6 +113,8 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     console.error('Database error in admin courses:', error);
+    console.error('Error details:', error.message);
+    console.error('Error stack:', error.stack);
     
     // Return mock data for admin courses when database is not available
     const mockCourses = [

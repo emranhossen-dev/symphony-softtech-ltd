@@ -215,10 +215,10 @@ export default function LoginPage() {
           </form>
 
           {/* Footer Links */}
-          <div className="mt-6 text-center">
+          <div className="mt-4 text-center">
             <Link 
               href="/forgot-password" 
-              className="text-sm text-purple-400 hover:text-purple-300 transition-colors"
+              className="text-sm text-white hover:text-purple-300 transition-colors font-medium underline"
             >
               Forgot your password?
             </Link>

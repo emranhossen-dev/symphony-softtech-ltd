@@ -6,6 +6,7 @@ import { useState } from "react";
 
 interface CourseCardProps {
   id?: string;
+  slug?: string;
   title: string;
   description: string;
   shortDescription?: string;
@@ -28,6 +29,7 @@ interface CourseCardProps {
 
 const CourseCard = ({
   id,
+  slug,
   title,
   description,
   shortDescription,
@@ -51,8 +53,8 @@ const CourseCard = ({
   const [isHovered, setIsHovered] = useState(false);
 
   const handleCardClick = () => {
-    if (id) {
-      router.push(`/course/${id}`);
+    if (slug) {
+      router.push(`/course/${slug}`);
     }
   };
 

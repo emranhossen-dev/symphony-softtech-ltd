@@ -33,7 +33,7 @@ const StudentHeader = ({ onSidebarToggle, sidebarOpen }: StudentHeaderProps) => 
   };
 
   return (
-    <header className="bg-gradient-to-r from-green-600 to-emerald-600 shadow-lg border-b border-green-700 h-16">
+    <header className="glass-nav shadow-lg border-b border-purple-500/30 h-16">
       <div className="px-3 sm:px-4 lg:px-8 h-full">
         <div className="flex items-center justify-between h-full">
           {/* Left side - Mobile menu button and Logo */}
@@ -89,6 +89,11 @@ const StudentHeader = ({ onSidebarToggle, sidebarOpen }: StudentHeaderProps) => 
                   <p className="text-xs sm:text-sm font-semibold text-gray-900">Student User</p>
                   <p className="text-xs text-gray-500 truncate">student@example.com</p>
                 </div>
+                
+                <Link href="/student/dashboard" className="flex items-center px-3 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 hover:bg-green-50 transition-colors">
+                  <BookOpen className="w-3 h-3 sm:w-4 sm:h-4 mr-2 sm:mr-3 text-gray-400" />
+                  Dashboard
+                </Link>
                 
                 <Link href="/student/profile" className="flex items-center px-3 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 hover:bg-green-50 transition-colors">
                   <User className="w-3 h-3 sm:w-4 sm:h-4 mr-2 sm:mr-3 text-gray-400" />

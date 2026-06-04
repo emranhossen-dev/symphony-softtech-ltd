@@ -8,6 +8,7 @@ import Counter from "@/components/Counter";
 
 interface Course {
   id: string;
+  slug: string;
   title: string;
   description: string;
   shortDescription?: string;
@@ -337,7 +338,7 @@ export default function CoursesPage() {
                       display: 'flex',
                       flexDirection: 'column'
                     }}
-                    onClick={() => router.push(`/course/${course.id}`)}
+                    onClick={() => router.push(`/course/${course.slug}`)}
                   >
                     {/* Course Image */}
                     <div className="h-64 flex-shrink-0">

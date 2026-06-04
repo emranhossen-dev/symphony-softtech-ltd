@@ -3,17 +3,17 @@ import { prisma } from '@/lib/prisma';
 
 
 
-// GET /api/courses/[courseId]/modules - Get modules for students
+// GET /api/courses/[slug]/modules - Get modules for students
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ courseId: string }> }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
-    const { courseId } = await params;
+    const { slug } = await params;
 
     // Check if course exists and is active
     const course = await prisma.course.findUnique({
-      where: { id: courseId }
+      where: { slug }
     });
 
     if (!course) {
@@ -37,7 +37,7 @@ export async function GET(
     }
 
     const modules = await prisma.module.findMany({
-      where: { courseId },
+      where: { courseId: course.id },
       orderBy: { order: 'asc' }
     });
 

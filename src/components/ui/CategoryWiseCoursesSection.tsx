@@ -8,6 +8,7 @@ import Counter from "@/components/Counter";
 
 interface Course {
   id: string;
+  slug: string;
   title: string;
   description: string;
   shortDescription?: string;
@@ -124,8 +125,8 @@ const CategoryWiseCoursesSection = () => {
     );
   };
 
-  const handleCourseClick = (courseId: string) => {
-    router.push(`/course/${courseId}`);
+  const handleCourseClick = (slug: string) => {
+    router.push(`/course/${slug}`);
   };
 
   if (loading) {

@@ -38,9 +38,9 @@ interface Course {
 
 export default function SplitCoursePage() {
   const params = useParams();
-  const courseId = params.courseId as string;
+  const courseIdentifier = params.courseId as string;
 
-  console.log('SplitCoursePage - courseId:', courseId);
+  console.log('SplitCoursePage - courseIdentifier:', courseIdentifier);
 
   const [course, setCourse] = useState<Course | null>(null);
   const [modules, setModules] = useState<Module[]>([]);
@@ -49,12 +49,13 @@ export default function SplitCoursePage() {
   useEffect(() => {
     fetchCourse();
     fetchModules();
-  }, [courseId]);
+  }, [courseIdentifier]);
 
   const fetchCourse = async () => {
     try {
-      console.log('Fetching course for ID:', courseId);
-      const response = await fetch(`/api/courses/${courseId}`, {
+      console.log('Fetching course for identifier:', courseIdentifier);
+      // Fetch by slug (the API supports both slug and ID)
+      const response = await fetch(`/api/courses/${courseIdentifier}`, {
         credentials: 'include'
       });
       const data = await response.json();
@@ -74,7 +75,9 @@ export default function SplitCoursePage() {
 
   const fetchModules = async () => {
     try {
-      const response = await fetch(`/api/courses/${courseId}/modules`, {
+      // Use the course ID if we have it from the course data, otherwise use the identifier
+      const courseIdToUse = course?.id || courseIdentifier;
+      const response = await fetch(`/api/courses/${courseIdToUse}/modules`, {
         credentials: 'include'
       });
       const data = await response.json();
@@ -100,27 +103,28 @@ export default function SplitCoursePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-[#0a0e27] via-[#1a1f4c] to-[#0d1b3e] flex items-center justify-center">
         <div className="relative">
-          <div className="animate-spin rounded-full h-20 w-20 border-4 border-gray-200"></div>
-          <div className="animate-spin rounded-full h-20 w-20 border-4 border-blue-500 border-t-transparent absolute top-0"></div>
+          <div className="animate-spin rounded-full h-20 w-20 border-4 border-gray-700"></div>
+          <div className="animate-spin rounded-full h-20 w-20 border-4 border-purple-500 border-t-transparent absolute top-0"></div>
         </div>
+        <p className="absolute mt-32 text-gray-300">Loading course...</p>
       </div>
     );
   }
 
   if (!course) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-[#0a0e27] via-[#1a1f4c] to-[#0d1b3e] flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <span className="text-red-600 text-2xl">!</span>
+          <div className="w-16 h-16 bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+            <span className="text-red-400 text-2xl">!</span>
           </div>
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">Course Not Found</h2>
-          <p className="text-gray-600">The course you're looking for doesn't exist.</p>
+          <h2 className="text-xl font-semibold text-white mb-2">Course Not Found</h2>
+          <p className="text-gray-400">The course you're looking for doesn't exist.</p>
           <button
             onClick={handleBack}
-            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            className="mt-4 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
           >
             Back to Dashboard
           </button>

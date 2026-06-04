@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { sendAdmissionEmail, sendEnrollmentConfirmationEmail } from '@/lib/email';
 
 // POST /api/enrollments - Create new enrollment
 export async function POST(request: NextRequest) {
@@ -108,6 +109,29 @@ export async function POST(request: NextRequest) {
         educationLevel: education,
       }
     });
+
+    // Send enrollment confirmation email
+    try {
+      const emailResult = await sendEnrollmentConfirmationEmail({
+        to: email,
+        fullName: name,
+        courseName: course.title,
+        email: email,
+        phone: phone,
+        enrollmentId: enrollment.id,
+        status: enrollmentStatus,
+        loginUrl: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/login`
+      });
+      
+      if (emailResult.success) {
+        console.log('Enrollment confirmation email sent successfully to:', email);
+      } else {
+        console.error('Failed to send enrollment confirmation email:', emailResult.error);
+      }
+    } catch (emailError) {
+      console.error('Error sending enrollment confirmation email:', emailError);
+      // Don't fail the enrollment if email fails
+    }
 
     // Create payment record if payment is required
     if (paymentMethod && paymentMethod !== 'none') {

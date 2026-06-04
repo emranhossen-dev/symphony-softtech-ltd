@@ -79,6 +79,7 @@ export async function GET(request: NextRequest) {
     // Transform courses to match frontend expectations
     const transformedCourses = courses.map(course => ({
       id: course.id,
+      slug: course.slug,
       title: course.title,
       description: course.description || '',
       shortDescription: course.shortDescription || '',

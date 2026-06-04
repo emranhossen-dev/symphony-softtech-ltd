@@ -1,18 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
-// GET /api/courses/[courseId] - Get single course for students
+// GET /api/courses/[slug] - Get single course for students
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ courseId: string }> }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
-  let courseId: string = '';
+  let slug: string = '';
   try {
-    const { courseId: id } = await params;
-    courseId = id;
+    const { slug: courseSlug } = await params;
+    slug = courseSlug;
 
     const course = await prisma?.course.findUnique({
-      where: { id: courseId },
+      where: { slug: slug },
       include: {
         mentor: {
           select: {
@@ -51,7 +51,7 @@ export async function GET(
     // Get related courses from same category
     const relatedCourses = await prisma?.course.findMany({
       where: {
-        id: { not: courseId },
+        id: { not: course.id },
         category: course.category,
         isActive: true
       },

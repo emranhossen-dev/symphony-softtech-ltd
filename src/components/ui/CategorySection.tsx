@@ -8,6 +8,7 @@ import { formatBDT } from '@/lib/currency';
 
 interface Course {
   id: string;
+  slug: string;
   title: string;
   thumbnail: string;
   mentor: string;
@@ -109,9 +110,9 @@ const CategorySection = () => {
     router.push(`/category/${slug}`);
   };
 
-  const handleCourseClick = (courseId: string) => {
-    setNavigatingCourse(courseId);
-    router.push(`/course/${courseId}`);
+  const handleCourseClick = (slug: string) => {
+    setNavigatingCourse(slug);
+    router.push(`/course/${slug}`);
   };
 
   if (loading) {
@@ -309,8 +310,8 @@ const CategorySection = () => {
                   <div 
                     key={course.id}
                     className="group relative bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-lg rounded-2xl border border-white/20 overflow-hidden hover:scale-105 transition-all duration-300 cursor-pointer"
-                    onClick={() => handleCourseClick(course.id)}
-                    onMouseEnter={() => setHoveredCourse(course.id)}
+                    onClick={() => handleCourseClick(course.slug)}
+                    onMouseEnter={() => setHoveredCourse(course.slug)}
                     onMouseLeave={() => setHoveredCourse(null)}
                   >
                     {hoveredCourse === course.id && (

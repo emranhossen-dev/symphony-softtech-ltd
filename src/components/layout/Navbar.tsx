@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { Menu, X, User, LogIn, ChevronDown, BookOpen, Users, Phone, GraduationCap, Sparkles, Star } from "lucide-react";
 import { usePathname } from "next/navigation";
 import Link from 'next/link';
-import LoginModal from "@/components/auth/LoginModal";
 import ThemeToggler from "@/components/ThemeToggler";
 
 const Navbar = () => {
@@ -12,7 +11,6 @@ const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMobileCourseDropdownOpen, setIsMobileCourseDropdownOpen] = useState(false);
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
 
@@ -166,13 +164,13 @@ const Navbar = () => {
           {/* Premium Action Buttons */}
           <div className="hidden xl:flex items-center space-x-4">
             <ThemeToggler />
-            <button 
-              onClick={() => setIsLoginModalOpen(true)}
+            <Link
+              href="/login"
               className="group flex items-center space-x-3 px-6 py-3 text-sm font-bold text-white border-2 border-white/50 rounded-xl hover:border-white hover:bg-white/10 transition-all duration-300 transform hover:scale-105 hover:-translate-y-1"
             >
               <LogIn className="w-5 h-5 group-hover:rotate-12 transition-transform duration-300" />
               <span>Login</span>
-            </button>
+            </Link>
           </div>
 
           {/* Mobile menu button */}
@@ -250,27 +248,19 @@ const Navbar = () => {
                   <span className="text-sm font-medium text-gray-400">Theme</span>
                   <ThemeToggler />
                 </div>
-                <button
-                  onClick={() => {
-                    setIsLoginModalOpen(true);
-                    setIsMenuOpen(false);
-                  }}
+                <Link
+                  href="/login"
+                  onClick={() => setIsMenuOpen(false)}
                   className="flex items-center justify-center space-x-3 w-full px-6 py-4 text-base font-bold bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl hover:from-purple-700 hover:to-indigo-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
                 >
                   <LogIn className="w-5 h-5" />
                   <span>Login</span>
-                </button>
+                </Link>
               </div>
             </div>
           </div>
         )}
       </div>
-
-      {/* Login Modal */}
-      <LoginModal
-        isOpen={isLoginModalOpen}
-        onClose={() => setIsLoginModalOpen(false)}
-      />
     </nav>
   );
 };
