@@ -108,21 +108,36 @@ export default function StudentManagement() {
 
   const fetchCourses = async () => {
     try {
-      const response = await fetch('/api/admin/courses?isActive=true&limit=100');
-      const data = await response.json();
+      console.log('Starting to fetch courses...');
+      
+      // Try admin endpoint first
+      let response = await fetch('/api/admin/courses?limit=100');
+      let data = await response.json();
 
-      console.log('Courses API response:', data);
+      console.log('Admin courses API response status:', response.status);
+      console.log('Admin courses API response data:', data);
+
+      // If admin endpoint fails, try public endpoint
+      if (response.status === 401 || response.status === 403) {
+        console.log('Admin endpoint failed, trying public endpoint...');
+        response = await fetch('/api/courses?limit=100');
+        data = await response.json();
+        console.log('Public courses API response status:', response.status);
+        console.log('Public courses API response data:', data);
+      }
+
+      console.log('Courses array from response:', data.courses);
       console.log('Courses count:', data.courses?.length || 0);
 
       if (data.courses && data.courses.length > 0) {
         setCourses(data.courses);
-        console.log('Courses set successfully:', data.courses.length);
+        console.log('✅ Courses set successfully:', data.courses.length);
       } else {
-        console.warn('No courses found in API response');
+        console.warn('⚠️ No courses found in API response');
         setCourses([]);
       }
     } catch (error) {
-      console.error('Error fetching courses:', error);
+      console.error('❌ Error fetching courses:', error);
       setCourses([]);
     }
   };
@@ -761,6 +776,9 @@ export default function StudentManagement() {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-2">Select Course</label>
+                    <div className="text-xs text-gray-400 mb-2">
+                      Loaded courses: {courses.length}
+                    </div>
                     <select
                       value={selectedCourseId}
                       onChange={(e) => setSelectedCourseId(e.target.value)}
