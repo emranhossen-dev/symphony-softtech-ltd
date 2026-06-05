@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
-
-
 export async function POST(request: NextRequest) {
   try {
     const { mentorId, courseId } = await request.json();
@@ -14,26 +12,38 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Mock assignment since MentorCourseAssignment model doesn't exist
-    const assignment = {
-      id: `assignment-${Date.now()}`,
-      mentorId,
-      courseId,
-      createdAt: new Date(),
-      mentor: {
-        id: mentorId,
-        name: 'Mock Mentor',
-        email: 'mentor@example.com'
+    // Update the course's mentorId field
+    const course = await (prisma as any).course.update({
+      where: {
+        id: courseId
       },
-      course: {
-        id: courseId,
-        title: 'Mock Course'
+      data: {
+        mentorId: mentorId
+      },
+      include: {
+        mentor: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        }
       }
-    };
+    });
 
     return NextResponse.json({
       success: true,
-      assignment
+      assignment: {
+        id: course.id,
+        mentorId,
+        courseId: course.id,
+        createdAt: new Date(),
+        mentor: course.mentor,
+        course: {
+          id: course.id,
+          title: course.title
+        }
+      }
     });
   } catch (error) {
     console.error('Error assigning course to mentor:', error);

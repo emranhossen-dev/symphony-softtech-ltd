@@ -100,34 +100,61 @@ export default function MentorDashboard() {
     feedback: ''
   });
   const [attendanceData, setAttendanceData] = useState<{[key: string]: 'PRESENT' | 'ABSENT' | 'LATE'}>({});
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [students, setStudents] = useState<Student[]>([]);
+  const [homeworkSubmissions, setHomeworkSubmissions] = useState<HomeworkSubmission[]>([]);
+  const [liveClasses, setLiveClasses] = useState<LiveClass[]>([]);
+  const [attendanceRecords, setAttendanceRecords] = useState<AttendanceRecord[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // Use optimized parallel fetch for dashboard data
-  const { data: dashboardData, loading, error, refetch } = useOptimizedParallelFetch<DashboardData>([
-    '/api/mentor/courses',
-    '/api/mentor/students',
-    '/api/mentor/homework',
-    '/api/mentor/live-classes',
-    '/api/mentor/attendance'
-  ], {
-    showLoading: true,
-    loadingMessage: 'Loading dashboard data...',
-    cacheTime: 2 * 60 * 1000, // 2 minutes cache
-    retryCount: 2
-  });
+  // Fetch data individually to prevent blocking
+  const fetchDashboardData = async () => {
+    setLoading(true);
+    try {
+      // Fetch all data in parallel but handle errors individually
+      const [coursesRes, studentsRes, homeworkRes, liveClassesRes, attendanceRes] = await Promise.allSettled([
+        fetch('/api/mentor/courses', { credentials: 'include' }),
+        fetch('/api/mentor/students', { credentials: 'include' }),
+        fetch('/api/mentor/homework', { credentials: 'include' }),
+        fetch('/api/mentor/live-classes', { credentials: 'include' }),
+        fetch('/api/mentor/attendance', { credentials: 'include' })
+      ]);
 
-  // Extract data from the parallel fetch response
-  const courses = dashboardData?.[0]?.courses || [];
-  const students = dashboardData?.[1]?.students || [];
-  const homeworkSubmissions = dashboardData?.[2]?.submissions || [];
-  const liveClasses = dashboardData?.[3]?.classes || [];
-  const attendanceRecords = dashboardData?.[4]?.records || [];
+      // Handle each response individually
+      if (coursesRes.status === 'fulfilled' && coursesRes.value.ok) {
+        const data = await coursesRes.value.json();
+        setCourses(data.success ? data.courses : []);
+      }
 
-  // Show error toast if there's an error
-  useEffect(() => {
-    if (error) {
-      toast.error('Failed to load dashboard data');
+      if (studentsRes.status === 'fulfilled' && studentsRes.value.ok) {
+        const data = await studentsRes.value.json();
+        setStudents(data.success ? data.students : []);
+      }
+
+      if (homeworkRes.status === 'fulfilled' && homeworkRes.value.ok) {
+        const data = await homeworkRes.value.json();
+        setHomeworkSubmissions(data.success ? data.submissions : []);
+      }
+
+      if (liveClassesRes.status === 'fulfilled' && liveClassesRes.value.ok) {
+        const data = await liveClassesRes.value.json();
+        setLiveClasses(data.success ? data.classes : []);
+      }
+
+      if (attendanceRes.status === 'fulfilled' && attendanceRes.value.ok) {
+        const data = await attendanceRes.value.json();
+        setAttendanceRecords(data.success ? data.records : []);
+      }
+    } catch (error) {
+      console.error('Error fetching dashboard data:', error);
+    } finally {
+      setLoading(false);
     }
-  }, [error]);
+  };
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
 
   const handleReviewSubmission = async () => {
     if (!selectedSubmission) return;
@@ -147,7 +174,7 @@ export default function MentorDashboard() {
         setShowReviewModal(false);
         setSelectedSubmission(null);
         setReviewData({ status: 'APPROVED', grade: 0, feedback: '' });
-        refetch();
+        fetchDashboardData();
       } else {
         const error = await response.json();
         toast.error(error.error || 'Failed to review homework');
@@ -178,7 +205,7 @@ export default function MentorDashboard() {
         toast.success('Attendance marked successfully!');
         setShowAttendanceModal(false);
         setAttendanceData({});
-        refetch();
+        fetchDashboardData();
       } else {
         const error = await response.json();
         toast.error(error.error || 'Failed to mark attendance');
@@ -199,7 +226,7 @@ export default function MentorDashboard() {
 
       if (response.ok) {
         toast.success('Live class started successfully!');
-        refetch();
+        fetchDashboardData();
       } else {
         const error = await response.json();
         toast.error(error.error || 'Failed to start class');
@@ -220,7 +247,7 @@ export default function MentorDashboard() {
 
       if (response.ok) {
         toast.success('Live class ended successfully!');
-        refetch();
+        fetchDashboardData();
       } else {
         const error = await response.json();
         toast.error(error.error || 'Failed to end class');
