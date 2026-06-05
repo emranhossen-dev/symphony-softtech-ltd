@@ -71,6 +71,7 @@ export default function StudentManagement() {
   const [showCourseModal, setShowCourseModal] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [newPassword, setNewPassword] = useState('');
+  const [selectedCourseId, setSelectedCourseId] = useState('');
   const [filters, setFilters] = useState({
     search: '',
     status: 'all',
@@ -107,10 +108,10 @@ export default function StudentManagement() {
 
   const fetchCourses = async () => {
     try {
-      const response = await fetch('/api/admin/courses');
+      const response = await fetch('/api/courses');
       const data = await response.json();
-      
-      if (data.success) {
+
+      if (data.courses) {
         setCourses(data.courses);
       }
     } catch (error) {
@@ -258,6 +259,7 @@ export default function StudentManagement() {
 
   const openCourseAssignment = (student: Student) => {
     setSelectedStudent(student);
+    setSelectedCourseId('');
     setShowCourseModal(true);
   };
 
@@ -750,31 +752,32 @@ export default function StudentManagement() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Select Course</label>
-                    <Select>
-                      <SelectTrigger className="w-full">
-                        <SelectValue>
-                          Choose a course
-                        </SelectValue>
-                      </SelectTrigger>
-                      <SelectContent>
-                        {courses.map((course) => (
-                          <SelectItem key={course.id} value={course.id}>
-                            {course.title}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">Select Course</label>
+                    <select
+                      value={selectedCourseId}
+                      onChange={(e) => setSelectedCourseId(e.target.value)}
+                      className="w-full px-3 py-2 bg-gray-900/50 border border-purple-500/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 cursor-pointer"
+                    >
+                      <option value="">Choose a course</option>
+                      {courses.map((course) => (
+                        <option key={course.id} value={course.id} className="text-white">
+                          {course.title} ({course.category})
+                        </option>
+                      ))}
+                    </select>
+                    {courses.length === 0 && (
+                      <p className="text-xs text-gray-500 mt-1">No courses available to assign</p>
+                    )}
                   </div>
 
                   <Button
                     onClick={() => {
-                      const selectElement = document.querySelector('select') as HTMLSelectElement;
-                      if (selectElement?.value) {
-                        assignCourse(selectedStudent.id, selectElement.value);
+                      if (selectedCourseId && selectedStudent) {
+                        assignCourse(selectedStudent.id, selectedCourseId);
                       }
                     }}
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                    className="w-full bg-purple-600 hover:bg-purple-700 text-white"
+                    disabled={!selectedCourseId}
                   >
                     Assign Course
                   </Button>
