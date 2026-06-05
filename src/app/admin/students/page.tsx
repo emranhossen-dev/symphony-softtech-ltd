@@ -108,14 +108,22 @@ export default function StudentManagement() {
 
   const fetchCourses = async () => {
     try {
-      const response = await fetch('/api/courses');
+      const response = await fetch('/api/admin/courses?isActive=true&limit=100');
       const data = await response.json();
 
-      if (data.courses) {
+      console.log('Courses API response:', data);
+      console.log('Courses count:', data.courses?.length || 0);
+
+      if (data.courses && data.courses.length > 0) {
         setCourses(data.courses);
+        console.log('Courses set successfully:', data.courses.length);
+      } else {
+        console.warn('No courses found in API response');
+        setCourses([]);
       }
     } catch (error) {
       console.error('Error fetching courses:', error);
+      setCourses([]);
     }
   };
 
