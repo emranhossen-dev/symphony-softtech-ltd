@@ -1,6 +1,7 @@
 'use client';
 
-import { BookOpen, Users, Eye } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { BookOpen, Users, Eye, RefreshCw } from 'lucide-react';
 
 interface Course {
   id: string;
@@ -8,74 +9,34 @@ interface Course {
   category: string;
   description: string;
   enrolledStudents: number;
-  status: 'active' | 'inactive';
-  progress: number;
-  thumbnail: string;
+  isActive: boolean;
+  thumbnail?: string;
 }
 
 export default function MentorCourses() {
-  const courses: Course[] = [
-    {
-      id: '1',
-      name: 'Web Development Basics',
-      category: 'Web Development',
-      description: 'Learn HTML, CSS, and JavaScript fundamentals',
-      enrolledStudents: 25,
-      status: 'active',
-      progress: 75,
-      thumbnail: '/api/placeholder/400/250'
-    },
-    {
-      id: '2',
-      name: 'React Advanced Concepts',
-      category: 'Web Development',
-      description: 'Advanced React patterns and best practices',
-      enrolledStudents: 18,
-      status: 'active',
-      progress: 60,
-      thumbnail: '/api/placeholder/400/250'
-    },
-    {
-      id: '3',
-      name: 'Node.js Backend Development',
-      category: 'Backend',
-      description: 'Building scalable backend applications with Node.js',
-      enrolledStudents: 22,
-      status: 'active',
-      progress: 45,
-      thumbnail: '/api/placeholder/400/250'
-    },
-    {
-      id: '4',
-      name: 'Database Design Fundamentals',
-      category: 'Database',
-      description: 'Principles of database design and SQL',
-      enrolledStudents: 15,
-      status: 'inactive',
-      progress: 90,
-      thumbnail: '/api/placeholder/400/250'
-    },
-    {
-      id: '5',
-      name: 'Python Programming',
-      category: 'Programming',
-      description: 'Complete Python guide from basics to advanced',
-      enrolledStudents: 30,
-      status: 'active',
-      progress: 80,
-      thumbnail: '/api/placeholder/400/250'
-    },
-    {
-      id: '6',
-      name: 'Mobile App Development',
-      category: 'Mobile',
-      description: 'Build native mobile applications with React Native',
-      enrolledStudents: 12,
-      status: 'active',
-      progress: 35,
-      thumbnail: '/api/placeholder/400/250'
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchCourses = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch('/api/mentor/courses', {
+        credentials: 'include'
+      });
+      const data = await response.json();
+      if (data.success) {
+        setCourses(data.courses);
+      }
+    } catch (error) {
+      console.error('Error fetching courses:', error);
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
+
+  useEffect(() => {
+    fetchCourses();
+  }, []);
 
   const handleViewDetails = (courseId: string) => {
     console.log('View course details:', courseId);
@@ -83,12 +44,29 @@ export default function MentorCourses() {
     alert(`Viewing details for course ${courseId}`);
   };
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       {/* Page Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-white">My Courses</h1>
-        <p className="text-gray-300 mt-1">Manage your assigned courses and track student progress.</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-white">My Courses</h1>
+          <p className="text-gray-300 mt-1">Manage your assigned courses and track student progress.</p>
+        </div>
+        <button
+          onClick={fetchCourses}
+          className="flex items-center gap-2 px-4 py-2 bg-white/10 text-white rounded-lg hover:bg-white/20 transition-colors"
+        >
+          <RefreshCw className="w-4 h-4" />
+          Refresh
+        </button>
       </div>
 
       {/* Courses Grid */}
@@ -104,11 +82,11 @@ export default function MentorCourses() {
               {/* Status Badge */}
               <div className="absolute top-4 right-4">
                 <span className={`px-3 py-1 text-xs font-medium rounded-full ${
-                  course.status === 'active'
+                  course.isActive
                     ? 'bg-green-500/20 text-green-300 border border-green-500/30'
                     : 'bg-gray-500/20 text-gray-300 border border-gray-500/30'
                 }`}>
-                  {course.status}
+                  {course.isActive ? 'Active' : 'Inactive'}
                 </span>
               </div>
             </div>
@@ -125,23 +103,9 @@ export default function MentorCourses() {
               <p className="text-gray-300 text-sm mb-4 line-clamp-2">{course.description}</p>
 
               {/* Students Count */}
-              <div className="flex items-center gap-2 mb-4">
+              <div className="flex items-center gap-2 mb-6">
                 <Users className="w-4 h-4 text-gray-400" />
                 <span className="text-sm text-gray-300">{course.enrolledStudents} students enrolled</span>
-              </div>
-
-              {/* Progress Bar */}
-              <div className="mb-6">
-                <div className="flex items-center justify-between text-sm text-gray-300 mb-2">
-                  <span>Course Progress</span>
-                  <span>{course.progress}%</span>
-                </div>
-                <div className="w-full bg-gray-700 rounded-full h-2">
-                  <div
-                    className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full transition-all duration-300"
-                    style={{ width: `${course.progress}%` }}
-                  ></div>
-                </div>
               </div>
 
               {/* View Details Button */}
