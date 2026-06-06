@@ -25,56 +25,52 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Fetch mentor's assigned courses
-    const courses = await (prisma as any).course.findMany({
+    // Fetch live classes for mentor's courses
+    const attendanceSessions = await (prisma as any).attendanceSession.findMany({
       where: {
-        mentorId: user.id,
-        isActive: true
+        course: {
+          mentorId: user.id
+        },
+        sessionDate: {
+          gte: new Date()
+        }
       },
       include: {
-        enrollments: {
-          where: {
-            enrollmentStatus: 'ADMITTED'
-          }
-        },
-        _count: {
+        course: {
           select: {
-            enrollments: {
-              where: {
-                enrollmentStatus: 'ADMITTED'
-              }
-            }
+            id: true,
+            title: true,
+            category: true,
+            slug: true
           }
         }
       },
       orderBy: {
-        title: 'asc'
+        sessionDate: 'asc'
       }
     });
 
     // Transform data to match expected format
-    const transformedCourses = courses.map((course: any) => ({
-      id: course.id,
-      name: course.title,
-      category: course.category,
-      description: course.description,
-      thumbnail: course.thumbnail,
-      price: course.price,
-      isActive: course.isActive,
-      enrolledStudents: course._count.enrollments,
-      averageRating: 4.5, // Mock data - would calculate from reviews
-      completionRate: Math.floor(Math.random() * 30) + 60, // Mock data
-      mentorId: course.mentorId
+    const classes = attendanceSessions.map((session: any) => ({
+      id: session.id,
+      title: session.title || `${session.course.title} - Live Session`,
+      courseName: session.course.title,
+      scheduledAt: session.sessionDate,
+      duration: session.duration || 60,
+      status: session.sessionDate > new Date() ? 'SCHEDULED' : 'ENDED',
+      participants: 0, // Would be calculated from attendance records
+      maxParticipants: session.maxParticipants || 50,
+      meetingLink: session.meetingLink
     }));
 
     return NextResponse.json({
       success: true,
-      courses: transformedCourses
+      classes
     });
   } catch (error) {
-    console.error('Error fetching mentor courses:', error);
+    console.error('Error fetching live classes:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch courses' },
+      { error: 'Failed to fetch live classes' },
       { status: 500 }
     );
   } finally {

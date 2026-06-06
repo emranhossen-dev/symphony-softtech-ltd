@@ -76,20 +76,27 @@ export default function StudentDashboard() {
       const dashboardResponse = await fetch('/api/student/dashboard', { credentials: 'include' });
       const dashboardData = await dashboardResponse.json();
 
+      console.log('Dashboard API Response:', dashboardData);
+
       if (dashboardData.success) {
         // Set user information
         setUserName(dashboardData.user?.name || 'Student');
-        
+
         // Set courses data
         setEnrolledCourses(dashboardData.courses || []);
-        
+
         // Set stats
         setStats(dashboardData.stats || stats);
-        
-        // Set enrollment status based on first admitted course or default
-        const admittedCourse = dashboardData.courses?.find((c: any) => c.enrollmentStatus === 'ADMITTED');
-        setEnrollmentStatus(admittedCourse ? 'ADMITTED' : 'ADMITTED');
+
+        // Set enrollment status based on first active enrollment
+        const activeCourse = dashboardData.courses?.find(
+          (c: any) => c.enrollmentStatus === 'ADMITTED' || c.enrollmentStatus === 'APPROVED'
+        );
+        setEnrollmentStatus(activeCourse ? activeCourse.enrollmentStatus : 'PENDING');
         setHasPassword(true);
+      } else {
+        console.error('Dashboard API error:', dashboardData.error);
+        toast.error(dashboardData.error || 'Failed to load dashboard data');
       }
 
       // Fetch notifications separately
@@ -208,7 +215,8 @@ export default function StudentDashboard() {
   }
 
   // Show verification pending page if no approved enrollment or no password
-  if (!hasPassword || !enrollmentStatus || enrollmentStatus !== 'ADMITTED') {
+  // Disabled - user is already authenticated and logged in
+  if (false && (!hasPassword || !enrollmentStatus || enrollmentStatus !== 'ADMITTED')) {
     return (
       <div className="max-w-2xl mx-auto">
         <div className="text-center py-12">

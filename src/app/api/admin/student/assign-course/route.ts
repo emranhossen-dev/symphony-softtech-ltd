@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
-
-
 export async function POST(request: NextRequest) {
   try {
     const { studentId, courseId } = await request.json();
@@ -15,7 +13,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if student is already enrolled in this course
-    const existingEnrollment = await (prisma as any).enrollment.findFirst({
+    const existingEnrollment = await prisma.enrollment.findFirst({
       where: {
         userId: studentId,
         courseId: courseId
@@ -29,8 +27,20 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Get student details
+    const student = await prisma.user.findUnique({
+      where: { id: studentId }
+    });
+
+    if (!student) {
+      return NextResponse.json(
+        { error: 'Student not found' },
+        { status: 404 }
+      );
+    }
+
     // Get course details
-    const course = await (prisma as any).course.findUnique({
+    const course = await prisma.course.findUnique({
       where: { id: courseId }
     });
 
@@ -42,17 +52,17 @@ export async function POST(request: NextRequest) {
     }
 
     // Create new enrollment
-    const enrollment = await (prisma as any).enrollment.create({
+    const enrollment = await prisma.enrollment.create({
       data: {
         userId: studentId,
         courseId: courseId,
         courseName: course.title,
-        category: course.category,
-        fullName: 'Student Name', // This should come from the user data
-        phoneNumber: 'N/A',
-        email: 'student@example.com', // This should come from the user data
+        categoryId: course.categoryId,
+        fullName: student.name,
+        phoneNumber: student.phone || 'N/A',
+        email: student.email,
         address: 'N/A',
-        enrollmentStatus: 'APPROVED'
+        enrollmentStatus: 'ADMITTED'
       }
     });
 
@@ -66,7 +76,5 @@ export async function POST(request: NextRequest) {
       { error: 'Failed to assign course' },
       { status: 500 }
     );
-  } finally {
-    await prisma.$disconnect();
   }
 }

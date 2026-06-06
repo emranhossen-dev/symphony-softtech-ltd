@@ -2,6 +2,57 @@ import { NextRequest, NextResponse } from 'next/server';
 import { verifyToken } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
+export async function GET(request: NextRequest) {
+  try {
+    // Authentication check
+    const token = request.cookies.get('auth-token')?.value;
+
+    if (!token) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const user = verifyToken(token);
+
+    if (user.role !== 'STUDENT') {
+      return NextResponse.json({ error: 'Access denied' }, { status: 403 });
+    }
+
+    // Fetch all homework submissions for the user
+    const submissions = await prisma.homeworkSubmission.findMany({
+      where: {
+        userId: user.id
+      },
+      include: {
+        module: {
+          select: {
+            title: true
+          }
+        },
+        course: {
+          select: {
+            title: true
+          }
+        }
+      },
+      orderBy: {
+        createdAt: 'desc'
+      }
+    });
+
+    return NextResponse.json({
+      success: true,
+      submissions
+    });
+
+  } catch (error) {
+    console.error('Error fetching homework submissions:', error);
+    return NextResponse.json(
+      { error: 'Failed to fetch homework submissions' },
+      { status: 500 }
+    );
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
     // Authentication check

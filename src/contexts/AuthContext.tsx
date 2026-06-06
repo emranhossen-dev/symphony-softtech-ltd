@@ -77,6 +77,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [checkAuth]);
 
   const login = useCallback(async (email: string, password: string): Promise<string> => {
+    console.log('AuthContext - Attempting login with email:', email);
+
     const response = await fetch('/api/auth/login', {
       method: 'POST',
       headers: {
@@ -85,19 +87,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       body: JSON.stringify({ email, password }),
     });
 
+    console.log('AuthContext - Login response status:', response.status);
+
     if (!response.ok) {
       const error = await response.json();
+      console.error('AuthContext - Login failed:', error);
       throw new Error(error.error || 'Login failed');
     }
 
     const data = await response.json();
     setUser(data.user);
-    
+
     // Token is stored in HTTP-only cookie by the server
     // No need to store in localStorage
     console.log('AuthContext - Login successful, user:', data.user);
     console.log('AuthContext - Redirect URL:', data.redirect);
-    
+
     // Return redirect URL so the calling component can handle navigation
     return data.redirect;
   }, []);

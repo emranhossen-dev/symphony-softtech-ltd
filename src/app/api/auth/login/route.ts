@@ -79,7 +79,8 @@ export async function POST(request: NextRequest) {
       secure: process.env.NODE_ENV === 'production',
       sameSite: "lax",
       path: "/",
-      maxAge: 0
+      maxAge: 0,
+      domain: process.env.NODE_ENV === 'production' ? undefined : 'localhost'
     })
 
     // Set new auth-token cookie using NextResponse
@@ -88,7 +89,8 @@ export async function POST(request: NextRequest) {
       secure: process.env.NODE_ENV === 'production',
       sameSite: "lax",
       path: "/",
-      maxAge: 7 * 24 * 60 * 60 // 7 days
+      maxAge: 30 * 24 * 60 * 60, // 30 days
+      domain: process.env.NODE_ENV === 'production' ? undefined : 'localhost'
     })
 
     console.log('🔐 LOGIN - Cookie set in response');

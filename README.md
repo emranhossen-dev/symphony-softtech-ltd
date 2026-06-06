@@ -54,9 +54,31 @@ cp .env.example .env
 
 4. Set up the database:
 ```bash
-npx prisma migrate dev
+npm run db:push  # Safe option for development - no migration history required
+# OR for production migrations:
+npm run db:migrate <migration-name>  # Use safe migration script with prompts
 npx prisma generate
 ```
+
+## ⚠️ Database Migration Safety
+
+**CRITICAL:** Never run `npx prisma migrate dev` directly without understanding the consequences. It can reset your database and delete all data.
+
+### Safe Migration Practices
+
+**For Development:**
+- Use `npm run db:push` to apply schema changes without migration history
+- This is safer and won't reset your database
+- Use `npx prisma studio` to view database contents
+
+**For Production:**
+- Use `npm run db:migrate <migration-name>` with the safe migration script
+- The script will prompt for confirmation before proceeding
+- Always have a database backup before migrating
+- Review the `.windsurf/workflows/database-migration.md` for detailed guidelines
+
+### What Happened Before
+A migration reset caused complete data loss on 2026-06-05. The safe migration workflow has been implemented to prevent this from happening again. See `.windsurf/workflows/database-migration.md` for the full post-mortem and prevention guidelines.
 
 5. Run the development server:
 ```bash

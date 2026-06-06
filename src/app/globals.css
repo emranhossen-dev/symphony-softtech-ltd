@@ -8,6 +8,11 @@ html {
 }
 
 body {
+  background: linear-gradient(135deg, #0a0e27 0%, #1a1f4c 25%, #0d1b3e 50%, #1a1f4c 75%, #0a0e27 100%) !important;
+  color: #f1f5f9 !important;
+  font-family: var(--font-inter), Arial, Helvetica, sans-serif;
+  min-height: 100vh;
+  position: relative;
   overflow-x: hidden;
   width: 100%;
   max-width: 100%;
@@ -26,6 +31,77 @@ body.chat-open {
 img {
   max-width: 100%;
   height: auto;
+}
+
+/* Dark Theme Overrides - Force dark mode everywhere */
+html body * {
+  background-color: transparent !important;
+}
+
+/* Force dark backgrounds - Override Tailwind utilities */
+:is(html, body) .bg-white,
+:is(html, body) .bg-gray-50,
+:is(html, body) .bg-gray-100,
+:is(html, body) .bg-gray-200,
+:is(html, body) .bg-gray-300,
+:is(html, body) .bg-gray-400,
+:is(html, body) .bg-gray-500 {
+  background-color: rgba(26, 31, 76, 0.5) !important;
+  background-image: none !important;
+}
+
+/* Force white/light text - High specificity */
+html body .text-gray-900,
+html body .text-gray-800,
+html body .text-gray-700,
+html body .text-gray-600,
+html body .text-gray-500,
+html body .text-gray-400,
+html body .text-gray-300,
+html body .text-gray-200,
+html body .text-gray-100,
+html body .text-black,
+html body .text-zinc-900,
+html body .text-zinc-800,
+html body .text-zinc-700,
+html body .text-slate-900,
+html body .text-slate-800,
+html body .text-slate-700,
+html body .text-neutral-900,
+html body .text-neutral-800,
+html body .text-neutral-700 {
+  color: #f1f5f9 !important;
+}
+
+/* Force all text to be light */
+html body h1,
+html body h2,
+html body h3,
+html body h4,
+html body h5,
+html body h6,
+html body p,
+html body span,
+html body div,
+html body td,
+html body th,
+html body li,
+html body a {
+  color: #f1f5f9 !important;
+}
+
+/* Keep specific colored text */
+html body .text-blue-600,
+html body .text-green-600,
+html body .text-red-600,
+html body .text-orange-600,
+html body .text-purple-600,
+html body .text-yellow-600,
+html body .text-pink-600,
+html body .text-indigo-600,
+html body .text-teal-600,
+html body .text-cyan-600 {
+  color: inherit !important;
 }
 
 /* Module Scrollbar */

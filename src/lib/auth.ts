@@ -210,11 +210,21 @@ export async function createStudentUser(data: {
     where: { email: data.email },
   });
 
-  if (existingUser) {
-    return { user: existingUser, tempPassword: null };
-  }
-
   const hashedPassword = await hashPassword(tempPassword);
+
+  if (existingUser) {
+    // Update existing user's password and ensure role is STUDENT
+    const updatedUser = await prisma.user.update({
+      where: { id: existingUser.id },
+      data: {
+        password: hashedPassword,
+        role: existingUser.role === 'STUDENT' ? existingUser.role : 'STUDENT',
+        isActive: true,
+      },
+    });
+    console.log(`Updated existing user ${data.email} with new temp password`);
+    return { user: updatedUser, tempPassword };
+  }
 
   const user = await prisma.user.create({
     data: {
@@ -227,5 +237,6 @@ export async function createStudentUser(data: {
     },
   });
 
+  console.log(`Created new student user ${data.email} with ID ${user.id}`);
   return { user, tempPassword };
 }

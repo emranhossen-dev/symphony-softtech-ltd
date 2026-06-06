@@ -81,6 +81,11 @@ const EnrollmentDetail = () => {
 
   const handleStatusChange = async (newStatus: EnrollmentStatus) => {
     try {
+      if (!enrollmentId || enrollmentId === 'undefined') {
+        alert('Error: Enrollment ID is missing');
+        return;
+      }
+
       console.log('Changing status to:', newStatus);
       console.log('Enrollment ID:', enrollmentId);
       
@@ -89,11 +94,22 @@ const EnrollmentDetail = () => {
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify({ status: newStatus }),
       });
 
       console.log('Response status:', response.status);
-      const data = await response.json();
+      
+      let data;
+      try {
+        data = await response.json();
+      } catch (parseError) {
+        const text = await response.text();
+        console.error('Failed to parse response:', text);
+        alert('Server error: ' + response.status + '. Check console for details.');
+        return;
+      }
+      
       console.log('Response data:', data);
       
       if (data.success) {

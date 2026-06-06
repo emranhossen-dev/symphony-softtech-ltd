@@ -49,26 +49,28 @@ export function useOptimizedFetch<T>(
         return;
       }
 
-      const response = await fetch(url);
-      
+      const response = await fetch(url, {
+        credentials: 'include'
+      });
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
       const result = await response.json();
-      
+
       // Cache the result
       cache.set(url, { data: result, timestamp: Date.now() });
-      
+
       setData(result);
     } catch (err) {
       console.error(`Fetch error (attempt ${attempt + 1}):`, err);
-      
+
       if (attempt < retryCount) {
         setTimeout(() => fetchData(attempt + 1), retryDelay * (attempt + 1));
         return;
       }
-      
+
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
       setLoading(false);
@@ -114,8 +116,10 @@ export function useOptimizedParallelFetch<T>(
       setLoading(true);
       setError(null);
 
-      const promises = urls.map(url => 
-        fetch(url).then(res => {
+      const promises = urls.map(url =>
+        fetch(url, {
+          credentials: 'include'
+        }).then(res => {
           if (!res.ok) {
             throw new Error(`HTTP error! status: ${res.status}`);
           }
@@ -127,12 +131,12 @@ export function useOptimizedParallelFetch<T>(
       setData(results);
     } catch (err) {
       console.error(`Parallel fetch error (attempt ${attempt + 1}):`, err);
-      
+
       if (attempt < retryCount) {
         setTimeout(() => fetchAllData(attempt + 1), retryDelay * (attempt + 1));
         return;
       }
-      
+
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
       setLoading(false);

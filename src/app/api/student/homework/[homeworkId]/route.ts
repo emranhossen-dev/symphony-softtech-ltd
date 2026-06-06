@@ -41,6 +41,7 @@ export async function GET(
           select: {
             id: true,
             title: true,
+            slug: true,
             categoryId: true
           }
         }
@@ -77,6 +78,7 @@ export async function GET(
       description: module.homework || 'Complete the assignment for this module.',
       moduleId: module.id,
       courseId: module.course.id,
+      courseSlug: module.course.slug,
       dueDate: null // Could be added to module schema if needed
     };
 

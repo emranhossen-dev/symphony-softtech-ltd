@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { ArrowLeft, Save, Send } from 'lucide-react';
+import { ArrowLeft, Save, Send, CheckCircle, Play } from 'lucide-react';
 import CodePlayground from '@/components/student/CodePlayground';
 import toast from 'react-hot-toast';
 
@@ -12,6 +12,7 @@ interface Homework {
   description: string;
   moduleId: string;
   courseId: string;
+  courseSlug?: string;
   dueDate?: string;
 }
 
@@ -33,6 +34,7 @@ const PlaygroundPage = () => {
   const [code, setCode] = useState('');
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   useEffect(() => {
     fetchHomework();
@@ -124,7 +126,7 @@ const PlaygroundPage = () => {
       const data = await response.json();
       
       if (data.success) {
-        toast.success('Homework submitted successfully!');
+        setShowSuccessModal(true);
         await fetchSubmission(); // Refresh submission status
       } else {
         toast.error(data.error || 'Failed to submit homework');
@@ -139,6 +141,18 @@ const PlaygroundPage = () => {
 
   const handleBack = () => {
     router.back();
+  };
+
+  const goToClass = () => {
+    setShowSuccessModal(false);
+    // Navigate to course learn page using slug if available
+    if (homework?.courseSlug) {
+      router.push(`/student/learn/${homework.courseSlug}`);
+    } else if (homework?.courseId) {
+      router.push(`/student/course-view/${homework.courseId}`);
+    } else {
+      router.push('/student/dashboard');
+    }
   };
 
   if (loading) {
@@ -318,6 +332,36 @@ const PlaygroundPage = () => {
           </div>
         </div>
       </div>
+
+      {/* Success Modal */}
+      {showSuccessModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 text-center animate-in fade-in zoom-in duration-300">
+            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <CheckCircle className="w-10 h-10 text-green-600" />
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">Homework Submitted!</h2>
+            <p className="text-gray-600 mb-6">
+              Great job! Your homework has been submitted successfully and is now under review.
+            </p>
+            <div className="space-y-3">
+              <button
+                onClick={goToClass}
+                className="w-full px-4 py-3 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-colors font-medium flex items-center justify-center gap-2"
+              >
+                <Play className="w-5 h-5" />
+                Go to Class
+              </button>
+              <button
+                onClick={() => setShowSuccessModal(false)}
+                className="w-full px-4 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors font-medium"
+              >
+                Stay Here
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

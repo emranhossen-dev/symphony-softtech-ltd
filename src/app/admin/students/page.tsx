@@ -248,6 +248,8 @@ export default function StudentManagement() {
       if (data.success) {
         // Refresh students to get updated data
         fetchStudents();
+        setShowCourseModal(false);
+        setSelectedCourseId('');
         toast.success('Course assigned successfully!');
       } else {
         toast.error(data.error || 'Failed to assign course');
@@ -297,16 +299,16 @@ export default function StudentManagement() {
   const inactiveStudents = students.filter(s => !s.isActive).length;
 
   return (
-    <div className="min-h-screen bg-gray-50/30">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
       {/* Header */}
-      <div className="bg-white border-b border-gray-100">
+      <div className="bg-gray-900/50 backdrop-blur-sm border-b border-purple-500/30">
         <div className="px-8 py-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-semibold text-gray-900">Student Management</h1>
-              <p className="text-sm text-gray-500 mt-1">Manage students and track their progress</p>
+              <h1 className="text-2xl font-semibold text-white">Student Management</h1>
+              <p className="text-sm text-gray-400 mt-1">Manage students and track their progress</p>
             </div>
-            
+
             <div className="flex items-center space-x-3">
               <button
                 type="button"
@@ -314,14 +316,14 @@ export default function StudentManagement() {
                   console.log('Add Student button clicked');
                   // Add student modal logic here
                 }}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center cursor-pointer"
+                className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg flex items-center cursor-pointer transition-colors"
               >
                 <Users className="w-4 h-4 mr-2" />
                 Add Student
               </button>
-              <Button 
-                variant="outline" 
-                className="border-gray-200 text-gray-700 hover:bg-gray-50"
+              <Button
+                variant="outline"
+                className="border-purple-500/30 text-gray-300 hover:bg-purple-600/20"
                 onClick={fetchStudents}
                 disabled={loading}
               >
@@ -336,43 +338,43 @@ export default function StudentManagement() {
       <div className="p-8 space-y-6">
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card className="bg-white border-0 shadow-sm">
+          <Card className="bg-gray-800/50 border border-purple-500/30 backdrop-blur-sm">
             <CardContent className="p-6">
               <div className="flex items-center">
-                <div className="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center">
-                  <UserCheck className="w-6 h-6 text-green-600" />
+                <div className="w-12 h-12 bg-green-500/20 rounded-xl flex items-center justify-center">
+                  <UserCheck className="w-6 h-6 text-green-400" />
                 </div>
                 <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">Active Students</p>
-                  <p className="text-2xl font-semibold text-gray-900 mt-1">{activeStudents}</p>
+                  <p className="text-sm font-medium text-gray-400">Active Students</p>
+                  <p className="text-2xl font-semibold text-white mt-1">{activeStudents}</p>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-white border-0 shadow-sm">
+          <Card className="bg-gray-800/50 border border-purple-500/30 backdrop-blur-sm">
             <CardContent className="p-6">
               <div className="flex items-center">
-                <div className="w-12 h-12 bg-gray-50 rounded-xl flex items-center justify-center">
-                  <UserX className="w-6 h-6 text-gray-600" />
+                <div className="w-12 h-12 bg-gray-700/50 rounded-xl flex items-center justify-center">
+                  <UserX className="w-6 h-6 text-gray-400" />
                 </div>
                 <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">Inactive Students</p>
-                  <p className="text-2xl font-semibold text-gray-900 mt-1">{inactiveStudents}</p>
+                  <p className="text-sm font-medium text-gray-400">Inactive Students</p>
+                  <p className="text-2xl font-semibold text-white mt-1">{inactiveStudents}</p>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-white border-0 shadow-sm">
+          <Card className="bg-gray-800/50 border border-purple-500/30 backdrop-blur-sm">
             <CardContent className="p-6">
               <div className="flex items-center">
-                <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center">
-                  <BookOpen className="w-6 h-6 text-blue-600" />
+                <div className="w-12 h-12 bg-purple-500/20 rounded-xl flex items-center justify-center">
+                  <BookOpen className="w-6 h-6 text-purple-400" />
                 </div>
                 <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">Total Enrollments</p>
-                  <p className="text-2xl font-semibold text-gray-900 mt-1">
+                  <p className="text-sm font-medium text-gray-400">Total Enrollments</p>
+                  <p className="text-2xl font-semibold text-white mt-1">
                     {students.reduce((sum, student) => sum + student.enrolledCourses.length, 0)}
                   </p>
                 </div>
@@ -382,7 +384,7 @@ export default function StudentManagement() {
         </div>
 
         {/* Filters */}
-        <Card className="bg-white border-0 shadow-sm">
+        <Card className="bg-gray-800/50 border border-purple-500/30 backdrop-blur-sm">
           <CardContent className="p-6">
             <div className="flex flex-col lg:flex-row gap-4">
               <div className="flex-1">
@@ -393,35 +395,35 @@ export default function StudentManagement() {
                     placeholder="Search by name, email, phone..."
                     value={filters.search}
                     onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
-                    className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors"
+                    className="w-full pl-10 pr-4 py-2.5 bg-gray-900/50 border border-purple-500/30 rounded-lg text-sm text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 transition-colors"
                   />
                 </div>
               </div>
 
               <div className="lg:w-48">
-                <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Status</label>
                 <Select value={filters.status} onValueChange={(value) => setFilters(prev => ({ ...prev, status: value }))}>
-                  <SelectTrigger className="w-full border-gray-200 text-sm">
-                    <SelectValue>Select status</SelectValue>
+                  <SelectTrigger className="w-full bg-gray-900/50 border border-purple-500/30 text-white focus:ring-2 focus:ring-purple-500">
+                    <SelectValue placeholder="Select status" />
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Students</SelectItem>
-                    <SelectItem value="active">Active</SelectItem>
-                    <SelectItem value="inactive">Inactive</SelectItem>
+                  <SelectContent className="bg-gray-900 border border-purple-500/30">
+                    <SelectItem value="all" className="text-white hover:bg-purple-600/20 focus:bg-purple-600/20 cursor-pointer">All Students</SelectItem>
+                    <SelectItem value="active" className="text-white hover:bg-purple-600/20 focus:bg-purple-600/20 cursor-pointer">Active</SelectItem>
+                    <SelectItem value="inactive" className="text-white hover:bg-purple-600/20 focus:bg-purple-600/20 cursor-pointer">Inactive</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
               <div className="lg:w-48">
-                <label className="block text-sm font-medium text-gray-700 mb-2">Course</label>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Course</label>
                 <Select value={filters.course} onValueChange={(value) => setFilters(prev => ({ ...prev, course: value }))}>
-                  <SelectTrigger className="w-full border-gray-200 text-sm">
-                    <SelectValue>Select course</SelectValue>
+                  <SelectTrigger className="w-full bg-gray-900/50 border border-purple-500/30 text-white focus:ring-2 focus:ring-purple-500">
+                    <SelectValue placeholder="Select course" />
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Courses</SelectItem>
+                  <SelectContent className="bg-gray-900 border border-purple-500/30 max-h-60 overflow-y-auto">
+                    <SelectItem value="all" className="text-white hover:bg-purple-600/20 focus:bg-purple-600/20 cursor-pointer">All Courses</SelectItem>
                     {courses.map((course) => (
-                      <SelectItem key={course.id} value={course.id}>
+                      <SelectItem key={course.id} value={course.id} className="text-white hover:bg-purple-600/20 focus:bg-purple-600/20 cursor-pointer">
                         {course.title}
                       </SelectItem>
                     ))}
@@ -433,12 +435,12 @@ export default function StudentManagement() {
         </Card>
 
         {/* Students Table */}
-        <Card className="bg-white border-0 shadow-sm">
-          <CardHeader className="px-6 py-4 border-b border-gray-100">
+        <Card className="bg-gray-800/50 border border-purple-500/30 backdrop-blur-sm">
+          <CardHeader className="px-6 py-4 border-b border-purple-500/30">
             <CardTitle className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <span className="text-lg font-semibold text-gray-900">All Students</span>
-                <Badge variant="outline" className="bg-gray-50 text-gray-600 border-gray-200">
+                <span className="text-lg font-semibold text-white">All Students</span>
+                <Badge variant="outline" className="bg-purple-500/20 text-purple-300 border-purple-500/30">
                   {filteredStudents.length} Total
                 </Badge>
               </div>
@@ -448,33 +450,33 @@ export default function StudentManagement() {
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
-                  <TableRow className="border-b border-gray-100">
-                    <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student</TableHead>
-                    <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</TableHead>
-                    <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Courses</TableHead>
-                    <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Progress</TableHead>
-                    <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Login</TableHead>
-                    <TableHead className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</TableHead>
+                  <TableRow className="border-b border-purple-500/30 bg-gray-900/30">
+                    <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Student</TableHead>
+                    <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Status</TableHead>
+                    <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Courses</TableHead>
+                    <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Progress</TableHead>
+                    <TableHead className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Last Login</TableHead>
+                    <TableHead className="px-6 py-3 text-right text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
-                <TableBody className="divide-y divide-gray-100">
+                <TableBody className="divide-y divide-purple-500/20">
                   {filteredStudents.map((student) => (
-                    <TableRow key={student.id} className="hover:bg-gray-50 transition-colors">
+                    <TableRow key={student.id} className="hover:bg-purple-500/10 transition-colors">
                       <TableCell className="px-6 py-4">
                         <div className="flex items-center">
-                          <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
-                            <Users className="w-5 h-5 text-gray-600" />
+                          <div className="w-10 h-10 bg-purple-500/20 rounded-full flex items-center justify-center">
+                            <Users className="w-5 h-5 text-purple-400" />
                           </div>
                           <div className="ml-3">
-                            <div className="text-sm font-medium text-gray-900">{student.name}</div>
-                            <div className="text-xs text-gray-500">{student.email}</div>
+                            <div className="text-sm font-medium text-white">{student.name}</div>
+                            <div className="text-xs text-gray-400">{student.email}</div>
                             {student.phone && (
-                              <div className="text-xs text-gray-500">{student.phone}</div>
+                              <div className="text-xs text-gray-400">{student.phone}</div>
                             )}
                           </div>
                         </div>
                       </TableCell>
-                      
+
                       <TableCell className="px-6 py-4">
                         <div className="flex items-center space-x-2">
                           <Badge className={getRoleColor(student.role)}>
@@ -485,50 +487,50 @@ export default function StudentManagement() {
                           }`} />
                         </div>
                       </TableCell>
-                      
+
                       <TableCell className="px-6 py-4">
                         <div className="space-y-1">
                           {student.enrolledCourses.map((course, index) => (
                             <div key={course.id} className="flex items-center justify-between text-sm">
                               <div className="flex items-center space-x-2">
                                 <BookOpen className="w-4 h-4 text-gray-400" />
-                                <span className="text-gray-700">{course.courseName}</span>
-                                <Badge variant="outline" className="text-xs">
+                                <span className="text-gray-300">{course.courseName}</span>
+                                <Badge variant="outline" className="text-xs bg-purple-500/20 text-purple-300 border-purple-500/30">
                                   {course.category}
                                 </Badge>
                               </div>
                               <div className="flex items-center space-x-2">
                                 <div className="flex items-center">
-                                  <div className="w-16 bg-gray-200 rounded-full h-2">
-                                    <div 
+                                  <div className="w-16 bg-gray-700 rounded-full h-2">
+                                    <div
                                       className={`h-2 rounded-full ${getProgressColor(course.progress)}`}
                                       style={{ width: `${course.progress}%` }}
                                     />
                                   </div>
                                 </div>
-                                <span className="text-xs text-gray-600">{course.progress}%</span>
+                                <span className="text-xs text-gray-400">{course.progress}%</span>
                               </div>
                               {course.completedAt && (
-                                <CheckCircle className="w-4 h-4 text-green-600" />
+                                <CheckCircle className="w-4 h-4 text-green-400" />
                               )}
                             </div>
                           ))}
                         </div>
                       </TableCell>
-                      
+
                       <TableCell className="px-6 py-4">
                         <div className="space-y-1">
                           {student.enrolledCourses.map((course, index) => (
                             <div key={course.id} className="flex items-center justify-between text-sm">
                               <div className="flex items-center space-x-2">
                                 {course.completedAt ? (
-                                  <Award className="w-4 h-4 text-green-600" />
+                                  <Award className="w-4 h-4 text-green-400" />
                                 ) : course.progress > 0 ? (
-                                  <Play className="w-4 h-4 text-blue-600" />
+                                  <Play className="w-4 h-4 text-blue-400" />
                                 ) : (
                                   <Pause className="w-4 h-4 text-gray-400" />
                                 )}
-                                <span className="text-gray-700">
+                                <span className="text-gray-300">
                                   {course.completedAt ? 'Completed' : course.progress > 0 ? 'In Progress' : 'Not Started'}
                                 </span>
                               </div>
@@ -536,52 +538,52 @@ export default function StudentManagement() {
                           ))}
                         </div>
                       </TableCell>
-                      
+
                       <TableCell className="px-6 py-4">
-                        <div className="text-sm text-gray-500">
+                        <div className="text-sm text-gray-400">
                           {student.lastLogin ? new Date(student.lastLogin).toLocaleDateString() : 'Never'}
                         </div>
                       </TableCell>
-                      
+
                       <TableCell className="px-6 py-4">
                         <div className="flex items-center justify-end space-x-2">
                           <Button
                             variant="outline"
                             size="sm"
                             onClick={() => viewStudentProfile(student)}
-                            className="border-gray-200 text-gray-700 hover:bg-gray-50"
+                            className="border-purple-500/30 text-gray-300 hover:bg-purple-600/20"
                           >
                             <Eye className="w-4 h-4 mr-1" />
                             Profile
                           </Button>
-                          
+
                           <Button
                             variant="outline"
                             size="sm"
                             onClick={() => openCourseAssignment(student)}
-                            className="border-blue-200 text-blue-700 hover:bg-blue-50"
+                            className="border-purple-500/30 text-purple-300 hover:bg-purple-600/20"
                           >
                             <BookOpen className="w-4 h-4 mr-1" />
                             Assign Course
                           </Button>
-                          
+
                           <Button
                             variant="outline"
                             size="sm"
                             onClick={() => openPasswordReset(student)}
-                            className="border-orange-200 text-orange-700 hover:bg-orange-50"
+                            className="border-orange-500/30 text-orange-300 hover:bg-orange-600/20"
                           >
                             <Key className="w-4 h-4 mr-1" />
                             Reset Password
                           </Button>
-                          
+
                           <Button
                             variant="outline"
                             size="sm"
                             onClick={() => toggleStudentStatus(student.id, !student.isActive)}
-                            className={student.isActive 
-                              ? "border-red-200 text-red-700 hover:bg-red-50"
-                              : "border-green-200 text-green-700 hover:bg-green-50"
+                            className={student.isActive
+                              ? "border-red-500/30 text-red-300 hover:bg-red-600/20"
+                              : "border-green-500/30 text-green-300 hover:bg-green-600/20"
                             }
                             disabled={actionLoading[student.id]}
                           >
@@ -631,14 +633,15 @@ export default function StudentManagement() {
         <div className="fixed inset-0 z-50 overflow-hidden">
           <div className="absolute inset-0 bg-black bg-opacity-50" onClick={() => setShowProfileModal(false)} />
           <div className="absolute inset-0 flex items-center justify-center p-4">
-            <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+            <div className="bg-gray-800 border border-purple-500/30 rounded-xl shadow-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto">
               <div className="p-6">
                 <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-xl font-semibold text-gray-900">Student Profile</h2>
+                  <h2 className="text-xl font-semibold text-white">Student Profile</h2>
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => setShowProfileModal(false)}
+                    className="border-purple-500/30 text-gray-300 hover:bg-purple-600/20"
                   >
                     ×
                   </Button>
@@ -646,85 +649,85 @@ export default function StudentManagement() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Information</h3>
+                    <h3 className="text-lg font-semibold text-white mb-4">Information</h3>
                     <div className="space-y-3">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700">Name</label>
-                        <p className="text-gray-900">{selectedStudent.name}</p>
+                        <label className="block text-sm font-medium text-gray-300">Name</label>
+                        <p className="text-white">{selectedStudent.name}</p>
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700">Email</label>
-                        <p className="text-gray-900">{selectedStudent.email}</p>
+                        <label className="block text-sm font-medium text-gray-300">Email</label>
+                        <p className="text-white">{selectedStudent.email}</p>
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700">Phone</label>
-                        <p className="text-gray-900">{selectedStudent.phone || 'Not provided'}</p>
+                        <label className="block text-sm font-medium text-gray-300">Phone</label>
+                        <p className="text-white">{selectedStudent.phone || 'Not provided'}</p>
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700">Role</label>
+                        <label className="block text-sm font-medium text-gray-300">Role</label>
                         <Badge className={getRoleColor(selectedStudent.role)}>
                           {selectedStudent.role}
                         </Badge>
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700">Status</label>
-                        <Badge className={selectedStudent.isActive ? 'bg-green-50 text-green-700 border-green-200' : 'bg-red-50 text-red-700 border-red-200'}>
+                        <label className="block text-sm font-medium text-gray-300">Status</label>
+                        <Badge className={selectedStudent.isActive ? 'bg-green-500/20 text-green-400 border-green-500/30' : 'bg-red-500/20 text-red-400 border-red-500/30'}>
                           {selectedStudent.isActive ? 'Active' : 'Inactive'}
                         </Badge>
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700">Member Since</label>
-                        <p className="text-gray-900">{new Date(selectedStudent.createdAt).toLocaleDateString()}</p>
+                        <label className="block text-sm font-medium text-gray-300">Member Since</label>
+                        <p className="text-white">{new Date(selectedStudent.createdAt).toLocaleDateString()}</p>
                       </div>
                       {selectedStudent.lastLogin && (
                         <div>
-                          <label className="block text-sm font-medium text-gray-700">Last Login</label>
-                          <p className="text-gray-900">{new Date(selectedStudent.lastLogin).toLocaleString()}</p>
+                          <label className="block text-sm font-medium text-gray-300">Last Login</label>
+                          <p className="text-white">{new Date(selectedStudent.lastLogin).toLocaleString()}</p>
                         </div>
                       )}
                     </div>
                   </div>
 
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Enrolled Courses</h3>
+                    <h3 className="text-lg font-semibold text-white mb-4">Enrolled Courses</h3>
                     <div className="space-y-3">
                       {selectedStudent.enrolledCourses.map((course) => (
-                        <div key={course.id} className="border border-gray-200 rounded-lg p-4">
+                        <div key={course.id} className="border border-purple-500/30 rounded-lg p-4 bg-gray-900/50">
                           <div className="flex items-center justify-between mb-2">
                             <div className="flex items-center space-x-2">
                               <BookOpen className="w-4 h-4 text-gray-400" />
-                              <span className="font-medium text-gray-900">{course.courseName}</span>
-                              <Badge variant="outline" className="text-xs">
+                              <span className="font-medium text-white">{course.courseName}</span>
+                              <Badge variant="outline" className="text-xs bg-purple-500/20 text-purple-300 border-purple-500/30">
                                 {course.category}
                               </Badge>
                             </div>
                             <Badge className={
-                              course.completedAt 
-                                ? 'bg-green-50 text-green-700 border-green-200'
-                                : course.progress > 0 
-                                  ? 'bg-blue-50 text-blue-700 border-blue-200'
-                                  : 'bg-gray-50 text-gray-700 border-gray-200'
+                              course.completedAt
+                                ? 'bg-green-500/20 text-green-400 border-green-500/30'
+                                : course.progress > 0
+                                  ? 'bg-blue-500/20 text-blue-400 border-blue-500/30'
+                                  : 'bg-gray-500/20 text-gray-400 border-gray-500/30'
                             }>
                               {course.completedAt ? 'Completed' : course.progress > 0 ? 'In Progress' : 'Not Started'}
                             </Badge>
                           </div>
                           <div className="mt-2">
-                            <div className="text-sm text-gray-600">
+                            <div className="text-sm text-gray-400">
                               Progress: {course.progress}%
                             </div>
-                            <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
-                              <div 
+                            <div className="w-full bg-gray-700 rounded-full h-2 mt-2">
+                              <div
                                 className={`h-2 rounded-full ${getProgressColor(course.progress)}`}
                                 style={{ width: `${course.progress}%` }}
                               />
                             </div>
                             {course.completedAt && (
-                              <div className="text-sm text-green-600 mt-2">
+                              <div className="text-sm text-green-400 mt-2">
                                 Completed on {new Date(course.completedAt).toLocaleDateString()}
                               </div>
                             )}
                           </div>
-                      </div>
+                        </div>
                       ))}
                     </div>
                   </div>
@@ -737,17 +740,18 @@ export default function StudentManagement() {
 
       {/* Course Assignment Modal */}
       {showCourseModal && selectedStudent && (
-        <div className="fixed inset-0 z-50 overflow-hidden">
+        <div className="fixed inset-0 z-[60] overflow-hidden">
           <div className="absolute inset-0 bg-black bg-opacity-50" onClick={() => setShowCourseModal(false)} />
           <div className="absolute inset-0 flex items-center justify-center p-4">
-            <div className="bg-white rounded-xl shadow-xl max-w-md w-full">
+            <div className="bg-gray-800 border border-purple-500/30 rounded-xl shadow-xl max-w-md w-full">
               <div className="p-6">
                 <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-xl font-semibold text-gray-900">Assign Course</h2>
+                  <h2 className="text-xl font-semibold text-white">Assign Course</h2>
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => setShowCourseModal(false)}
+                    className="border-purple-500/30 text-gray-300 hover:bg-purple-600/20"
                   >
                     ×
                   </Button>
@@ -755,8 +759,8 @@ export default function StudentManagement() {
 
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Student</label>
-                    <p className="text-gray-900 font-medium">{selectedStudent.name}</p>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">Student</label>
+                    <p className="text-white font-medium">{selectedStudent.name}</p>
                   </div>
 
                   <div>
@@ -801,14 +805,15 @@ export default function StudentManagement() {
         <div className="fixed inset-0 z-50 overflow-hidden">
           <div className="absolute inset-0 bg-black bg-opacity-50" onClick={() => setShowPasswordModal(false)} />
           <div className="absolute inset-0 flex items-center justify-center p-4">
-            <div className="bg-white rounded-xl shadow-xl max-w-md w-full">
+            <div className="bg-gray-800 border border-purple-500/30 rounded-xl shadow-xl max-w-md w-full">
               <div className="p-6">
                 <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-xl font-semibold text-gray-900">Reset Password</h2>
+                  <h2 className="text-xl font-semibold text-white">Reset Password</h2>
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => setShowPasswordModal(false)}
+                    className="border-purple-500/30 text-gray-300 hover:bg-purple-600/20"
                   >
                     ×
                   </Button>
@@ -816,24 +821,24 @@ export default function StudentManagement() {
 
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Student</label>
-                    <p className="text-gray-900 font-medium">{selectedStudent.name}</p>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">Student</label>
+                    <p className="text-white font-medium">{selectedStudent.name}</p>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">New Password</label>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">New Password</label>
                     <input
                       type="password"
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full px-3 py-2 bg-gray-900/50 border border-purple-500/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 text-white placeholder-gray-400"
                       placeholder="Enter new password"
                     />
                   </div>
 
                   <Button
                     onClick={() => resetStudentPassword(selectedStudent.id)}
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                    className="w-full bg-purple-600 hover:bg-purple-700 text-white"
                     disabled={!newPassword || newPassword.length < 6}
                   >
                     Reset Password

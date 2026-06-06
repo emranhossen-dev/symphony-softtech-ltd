@@ -17,27 +17,27 @@ const MentorLayout = ({ children }: MentorLayoutProps) => {
 
   if (!isMentor) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #0a0e27 0%, #1a1f4c 25%, #0d1b3e 50%, #1a1f4c 75%, #0a0e27 100%)', color: '#f1f5f9' }}>
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Access Denied</h1>
-          <p className="text-gray-600">You don't have permission to access this page.</p>
+          <h1 className="text-2xl font-bold mb-4">Access Denied</h1>
+          <p>You don't have permission to access this page.</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen flex" style={{ background: 'linear-gradient(135deg, #0a0e27 0%, #1a1f4c 25%, #0d1b3e 50%, #1a1f4c 75%, #0a0e27 100%)', color: '#f1f5f9' }}>
       {/* Sidebar */}
-      <MentorSidebar 
-        isOpen={sidebarOpen} 
-        onClose={() => setSidebarOpen(false)} 
+      <MentorSidebar
+        isOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
       />
 
       {/* Main content area */}
       <div className="flex-1 flex flex-col lg:ml-64">
         {/* Header */}
-        <MentorHeader 
+        <MentorHeader
           onSidebarToggle={() => setSidebarOpen(!sidebarOpen)}
           sidebarOpen={sidebarOpen}
         />

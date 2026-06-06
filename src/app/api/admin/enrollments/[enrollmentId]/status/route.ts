@@ -13,6 +13,28 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     console.log('Enrollment ID:', enrollmentId);
     console.log('New status:', status);
 
+    if (!enrollmentId || enrollmentId === 'undefined') {
+      return NextResponse.json(
+        { success: false, error: 'Enrollment ID is required' },
+        { status: 400 }
+      );
+    }
+
+    if (!status) {
+      return NextResponse.json(
+        { success: false, error: 'Status is required' },
+        { status: 400 }
+      );
+    }
+
+    const validStatuses = ['APPLIED', 'ADMITTED', 'REJECTED', 'WAITING', 'NEXT_BATCH'];
+    if (!validStatuses.includes(status)) {
+      return NextResponse.json(
+        { success: false, error: `Invalid status: ${status}. Must be one of: ${validStatuses.join(', ')}` },
+        { status: 400 }
+      );
+    }
+
     // Check if database is available
     if (!prisma) {
       console.log('Database not available, returning mock response');
@@ -41,15 +63,20 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 
     const previousStatus = currentEnrollment.enrollmentStatus;
 
+    // Prepare update data
+    const updateData: any = {
+      enrollmentStatus: status,
+      updatedAt: new Date()
+    };
+
+    let linkedUserId: string | null = null;
+
     // Update the enrollment status
     const updatedEnrollment = await prisma.enrollment.update({
       where: {
         id: enrollmentId
       },
-      data: {
-        enrollmentStatus: status,
-        updatedAt: new Date()
-      }
+      data: updateData
     });
 
     console.log('Updated enrollment:', updatedEnrollment);
@@ -59,15 +86,13 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
       if (previousStatus !== status) {
         console.log(`Status changed from ${previousStatus} to ${status}, sending email notification`);
 
-        let emailResult;
+        let emailResult: { success: boolean; error?: string } | undefined;
 
         if (status === 'ADMITTED') {
-          // Create user account for the admitted student
+          // Step 1: Always create or update user account first
           let tempPassword = '';
-          let userAccountCreated = false;
-          
           try {
-            console.log('Creating user account for admitted student:', currentEnrollment.email);
+            console.log('[ADMISSION] Creating/updating user for:', currentEnrollment.email);
             
             const userResult = await createStudentUser({
               fullName: currentEnrollment.fullName,
@@ -75,44 +100,58 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
               phoneNumber: currentEnrollment.phoneNumber || ''
             });
             
+            linkedUserId = userResult.user.id;
             tempPassword = userResult.tempPassword || '';
-            userAccountCreated = true;
             
-            console.log('Student user account created successfully:', {
-              email: userResult.user.email,
+            console.log('[ADMISSION] User ready:', {
               userId: userResult.user.id,
-              tempPassword: tempPassword ? 'generated' : 'existing_user'
+              email: userResult.user.email,
+              isNew: !!userResult.tempPassword,
+              hasPassword: !!tempPassword
             });
           } catch (userError) {
-            console.error('Error creating student user account:', userError);
-            console.error('User error details:', {
-              message: userError instanceof Error ? userError.message : 'Unknown error',
-              stack: userError instanceof Error ? userError.stack : 'No stack'
-            });
-            
-            // Generate a fallback password if user creation fails
-            tempPassword = Math.random().toString(36).slice(-8);
-            userAccountCreated = false;
-            
-            console.log('Using fallback password due to user creation failure');
+            console.error('[ADMISSION] CRITICAL: Failed to create user:', userError);
+            // Don't proceed with email if user creation fails
           }
           
-          console.log('Sending admission email with password:', {
-            email: currentEnrollment.email,
-            hasPassword: !!tempPassword,
-            userAccountCreated
-          });
+          // Step 2: Link user to enrollment (critical for dashboard access)
+          if (linkedUserId) {
+            try {
+              await prisma.enrollment.update({
+                where: { id: enrollmentId },
+                data: { userId: linkedUserId }
+              });
+              console.log('[ADMISSION] Linked user', linkedUserId, 'to enrollment');
+            } catch (linkError) {
+              console.error('[ADMISSION] Failed to link user to enrollment:', linkError);
+            }
+          }
           
-          emailResult = await sendAdmissionEmail({
-            to: currentEnrollment.email,
-            fullName: currentEnrollment.fullName,
-            courseName: currentEnrollment.course?.title || 'Unknown Course',
-            email: currentEnrollment.email,
-            password: tempPassword,
-            loginUrl: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/login`
-          });
-          
-          console.log('Admission email sent to:', currentEnrollment.email);
+          // Step 3: Send email (non-critical)
+          const smtpConfigured = process.env.SMTP_USER && process.env.SMTP_PASS;
+          if (!smtpConfigured) {
+            console.log('[ADMISSION] SMTP not configured. Skipping email. Set SMTP_USER and SMTP_PASS in .env file.');
+            console.log('[ADMISSION] Student login credentials - Email:', currentEnrollment.email, '| Password:', tempPassword || '(user creation failed)');
+          } else if (tempPassword) {
+            try {
+              emailResult = await sendAdmissionEmail({
+                to: currentEnrollment.email,
+                fullName: currentEnrollment.fullName,
+                courseName: currentEnrollment.course?.title || 'Unknown Course',
+                email: currentEnrollment.email,
+                password: tempPassword,
+                loginUrl: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/login`
+              });
+              
+              if (emailResult.success) {
+                console.log('[ADMISSION] Email sent to:', currentEnrollment.email);
+              } else {
+                console.error('[ADMISSION] Email failed:', emailResult.error);
+              }
+            } catch (emailErr) {
+              console.error('[ADMISSION] Email exception:', emailErr);
+            }
+          }
         } else if (status === 'REJECTED') {
           emailResult = await sendRejectionEmail({
             to: currentEnrollment.email,
@@ -140,9 +179,9 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
           console.log('Status change email sent to:', currentEnrollment.email);
         }
 
-        if (emailResult.success) {
+        if (emailResult?.success) {
           console.log('Email notification sent successfully');
-        } else {
+        } else if (emailResult) {
           console.error('Failed to send email notification:', emailResult.error);
         }
       } else {

@@ -17,11 +17,11 @@ export const GET = withRateLimit(
           const user = (request as any).user;
           
           // Get student's enrollments with course data
+          console.log('Fetching enrollments for userId:', user.id);
+          
           const enrollments = await prisma.enrollment.findMany({
             where: {
-              user: {
-                id: user.id
-              }
+              userId: user.id
             },
             include: {
               course: {
@@ -54,7 +54,7 @@ export const GET = withRateLimit(
               let certificateEligible = false;
               let certificate = null;
               
-              if (enrollment.enrollmentStatus === 'ADMITTED' && enrollment.courseId) {
+              if ((enrollment.enrollmentStatus === 'ADMITTED' || enrollment.enrollmentStatus === 'APPROVED') && enrollment.courseId) {
                 // Get actual progress from ModuleProgress
                 try {
                   const moduleProgress = await prisma.moduleProgress.findMany({
@@ -158,29 +158,30 @@ export const GET = withRateLimit(
             })
           );
 
+          console.log(`Found ${enrollments.length} enrollments for user ${user.id}, returning ${courses.length} courses`);
+
           // Calculate overall stats with real data
-          const totalEnrolled = courses.length;
-          const totalCompleted = courses.filter(c => c.progress === 100).length;
-          const totalInProgress = courses.filter(c => c.progress > 0 && c.progress < 100).length;
-          const averageProgress = totalEnrolled > 0 
-            ? Math.round(courses.reduce((sum, course) => sum + course.progress, 0) / totalEnrolled)
+          const totalCourses = courses.length;
+          const completedCourses = courses.filter(c => c.progress === 100).length;
+          const averageProgress = totalCourses > 0 
+            ? Math.round(courses.reduce((sum, course) => sum + course.progress, 0) / totalCourses)
             : 0;
 
           // Calculate additional stats
-          const totalModules = courses.reduce((sum, course) => sum + (course.totalModules || 0), 0);
-          const completedModules = courses.reduce((sum, course) => sum + (course.completedModules || 0), 0);
-          const totalHours = Math.round(totalModules * 0.5); // Assuming 30 min per module
+          const totalModulesCount = courses.reduce((sum, course) => sum + (course.totalModules || 0), 0);
+          const completedModulesCount = courses.reduce((sum, course) => sum + (course.completedModules || 0), 0);
+          const totalHours = Math.round(totalModulesCount * 0.5); // Assuming 30 min per module
           const upcomingClasses = 0; // Would be calculated from attendance sessions
 
           const stats = {
-            totalEnrolled,
-            totalCompleted,
-            totalInProgress,
+            totalCourses,
+            completedCourses,
             averageProgress,
             totalHours,
-            completedModules,
-            totalModules,
-            upcomingClasses
+            completedModules: completedModulesCount,
+            totalModules: totalModulesCount,
+            upcomingClasses,
+            unreadNotifications: 0
           };
 
           // Get user information

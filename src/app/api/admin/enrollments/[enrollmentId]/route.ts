@@ -119,6 +119,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ enrollmentId: string }> }) {
   try {
     const { enrollmentId } = await params;
+    console.log('PATCH /api/admin/enrollments/[enrollmentId] - enrollmentId:', enrollmentId);
     const body = await request.json();
 
     // Check if database is available

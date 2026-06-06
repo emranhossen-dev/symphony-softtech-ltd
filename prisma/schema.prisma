@@ -31,6 +31,7 @@ model User {
   createdSeminars     Seminar[]
   callRecords         CallRecord[]
   userPermissions     UserPermission[]
+  notes               Note[]
 
   @@map("users")
 }
@@ -107,6 +108,7 @@ model Course {
   homeworkSubmissions HomeworkSubmission[]
   moduleProgress      ModuleProgress[]
   modules             Module[]
+  notes               Note[]
 
   @@map("courses")
 }
@@ -125,6 +127,7 @@ model Module {
   updatedAt           DateTime             @updatedAt
   homeworkSubmissions HomeworkSubmission[]
   moduleProgress      ModuleProgress[]
+  notes               Note[]
   course              Course               @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
   @@map("modules")
@@ -489,4 +492,20 @@ model PasswordResetToken {
   used      Boolean  @default(false)
 
   @@map("password_reset_tokens")
+}
+
+model Note {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String
+  content   String
+  courseId  String?
+  moduleId  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course    Course?  @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  module    Module?  @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+
+  @@map("notes")
 }

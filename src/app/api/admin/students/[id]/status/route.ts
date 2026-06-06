@@ -38,21 +38,25 @@ export async function PATCH(
       }
     });
 
-    // Log the status change
-    await prisma.activityLog.create({
-      data: {
-        type: 'STATUS_CHANGE',
-        action: `Enrollment status changed to ${status}`,
-        metadata: {
-          previousStatus: enrollment.enrollmentStatus,
-          newStatus: status,
-          enrollmentId: id,
-          courseName: enrollment.course?.title,
-          category: enrollment.course?.category
-        },
-        timestamp: new Date()
-      }
-    });
+    // Log the status change (non-critical)
+    try {
+      await prisma.activityLog.create({
+        data: {
+          type: 'STATUS_CHANGE',
+          action: `Enrollment status changed to ${status}`,
+          metadata: {
+            previousStatus: enrollment.enrollmentStatus,
+            newStatus: status,
+            enrollmentId: id,
+            courseName: enrollment.course?.title,
+            category: enrollment.course?.category
+          },
+          timestamp: new Date()
+        }
+      });
+    } catch (logError) {
+      console.error('Failed to create activity log:', logError);
+    }
 
     return NextResponse.json({
       success: true,

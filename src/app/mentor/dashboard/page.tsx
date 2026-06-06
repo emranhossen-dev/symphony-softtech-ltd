@@ -239,11 +239,11 @@ export default function MentorDashboard() {
       case 'SUBMITTED': return 'bg-blue-100 text-blue-800';
       case 'UNDER_REVIEW': return 'bg-purple-100 text-purple-800';
       case 'LIVE': return 'bg-red-100 text-red-800';
-      case 'ENDED': return 'bg-gray-100 text-gray-800';
+      case 'ENDED': return 'bg-gray-500/20 text-gray-300';
       case 'PRESENT': return 'bg-green-100 text-green-800';
       case 'ABSENT': return 'bg-red-100 text-red-800';
       case 'LATE': return 'bg-yellow-100 text-yellow-800';
-      default: return 'bg-gray-100 text-gray-800';
+      default: return 'bg-gray-500/20 text-gray-300';
     }
   };
 
@@ -276,19 +276,19 @@ export default function MentorDashboard() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" style={{ background: 'linear-gradient(135deg, #0a0e27 0%, #1a1f4c 25%, #0d1b3e 50%, #1a1f4c 75%, #0a0e27 100%)', color: '#f1f5f9', minHeight: '100vh' }}>
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Mentor Dashboard</h1>
-          <p className="text-gray-600 mt-1">Manage your courses, students, and live sessions</p>
+          <h1 className="text-3xl font-bold text-white">Mentor Dashboard</h1>
+          <p className="text-gray-300 mt-1">Manage your courses, students, and live sessions</p>
         </div>
         <div className="flex items-center gap-4">
           <input
             type="date"
             value={selectedDate}
             onChange={(e) => setSelectedDate(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="px-3 py-2 border border-white/20 bg-white/5 text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
           <button
             onClick={openAttendanceModal}
@@ -302,28 +302,28 @@ export default function MentorDashboard() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="glass-card rounded-lg p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Assigned Courses</p>
-              <p className="text-2xl font-bold text-gray-900">{courses.length}</p>
+              <p className="text-sm text-gray-300">Assigned Courses</p>
+              <p className="text-2xl font-bold text-white">{courses.length}</p>
             </div>
             <BookOpen className="w-8 h-8 text-blue-600" />
           </div>
         </div>
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="glass-card rounded-lg p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Total Students</p>
-              <p className="text-2xl font-bold text-gray-900">{students.length}</p>
+              <p className="text-sm text-gray-300">Total Students</p>
+              <p className="text-2xl font-bold text-white">{students.length}</p>
             </div>
             <Users className="w-8 h-8 text-green-600" />
           </div>
         </div>
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="glass-card rounded-lg p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Pending Reviews</p>
+              <p className="text-sm text-gray-300">Pending Reviews</p>
               <p className="text-2xl font-bold text-yellow-600">
                 {homeworkSubmissions.filter(h => h.status === 'SUBMITTED').length}
               </p>
@@ -331,10 +331,10 @@ export default function MentorDashboard() {
             <FileText className="w-8 h-8 text-yellow-600" />
           </div>
         </div>
-                <div className="bg-white rounded-lg shadow p-6">
+                <div className="glass-card rounded-lg p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Avg Progress</p>
+              <p className="text-sm text-gray-300">Avg Progress</p>
               <p className="text-2xl font-bold text-purple-600">
                 {students.length > 0 
                   ? Math.round(students.reduce((sum, s) => sum + s.totalProgress, 0) / students.length)
@@ -348,8 +348,8 @@ export default function MentorDashboard() {
       </div>
 
       {/* Navigation Tabs */}
-      <div className="bg-white rounded-lg shadow">
-        <div className="border-b border-gray-200">
+      <div className="glass-card">
+        <div className="border-b border-white/10">
           <nav className="flex -mb-px">
             {[
               { id: 'overview', label: 'Overview', icon: BarChart3 },
@@ -364,7 +364,7 @@ export default function MentorDashboard() {
                 className={`flex items-center px-6 py-3 border-b-2 font-medium text-sm ${
                   activeTab === tab.id
                     ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    : 'border-transparent text-gray-400 hover:text-white hover:border-white/30'
                 }`}
               >
                 <tab.icon className="w-5 h-5 mr-2" />
@@ -381,13 +381,13 @@ export default function MentorDashboard() {
             <div className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h3>
+                  <h3 className="text-lg font-semibold text-white mb-4">Recent Activity</h3>
                   <div className="space-y-3">
                     {homeworkSubmissions.slice(0, 5).map((submission) => (
-                      <div key={submission.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div key={submission.id} className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
                         <div>
-                          <p className="font-medium text-gray-900">{submission.studentName}</p>
-                          <p className="text-sm text-gray-600">{submission.homeworkTitle}</p>
+                          <p className="font-medium text-white">{submission.studentName}</p>
+                          <p className="text-sm text-gray-300">{submission.homeworkTitle}</p>
                         </div>
                         <span className={`px-2 py-1 text-xs rounded-full ${getStatusColor(submission.status)}`}>
                           {submission.status}
@@ -397,14 +397,14 @@ export default function MentorDashboard() {
                   </div>
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Upcoming Classes</h3>
+                  <h3 className="text-lg font-semibold text-white mb-4">Upcoming Classes</h3>
                   <div className="space-y-3">
                     {liveClasses.filter(c => c.status === 'SCHEDULED').slice(0, 5).map((liveClass) => (
-                      <div key={liveClass.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div key={liveClass.id} className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
                         <div>
-                          <p className="font-medium text-gray-900">{liveClass.title}</p>
-                          <p className="text-sm text-gray-600">{liveClass.courseName}</p>
-                          <p className="text-xs text-gray-500">
+                          <p className="font-medium text-white">{liveClass.title}</p>
+                          <p className="text-sm text-gray-300">{liveClass.courseName}</p>
+                          <p className="text-xs text-gray-400">
                             {new Date(liveClass.scheduledAt).toLocaleDateString()} at {new Date(liveClass.scheduledAt).toLocaleTimeString()}
                           </p>
                         </div>
@@ -426,17 +426,17 @@ export default function MentorDashboard() {
           {activeTab === 'courses' && (
             <div className="space-y-4">
               {courses.map((course) => (
-                <div key={course.id} className="border border-gray-200 rounded-lg p-4">
+                <div key={course.id} className="border border-white/10 rounded-lg p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h3 className="text-lg font-semibold text-gray-900">{course.name}</h3>
-                      <p className="text-gray-600">{course.category}</p>
+                      <h3 className="text-lg font-semibold text-white">{course.name}</h3>
+                      <p className="text-gray-300">{course.category}</p>
                       <div className="flex items-center gap-4 mt-2">
-                        <span className="text-sm text-gray-500">{course.enrolledStudents} students</span>
-                        <span className="text-sm text-gray-500">{course.completionRate}% completion</span>
+                        <span className="text-sm text-gray-400">{course.enrolledStudents} students</span>
+                        <span className="text-sm text-gray-400">{course.completionRate}% completion</span>
                         <div className="flex items-center">
-                          <Award className="w-4 h-4 text-yellow-500 mr-1" />
-                          <span className="text-sm text-gray-500">{course.averageRating.toFixed(1)} rating</span>
+                          <Award className="w-4 h-4 text-yellow-400 mr-1" />
+                          <span className="text-sm text-gray-400">{course.averageRating.toFixed(1)} rating</span>
                         </div>
                       </div>
                     </div>
@@ -458,19 +458,19 @@ export default function MentorDashboard() {
           {activeTab === 'students' && (
             <div className="space-y-4">
               {students.map((student) => (
-                <div key={student.id} className="border border-gray-200 rounded-lg p-4">
+                <div key={student.id} className="border border-white/10 rounded-lg p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h3 className="text-lg font-semibold text-gray-900">
+                      <h3 className="text-lg font-semibold text-white">
                         {student.firstName} {student.lastName}
                       </h3>
-                      <p className="text-gray-600">{student.email}</p>
+                      <p className="text-gray-300">{student.email}</p>
                       <div className="flex items-center gap-4 mt-2">
-                        <span className="text-sm text-gray-500">{student.enrolledCourses.length} courses</span>
-                        <span className="text-sm text-gray-500">{student.totalProgress}% progress</span>
+                        <span className="text-sm text-gray-400">{student.enrolledCourses.length} courses</span>
+                        <span className="text-sm text-gray-400">{student.totalProgress}% progress</span>
                         <div className="flex items-center">
-                          <Award className="w-4 h-4 text-yellow-500 mr-1" />
-                          <span className="text-sm text-gray-500">{student.averageRating.toFixed(1)} rating</span>
+                          <Award className="w-4 h-4 text-yellow-400 mr-1" />
+                          <span className="text-sm text-gray-400">{student.averageRating.toFixed(1)} rating</span>
                         </div>
                       </div>
                     </div>
@@ -494,21 +494,21 @@ export default function MentorDashboard() {
           {activeTab === 'homework' && (
             <div className="space-y-4">
               {homeworkSubmissions.map((submission) => (
-                <div key={submission.id} className="border border-gray-200 rounded-lg p-4">
+                <div key={submission.id} className="border border-white/10 rounded-lg p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h3 className="text-lg font-semibold text-gray-900">{submission.homeworkTitle}</h3>
-                      <p className="text-gray-600">{submission.studentName}</p>
-                      <p className="text-sm text-gray-500">{submission.courseName}</p>
+                      <h3 className="text-lg font-semibold text-white">{submission.homeworkTitle}</h3>
+                      <p className="text-gray-300">{submission.studentName}</p>
+                      <p className="text-sm text-gray-400">{submission.courseName}</p>
                       <div className="flex items-center gap-4 mt-2">
-                        <span className="text-sm text-gray-500">
+                        <span className="text-sm text-gray-400">
                           Submitted: {new Date(submission.submittedAt).toLocaleDateString()}
                         </span>
                         <span className={`px-2 py-1 text-xs rounded-full ${getStatusColor(submission.status)}`}>
                           {submission.status}
                         </span>
                         {submission.grade && (
-                          <span className="text-sm text-gray-500">Grade: {submission.grade}%</span>
+                          <span className="text-sm text-gray-400">Grade: {submission.grade}%</span>
                         )}
                       </div>
                     </div>
@@ -535,19 +535,19 @@ export default function MentorDashboard() {
           {activeTab === 'attendance' && (
             <div className="space-y-4">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-gray-900">Attendance Records</h3>
-                <p className="text-sm text-gray-600">Date: {selectedDate}</p>
+                <h3 className="text-lg font-semibold text-white">Attendance Records</h3>
+                <p className="text-sm text-gray-300">Date: {selectedDate}</p>
               </div>
               {attendanceRecords
                 .filter(record => record.date === selectedDate)
                 .map((record) => (
-                <div key={record.id} className="border border-gray-200 rounded-lg p-4">
+                <div key={record.id} className="border border-white/10 rounded-lg p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h3 className="text-lg font-semibold text-gray-900">{record.studentName}</h3>
-                      <p className="text-gray-600">{record.courseName}</p>
+                      <h3 className="text-lg font-semibold text-white">{record.studentName}</h3>
+                      <p className="text-gray-300">{record.courseName}</p>
                       {record.checkInTime && (
-                        <p className="text-sm text-gray-500">Check-in: {record.checkInTime}</p>
+                        <p className="text-sm text-gray-400">Check-in: {record.checkInTime}</p>
                       )}
                     </div>
                     <span className={`px-2 py-1 text-xs rounded-full ${getStatusColor(record.status)}`}>
@@ -564,21 +564,21 @@ export default function MentorDashboard() {
       {/* Homework Review Modal */}
       {showReviewModal && selectedSubmission && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-2xl">
+          <div className="glass-modal rounded-lg p-6 w-full max-w-2xl">
             <h2 className="text-xl font-bold mb-4">Review Homework</h2>
             <div className="space-y-4">
               <div>
-                <p className="text-sm text-gray-600">Student: {selectedSubmission.studentName}</p>
-                <p className="text-sm text-gray-600">Assignment: {selectedSubmission.homeworkTitle}</p>
-                <p className="text-sm text-gray-600">Course: {selectedSubmission.courseName}</p>
+                <p className="text-sm text-gray-300">Student: {selectedSubmission.studentName}</p>
+                <p className="text-sm text-gray-300">Assignment: {selectedSubmission.homeworkTitle}</p>
+                <p className="text-sm text-gray-300">Course: {selectedSubmission.courseName}</p>
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Review Status</label>
+                <label className="block text-sm font-medium text-gray-300 mb-1">Review Status</label>
                 <select
                   value={reviewData.status}
                   onChange={(e) => setReviewData({ ...reviewData, status: e.target.value as any })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-white/20 bg-white/5 text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   <option value="APPROVED">Approved</option>
                   <option value="REJECTED">Rejected</option>
@@ -587,24 +587,24 @@ export default function MentorDashboard() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Grade (0-100)</label>
+                <label className="block text-sm font-medium text-gray-300 mb-1">Grade (0-100)</label>
                 <input
                   type="number"
                   min="0"
                   max="100"
                   value={reviewData.grade}
                   onChange={(e) => setReviewData({ ...reviewData, grade: parseInt(e.target.value) || 0 })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-white/20 bg-white/5 text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Feedback</label>
+                <label className="block text-sm font-medium text-gray-300 mb-1">Feedback</label>
                 <textarea
                   value={reviewData.feedback}
                   onChange={(e) => setReviewData({ ...reviewData, feedback: e.target.value })}
                   rows={4}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-white/20 bg-white/5 text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="Provide detailed feedback..."
                 />
               </div>
@@ -613,7 +613,7 @@ export default function MentorDashboard() {
             <div className="flex justify-end gap-3 mt-6">
               <button
                 onClick={() => setShowReviewModal(false)}
-                className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                className="px-4 py-2 text-white bg-white/10 rounded-lg hover:bg-white/20 transition-colors"
               >
                 Cancel
               </button>
@@ -631,16 +631,16 @@ export default function MentorDashboard() {
       {/* Attendance Modal */}
       {showAttendanceModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+          <div className="glass-modal rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
             <h2 className="text-xl font-bold mb-4">Mark Attendance - {selectedDate}</h2>
             <div className="space-y-3">
               {students.map((student) => (
-                <div key={student.id} className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
+                <div key={student.id} className="flex items-center justify-between p-3 border border-white/10 rounded-lg">
                   <div>
-                    <p className="font-medium text-gray-900">
+                    <p className="font-medium text-white">
                       {student.firstName} {student.lastName}
                     </p>
-                    <p className="text-sm text-gray-600">{student.email}</p>
+                    <p className="text-sm text-gray-300">{student.email}</p>
                   </div>
                   <div className="flex items-center gap-2">
                     <button
@@ -648,7 +648,7 @@ export default function MentorDashboard() {
                       className={`px-3 py-1 rounded text-sm ${
                         attendanceData[student.id] === 'PRESENT'
                           ? 'bg-green-600 text-white'
-                          : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                          : 'bg-white/10 text-white hover:bg-white/20'
                       }`}
                     >
                       Present
@@ -658,7 +658,7 @@ export default function MentorDashboard() {
                       className={`px-3 py-1 rounded text-sm ${
                         attendanceData[student.id] === 'LATE'
                           ? 'bg-yellow-600 text-white'
-                          : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                          : 'bg-white/10 text-white hover:bg-white/20'
                       }`}
                     >
                       Late
@@ -668,7 +668,7 @@ export default function MentorDashboard() {
                       className={`px-3 py-1 rounded text-sm ${
                         attendanceData[student.id] === 'ABSENT'
                           ? 'bg-red-600 text-white'
-                          : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                          : 'bg-white/10 text-white hover:bg-white/20'
                       }`}
                     >
                       Absent
@@ -681,7 +681,7 @@ export default function MentorDashboard() {
             <div className="flex justify-end gap-3 mt-6">
               <button
                 onClick={() => setShowAttendanceModal(false)}
-                className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                className="px-4 py-2 text-white bg-white/10 rounded-lg hover:bg-white/20 transition-colors"
               >
                 Cancel
               </button>
