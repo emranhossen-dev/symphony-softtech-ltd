@@ -32,18 +32,10 @@ export async function GET(request: NextRequest) {
         isActive: true
       },
       include: {
-        enrollments: {
-          where: {
-            enrollmentStatus: 'ADMITTED'
-          }
-        },
+        enrollments: true,
         _count: {
           select: {
-            enrollments: {
-              where: {
-                enrollmentStatus: 'ADMITTED'
-              }
-            }
+            enrollments: true
           }
         }
       },
