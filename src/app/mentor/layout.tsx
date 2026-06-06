@@ -27,7 +27,7 @@ const MentorLayout = ({ children }: MentorLayoutProps) => {
   }
 
   return (
-    <div className="min-h-screen flex" style={{ background: 'linear-gradient(135deg, #0a0e27 0%, #1a1f4c 25%, #0d1b3e 50%, #1a1f4c 75%, #0a0e27 100%)', color: '#f1f5f9' }}>
+    <div className="min-h-screen bg-gradient-to-br from-[#0a0e27] via-[#1a1f4c] to-[#0d1b3e] flex text-white">
       {/* Sidebar */}
       <MentorSidebar
         isOpen={sidebarOpen}
@@ -35,7 +35,7 @@ const MentorLayout = ({ children }: MentorLayoutProps) => {
       />
 
       {/* Main content area */}
-      <div className="flex-1 flex flex-col lg:ml-64">
+      <div className="flex-1 flex flex-col min-w-0">
         {/* Header */}
         <MentorHeader
           onSidebarToggle={() => setSidebarOpen(!sidebarOpen)}
@@ -43,7 +43,7 @@ const MentorLayout = ({ children }: MentorLayoutProps) => {
         />
 
         {/* Page content */}
-        <main className="flex-1 p-6 overflow-auto">
+        <main className="flex-1 p-3 sm:p-4 md:p-6 lg:p-8 overflow-auto">
           {children}
         </main>
       </div>

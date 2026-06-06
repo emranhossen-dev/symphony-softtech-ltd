@@ -10,65 +10,56 @@ interface MentorHeaderProps {
 
 const MentorHeader = ({ onSidebarToggle, sidebarOpen }: MentorHeaderProps) => {
   return (
-    <header className="bg-white shadow-sm border-b border-gray-200 h-16">
-      <div className="px-4 sm:px-6 lg:px-8 h-full">
+    <header className="glass-nav shadow-lg border-b border-purple-500/30 h-16">
+      <div className="px-3 sm:px-4 lg:px-8 h-full">
         <div className="flex items-center justify-between h-full">
-          {/* Left side - Mobile menu button */}
+          {/* Left side - Mobile menu button and Logo */}
           <div className="flex items-center">
             <button
               onClick={onSidebarToggle}
-              className="lg:hidden p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+              className="lg:hidden p-2 rounded-md text-white hover:bg-purple-700 transition-colors"
             >
               {sidebarOpen ? (
-                <X className="w-6 h-6" />
+                <X className="w-5 h-5 sm:w-6 sm:h-6" />
               ) : (
-                <Menu className="w-6 h-6" />
+                <Menu className="w-5 h-5 sm:w-6 sm:h-6" />
               )}
             </button>
+            <div className="hidden sm:flex items-center ml-2 sm:ml-4">
+              <div className="w-7 h-7 sm:w-8 sm:h-8 bg-white rounded-lg flex items-center justify-center mr-2 sm:mr-3">
+                <span className="text-purple-600 font-bold text-xs sm:text-sm">MT</span>
+              </div>
+              <div>
+                <h1 className="text-lg sm:text-xl font-bold text-white">Mentor Dashboard</h1>
+                <p className="text-xs text-purple-100 hidden sm:block">Symphony Institute of Technology</p>
+              </div>
+            </div>
           </div>
 
-          {/* Center - Title */}
-          <div className="hidden sm:block">
-            <h1 className="text-xl font-semibold text-gray-900">Mentor Dashboard</h1>
+          {/* Center - Title for mobile */}
+          <div className="sm:hidden">
+            <h1 className="text-sm font-semibold text-white">Mentor Panel</h1>
           </div>
 
           {/* Right side - User menu */}
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2 sm:space-x-4">
             {/* Notifications */}
-            <button className="p-2 rounded-full text-gray-600 hover:text-gray-900 hover:bg-gray-100 relative">
-              <Bell className="w-6 h-6" />
+            <button className="p-2 rounded-full text-white hover:bg-white/10 relative">
+              <Bell className="w-5 h-5 sm:w-6 sm:h-6" />
               <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
             </button>
 
             {/* Live Session Indicator */}
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-2 bg-white/10 px-3 py-1.5 rounded-full border border-white/20">
               <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-              <span className="text-sm text-gray-600">Live</span>
+              <span className="text-sm text-white hidden sm:inline">Live</span>
             </div>
 
             {/* User menu */}
             <div className="relative">
-              <button className="flex items-center p-2 rounded-full text-gray-600 hover:text-gray-900 hover:bg-gray-100">
-                <User className="w-6 h-6" />
+              <button className="flex items-center p-2 rounded-full text-white hover:bg-white/10 transition-colors border border-white/20">
+                <User className="w-5 h-5 sm:w-6 sm:h-6" />
               </button>
-              
-              {/* Dropdown menu */}
-              <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 hidden">
-                <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                  My Profile
-                </a>
-                <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                  Earnings
-                </a>
-                <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                  Settings
-                </a>
-                <hr className="my-1" />
-                <a href="#" className="block px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center">
-                  <LogOut className="w-4 h-4 mr-2" />
-                  Logout
-                </a>
-              </div>
             </div>
           </div>
         </div>
