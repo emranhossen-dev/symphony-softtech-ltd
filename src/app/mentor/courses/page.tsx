@@ -39,9 +39,7 @@ export default function MentorCourses() {
   }, []);
 
   const handleViewDetails = (courseId: string) => {
-    console.log('View course details:', courseId);
-    // TODO: Implement navigation to course details
-    alert(`Viewing details for course ${courseId}`);
+    window.location.href = `/mentor/courses/${courseId}`;
   };
 
   if (loading) {
