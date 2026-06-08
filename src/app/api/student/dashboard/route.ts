@@ -54,7 +54,7 @@ export const GET = withRateLimit(
               let certificateEligible = false;
               let certificate = null;
               
-              if ((enrollment.enrollmentStatus === 'ADMITTED' || enrollment.enrollmentStatus === 'APPROVED') && enrollment.courseId) {
+              if ((enrollment.enrollmentStatus === 'ADMITTED' || enrollment.enrollmentStatus === 'WAITING') && enrollment.courseId) {
                 // Get actual progress from ModuleProgress
                 try {
                   const moduleProgress = await prisma.moduleProgress.findMany({

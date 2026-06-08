@@ -38,8 +38,16 @@ export default function MentorCourses() {
     fetchCourses();
   }, []);
 
-  const handleViewDetails = (courseId: string) => {
-    window.location.href = `/mentor/courses/${courseId}`;
+  const createSlug = (title: string) => {
+    return title
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '');
+  };
+
+  const handleViewDetails = (course: Course) => {
+    const slug = createSlug(course.name);
+    window.location.href = `/mentor/courses/${slug}`;
   };
 
   if (loading) {
@@ -108,7 +116,7 @@ export default function MentorCourses() {
 
               {/* View Details Button */}
               <button
-                onClick={() => handleViewDetails(course.id)}
+                onClick={() => handleViewDetails(course)}
                 className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-medium rounded-lg hover:from-green-700 hover:to-emerald-700 transition-all"
               >
                 <Eye className="w-4 h-4" />

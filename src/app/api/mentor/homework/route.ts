@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest) {
   try {
     // Get mentor ID from auth token
@@ -71,7 +73,7 @@ export async function GET(request: NextRequest) {
       studentEmail: submission.user.email,
       submittedAt: submission.createdAt.toISOString(),
       status: submission.status,
-      grade: submission.feedback ? (submission.status === 'APPROVED' ? 85 : 0) : undefined,
+      marks: submission.marks,
       feedback: submission.feedback,
       code: submission.code,
       fileUrl: submission.fileUrl,
@@ -85,6 +87,12 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       success: true,
       submissions: transformedSubmissions
+    }, {
+      headers: {
+        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+      }
     });
   } catch (error) {
     console.error('Error fetching homework submissions:', error);

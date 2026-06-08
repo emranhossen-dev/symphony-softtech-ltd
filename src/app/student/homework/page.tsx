@@ -8,8 +8,8 @@ interface HomeworkSubmission {
   title: string;
   courseName: string;
   submittedAt: string;
-  status: 'pending' | 'submitted' | 'under_review' | 'approved' | 'rejected';
-  grade?: number;
+  status: 'PENDING' | 'APPROVED' | 'REJECTED' | 'pending' | 'approved' | 'rejected';
+  marks?: number;
   feedback?: string;
 }
 
@@ -36,7 +36,7 @@ export default function StudentHomework() {
           courseName: sub.course?.title || 'Unknown Course',
           submittedAt: sub.createdAt,
           status: sub.status.toLowerCase() as any,
-          grade: sub.grade,
+          marks: sub.marks,
           feedback: sub.feedback
         }));
         setSubmissions(transformedSubmissions);
@@ -149,7 +149,7 @@ export default function StudentHomework() {
                 <div>
                   <p className="text-xs sm:text-sm font-medium text-gray-600">Under Review</p>
                   <p className="text-xl sm:text-2xl font-bold text-purple-600 mt-1">
-                    {submissions.filter(s => s.status === 'under_review').length}
+                    {submissions.filter(s => s.status === 'PENDING').length}
                   </p>
                 </div>
                 <div className="w-10 h-10 sm:w-12 sm:h-12 bg-purple-100 rounded-xl flex items-center justify-center">
@@ -224,8 +224,8 @@ export default function StudentHomework() {
                         {getStatusBadge(submission.status)}
                       </td>
                       <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900 hidden lg:table-cell">
-                        {submission.grade ? (
-                          <span className="font-semibold">{submission.grade}%</span>
+                        {submission.marks !== undefined ? (
+                          <span className="font-semibold">{submission.marks}/100</span>
                         ) : (
                           <span className="text-gray-400">-</span>
                         )}

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
-import { ArrowLeft, Users, BookOpen, Calendar, Clock, CheckCircle } from 'lucide-react';
+import { ArrowLeft, Users, BookOpen, Calendar, Clock, CheckCircle, FileText, TrendingUp } from 'lucide-react';
 
 interface CourseDetails {
   id: string;
@@ -18,7 +18,7 @@ interface CourseDetails {
 
 export default function CourseDetails() {
   const params = useParams();
-  const courseId = params.id as string;
+  const courseSlug = params.slug as string;
   const [course, setCourse] = useState<CourseDetails | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -26,12 +26,17 @@ export default function CourseDetails() {
     const fetchCourseDetails = async () => {
       setLoading(true);
       try {
-        const response = await fetch(`/api/mentor/courses/${courseId}`, {
+        console.log('Fetching course with slug:', courseSlug);
+        const response = await fetch(`/api/mentor/courses/${courseSlug}`, {
           credentials: 'include'
         });
+        console.log('API Response status:', response.status);
         const data = await response.json();
+        console.log('API Response data:', data);
         if (data.success) {
           setCourse(data.course);
+        } else {
+          console.error('API Error:', data.error);
         }
       } catch (error) {
         console.error('Error fetching course details:', error);
@@ -40,10 +45,10 @@ export default function CourseDetails() {
       }
     };
 
-    if (courseId) {
+    if (courseSlug) {
       fetchCourseDetails();
     }
-  }, [courseId]);
+  }, [courseSlug]);
 
   if (loading) {
     return (
@@ -62,6 +67,14 @@ export default function CourseDetails() {
       </div>
     );
   }
+
+  // Calculate statistics
+  const admittedStudents = course.enrollments?.filter(e => e.enrollmentStatus === 'ADMITTED').length || 0;
+  const appliedStudents = course.enrollments?.filter(e => e.enrollmentStatus === 'APPLIED').length || 0;
+  const completedStudents = course.enrollments?.filter(e => e.enrollmentStatus === 'COMPLETED').length || 0;
+  const totalHomeworkSubmitted = course.enrollments?.reduce((total, enrollment) => {
+    return total + (enrollment.homeworkSubmitted || 0);
+  }, 0) || 0;
 
   return (
     <div className="space-y-6">
@@ -97,15 +110,42 @@ export default function CourseDetails() {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <div className="glass-card p-6">
           <div className="flex items-center gap-3 mb-2">
             <Users className="w-5 h-5 text-blue-400" />
-            <span className="text-gray-400">Enrolled Students</span>
+            <span className="text-gray-400">Total Enrolled</span>
           </div>
           <p className="text-2xl font-bold text-white">{course.enrolledStudents}</p>
         </div>
 
+        <div className="glass-card p-6">
+          <div className="flex items-center gap-3 mb-2">
+            <CheckCircle className="w-5 h-5 text-green-400" />
+            <span className="text-gray-400">Admitted</span>
+          </div>
+          <p className="text-2xl font-bold text-white">{admittedStudents}</p>
+        </div>
+
+        <div className="glass-card p-6">
+          <div className="flex items-center gap-3 mb-2">
+            <FileText className="w-5 h-5 text-yellow-400" />
+            <span className="text-gray-400">Applied</span>
+          </div>
+          <p className="text-2xl font-bold text-white">{appliedStudents}</p>
+        </div>
+
+        <div className="glass-card p-6">
+          <div className="flex items-center gap-3 mb-2">
+            <TrendingUp className="w-5 h-5 text-purple-400" />
+            <span className="text-gray-400">Completed</span>
+          </div>
+          <p className="text-2xl font-bold text-white">{completedStudents}</p>
+        </div>
+      </div>
+
+      {/* Additional Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="glass-card p-6">
           <div className="flex items-center gap-3 mb-2">
             <BookOpen className="w-5 h-5 text-purple-400" />
@@ -116,10 +156,10 @@ export default function CourseDetails() {
 
         <div className="glass-card p-6">
           <div className="flex items-center gap-3 mb-2">
-            <CheckCircle className="w-5 h-5 text-green-400" />
-            <span className="text-gray-400">Enrollments</span>
+            <FileText className="w-5 h-5 text-orange-400" />
+            <span className="text-gray-400">Total Homework Submitted</span>
           </div>
-          <p className="text-2xl font-bold text-white">{course.enrollments?.length || 0}</p>
+          <p className="text-2xl font-bold text-white">{totalHomeworkSubmitted}</p>
         </div>
       </div>
 
@@ -139,13 +179,20 @@ export default function CourseDetails() {
                     <p className="text-sm text-gray-400">{enrollment.email}</p>
                   </div>
                 </div>
-                <span className={`px-3 py-1 text-xs font-medium rounded-full ${
-                  enrollment.enrollmentStatus === 'ADMITTED' || enrollment.enrollmentStatus === 'APPLIED'
-                    ? 'bg-green-500/20 text-green-300 border border-green-500/30'
-                    : 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/30'
-                }`}>
-                  {enrollment.enrollmentStatus}
-                </span>
+                <div className="flex items-center gap-3">
+                  <span className="text-xs text-gray-400">
+                    HW: {enrollment.homeworkSubmitted || 0}
+                  </span>
+                  <span className={`px-3 py-1 text-xs font-medium rounded-full ${
+                    enrollment.enrollmentStatus === 'ADMITTED' || enrollment.enrollmentStatus === 'APPLIED'
+                      ? 'bg-green-500/20 text-green-300 border border-green-500/30'
+                      : enrollment.enrollmentStatus === 'COMPLETED'
+                      ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
+                      : 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/30'
+                  }`}>
+                    {enrollment.enrollmentStatus}
+                  </span>
+                </div>
               </div>
             ))}
           </div>

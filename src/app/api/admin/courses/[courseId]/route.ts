@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { getAuthenticatedUser } from '@/lib/auth';
 
 
 
@@ -9,8 +10,17 @@ export async function GET(
   { params }: { params: Promise<{ courseId: string }> }
 ) {
   let courseId: string = '';
-  
+
   try {
+    // Check authentication
+    const user = await getAuthenticatedUser(request);
+    if (user.role !== 'ADMIN') {
+      return NextResponse.json(
+        { success: false, error: 'Admin access required' },
+        { status: 403 }
+      );
+    }
+
     courseId = (await params).courseId;
 
     const course = await prisma.course.findFirst({
@@ -92,6 +102,15 @@ export async function PUT(
   { params }: { params: Promise<{ courseId: string }> }
 ) {
   try {
+    // Check authentication
+    const user = await getAuthenticatedUser(request);
+    if (user.role !== 'ADMIN') {
+      return NextResponse.json(
+        { success: false, error: 'Admin access required to update courses' },
+        { status: 403 }
+      );
+    }
+
     const { courseId } = await params;
     const body = await request.json();
     const {

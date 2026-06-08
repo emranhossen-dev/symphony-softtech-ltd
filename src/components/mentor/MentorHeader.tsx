@@ -10,7 +10,7 @@ interface MentorHeaderProps {
 
 const MentorHeader = ({ onSidebarToggle, sidebarOpen }: MentorHeaderProps) => {
   return (
-    <header className="glass-nav shadow-lg border-b border-purple-500/30 h-16">
+    <header className="bg-slate-900 shadow-lg border-b border-purple-600 h-16">
       <div className="px-3 sm:px-4 lg:px-8 h-full">
         <div className="flex items-center justify-between h-full">
           {/* Left side - Mobile menu button and Logo */}
@@ -44,20 +44,20 @@ const MentorHeader = ({ onSidebarToggle, sidebarOpen }: MentorHeaderProps) => {
           {/* Right side - User menu */}
           <div className="flex items-center space-x-2 sm:space-x-4">
             {/* Notifications */}
-            <button className="p-2 rounded-full text-white hover:bg-white/10 relative">
+            <button className="p-2 rounded-full text-white hover:bg-slate-700 relative">
               <Bell className="w-5 h-5 sm:w-6 sm:h-6" />
               <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
             </button>
 
             {/* Live Session Indicator */}
-            <div className="flex items-center space-x-2 bg-white/10 px-3 py-1.5 rounded-full border border-white/20">
+            <div className="flex items-center space-x-2 bg-slate-700 px-3 py-1.5 rounded-full border border-slate-600">
               <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
               <span className="text-sm text-white hidden sm:inline">Live</span>
             </div>
 
             {/* User menu */}
             <div className="relative">
-              <button className="flex items-center p-2 rounded-full text-white hover:bg-white/10 transition-colors border border-white/20">
+              <button className="flex items-center p-2 rounded-full text-white hover:bg-slate-700 transition-colors border border-slate-600">
                 <User className="w-5 h-5 sm:w-6 sm:h-6" />
               </button>
             </div>

@@ -33,7 +33,7 @@ const StudentHeader = ({ onSidebarToggle, sidebarOpen }: StudentHeaderProps) => 
   };
 
   return (
-    <header className="glass-nav shadow-lg border-b border-purple-500/30 h-16">
+    <header className="bg-slate-900 shadow-lg border-b border-purple-600 h-16">
       <div className="px-3 sm:px-4 lg:px-8 h-full">
         <div className="flex items-center justify-between h-full">
           {/* Left side - Mobile menu button and Logo */}
@@ -75,7 +75,7 @@ const StudentHeader = ({ onSidebarToggle, sidebarOpen }: StudentHeaderProps) => 
             <div className="relative" ref={dropdownRef}>
               <button 
                 onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
-                className="flex items-center space-x-1 sm:space-x-2 p-1.5 sm:p-2 rounded-lg bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 transition-all duration-200 border border-white/20"
+                className="flex items-center space-x-1 sm:space-x-2 p-1.5 sm:p-2 rounded-lg bg-slate-700 text-white hover:bg-slate-600 transition-all duration-200 border border-slate-600"
               >
                 <div className="w-6 h-6 sm:w-8 sm:h-8 bg-white rounded-full flex items-center justify-center">
                   <User className="w-3 h-3 sm:w-5 sm:h-5 text-green-600" />

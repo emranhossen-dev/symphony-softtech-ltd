@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { FileText, User, Calendar, CheckCircle, XCircle, Clock, Eye } from 'lucide-react';
+import { FileText, Calendar, CheckCircle, XCircle, Clock, Eye } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 interface HomeworkSubmission {
@@ -14,7 +14,7 @@ interface HomeworkSubmission {
   studentEmail: string;
   submittedAt: string;
   status: 'PENDING' | 'APPROVED' | 'REJECTED';
-  grade?: number;
+  marks?: number;
   feedback?: string;
   code?: string;
   fileUrl?: string;
@@ -25,23 +25,44 @@ interface HomeworkSubmission {
 }
 
 export default function MentorHomework() {
+  const router = useRouter();
   const [submissions, setSubmissions] = useState<HomeworkSubmission[]>([]);
   const [loading, setLoading] = useState(true);
-  const router = useRouter();
+  const [refreshKey, setRefreshKey] = useState(Date.now());
 
+  // Fetch on mount and whenever refreshKey changes
   useEffect(() => {
     fetchHomeworkSubmissions();
+  }, [refreshKey]);
+
+  // Refresh when tab becomes visible (after navigating back from detail page)
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        console.log('[HW List] Tab visible, refreshing...');
+        setRefreshKey(Date.now());
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
   }, []);
 
   const fetchHomeworkSubmissions = async () => {
+    console.log('[HW List] Fetching submissions...');
     try {
-      const response = await fetch('/api/mentor/homework', {
-        credentials: 'include'
+      const response = await fetch(`/api/mentor/homework?t=${Date.now()}`, {
+        credentials: 'include',
+        cache: 'no-store'
       });
 
       if (response.ok) {
         const data = await response.json();
+        console.log('[HW List] Fetched:', data.submissions?.length, 'items');
         if (data.success) {
+          // Log each submission status for debugging
+          data.submissions?.forEach((s: any) => {
+            console.log(`[HW List] ${s.studentName}: status=${s.status}`);
+          });
           setSubmissions(data.submissions || []);
         }
       } else {
@@ -85,8 +106,7 @@ export default function MentorHomework() {
   };
 
   const handleView = (submission: HomeworkSubmission) => {
-    // Navigate to dashboard with the homework tab selected and this submission selected
-    router.push(`/mentor/dashboard?tab=homework&submission=${submission.id}`);
+    router.push(`/mentor/homework/${submission.id}`);
   };
 
   if (loading) {
@@ -100,9 +120,20 @@ export default function MentorHomework() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-white">Homework Review</h1>
-        <p className="text-gray-300 mt-1">Review and grade student homework submissions.</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-white">Homework Review</h1>
+          <p className="text-gray-300 mt-1">Review and grade student homework submissions.</p>
+        </div>
+        <button
+          onClick={() => setRefreshKey(Date.now())}
+          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          </svg>
+          Refresh
+        </button>
       </div>
 
       {/* Stats Cards */}

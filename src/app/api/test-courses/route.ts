@@ -28,7 +28,7 @@ export async function GET() {
     console.error('Database error:', error);
     return NextResponse.json({
       success: false,
-      error: error.message
+      error: (error as Error).message
     });
   }
 }

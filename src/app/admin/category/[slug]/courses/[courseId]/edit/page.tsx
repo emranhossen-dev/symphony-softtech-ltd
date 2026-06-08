@@ -115,34 +115,19 @@ const EditCoursePage = () => {
 
   const fetchCourse = async () => {
     try {
-      // Get token from cookie first, then localStorage
-      const cookieToken = document.cookie
-        .split(';')
-        .find(c => c.trim().startsWith('auth-token='))
-        ?.split('=')[1];
-      
-      const localStorageToken = localStorage.getItem('auth-token');
-      const token = cookieToken || localStorageToken;
-      
-      const headers: Record<string, string> = {
-        'Content-Type': 'application/json'
-      };
-      
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-      }
-      
       const response = await fetch(`/api/admin/courses/${courseId}`, {
-        headers: headers
+        credentials: 'include'
       });
-      
+
       if (!response.ok && response.status === 401) {
         console.error('Fetch course - Unauthorized');
+        toast.error('Please login to access this page');
+        window.location.href = '/login';
         return;
       }
-      
+
       const data = await response.json();
-      
+
       if (data.success) {
         const course = data.course;
         setFormData({
@@ -189,25 +174,9 @@ const EditCoursePage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.title || !formData.description) {
       toast.error('Title and description are required');
-      return;
-    }
-
-    // Get token from cookie first, then localStorage
-    const cookieToken = document.cookie
-      .split(';')
-      .find(c => c.trim().startsWith('auth-token='))
-      ?.split('=')[1];
-    
-    const localStorageToken = localStorage.getItem('auth-token');
-    const token = cookieToken || localStorageToken;
-    
-    console.log('Edit course - Token being sent:', !!token, token?.substring(0, 20) + '...');
-    
-    if (!token) {
-      toast.error('Please login to update course');
       return;
     }
 
@@ -217,9 +186,9 @@ const EditCoursePage = () => {
       const response = await fetch(`/api/admin/courses/${courseId}`, {
         method: 'PUT',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          'Content-Type': 'application/json'
         },
+        credentials: 'include',
         body: JSON.stringify(formData),
       });
 
@@ -228,15 +197,13 @@ const EditCoursePage = () => {
       if (!response.ok) {
         const errorText = await response.text();
         console.error('Edit course error:', response.status, errorText);
-        
+
         if (response.status === 401) {
           toast.error('Session expired. Please login again.');
-          // Clear invalid token
-          localStorage.removeItem('auth-token');
-          document.cookie = 'auth-token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+          window.location.href = '/login';
           return;
         }
-        
+
         try {
           const errorData = JSON.parse(errorText);
           toast.error(errorData.error || 'Failed to update course');

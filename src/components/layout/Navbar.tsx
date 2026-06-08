@@ -121,8 +121,8 @@ const Navbar = () => {
                   href={link.href}
                   className={`flex items-center space-x-2 px-6 py-3 rounded-xl text-sm font-bold transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 ${
                     isActive(link.href)
-                      ? "bg-white/20 text-white shadow-lg border border-white/30"
-                      : "text-white/90 hover:bg-white/10 hover:text-white border border-transparent hover:border-white/20"
+                      ? "bg-slate-700 text-white shadow-lg border border-slate-600"
+                      : "text-gray-300 hover:bg-slate-800 hover:text-white border border-transparent hover:border-slate-600"
                   }`}
                   onMouseEnter={() => link.href === "/courses" && setIsDropdownOpen(true)}
                   onMouseLeave={() => link.href === "/courses" && setIsDropdownOpen(false)}
@@ -137,15 +137,14 @@ const Navbar = () => {
                 {/* Premium Dropdown for Courses */}
                 {link.href === "/courses" && (
                   <div
-                    className={`absolute top-full left-0 mt-2 w-56 rounded-xl shadow-2xl z-50 transition-all duration-300 transform ${
+                    className={`absolute top-full left-0 mt-2 w-56 rounded-xl shadow-2xl z-50 transition-all duration-300 transform bg-black border border-slate-700 ${
                       isDropdownOpen ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible translate-y-4'
                     }`}
-                    style={{ backgroundColor: '#000000' }}
                     onMouseEnter={() => setIsDropdownOpen(true)}
                     onMouseLeave={() => setIsDropdownOpen(false)}>
-                    <div className="p-2 space-y-1 bg-black rounded-xl w-full">
+                    <div className="p-2 space-y-1 rounded-xl w-full">
                       {courseCategories.map((category) => (
-                        <a key={category.href} href={category.href} className="flex items-center space-x-2 p-2 rounded-lg hover:bg-gradient-to-r hover:from-purple-600/20 hover:to-indigo-600/20 transition-all duration-300 group">
+                        <a key={category.href} href={category.href} className="flex items-center space-x-2 p-2 rounded-lg hover:bg-slate-700 transition-all duration-300 group">
                           <div className={`w-7 h-7 bg-gradient-to-r ${category.color} rounded-lg flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300 flex-shrink-0`}>
                             {category.icon}
                           </div>
@@ -166,7 +165,7 @@ const Navbar = () => {
             <ThemeToggler />
             <Link
               href="/login"
-              className="group flex items-center space-x-3 px-6 py-3 text-sm font-bold text-white border-2 border-white/50 rounded-xl hover:border-white hover:bg-white/10 transition-all duration-300 transform hover:scale-105 hover:-translate-y-1"
+              className="group flex items-center space-x-3 px-6 py-3 text-sm font-bold text-white border-2 border-slate-500 rounded-xl hover:border-white hover:bg-slate-700 transition-all duration-300 transform hover:scale-105 hover:-translate-y-1"
             >
               <LogIn className="w-5 h-5 group-hover:rotate-12 transition-transform duration-300" />
               <span>Login</span>
@@ -177,7 +176,7 @@ const Navbar = () => {
           <div className="xl:hidden">
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="relative p-3 rounded-xl text-white hover:bg-white/10 focus:outline-none transition-all duration-300 transform hover:scale-105 z-50"
+              className="relative p-3 rounded-xl text-white hover:bg-slate-700 focus:outline-none transition-all duration-300 transform hover:scale-105 z-50"
             >
               <div className="relative w-7 h-7">
                 {isMenuOpen ? (
@@ -186,14 +185,14 @@ const Navbar = () => {
                   <Menu className="h-7 w-7" />
                 )}
               </div>
-              <div className={`absolute inset-0 bg-white/20 rounded-xl opacity-0 ${isMenuOpen ? 'opacity-100' : ''} transition-opacity duration-300`}></div>
+              <div className={`absolute inset-0 bg-slate-600 rounded-xl opacity-0 ${isMenuOpen ? 'opacity-100' : ''} transition-opacity duration-300`}></div>
             </button>
           </div>
         </div>
 
         {/* Premium Mobile Menu */}
         {isMenuOpen && (
-          <div className="xl:hidden border-t border-purple-500/30 bg-black rounded-b-3xl shadow-2xl absolute top-full left-0 right-0 z-50">
+          <div className="xl:hidden border-t border-purple-600 bg-black rounded-b-3xl shadow-2xl absolute top-full left-0 right-0 z-50">
             <div className="px-4 py-6 space-y-2">
               {navLinks.map((link) => (
                 <div key={link.href}>
@@ -210,7 +209,7 @@ const Navbar = () => {
                     className={`flex items-center justify-between px-4 py-4 rounded-xl text-base font-bold transition-all duration-300 transform hover:scale-105 hover:-translate-x-1 ${
                       isActive(link.href)
                         ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-lg"
-                        : "text-gray-200 hover:bg-gradient-to-r hover:from-purple-600/20 hover:to-indigo-600/20 hover:text-white"
+                        : "text-gray-200 hover:bg-slate-700 hover:text-white"
                     }`}
                   >
                     <div className="flex items-center space-x-4">
@@ -224,13 +223,13 @@ const Navbar = () => {
                   
                   {/* Mobile Course Dropdown */}
                   {link.href === "/courses" && isMobileCourseDropdownOpen && (
-                    <div className="ml-4 mt-2 space-y-2 pl-4 border-l-2 border-purple-500/30">
+                    <div className="ml-4 mt-2 space-y-2 pl-4 border-l-2 border-purple-600">
                       {courseCategories.map((category) => (
                         <a
                           key={category.href}
                           href={category.href}
                           onClick={() => setIsMenuOpen(false)}
-                          className="flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium text-gray-300 hover:bg-gradient-to-r hover:from-emerald-600/20 hover:to-teal-600/20 hover:text-white transition-all duration-300"
+                          className="flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium text-gray-300 hover:bg-slate-700 hover:text-white transition-all duration-300"
                         >
                           <div className={`w-8 h-8 bg-gradient-to-r ${category.color} rounded-lg flex items-center justify-center shadow-lg`}>
                             {category.icon}
@@ -243,7 +242,7 @@ const Navbar = () => {
                 </div>
               ))}
 
-              <div className="pt-6 mt-6 border-t border-purple-500/30">
+              <div className="pt-6 mt-6 border-t border-purple-600">
                 <div className="flex items-center justify-between mb-4 px-4">
                   <span className="text-sm font-medium text-gray-400">Theme</span>
                   <ThemeToggler />

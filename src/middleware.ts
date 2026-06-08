@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function middleware(request: NextRequest) {
-  console.log('🔥 MIDDLEWARE CALLED for:', request.nextUrl.pathname);
-  
   const { pathname } = request.nextUrl;
 
   // Public routes that don't require authentication
@@ -33,13 +31,11 @@ export async function middleware(request: NextRequest) {
 
   // If it's a public route, allow access
   if (isPublicRoute) {
-    console.log(`✅ Public route allowed: ${pathname}`);
     return NextResponse.next();
   }
 
   // Skip middleware for API routes that aren't specifically protected
   if (pathname.startsWith('/api/') && !pathname.startsWith('/api/admin/') && !pathname.startsWith('/api/student/') && !pathname.startsWith('/api/mentor/') && !pathname.startsWith('/api/employee/')) {
-    console.log(`✅ API route allowed: ${pathname}`);
     return NextResponse.next();
   }
 
@@ -61,7 +57,6 @@ export async function middleware(request: NextRequest) {
 
   // If it's a protected route and user is not authenticated, redirect to login
   if (isProtectedRoute && !token) {
-    console.log(`🚫 Protected route ${pathname} accessed without token, redirecting to login`);
     return NextResponse.redirect(new URL('/login', request.url));
   }
 
@@ -82,7 +77,6 @@ export async function middleware(request: NextRequest) {
       }
       
       const { user } = await authResponse.json();
-      console.log(`✅ Token verified for user ${user.email}, role: ${user.role}`);
 
       // Add user info to request headers for downstream use
       const requestHeaders = new Headers(request.headers);
@@ -124,11 +118,9 @@ export async function middleware(request: NextRequest) {
       }
 
       if (!hasAccess) {
-        console.log(`🚫 User ${user.email} with role ${user.role} denied access to ${pathname} (requires ${requiredRole})`);
         return NextResponse.redirect(new URL('/unauthorized', request.url));
       }
 
-      console.log(`✅ Access granted to ${pathname} for user ${user.email}`);
       return NextResponse.next({
         request: {
           headers: requestHeaders,
@@ -136,8 +128,6 @@ export async function middleware(request: NextRequest) {
       });
       
     } catch (error) {
-      console.error(`❌ Middleware auth error for ${pathname}:`, error instanceof Error ? error.message : 'Unknown error');
-      
       // Clear invalid token and redirect to login
       const response = NextResponse.redirect(new URL('/login', request.url));
       response.cookies.set('auth-token', '', {
@@ -152,7 +142,6 @@ export async function middleware(request: NextRequest) {
   }
 
   // If no token and not public route, redirect to login
-  console.log(`🚫 No token for ${pathname}, redirecting to login`);
   return NextResponse.redirect(new URL('/login', request.url));
 }
 

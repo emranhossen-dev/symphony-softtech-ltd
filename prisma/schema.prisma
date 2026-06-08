@@ -265,6 +265,7 @@ model HomeworkSubmission {
   fileUrl    String?
   status     HomeworkStatus @default(PENDING)
   feedback   String?
+  marks      Int?
   mentorId   String?
   reviewedAt DateTime?
   createdAt  DateTime       @default(now())

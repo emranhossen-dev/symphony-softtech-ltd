@@ -4,13 +4,13 @@ import { AuthError, verifyToken, getUserFromToken } from '@/lib/auth';
 
 
 
-// POST /api/courses/[courseId]/enroll - Enroll in course
+// POST /api/courses/[slug]/enroll - Enroll in course
 export async function POST(
   request: NextRequest,
-  { params }: { params: Promise<{ courseId: string }> }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
-    const { courseId } = await params;
+    const { slug: courseId } = await params;
 
     // Get authentication token from header or cookie
     const token = request.headers.get('Authorization')?.replace('Bearer ', '') || 

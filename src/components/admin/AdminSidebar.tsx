@@ -4,48 +4,49 @@ import { useState, useEffect, useMemo } from 'react';
 import { useParams, useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
-// Import lucide-react icons individually to avoid module resolution issues
-import LayoutDashboard from 'lucide-react/dist/esm/icons/layout-dashboard';
-import Users from 'lucide-react/dist/esm/icons/users';
-import BookOpen from 'lucide-react/dist/esm/icons/book-open';
-import DollarSign from 'lucide-react/dist/esm/icons/dollar-sign';
-import Settings from 'lucide-react/dist/esm/icons/settings';
-import HelpCircle from 'lucide-react/dist/esm/icons/help-circle';
-import ChevronDown from 'lucide-react/dist/esm/icons/chevron-down';
-import ChevronRight from 'lucide-react/dist/esm/icons/chevron-right';
-import ChevronLeft from 'lucide-react/dist/esm/icons/chevron-left';
-import Plus from 'lucide-react/dist/esm/icons/plus';
-import GraduationCap from 'lucide-react/dist/esm/icons/graduation-cap';
-import Award from 'lucide-react/dist/esm/icons/award';
-import Target from 'lucide-react/dist/esm/icons/target';
-import BarChart3 from 'lucide-react/dist/esm/icons/bar-chart-3';
-import FileText from 'lucide-react/dist/esm/icons/file-text';
-import Calendar from 'lucide-react/dist/esm/icons/calendar';
-import Clock from 'lucide-react/dist/esm/icons/clock';
-import Star from 'lucide-react/dist/esm/icons/star';
-import TrendingUp from 'lucide-react/dist/esm/icons/trending-up';
-import UserCheck from 'lucide-react/dist/esm/icons/user-check';
-import UserPlus from 'lucide-react/dist/esm/icons/user-plus';
-import Building from 'lucide-react/dist/esm/icons/building';
-import Monitor from 'lucide-react/dist/esm/icons/monitor';
-import PlayCircle from 'lucide-react/dist/esm/icons/play-circle';
-import Search from 'lucide-react/dist/esm/icons/search';
-import Bell from 'lucide-react/dist/esm/icons/bell';
-import Activity from 'lucide-react/dist/esm/icons/activity';
-import Filter from 'lucide-react/dist/esm/icons/filter';
-import Download from 'lucide-react/dist/esm/icons/download';
-import Upload from 'lucide-react/dist/esm/icons/upload';
-import RefreshCw from 'lucide-react/dist/esm/icons/refresh-cw';
-import AlertCircle from 'lucide-react/dist/esm/icons/alert-circle';
-import CheckCircle from 'lucide-react/dist/esm/icons/check-circle';
-import Menu from 'lucide-react/dist/esm/icons/menu';
-import X from 'lucide-react/dist/esm/icons/x';
-import LogOut from 'lucide-react/dist/esm/icons/log-out';
-import Shield from 'lucide-react/dist/esm/icons/shield';
-import User from 'lucide-react/dist/esm/icons/user';
-import Phone from 'lucide-react/dist/esm/icons/phone';
-import MessageCircle from 'lucide-react/dist/esm/icons/message-circle';
-import Quote from 'lucide-react/dist/esm/icons/quote';
+import {
+  LayoutDashboard,
+  Users,
+  BookOpen,
+  DollarSign,
+  Settings,
+  HelpCircle,
+  ChevronDown,
+  ChevronRight,
+  ChevronLeft,
+  Plus,
+  GraduationCap,
+  Award,
+  Target,
+  BarChart3,
+  FileText,
+  Calendar,
+  Clock,
+  Star,
+  TrendingUp,
+  UserCheck,
+  UserPlus,
+  Building,
+  Monitor,
+  PlayCircle,
+  Search,
+  Bell,
+  Activity,
+  Filter,
+  Download,
+  Upload,
+  RefreshCw,
+  AlertCircle,
+  CheckCircle,
+  Menu,
+  X,
+  LogOut,
+  Shield,
+  User,
+  Phone,
+  MessageCircle,
+  Quote
+} from 'lucide-react';
 
 interface MenuItem {
   title: string;

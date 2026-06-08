@@ -56,19 +56,27 @@ export function verifyToken(token: string): JWTPayload {
 
 /* ---------------- COOKIE AUTH ---------------- */
 
-export async function getAuthToken(): Promise<string> {
+export async function getAuthToken(request?: Request): Promise<string> {
   const cookieStore = await cookies();
   const token = cookieStore.get("auth-token")?.value;
 
-  if (!token) {
-    throw new AuthError("Not authenticated", 401);
+  if (token) {
+    return token;
   }
 
-  return token;
+  // If no cookie, check Authorization header from request
+  if (request) {
+    const authHeader = request.headers.get("authorization");
+    if (authHeader && authHeader.startsWith("Bearer ")) {
+      return authHeader.substring(7);
+    }
+  }
+
+  throw new AuthError("Not authenticated", 401);
 }
 
-export async function getAuthenticatedUser(): Promise<JWTPayload> {
-  const token = await getAuthToken();
+export async function getAuthenticatedUser(request?: Request): Promise<JWTPayload> {
+  const token = await getAuthToken(request);
   return verifyToken(token);
 }
 
