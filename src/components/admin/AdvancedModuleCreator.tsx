@@ -135,7 +135,7 @@ export default function AdvancedModuleCreator({
       title: '',
       videoUrl: '',
       homework: '',
-      isLocked: true,
+      isLocked: false,
       order: index !== undefined ? index + 1 : modules.length + 1
     };
 

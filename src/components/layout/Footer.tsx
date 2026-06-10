@@ -45,11 +45,11 @@ const Footer = () => {
     return `${baseClass} ${isActive(path) ? activeClass : ""}`;
   };
   return (
-    <footer className="relative bg-slate-950 text-white overflow-hidden">
+    <footer className="relative bg-black text-white overflow-hidden" style={{ backgroundColor: '#000' }}>
       {/* Background Effects */}
       <div className="absolute inset-0">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-purple-900 rounded-full mix-blend-multiply filter blur-3xl opacity-5 animate-pulse"></div>
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-900 rounded-full mix-blend-multiply filter blur-3xl opacity-5 animate-pulse delay-1000"></div>
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-black rounded-full mix-blend-normal filter blur-3xl opacity-20"></div>
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-black rounded-full mix-blend-normal filter blur-3xl opacity-20"></div>
       </div>
       
       <div className="container mx-auto px-4 py-16 relative z-10">

@@ -27,6 +27,20 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [mounted]);
 
+  // Force nav background to solid black (use setProperty with important to beat broad overrides)
+  useEffect(() => {
+    const navEl = document.querySelector('nav');
+    if (navEl) {
+      try {
+        navEl.style.setProperty('background-color', 'var(--solid-bg-nav)', 'important');
+        navEl.style.setProperty('background-image', 'none', 'important');
+        navEl.style.setProperty('opacity', '1', 'important');
+      } catch (e) {
+        // ignore
+      }
+    }
+  }, [isScrolled, mounted]);
+
   // Lock body scroll when mobile menu is open
   useEffect(() => {
     if (isMenuOpen) {
@@ -89,8 +103,8 @@ const Navbar = () => {
   return (
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 overflow-visible ${
       isScrolled 
-        ? "bg-slate-900 shadow-2xl" 
-        : "bg-slate-900 shadow-xl"
+        ? "bg-[#0a0e27] bg-opacity-100 shadow-2xl" 
+        : "bg-[#0a0e27] bg-opacity-100 shadow-xl"
     }`}>
       <div className="container mx-auto px-4 overflow-visible">
         <div className="flex justify-between items-center h-18">
@@ -137,7 +151,7 @@ const Navbar = () => {
                 {/* Premium Dropdown for Courses */}
                 {link.href === "/courses" && (
                   <div
-                    className={`absolute top-full left-0 mt-2 w-56 rounded-xl shadow-2xl z-50 transition-all duration-300 transform bg-black border border-slate-700 ${
+                    className={`absolute top-full left-0 mt-2 w-56 rounded-xl shadow-2xl z-50 transition-all duration-300 transform bg-[#0a0e27] nav-dropdown border border-slate-700 ${
                       isDropdownOpen ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible translate-y-4'
                     }`}
                     onMouseEnter={() => setIsDropdownOpen(true)}
@@ -192,7 +206,7 @@ const Navbar = () => {
 
         {/* Premium Mobile Menu */}
         {isMenuOpen && (
-          <div className="xl:hidden border-t border-purple-600 bg-black rounded-b-3xl shadow-2xl absolute top-full left-0 right-0 z-50">
+          <div className="xl:hidden border-t border-purple-600 bg-[#0a0e27] nav-dropdown rounded-b-3xl shadow-2xl absolute top-full left-0 right-0 z-50">
             <div className="px-4 py-6 space-y-2">
               {navLinks.map((link) => (
                 <div key={link.href}>

@@ -151,6 +151,7 @@ html body .text-cyan-600 {
 :root {
   --solid-bg-card: #0d1b3e;
   --solid-bg-nav: #0a0e27;
+  --solid-footer: #000000;
   --solid-bg-modal: #0a0e27;
   --solid-bg-button: #1a1f4c;
   --solid-bg-input: #1a1f4c;
@@ -282,6 +283,27 @@ html body .text-cyan-600 {
 
 .glass-input::placeholder {
   color: #94a3b8;
+}
+
+/* Fix: force navbar and dropdowns opaque (override broad transparent rule) */
+nav,
+nav .nav-dropdown,
+nav .nav-dropdown * {
+  background-color: var(--solid-bg-nav) !important;
+  background-image: none !important;
+}
+
+/* Force footer to be extra dark (black-like) and disable blending/blur */
+footer,
+footer * {
+  background: #000 !important;
+  background-color: #000 !important;
+  background-image: none !important;
+  background-blend-mode: normal !important;
+  mix-blend-mode: normal !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  opacity: 1 !important;
 }
 
 

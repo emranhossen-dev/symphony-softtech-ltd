@@ -511,13 +511,18 @@ const CourseDetailPage = () => {
     
     console.log('Final video URL to be used:', finalVideoUrl);
     
-    const previewModules = modules.filter((_, index) => isPreviewModule(modules[index], index));
+    const playableModules = modules.filter((module, idx) => {
+      const isPreview = isPreviewModule(module, idx);
+      return isPreview || !module.isLocked;
+    });
+    const currentPlaylistIndex = playableModules.findIndex((module) => module.id === modules[moduleIndex]?.id);
+
     setVideoModal({
       isOpen: true,
       videoUrl: finalVideoUrl,
       title,
-      currentModuleIndex: moduleIndex,
-      playlist: previewModules,
+      currentModuleIndex: currentPlaylistIndex >= 0 ? currentPlaylistIndex : 0,
+      playlist: playableModules,
       isPlaying: false,
       currentTime: 0,
       duration: 0,
@@ -1121,7 +1126,7 @@ const CourseDetailPage = () => {
               <div className="divide-y divide-purple-500/20">
                 {modules.map((module, index) => {
                   const isPreview = isPreviewModule(module, index);
-                  const isLocked = !isPreview && !enrolledModules.has(module.id);
+                  const isLocked = !isPreview && module.isLocked;
 
                   return (
                     <div key={module.id} className="p-6 hover:bg-purple-900/20 transition-colors group">
@@ -1155,13 +1160,13 @@ const CourseDetailPage = () => {
                         </div>
 
                         <div className="flex items-center gap-3">
-                          {module.videoUrl && isPreview && (
+                          {module.videoUrl && !isLocked && (
                             <Button
-                              onClick={() => openVideoModal(module.videoUrl!, module.title)}
+                              onClick={() => openVideoModal(module.videoUrl!, module.title, index)}
                               className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-4 py-2 rounded-xl font-bold transition-all duration-300 shadow-lg text-sm"
                             >
                               <Play className="w-4 h-4 mr-1" />
-                              Preview
+                              {isPreview ? 'Preview' : 'Watch'}
                             </Button>
                           )}
                           {isLocked ? (

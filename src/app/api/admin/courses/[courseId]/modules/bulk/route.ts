@@ -63,7 +63,7 @@ export async function POST(
               title: module.title.trim(),
               videoUrl: module.videoUrl || '',
               homework: module.homework || '',
-              isLocked: module.isLocked !== undefined ? module.isLocked : true,
+              isLocked: module.isLocked !== undefined ? module.isLocked : false,
               order: startOrder + index,
               courseId
             }

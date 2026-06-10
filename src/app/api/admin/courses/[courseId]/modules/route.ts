@@ -171,7 +171,7 @@ export async function POST(
           videoUrl,
           homework,
           order: nextOrder,
-          isLocked: true
+          isLocked: body.isLocked !== undefined ? body.isLocked : false
         }
       });
 
@@ -191,7 +191,7 @@ export async function POST(
         videoUrl: videoUrl || '',
         homework: homework || '',
         order: 1,
-        isLocked: true,
+        isLocked: body.isLocked !== undefined ? body.isLocked : false,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
       };
