@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, use } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { Search, ChevronLeft, ChevronRight, FileText, Download, BookOpen, Play, Menu, X } from 'lucide-react';
 
@@ -36,9 +36,9 @@ interface Course {
   };
 }
 
-export default function CourseLearnPage({ params }: { params: Promise<{ slug: string }> }) {
-  const resolvedParams = use(params);
-  const courseSlug = resolvedParams.slug;
+export default function CourseLearnPage() {
+  const params = useParams();
+  const courseSlug = params?.slug as string;
 
   const [course, setCourse] = useState<Course | null>(null);
   const [modules, setModules] = useState<Module[]>([]);
@@ -89,6 +89,10 @@ export default function CourseLearnPage({ params }: { params: Promise<{ slug: st
   }, [unlockedModules, course?.slug]);
 
   const fetchCourse = async () => {
+    if (!courseSlug) {
+      console.log('No courseSlug available to fetch course');
+      return;
+    }
     try {
       console.log('Fetching course with slug:', courseSlug);
       const response = await fetch(`/api/courses/${courseSlug}`, {
@@ -134,17 +138,7 @@ export default function CourseLearnPage({ params }: { params: Promise<{ slug: st
     }
   };
 
-  useEffect(() => {
-    fetchCourse();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [courseSlug]);
-
-  useEffect(() => {
-    if (course?.slug) {
-      fetchModules();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [course]);
+  // Removed duplicate useEffect hooks to prevent redundant API fetches
 
   const handleBack = () => {
     window.location.href = '/student/dashboard';
@@ -476,7 +470,7 @@ export default function CourseLearnPage({ params }: { params: Promise<{ slug: st
                           console.log('Course ID from module:', currentModule.courseId);
                           console.log('Course ID from course object:', course?.id);
                           console.log('Final Course ID:', courseId);
-                          window.location.href = `/student/playground?moduleId=${currentModule.id}&courseId=${courseId}`;
+                          window.location.href = `/student/playground?moduleId=${currentModule.id}&courseId=${courseId}&courseSlug=${course?.slug}`;
                         }}
                         className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium"
                       >

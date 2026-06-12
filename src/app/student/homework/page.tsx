@@ -11,11 +11,13 @@ interface HomeworkSubmission {
   status: 'PENDING' | 'APPROVED' | 'REJECTED' | 'pending' | 'approved' | 'rejected';
   marks?: number;
   feedback?: string;
+  code?: string;
 }
 
 export default function StudentHomework() {
   const [submissions, setSubmissions] = useState<HomeworkSubmission[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedSubmission, setSelectedSubmission] = useState<HomeworkSubmission | null>(null);
 
   useEffect(() => {
     fetchSubmissions();
@@ -37,7 +39,8 @@ export default function StudentHomework() {
           submittedAt: sub.createdAt,
           status: sub.status.toLowerCase() as any,
           marks: sub.marks,
-          feedback: sub.feedback
+          feedback: sub.feedback,
+          code: sub.code
         }));
         setSubmissions(transformedSubmissions);
       }
@@ -197,6 +200,9 @@ export default function StudentHomework() {
                     <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">
                       Grade
                     </th>
+                    <th className="px-4 sm:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Action
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-100">
@@ -230,6 +236,15 @@ export default function StudentHomework() {
                           <span className="text-gray-400">-</span>
                         )}
                       </td>
+                      <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <button
+                          onClick={() => setSelectedSubmission(submission)}
+                          className="text-blue-600 hover:text-blue-900 bg-blue-50 hover:bg-blue-100 p-2 rounded-lg transition-colors inline-flex items-center"
+                          title="View Homework"
+                        >
+                          <Eye className="w-5 h-5" />
+                        </button>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -245,6 +260,88 @@ export default function StudentHomework() {
               </div>
               <h3 className="text-lg font-medium text-gray-900 mb-2">No submissions yet</h3>
               <p className="text-gray-600 text-sm sm:text-base">You haven't submitted any homework assignments yet.</p>
+            </div>
+          )}
+
+          {/* View Homework Modal */}
+          {selectedSubmission && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+              <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col animate-in zoom-in-95 duration-200">
+                <div className="flex items-center justify-between p-6 border-b border-gray-100 bg-gray-50/50">
+                  <div>
+                    <h3 className="text-xl font-bold text-gray-900">{selectedSubmission.title}</h3>
+                    <p className="text-sm text-gray-500 mt-1">{selectedSubmission.courseName}</p>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    {getStatusBadge(selectedSubmission.status)}
+                    <button
+                      onClick={() => setSelectedSubmission(null)}
+                      className="text-gray-400 hover:text-gray-600 p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+                
+                <div className="flex-1 overflow-y-auto p-6 space-y-6">
+                  {/* Info Row */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                      <p className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Submitted On</p>
+                      <p className="text-gray-900 font-medium flex items-center gap-2">
+                        <Calendar className="w-4 h-4 text-gray-400" />
+                        {new Date(selectedSubmission.submittedAt).toLocaleDateString()} at {new Date(selectedSubmission.submittedAt).toLocaleTimeString()}
+                      </p>
+                    </div>
+                    {selectedSubmission.marks !== undefined && (
+                      <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                        <p className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Grade</p>
+                        <p className="text-gray-900 font-medium text-lg">
+                          {selectedSubmission.marks} <span className="text-sm text-gray-500 font-normal">/ 100</span>
+                        </p>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Feedback Section */}
+                  {selectedSubmission.feedback && (
+                    <div className="bg-blue-50/50 rounded-xl p-4 border border-blue-100">
+                      <p className="text-sm font-medium text-blue-900 mb-2">Mentor Feedback</p>
+                      <p className="text-blue-800 text-sm whitespace-pre-wrap">{selectedSubmission.feedback}</p>
+                    </div>
+                  )}
+
+                  {/* Code Section */}
+                  <div>
+                    <p className="text-sm font-medium text-gray-900 mb-2">Submitted Code</p>
+                    <div className="bg-gray-900 rounded-xl overflow-hidden border border-gray-800">
+                      <div className="flex items-center px-4 py-2 border-b border-gray-800 bg-gray-900/50">
+                        <div className="flex gap-1.5">
+                          <div className="w-3 h-3 rounded-full bg-red-500/20 border border-red-500/50"></div>
+                          <div className="w-3 h-3 rounded-full bg-yellow-500/20 border border-yellow-500/50"></div>
+                          <div className="w-3 h-3 rounded-full bg-green-500/20 border border-green-500/50"></div>
+                        </div>
+                      </div>
+                      <div className="p-4 overflow-x-auto">
+                        <pre className="text-gray-300 font-mono text-sm leading-relaxed">
+                          {selectedSubmission.code || 'No code provided.'}
+                        </pre>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="p-6 border-t border-gray-100 bg-gray-50/50 flex justify-end">
+                  <button
+                    onClick={() => setSelectedSubmission(null)}
+                    className="px-6 py-2.5 bg-gray-900 text-white font-medium rounded-xl hover:bg-gray-800 transition-colors shadow-sm"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
             </div>
           )}
         </>
