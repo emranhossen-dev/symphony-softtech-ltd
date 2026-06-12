@@ -27,13 +27,15 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [mounted]);
 
-  // Force nav background to solid black (use setProperty with important to beat broad overrides)
+  // Force nav background to solid dark blue and remove glass effect
   useEffect(() => {
     const navEl = document.querySelector('nav');
     if (navEl) {
       try {
-        navEl.style.setProperty('background-color', 'var(--solid-bg-nav)', 'important');
+        navEl.style.setProperty('background-color', '#0a0e27', 'important');
         navEl.style.setProperty('background-image', 'none', 'important');
+        navEl.style.setProperty('backdrop-filter', 'none', 'important');
+        navEl.style.setProperty('-webkit-backdrop-filter', 'none', 'important');
         navEl.style.setProperty('opacity', '1', 'important');
       } catch (e) {
         // ignore

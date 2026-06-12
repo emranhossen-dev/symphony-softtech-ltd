@@ -33,11 +33,8 @@ img {
   height: auto;
 }
 
-/* Dark Theme Overrides - Force dark mode everywhere */
-html body *:not(.solid-modal-bg):not(.solid-modal-bg *):not(.keep-bg):not(.keep-bg *):not(select):not(option):not(input):not(textarea):not(button):not(nav):not(nav *):not(.nav-dropdown):not(.nav-dropdown *) {
-  background-color: #0d1b3e !important;
-}
 
+/* Dark Theme Overrides - Solid Modal Background */
 .solid-modal-bg {
   background-color: #0d1b3e !important;
   background-image: none !important;
@@ -292,12 +289,15 @@ html body .text-cyan-600 {
   color: #94a3b8;
 }
 
-/* Fix: force navbar and dropdowns opaque (override broad transparent rule) */
+/* Fix: force navbar and dropdowns opaque (override broad transparent rule) and remove glass effect */
 nav,
 nav .nav-dropdown,
 nav .nav-dropdown * {
-  background-color: var(--solid-bg-nav) !important;
+  background-color: #0a0e27 !important;
   background-image: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  opacity: 1 !important;
 }
 
 /* Force footer to be extra dark (black-like) and disable blending/blur */
