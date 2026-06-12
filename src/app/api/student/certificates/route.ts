@@ -1,65 +1,81 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { verifyToken } from '@/lib/auth';
+import { prisma } from '@/lib/prisma';
 
-// Get student certificates
+// Get student certificates and eligible courses
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
-    const { status, search } = {
-      status: searchParams.get('status') || 'all',
-      search: searchParams.get('search') || ''
-    };
+    const token = request.cookies.get('auth-token')?.value;
 
-    // Mock data - in real app, fetch from database
-    const certificates = [
-      {
-        id: '1',
-        studentName: 'John Doe',
-        courseName: 'Web Development Fundamentals',
-        completionDate: '2024-01-15T10:00:00Z',
-        instructorName: 'John Smith',
-        duration: '8 weeks',
-        grade: 'A',
-        verificationId: 'CERT-2024-ABC123',
-        certificateUrl: '/certificates/verify/CERT-2024-ABC123',
-        pdfUrl: '/certificates/download/CERT-2024-ABC123.pdf',
-        isDownloaded: true,
-        createdAt: '2024-01-15T10:00:00Z'
-      },
-      {
-        id: '2',
-        studentName: 'John Doe',
-        courseName: 'Advanced JavaScript',
-        completionDate: '2024-01-20T14:30:00Z',
-        instructorName: 'Jane Smith',
-        duration: '6 weeks',
-        grade: 'B+',
-        verificationId: 'CERT-2024-DEF456',
-        certificateUrl: '/certificates/verify/CERT-2024-DEF456',
-        pdfUrl: '/certificates/download/CERT-2024-DEF456.pdf',
-        isDownloaded: false,
-        createdAt: '2024-01-20T14:30:00Z'
-      }
-    ];
-
-    // Apply filters
-    let filteredCertificates = certificates;
-    
-    if (status !== 'all') {
-      filteredCertificates = filteredCertificates.filter(cert => 
-        status === 'downloaded' ? cert.isDownloaded : !cert.isDownloaded
-      );
+    if (!token) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-    
-    if (search) {
-      filteredCertificates = filteredCertificates.filter(cert =>
-        cert.studentName.toLowerCase().includes(search.toLowerCase()) ||
-        cert.courseName.toLowerCase().includes(search.toLowerCase())
-      );
+
+    const user = verifyToken(token);
+
+    if (user.role !== 'STUDENT') {
+      return NextResponse.json({ error: 'Access denied' }, { status: 403 });
+    }
+
+    // Fetch existing certificates
+    const certificates = await prisma.certificate.findMany({
+      where: { userId: user.id },
+      include: {
+        course: {
+          select: {
+            title: true,
+            slug: true,
+            thumbnail: true,
+            duration: true,
+            mentor: { select: { name: true } }
+          }
+        }
+      },
+      orderBy: { issuedAt: 'desc' }
+    });
+
+    // Determine eligible courses
+    const enrolledCourses = await prisma.course.findMany({
+      where: {
+        enrollments: {
+          some: { userId: user.id }
+        }
+      },
+      include: {
+        modules: true,
+        homeworkSubmissions: {
+          where: { userId: user.id }
+        }
+      }
+    });
+
+    const existingCertCourseIds = new Set(certificates.map(c => c.courseId));
+    const eligibleCourses = [];
+
+    for (const course of enrolledCourses) {
+      if (existingCertCourseIds.has(course.id)) continue;
+
+      const homeworkModules = course.modules.filter(m => m.homework && m.homework.trim() !== '');
+      if (homeworkModules.length > 0) {
+        const submittedModuleIds = new Set(course.homeworkSubmissions.map(s => s.moduleId));
+        
+        // Check if student submitted homework for EVERY homework module
+        const allSubmitted = homeworkModules.every(m => submittedModuleIds.has(m.id));
+        if (allSubmitted) {
+          eligibleCourses.push({
+            id: course.id,
+            title: course.title,
+            slug: course.slug,
+            thumbnail: course.thumbnail,
+          });
+        }
+      }
     }
 
     return NextResponse.json({
       success: true,
-      certificates: filteredCertificates
+      certificates,
+      eligibleCourses
     });
   } catch (error) {
     console.error('Error fetching certificates:', error);
@@ -70,9 +86,21 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// Generate new certificate
+// Request new certificate
 export async function POST(request: NextRequest) {
   try {
+    const token = request.cookies.get('auth-token')?.value;
+
+    if (!token) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const user = verifyToken(token);
+
+    if (user.role !== 'STUDENT') {
+      return NextResponse.json({ error: 'Access denied' }, { status: 403 });
+    }
+
     const { courseId } = await request.json();
 
     if (!courseId) {
@@ -82,54 +110,25 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Mock course data - in real app, fetch from database
-    const course = {
-      id: courseId,
-      name: 'Web Development Fundamentals',
-      description: 'Learn the basics of web development',
-      duration: '8 weeks',
-      instructor: 'John Smith',
-      category: 'Web Development'
-    };
-
-    // Mock student data - in real app, get from auth
-    const student = {
-      id: 'student_123',
-      name: 'John Doe',
-      email: 'john@example.com'
-    };
-
-    // Generate unique verification ID
-    const verificationId = `CERT-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
-
-    // Create certificate record
-    const certificate = {
-      id: Date.now().toString(),
-      studentName: student.name,
-      courseName: course.name,
-      completionDate: new Date().toISOString(),
-      instructorName: course.instructor,
-      duration: course.duration,
-      grade: 'A', // In real app, calculate based on performance
-      verificationId,
-      certificateUrl: `/certificates/verify/${verificationId}`,
-      pdfUrl: `/certificates/download/${verificationId}.pdf`,
-      isDownloaded: false,
-      createdAt: new Date().toISOString()
-    };
-
-    // In real app, save to database
-    console.log('[CERTIFICATE GENERATED]', JSON.stringify(certificate));
+    // In a real app, this might create a 'Certificate Request' notification for admins
+    // For now, we will just create a notification as a placeholder.
+    await prisma.notification.create({
+      data: {
+        userId: user.id, // Usually this would go to an admin, but tying it to student for simple logging
+        type: 'CERTIFICATE_AVAILABLE',
+        title: 'Certificate Request',
+        message: `Requested certificate for course ID: ${courseId}`
+      }
+    });
 
     return NextResponse.json({
       success: true,
-      certificate,
-      message: 'Certificate generated successfully'
+      message: 'Certificate request submitted successfully'
     });
   } catch (error) {
-    console.error('Error generating certificate:', error);
+    console.error('Error requesting certificate:', error);
     return NextResponse.json(
-      { error: 'Failed to generate certificate' },
+      { error: 'Failed to request certificate' },
       { status: 500 }
     );
   }
