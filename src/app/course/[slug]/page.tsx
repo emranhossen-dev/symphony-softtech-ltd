@@ -1192,8 +1192,8 @@ const CourseDetailPage = () => {
         
         {/* Enrollment Modal */}
         {showEnrollmentModal && course && (
-          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <div className="relative w-full max-w-2xl">
+          <div className="fixed inset-0 flex items-center justify-center z-50 p-4" style={{background: 'rgba(0,0,0,0.85)'}}>
+            <div className="solid-modal-bg relative w-full max-w-2xl rounded-2xl shadow-2xl" style={{background: '#0d1b3e', border: '1px solid rgba(30,58,138,0.5)'}}>
               <button
                 onClick={() => setShowEnrollmentModal(false)}
                 className="absolute -top-12 right-0 text-white hover:text-gray-300 transition-colors"
@@ -1283,8 +1283,8 @@ const CourseDetailPage = () => {
       )}
           {/* Professional Enrollment Form Modal */}
       {showEnrollmentForm && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-xl z-50 flex items-center justify-center p-4">
-          <div className="glass-card max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{background: 'rgba(0,0,0,0.85)'}}>
+          <div className="max-w-2xl w-full max-h-[90vh] overflow-y-auto rounded-2xl shadow-2xl" style={{background: '#0d1b3e', border: '1px solid rgba(30,58,138,0.5)'}}>
             <div className="p-6 border-b border-gray-700/50">
               <div className="flex items-center justify-between">
                 <div>

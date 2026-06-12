@@ -356,7 +356,7 @@ const GovernmentCategoryPage = () => {
       {/* Enrollment Modal */}
       {showEnrollModal && selectedCourse && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="relative bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 rounded-3xl border border-white/20 shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="solid-modal-bg relative bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 rounded-3xl border border-white/20 shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             {/* Modal Header */}
             <div className="relative p-8 border-b border-white/10">
               <button 

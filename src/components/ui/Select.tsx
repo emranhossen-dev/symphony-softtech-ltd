@@ -99,11 +99,12 @@ const SelectValue = React.forwardRef<
 >(({ className, children, placeholder, value, ...props }, ref) => {
   // Prioritize value from parent (SelectTrigger) over children
   const displayValue = value || children;
+  const hasText = className && /\btext-/.test(className);
 
   return (
     <span
       ref={ref}
-      className={cn("block truncate text-gray-900", className)}
+      className={cn("block truncate", !hasText && "text-current", className)}
       {...props}
     >
       {displayValue ? (
@@ -136,12 +137,19 @@ const SelectTrigger = React.forwardRef<
     return child;
   });
 
+  const hasBg = className && /\bbg-/.test(className);
+  const hasText = className && /\btext-/.test(className);
+  const hasBorder = className && /\bborder-/.test(className);
+
   return (
     <button
       type="button"
       ref={ref}
       className={cn(
-        "flex h-10 w-full items-center justify-between rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 ring-offset-white placeholder:text-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:cursor-not-allowed disabled:opacity-50",
+        "flex h-10 w-full items-center justify-between rounded-md px-3 py-2 text-sm ring-offset-white placeholder:text-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:cursor-not-allowed disabled:opacity-50",
+        !hasBg && "bg-white",
+        !hasText && "text-gray-900",
+        !hasBorder && "border border-gray-300",
         className
       )}
       onClick={handleClick}
@@ -165,11 +173,18 @@ const SelectContent = React.forwardRef<
 >(({ className, children, isOpen, setIsOpen, ...props }, ref) => {
   if (!isOpen) return null;
 
+  const hasBg = className && /\bbg-/.test(className);
+  const hasText = className && /\btext-/.test(className);
+  const hasBorder = className && /\bborder-/.test(className);
+
   return (
     <div
       ref={ref}
       className={cn(
-        "absolute top-full left-0 right-0 z-50 mt-1 min-w-[8rem] overflow-hidden rounded-md border border-gray-200 bg-white text-gray-900 shadow-lg",
+        "absolute top-full left-0 right-0 z-50 mt-1 min-w-[8rem] overflow-hidden rounded-md shadow-lg",
+        !hasBg && "bg-white",
+        !hasText && "text-gray-900",
+        !hasBorder && "border border-gray-200",
         className
       )}
       {...props}
@@ -191,11 +206,16 @@ const SelectItem = React.forwardRef<
     onValueChange?.(value || '');
   };
 
+  const hasBg = className && /\bbg-/.test(className);
+  const hasText = className && /\btext-/.test(className);
+
   return (
     <div
       ref={ref}
       className={cn(
-        "relative flex w-full cursor-pointer select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm text-gray-900 outline-none hover:bg-gray-100 hover:text-gray-900 focus:bg-blue-50 focus:text-blue-900",
+        "relative flex w-full cursor-pointer select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none",
+        !hasText && "text-gray-900 hover:text-gray-900 focus:text-blue-900",
+        !hasBg && "hover:bg-gray-100 focus:bg-blue-50",
         className
       )}
       onClick={handleClick}

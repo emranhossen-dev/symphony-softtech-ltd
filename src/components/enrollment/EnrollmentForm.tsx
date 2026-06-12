@@ -232,7 +232,7 @@ const EnrollmentForm = ({ course, onClose }: EnrollmentFormProps) => {
           Personal Information
         </h3>
         
-        <div className="bg-gray-800/80 backdrop-blur-sm rounded-2xl p-6 border border-gray-700 shadow-lg">
+        <div className="rounded-2xl p-6 shadow-lg" style={{background: '#112354', border: '1px solid rgba(30,58,138,0.3)'}}> 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label htmlFor="fullName" className="block text-sm font-semibold text-gray-300 mb-2">Full Name <span className="text-red-400">*</span></label>
@@ -672,7 +672,7 @@ const EnrollmentForm = ({ course, onClose }: EnrollmentFormProps) => {
   );
 
   return (
-    <div className="bg-gray-800 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+    <div className="solid-modal-bg rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto" style={{background: '#0d1b3e', border: '1px solid rgba(30,58,138,0.5)'}}> 
       {/* Header */}
       <div className="bg-gradient-to-r from-emerald-600 to-blue-600 p-6 text-white">
         <div className="flex items-center justify-between">

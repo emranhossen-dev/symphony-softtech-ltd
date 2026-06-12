@@ -1016,7 +1016,7 @@ export default function EnrollmentManagementSystem() {
   };
 
   return (
-    <div className="flex-1 p-6 bg-gradient-to-br from-gray-900 to-black min-h-screen text-white">
+    <div className="keep-bg flex-1 p-6 bg-gradient-to-br from-[#09152b] via-[#0d2040] to-[#060e1d] min-h-screen text-white">
       {/* Header */}
       <div className="mb-8 flex items-center justify-between">
         <div>
@@ -1037,7 +1037,7 @@ export default function EnrollmentManagementSystem() {
             <Plus className="w-5 h-5 mr-2" />
             New Applicant
           </button>
-          <Button variant="outline" className="border-gray-600 text-gray-100 hover:bg-gray-800 px-6 py-3 rounded-xl text-lg font-semibold transition-all duration-200">
+          <Button variant="outline" className="border-[#22427a] text-gray-100 bg-[#132547]/40 hover:bg-[#1b345f] hover:text-white px-6 py-3 rounded-xl text-lg font-semibold transition-all duration-200">
             <Download className="w-5 h-5 mr-2" />
             Export CSV
           </Button>
@@ -1091,7 +1091,7 @@ export default function EnrollmentManagementSystem() {
       </div>
 
       {/* Search and Filter Bar */}
-      <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-4 mb-6 border border-gray-700">
+      <div className="relative z-30 bg-[#0d2040]/40 backdrop-blur-md rounded-2xl p-4 mb-6 border border-[#1b345f]/60">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4 flex-1">
             <div className="relative flex-1 max-w-md">
@@ -1101,14 +1101,14 @@ export default function EnrollmentManagementSystem() {
                 placeholder="Search applicants..."
                 value={filters.search}
                 onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
-                className="w-full pl-10 pr-4 py-3 bg-gray-700/50 border border-gray-600 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all duration-200"
+                className="w-full pl-10 pr-4 py-3 bg-[#132547]/60 border border-[#22427a] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all duration-200"
               />
             </div>
             
             <Button
               variant="outline"
               onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
-              className="border-gray-600 text-gray-100 hover:bg-gray-700 px-4 py-3 rounded-xl transition-all duration-200"
+              className="border-[#22427a] text-gray-100 bg-[#132547]/40 hover:bg-[#1b345f] hover:text-white px-4 py-3 rounded-xl transition-all duration-200"
             >
               <Filter className="w-4 h-4 mr-2" />
               Filters
@@ -1127,7 +1127,7 @@ export default function EnrollmentManagementSystem() {
                 hasNotes: false,
                 hasCallHistory: false
               })}
-              className="border-gray-600 text-gray-100 hover:bg-gray-700 px-4 py-3 rounded-xl transition-all duration-200"
+              className="border-[#22427a] text-gray-100 bg-[#132547]/40 hover:bg-[#1b345f] hover:text-white px-4 py-3 rounded-xl transition-all duration-200"
             >
               <X className="w-4 h-4 mr-2" />
               Clear
@@ -1136,7 +1136,7 @@ export default function EnrollmentManagementSystem() {
             <div className="relative">
               <Button
                 variant="outline"
-                className="border-gray-600 text-gray-100 hover:bg-gray-700 px-4 py-3 rounded-xl transition-all duration-200"
+                className="border-[#22427a] text-gray-100 bg-[#132547]/40 hover:bg-[#1b345f] hover:text-white px-4 py-3 rounded-xl transition-all duration-200"
                 onMouseEnter={() => setShowBulkActions(true)}
               >
                 <Download className="w-4 h-4 mr-2" />
@@ -1144,13 +1144,13 @@ export default function EnrollmentManagementSystem() {
               </Button>
               
               {showBulkActions && (
-                <div className="absolute right-0 mt-2 w-48 bg-gray-800 rounded-lg shadow-lg border border-gray-700 z-10">
+                <div className="absolute right-0 mt-2 w-48 bg-[#0d1b3e] rounded-xl shadow-2xl border border-[#1e3d70] z-50" onMouseLeave={() => setShowBulkActions(false)}>
                   <div className="p-2">
                     <Button
                       variant="ghost"
                       size="sm"
                       onClick={() => handleExport('csv')}
-                      className="w-full justify-start text-left hover:bg-gray-700 text-gray-100"
+                      className="w-full justify-start text-left hover:bg-[#1b345f]/70 text-gray-100 hover:text-white"
                     >
                       <FileSpreadsheet className="w-4 h-4 mr-2" />
                       Export as CSV
@@ -1159,7 +1159,7 @@ export default function EnrollmentManagementSystem() {
                       variant="ghost"
                       size="sm"
                       onClick={() => handleExport('excel')}
-                      className="w-full justify-start text-left hover:bg-gray-700 text-gray-100"
+                      className="w-full justify-start text-left hover:bg-[#1b345f]/70 text-gray-100 hover:text-white"
                     >
                       <FileDown className="w-4 h-4 mr-2" />
                       Export as Excel
@@ -1168,7 +1168,7 @@ export default function EnrollmentManagementSystem() {
                       variant="ghost"
                       size="sm"
                       onClick={() => handleExport('pdf')}
-                      className="w-full justify-start text-left hover:bg-gray-700 text-gray-100"
+                      className="w-full justify-start text-left hover:bg-[#1b345f]/70 text-gray-100 hover:text-white"
                     >
                       <Printer className="w-4 h-4 mr-2" />
                       Export as PDF
@@ -1181,22 +1181,22 @@ export default function EnrollmentManagementSystem() {
           
           <Button
             variant="outline"
-            className="border-gray-600 text-gray-100 hover:bg-gray-700 p-3 rounded-xl transition-all duration-200"
+            className="border-[#22427a] text-gray-100 bg-[#132547]/40 hover:bg-[#1b345f] hover:text-white p-3 rounded-xl transition-all duration-200"
           >
             <Settings className="w-5 h-5" />
           </Button>
         </div>
         
         {showAdvancedFilters && (
-          <div className="mt-4 pt-4 border-t border-gray-700">
+          <div className="mt-4 pt-4 border-t border-[#1b345f]/60">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <Select value={filters.category} onValueChange={(value) => setFilters(prev => ({ ...prev, category: value }))}>
-                <SelectTrigger className="bg-gray-700/50 border-gray-600 text-white">
+                <SelectTrigger className="bg-[#132547]/70 border-[#22427a] text-white hover:bg-[#18305c] hover:border-[#305ca7]">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-gray-800 border-gray-700">
+                <SelectContent className="bg-[#0d1b3e] border-[#1e3d70] text-white shadow-2xl z-50">
                   {categories.map((category) => (
-                    <SelectItem key={category.value} value={category.value} className="text-gray-100">
+                    <SelectItem key={category.value} value={category.value} className="text-white hover:bg-[#1b345f] focus:bg-[#1b345f] cursor-pointer hover:text-white">
                       {category.label}
                     </SelectItem>
                   ))}
@@ -1204,12 +1204,12 @@ export default function EnrollmentManagementSystem() {
               </Select>
               
               <Select value={filters.status} onValueChange={(value) => setFilters(prev => ({ ...prev, status: value }))}>
-                <SelectTrigger className="bg-gray-700/50 border-gray-600 text-white">
+                <SelectTrigger className="bg-[#132547]/70 border-[#22427a] text-white hover:bg-[#18305c] hover:border-[#305ca7]">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-gray-800 border-gray-700">
+                <SelectContent className="bg-[#0d1b3e] border-[#1e3d70] text-white shadow-2xl z-50">
                   {statuses.map((status) => (
-                    <SelectItem key={status.value} value={status.value} className="text-gray-100">
+                    <SelectItem key={status.value} value={status.value} className="text-white hover:bg-[#1b345f] focus:bg-[#1b345f] cursor-pointer hover:text-white">
                       {status.label}
                     </SelectItem>
                   ))}
@@ -1217,29 +1217,29 @@ export default function EnrollmentManagementSystem() {
               </Select>
               
               <Select value={filters.paymentStatus} onValueChange={(value) => setFilters(prev => ({ ...prev, paymentStatus: value }))}>
-                <SelectTrigger className="bg-gray-700/50 border-gray-600 text-white">
+                <SelectTrigger className="bg-[#132547]/70 border-[#22427a] text-white hover:bg-[#18305c] hover:border-[#305ca7]">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-gray-800 border-gray-700">
-                  <SelectItem value="all" className="text-gray-100">All Payment Status</SelectItem>
-                  <SelectItem value="PAID" className="text-gray-100">Paid</SelectItem>
-                  <SelectItem value="PENDING" className="text-gray-100">Pending</SelectItem>
-                  <SelectItem value="FAILED" className="text-gray-100">Failed</SelectItem>
-                  <SelectItem value="REFUNDED" className="text-gray-100">Refunded</SelectItem>
+                <SelectContent className="bg-[#0d1b3e] border-[#1e3d70] text-white shadow-2xl z-50">
+                  <SelectItem value="all" className="text-white hover:bg-[#1b345f] focus:bg-[#1b345f] cursor-pointer hover:text-white">All Payment Status</SelectItem>
+                  <SelectItem value="PAID" className="text-white hover:bg-[#1b345f] focus:bg-[#1b345f] cursor-pointer hover:text-white">Paid</SelectItem>
+                  <SelectItem value="PENDING" className="text-white hover:bg-[#1b345f] focus:bg-[#1b345f] cursor-pointer hover:text-white">Pending</SelectItem>
+                  <SelectItem value="FAILED" className="text-white hover:bg-[#1b345f] focus:bg-[#1b345f] cursor-pointer hover:text-white">Failed</SelectItem>
+                  <SelectItem value="REFUNDED" className="text-white hover:bg-[#1b345f] focus:bg-[#1b345f] cursor-pointer hover:text-white">Refunded</SelectItem>
                 </SelectContent>
               </Select>
               
               <Select value={filters.dateRange} onValueChange={(value) => setFilters(prev => ({ ...prev, dateRange: value }))}>
-                <SelectTrigger className="bg-gray-700/50 border-gray-600 text-white">
+                <SelectTrigger className="bg-[#132547]/70 border-[#22427a] text-white hover:bg-[#18305c] hover:border-[#305ca7]">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-gray-800 border-gray-700">
-                  <SelectItem value="all" className="text-gray-100">All Time</SelectItem>
-                  <SelectItem value="today" className="text-gray-100">Today</SelectItem>
-                  <SelectItem value="week" className="text-gray-100">This Week</SelectItem>
-                  <SelectItem value="month" className="text-gray-100">This Month</SelectItem>
-                  <SelectItem value="quarter" className="text-gray-100">This Quarter</SelectItem>
-                  <SelectItem value="year" className="text-gray-100">This Year</SelectItem>
+                <SelectContent className="bg-[#0d1b3e] border-[#1e3d70] text-white shadow-2xl z-50">
+                  <SelectItem value="all" className="text-white hover:bg-[#1b345f] focus:bg-[#1b345f] cursor-pointer hover:text-white">All Time</SelectItem>
+                  <SelectItem value="today" className="text-white hover:bg-[#1b345f] focus:bg-[#1b345f] cursor-pointer hover:text-white">Today</SelectItem>
+                  <SelectItem value="week" className="text-white hover:bg-[#1b345f] focus:bg-[#1b345f] cursor-pointer hover:text-white">This Week</SelectItem>
+                  <SelectItem value="month" className="text-white hover:bg-[#1b345f] focus:bg-[#1b345f] cursor-pointer hover:text-white">This Month</SelectItem>
+                  <SelectItem value="quarter" className="text-white hover:bg-[#1b345f] focus:bg-[#1b345f] cursor-pointer hover:text-white">This Quarter</SelectItem>
+                  <SelectItem value="year" className="text-white hover:bg-[#1b345f] focus:bg-[#1b345f] cursor-pointer hover:text-white">This Year</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -1248,9 +1248,9 @@ export default function EnrollmentManagementSystem() {
       </div>
 
         {/* Table Section */}
-      <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl border border-gray-700">
+      <div className="bg-[#0d2040]/30 backdrop-blur-md rounded-2xl border border-[#1b345f]/60">
         {/* Table Header */}
-        <div className="p-4 border-b border-gray-700">
+        <div className="p-4 border-b border-[#1b345f]/60">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-2">
@@ -1258,7 +1258,7 @@ export default function EnrollmentManagementSystem() {
                   type="checkbox"
                   checked={selectedEnrollments.length === filteredEnrollments.length && filteredEnrollments.length > 0}
                   onChange={handleSelectAll}
-                  className="w-4 h-4 text-blue-600 border-gray-600 rounded focus:ring-blue-500 bg-gray-700"
+                  className="w-4 h-4 text-blue-600 border-[#22427a] bg-[#132547] rounded focus:ring-blue-500/50"
                 />
                 {selectedEnrollments.length > 0 && (
                   <span className="text-gray-300 text-sm">
@@ -1288,14 +1288,14 @@ export default function EnrollmentManagementSystem() {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="border-gray-600 text-gray-400 hover:bg-gray-700 px-3 py-1 rounded-lg text-sm"
+                  className="border-[#22427a] text-gray-300 bg-[#132547]/40 hover:bg-[#1b345f] hover:text-white px-3 py-1 rounded-lg text-sm transition-colors"
                 >
                   PREV
                 </Button>
                 <Button
                   variant="outline"
                   size="sm"
-                  className="border-gray-600 text-gray-400 hover:bg-gray-700 px-3 py-1 rounded-lg text-sm"
+                  className="border-[#22427a] text-gray-300 bg-[#132547]/40 hover:bg-[#1b345f] hover:text-white px-3 py-1 rounded-lg text-sm transition-colors"
                 >
                   NEXT
                 </Button>
@@ -1304,7 +1304,7 @@ export default function EnrollmentManagementSystem() {
               <Button
                 variant="outline"
                 size="sm"
-                className="border-gray-600 text-gray-400 hover:bg-gray-700 p-2 rounded-lg"
+                className="border-[#22427a] text-gray-300 bg-[#132547]/40 hover:bg-[#1b345f] hover:text-white p-2 rounded-lg transition-colors"
               >
                 <Settings className="w-4 h-4" />
               </Button>
@@ -1316,7 +1316,7 @@ export default function EnrollmentManagementSystem() {
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-gray-700 bg-gray-900/50">
+              <tr className="border-b border-[#1b345f]/60 bg-[#061021]/80">
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">#</th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">APPLICANT</th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">COURSE & DATE</th>
@@ -1329,16 +1329,16 @@ export default function EnrollmentManagementSystem() {
                 <th className="px-4 py-3 text-right text-xs font-medium text-gray-400 uppercase tracking-wider">ACTIONS</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-700">
+            <tbody className="divide-y divide-[#1b345f]/40">
               {filteredEnrollments.map((enrollment, index) => (
-                <tr key={enrollment.id} className="hover:bg-gray-700/30 transition-colors">
+                <tr key={enrollment.id} className="hover:bg-[#132547]/40 transition-colors">
                   <td className="px-4 py-3 text-sm text-gray-300">
                     <div className="flex items-center space-x-2">
                       <input
                         type="checkbox"
                         checked={selectedEnrollments.includes(enrollment.id)}
                         onChange={() => handleSelectEnrollment(enrollment.id)}
-                        className="w-4 h-4 text-blue-600 border-gray-600 rounded focus:ring-blue-500 bg-gray-700"
+                        className="w-4 h-4 text-blue-600 border-[#22427a] bg-[#132547] rounded focus:ring-blue-500/50"
                       />
                       <span>{index + 1}</span>
                     </div>
@@ -1379,13 +1379,14 @@ export default function EnrollmentManagementSystem() {
                         value={enrollment.paymentStatus || 'PENDING'}
                         onChange={(e) => updatePaymentStatus(enrollment.id, e.target.value)}
                         disabled={actionLoading[enrollment.id]}
-                        className="w-28 rounded-md border border-gray-600 bg-gray-700/50 px-2 py-1 text-sm text-white focus:border-blue-400 focus:outline-none"
+                        style={{ colorScheme: 'dark' }}
+                        className="w-28 rounded-md border border-[#22427a] bg-[#132547]/80 hover:bg-[#18305c] hover:border-[#305ca7] px-2 py-1 text-sm text-white focus:border-blue-400 focus:outline-none cursor-pointer transition-colors"
                       >
-                        <option value="PENDING">Pending</option>
-                        <option value="PAID">Paid</option>
-                        <option value="FAILED">Failed</option>
-                        <option value="CANCELLED">Cancelled</option>
-                        <option value="NOT_REQUIRED">Not Required</option>
+                        <option value="PENDING" className="bg-[#0d1b3e] text-white">Pending</option>
+                        <option value="PAID" className="bg-[#0d1b3e] text-white">Paid</option>
+                        <option value="FAILED" className="bg-[#0d1b3e] text-white">Failed</option>
+                        <option value="CANCELLED" className="bg-[#0d1b3e] text-white">Cancelled</option>
+                        <option value="NOT_REQUIRED" className="bg-[#0d1b3e] text-white">Not Required</option>
                       </select>
                     </div>
                   </td>
@@ -1408,7 +1409,7 @@ export default function EnrollmentManagementSystem() {
                   
                   <td className="px-4 py-3">
                     <div className="flex items-center space-x-2">
-                      <div className="w-16 bg-gray-700 rounded-full h-2">
+                      <div className="w-16 bg-[#132547] rounded-full h-2">
                         <div className="bg-gradient-to-r from-green-500 to-emerald-500 h-2 rounded-full" style={{width: '75%'}}></div>
                       </div>
                       <span className="text-sm text-gray-300">75%</span>
@@ -1431,13 +1432,14 @@ export default function EnrollmentManagementSystem() {
                         value={enrollment.enrollmentStatus}
                         onChange={(e) => updateEnrollmentStatus(enrollment.id, e.target.value)}
                         disabled={actionLoading[enrollment.id]}
-                        className="w-32 rounded-md border border-gray-600 bg-gray-700/50 px-2 py-1 text-sm text-white focus:border-blue-400 focus:outline-none"
+                        style={{ colorScheme: 'dark' }}
+                        className="w-32 rounded-md border border-[#22427a] bg-[#132547]/80 hover:bg-[#18305c] hover:border-[#305ca7] px-2 py-1 text-sm text-white focus:border-blue-400 focus:outline-none cursor-pointer transition-colors"
                       >
-                        <option value="APPLIED">Applied</option>
-                        <option value="ADMITTED">Admitted</option>
-                        <option value="REJECTED">Rejected</option>
-                        <option value="WAITING">Waiting</option>
-                        <option value="NEXT_BATCH">Next Batch</option>
+                        <option value="APPLIED" className="bg-[#0d1b3e] text-white">Applied</option>
+                        <option value="ADMITTED" className="bg-[#0d1b3e] text-white">Admitted</option>
+                        <option value="REJECTED" className="bg-[#0d1b3e] text-white">Rejected</option>
+                        <option value="WAITING" className="bg-[#0d1b3e] text-white">Waiting</option>
+                        <option value="NEXT_BATCH" className="bg-[#0d1b3e] text-white">Next Batch</option>
                       </select>
                     </div>
                   </td>
@@ -1533,9 +1535,9 @@ export default function EnrollmentManagementSystem() {
       {showCallModal && selectedEnrollment && (
         <div className="fixed inset-0 z-50 overflow-hidden">
           <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShowCallModal(false)} />
-          <div className="absolute inset-4 md:inset-8 bg-gray-800 rounded-2xl shadow-2xl flex flex-col border border-gray-700">
+          <div className="absolute inset-4 md:inset-8 bg-[#0b1426] rounded-2xl shadow-2xl flex flex-col border border-[#1e3d70]">
             {/* Modal Header */}
-            <div className="flex items-center justify-between p-6 border-b border-gray-700">
+            <div className="flex items-center justify-between p-6 border-b border-[#1b345f]/60">
               <div className="flex items-center space-x-4">
                 <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl">
                   <PhoneCall className="w-6 h-6 text-white" />
@@ -1549,7 +1551,7 @@ export default function EnrollmentManagementSystem() {
                 variant="outline"
                 size="sm"
                 onClick={() => setShowCallModal(false)}
-                className="border-gray-600 text-gray-300 hover:bg-gray-700"
+                className="border-[#22427a] text-gray-300 bg-[#132547]/40 hover:bg-[#1b345f] hover:text-white"
               >
                 <CloseIcon className="w-4 h-4" />
               </Button>
@@ -1618,28 +1620,28 @@ export default function EnrollmentManagementSystem() {
                     onChange={(e) => setCallNotes(e.target.value)}
                     placeholder="Enter notes about this call..."
                     rows={4}
-                    className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all duration-200"
+                    className="w-full px-4 py-3 bg-[#132547]/50 border border-[#22427a] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all duration-200"
                   />
                 </div>
 
                 {/* Student Info */}
-                <div className="bg-gray-700/50 rounded-xl p-4 border border-gray-600">
+                <div className="bg-[#132547]/30 rounded-xl p-4 border border-[#22427a]/60">
                   <h4 className="font-medium text-white mb-3">Student Information</h4>
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
-                      <span className="text-gray-400">Name:</span>
+                      <span className="text-gray-300">Name:</span>
                       <span className="text-white">{selectedEnrollment.fullName}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-400">Phone:</span>
+                      <span className="text-gray-300">Phone:</span>
                       <span className="text-white">{selectedEnrollment.phoneNumber}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-400">Email:</span>
+                      <span className="text-gray-300">Email:</span>
                       <span className="text-white">{selectedEnrollment.email}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-400">Course:</span>
+                      <span className="text-gray-300">Course:</span>
                       <span className="text-white">{selectedEnrollment.courseName}</span>
                     </div>
                   </div>
@@ -1648,11 +1650,11 @@ export default function EnrollmentManagementSystem() {
             </div>
 
             {/* Modal Footer */}
-            <div className="flex items-center justify-between p-6 border-t border-gray-700">
+            <div className="flex items-center justify-between p-6 border-t border-[#1b345f]/60">
               <Button
                 variant="outline"
                 onClick={() => setShowCallModal(false)}
-                className="border-gray-600 text-gray-300 hover:bg-gray-700"
+                className="border-[#22427a] text-gray-300 bg-[#132547]/40 hover:bg-[#1b345f] hover:text-white"
               >
                 Cancel
               </Button>
@@ -1673,9 +1675,9 @@ export default function EnrollmentManagementSystem() {
       {showProfileDrawer && studentProfile && (
         <div className="fixed inset-0 z-50 overflow-hidden">
           <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShowProfileDrawer(false)} />
-          <div className="absolute inset-4 md:inset-auto md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-full md:max-w-3xl bg-gray-800 rounded-2xl shadow-2xl flex flex-col max-h-[90vh] border border-gray-700">
+          <div className="absolute inset-4 md:inset-auto md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-full md:max-w-3xl bg-[#0b1426] rounded-2xl shadow-2xl flex flex-col max-h-[90vh] border border-[#1e3d70]">
             {/* Modal Header */}
-            <div className="flex items-center justify-between p-6 border-b border-gray-700">
+            <div className="flex items-center justify-between p-6 border-b border-[#1b345f]/60">
               <div className="flex items-center space-x-4">
                 <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl">
                   <User className="w-6 h-6 text-white" />
@@ -1689,7 +1691,7 @@ export default function EnrollmentManagementSystem() {
                 variant="outline"
                 size="sm"
                 onClick={() => setShowProfileDrawer(false)}
-                className="border-gray-600 text-gray-300 hover:bg-gray-700"
+                className="border-[#22427a] text-gray-300 bg-[#132547]/40 hover:bg-[#1b345f] hover:text-white"
               >
                 <CloseIcon className="w-4 h-4" />
               </Button>
@@ -1699,54 +1701,54 @@ export default function EnrollmentManagementSystem() {
             <div className="flex-1 overflow-y-auto p-6">
               <div className="space-y-6">
                 {/* Personal Information */}
-                <div className="bg-gray-700/50 rounded-xl p-6 border border-gray-600">
+                <div className="bg-[#132547]/30 rounded-xl p-6 border border-[#22427a]/60">
                   <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
                     <User className="w-5 h-5 mr-2 text-blue-400" />
                     Personal Information
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-400 mb-1">Full Name</label>
+                      <label className="block text-sm font-medium text-gray-300 mb-1">Full Name</label>
                       <p className="text-white">{studentProfile.enrollment.fullName}</p>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-400 mb-1">Email</label>
+                      <label className="block text-sm font-medium text-gray-300 mb-1">Email</label>
                       <p className="text-white">{studentProfile.enrollment.email}</p>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-400 mb-1">Phone</label>
+                      <label className="block text-sm font-medium text-gray-300 mb-1">Phone</label>
                       <p className="text-white">{studentProfile.enrollment.phoneNumber}</p>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-400 mb-1">Address</label>
+                      <label className="block text-sm font-medium text-gray-300 mb-1">Address</label>
                       <p className="text-white">{studentProfile.enrollment.address || 'N/A'}</p>
                     </div>
                   </div>
                 </div>
 
                 {/* Course Information */}
-                <div className="bg-gray-700/50 rounded-xl p-6 border border-gray-600">
+                <div className="bg-[#132547]/30 rounded-xl p-6 border border-[#22427a]/60">
                   <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
                     <BookOpen className="w-5 h-5 mr-2 text-green-400" />
                     Course Information
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-400 mb-1">Course</label>
+                      <label className="block text-sm font-medium text-gray-300 mb-1">Course</label>
                       <p className="text-white">{studentProfile.enrollment.courseName}</p>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-400 mb-1">Category</label>
+                      <label className="block text-sm font-medium text-gray-300 mb-1">Category</label>
                       <p className="text-white">{studentProfile.enrollment.category}</p>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-400 mb-1">Enrollment Status</label>
+                      <label className="block text-sm font-medium text-gray-300 mb-1">Enrollment Status</label>
                       <Badge className={statusConfig[studentProfile.enrollment.enrollmentStatus as keyof typeof statusConfig]?.color || 'badge-secondary'}>
                         {statusConfig[studentProfile.enrollment.enrollmentStatus as keyof typeof statusConfig]?.label || studentProfile.enrollment.enrollmentStatus}
                       </Badge>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-400 mb-1">Payment Status</label>
+                      <label className="block text-sm font-medium text-gray-300 mb-1">Payment Status</label>
                       <Badge className={paymentConfig[studentProfile.enrollment.paymentStatus as keyof typeof paymentConfig]?.color || 'badge-secondary'}>
                         {paymentConfig[studentProfile.enrollment.paymentStatus as keyof typeof paymentConfig]?.label || studentProfile.enrollment.paymentStatus || 'N/A'}
                       </Badge>
@@ -1755,29 +1757,29 @@ export default function EnrollmentManagementSystem() {
                 </div>
 
                 {/* Additional Information */}
-                <div className="bg-gray-700/50 rounded-xl p-6 border border-gray-600">
+                <div className="bg-[#132547]/30 rounded-xl p-6 border border-[#22427a]/60">
                   <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
                     <FileText className="w-5 h-5 mr-2 text-purple-400" />
                     Additional Information
                   </h3>
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-400 mb-1">Education Level</label>
+                      <label className="block text-sm font-medium text-gray-300 mb-1">Education Level</label>
                       <p className="text-white">{studentProfile.enrollment.educationLevel || 'N/A'}</p>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-400 mb-1">Why Join</label>
+                      <label className="block text-sm font-medium text-gray-300 mb-1">Why Join</label>
                       <p className="text-white">{studentProfile.enrollment.whyJoin || 'N/A'}</p>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-400 mb-1">Preferred Batch Time</label>
+                      <label className="block text-sm font-medium text-gray-300 mb-1">Preferred Batch Time</label>
                       <p className="text-white">{studentProfile.enrollment.preferredBatchTime || 'N/A'}</p>
                     </div>
                   </div>
                 </div>
 
                 {/* Notes Section */}
-                <div className="bg-gray-700/50 rounded-xl p-6 border border-gray-600">
+                <div className="bg-[#132547]/30 rounded-xl p-6 border border-[#22427a]/60">
                   <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
                     <MessageSquare className="w-5 h-5 mr-2 text-blue-400" />
                     Notes
@@ -1787,13 +1789,13 @@ export default function EnrollmentManagementSystem() {
                     {studentProfile.enrollment.notes && (
                       <div>
                         <div className="flex items-center justify-between mb-2">
-                          <label className="block text-sm font-medium text-gray-400">Current Notes</label>
+                          <label className="block text-sm font-medium text-gray-300">Current Notes</label>
                           <div className="flex items-center space-x-2">
                             <Button
                               variant="ghost"
                               size="sm"
                               onClick={handleEditNote}
-                              className="h-7 px-2 text-blue-400 hover:text-blue-300 hover:bg-gray-700"
+                              className="h-7 px-2 text-blue-400 hover:text-blue-300 hover:bg-[#132547]"
                               title="Edit Note"
                             >
                               <Edit className="w-3 h-3 mr-1" />
@@ -1803,7 +1805,7 @@ export default function EnrollmentManagementSystem() {
                               variant="ghost"
                               size="sm"
                               onClick={handleDeleteNote}
-                              className="h-7 px-2 text-red-400 hover:text-red-300 hover:bg-gray-700"
+                              className="h-7 px-2 text-red-400 hover:text-red-300 hover:bg-[#132547]"
                               title="Delete Note"
                             >
                               <Trash2 className="w-3 h-3 mr-1" />
@@ -1811,7 +1813,7 @@ export default function EnrollmentManagementSystem() {
                             </Button>
                           </div>
                         </div>
-                        <div className="bg-gray-800/50 rounded-xl p-4 border border-gray-600">
+                        <div className="bg-[#090f1d] rounded-xl p-4 border border-[#1e3d70]">
                           <p className="text-white whitespace-pre-wrap">{studentProfile.enrollment.notes}</p>
                           <p className="text-xs text-gray-500 mt-2">
                             Last updated: {new Date(studentProfile.enrollment.updatedAt).toLocaleString()}
@@ -1822,7 +1824,7 @@ export default function EnrollmentManagementSystem() {
 
                     {/* Add New Note */}
                     <div>
-                      <label className="block text-sm font-medium text-gray-400 mb-2">
+                      <label className="block text-sm font-medium text-gray-300 mb-2">
                         {studentProfile.enrollment.notes ? 'Update Note' : 'Add New Note'}
                       </label>
                       <textarea
@@ -1830,7 +1832,7 @@ export default function EnrollmentManagementSystem() {
                         onChange={(e) => setNewProfileNote(e.target.value)}
                         placeholder="Enter notes about this student..."
                         rows={4}
-                        className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all duration-200 resize-none"
+                        className="w-full px-4 py-3 bg-[#090f1d] border border-[#1e3d70] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all duration-200 resize-none"
                       />
                     </div>
 
@@ -1847,18 +1849,18 @@ export default function EnrollmentManagementSystem() {
                 </div>
 
                 {/* Timestamps */}
-                <div className="bg-gray-700/50 rounded-xl p-6 border border-gray-600">
+                <div className="bg-[#132547]/30 rounded-xl p-6 border border-[#22427a]/60">
                   <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
                     <Calendar className="w-5 h-5 mr-2 text-yellow-400" />
                     Timestamps
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-400 mb-1">Created At</label>
+                      <label className="block text-sm font-medium text-gray-300 mb-1">Created At</label>
                       <p className="text-white">{new Date(studentProfile.enrollment.createdAt).toLocaleString()}</p>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-400 mb-1">Updated At</label>
+                      <label className="block text-sm font-medium text-gray-300 mb-1">Updated At</label>
                       <p className="text-white">{new Date(studentProfile.enrollment.updatedAt).toLocaleString()}</p>
                     </div>
                   </div>
@@ -1867,11 +1869,11 @@ export default function EnrollmentManagementSystem() {
             </div>
 
             {/* Modal Footer */}
-            <div className="flex items-center justify-end p-6 border-t border-gray-700">
+            <div className="flex items-center justify-end p-6 border-t border-[#1b345f]/60">
               <Button
                 variant="outline"
                 onClick={() => setShowProfileDrawer(false)}
-                className="border-gray-600 text-gray-300 hover:bg-gray-700"
+                className="border-[#22427a] text-gray-300 bg-[#132547]/40 hover:bg-[#1b345f] hover:text-white"
               >
                 Close
               </Button>
@@ -1884,9 +1886,9 @@ export default function EnrollmentManagementSystem() {
       {showNotesModal && selectedEnrollment && (
         <div className="fixed inset-0 z-50 overflow-hidden">
           <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShowNotesModal(false)} />
-          <div className="absolute inset-4 md:inset-auto md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-full md:max-w-2xl bg-gray-800 rounded-2xl shadow-2xl flex flex-col max-h-[90vh] border border-gray-700">
+          <div className="absolute inset-4 md:inset-auto md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-full md:max-w-2xl bg-[#0b1426] rounded-2xl shadow-2xl flex flex-col max-h-[90vh] border border-[#1e3d70]">
             {/* Modal Header */}
-            <div className="flex items-center justify-between p-6 border-b border-gray-700">
+            <div className="flex items-center justify-between p-6 border-b border-[#1b345f]/60">
               <div className="flex items-center space-x-4">
                 <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl">
                   <FileText className="w-6 h-6 text-white" />
@@ -1900,7 +1902,7 @@ export default function EnrollmentManagementSystem() {
                 variant="outline"
                 size="sm"
                 onClick={() => setShowNotesModal(false)}
-                className="border-gray-600 text-gray-300 hover:bg-gray-700"
+                className="border-[#22427a] text-gray-300 bg-[#132547]/40 hover:bg-[#1b345f] hover:text-white"
               >
                 <CloseIcon className="w-4 h-4" />
               </Button>
@@ -1917,7 +1919,7 @@ export default function EnrollmentManagementSystem() {
                     onChange={(e) => setEnrollmentNotes(e.target.value)}
                     placeholder="Enter notes about this student..."
                     rows={8}
-                    className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all duration-200"
+                    className="w-full px-4 py-3 bg-[#132547]/50 border border-[#22427a] rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all duration-200"
                   />
                 </div>
 
@@ -1925,7 +1927,7 @@ export default function EnrollmentManagementSystem() {
                 {selectedEnrollment.notes && (
                   <div>
                     <h4 className="font-medium text-white mb-3">Previous Notes</h4>
-                    <div className="bg-gray-700/50 rounded-xl p-4 border border-gray-600">
+                    <div className="bg-[#132547]/30 rounded-xl p-4 border border-[#22427a]/60">
                       <p className="text-sm text-gray-300 whitespace-pre-wrap">{selectedEnrollment.notes}</p>
                     </div>
                   </div>
@@ -1937,7 +1939,7 @@ export default function EnrollmentManagementSystem() {
                     <h4 className="font-medium text-white mb-3">Call History</h4>
                     <div className="space-y-3">
                       {selectedEnrollment.callHistory.map((call) => (
-                        <div key={call.id} className="bg-gray-700/50 rounded-xl p-4 border border-gray-600">
+                        <div key={call.id} className="bg-[#132547]/30 rounded-xl p-4 border border-[#22427a]/60">
                           <div className="flex items-center justify-between mb-2">
                             <div className="flex items-center space-x-2">
                               <PhoneCall className="w-4 h-4 text-green-400" />
@@ -1959,11 +1961,11 @@ export default function EnrollmentManagementSystem() {
             </div>
 
             {/* Modal Footer */}
-            <div className="flex items-center justify-between p-6 border-t border-gray-700">
+            <div className="flex items-center justify-between p-6 border-t border-[#1b345f]/60">
               <Button
                 variant="outline"
                 onClick={() => setShowNotesModal(false)}
-                className="border-gray-600 text-gray-300 hover:bg-gray-700"
+                className="border-[#22427a] text-gray-300 bg-[#132547]/40 hover:bg-[#1b345f] hover:text-white"
               >
                 Cancel
               </Button>
@@ -1986,7 +1988,7 @@ export default function EnrollmentManagementSystem() {
             className="absolute inset-0 bg-black/80 backdrop-blur-sm"
             onClick={() => setShowNewApplicantModal(false)}
           />
-          <div className="relative bg-slate-900/95 backdrop-blur-xl rounded-3xl p-8 w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl animate-in zoom-in duration-200 border-2 border-white/10">
+          <div className="relative bg-[#0b1426]/98 backdrop-blur-xl rounded-3xl p-8 w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl animate-in zoom-in duration-200 border-2 border-[#1e3d70]/80">
             <button
               onClick={() => setShowNewApplicantModal(false)}
               className="absolute top-5 right-5 p-2 rounded-full hover:bg-white/10 transition-colors group"
@@ -2011,7 +2013,7 @@ export default function EnrollmentManagementSystem() {
                   type="text"
                   value={newApplicant.fullName}
                   onChange={(e) => setNewApplicant({ ...newApplicant, fullName: e.target.value })}
-                  className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-3 bg-[#132547]/60 border border-[#22427a] rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                   placeholder="Enter full name"
                   required
                 />
@@ -2024,7 +2026,7 @@ export default function EnrollmentManagementSystem() {
                   type="email"
                   value={newApplicant.email}
                   onChange={(e) => setNewApplicant({ ...newApplicant, email: e.target.value })}
-                  className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-3 bg-[#132547]/60 border border-[#22427a] rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                   placeholder="Enter email address"
                   required
                 />
@@ -2037,7 +2039,7 @@ export default function EnrollmentManagementSystem() {
                   type="tel"
                   value={newApplicant.phoneNumber}
                   onChange={(e) => setNewApplicant({ ...newApplicant, phoneNumber: e.target.value })}
-                  className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-3 bg-[#132547]/60 border border-[#22427a] rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                   placeholder="Enter phone number"
                   required
                 />
@@ -2049,7 +2051,7 @@ export default function EnrollmentManagementSystem() {
                 <textarea
                   value={newApplicant.address}
                   onChange={(e) => setNewApplicant({ ...newApplicant, address: e.target.value })}
-                  className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                  className="w-full px-4 py-3 bg-[#132547]/60 border border-[#22427a] rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 resize-none"
                   placeholder="Enter address"
                   rows={2}
                   required
@@ -2063,7 +2065,7 @@ export default function EnrollmentManagementSystem() {
                   type="text"
                   value={newApplicant.courseName}
                   onChange={(e) => setNewApplicant({ ...newApplicant, courseName: e.target.value })}
-                  className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-3 bg-[#132547]/60 border border-[#22427a] rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                   placeholder="Enter course name"
                   required
                 />
@@ -2075,13 +2077,14 @@ export default function EnrollmentManagementSystem() {
                 <select
                   value={newApplicant.category}
                   onChange={(e) => setNewApplicant({ ...newApplicant, category: e.target.value })}
-                  className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  style={{ colorScheme: 'dark' }}
+                  className="w-full px-4 py-3 bg-[#132547]/80 border border-[#22427a] rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 cursor-pointer text-left"
                   required
                 >
-                  <option value="GOVERNMENT">Government Job Preparation</option>
-                  <option value="ONLINE">Online Live Course</option>
-                  <option value="OFFLINE">Offline Classroom</option>
-                  <option value="RECORDED">Recorded Course</option>
+                  <option value="GOVERNMENT" className="bg-[#0d1b3e] text-white">Government Job Preparation</option>
+                  <option value="ONLINE" className="bg-[#0d1b3e] text-white">Online Live Course</option>
+                  <option value="OFFLINE" className="bg-[#0d1b3e] text-white">Offline Classroom</option>
+                  <option value="RECORDED" className="bg-[#0d1b3e] text-white">Recorded Course</option>
                 </select>
               </div>
 
@@ -2092,7 +2095,7 @@ export default function EnrollmentManagementSystem() {
                   type="text"
                   value={newApplicant.educationLevel}
                   onChange={(e) => setNewApplicant({ ...newApplicant, educationLevel: e.target.value })}
-                  className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-3 bg-[#132547]/60 border border-[#22427a] rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                   placeholder="Enter education level"
                 />
               </div>
@@ -2103,7 +2106,7 @@ export default function EnrollmentManagementSystem() {
                 <textarea
                   value={newApplicant.whyJoin}
                   onChange={(e) => setNewApplicant({ ...newApplicant, whyJoin: e.target.value })}
-                  className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                  className="w-full px-4 py-3 bg-[#132547]/60 border border-[#22427a] rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 resize-none"
                   placeholder="Why do you want to join this course?"
                   rows={3}
                 />
@@ -2115,23 +2118,24 @@ export default function EnrollmentManagementSystem() {
                 <select
                   value={newApplicant.preferredBatchTime}
                   onChange={(e) => setNewApplicant({ ...newApplicant, preferredBatchTime: e.target.value })}
-                  className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  style={{ colorScheme: 'dark' }}
+                  className="w-full px-4 py-3 bg-[#132547]/80 border border-[#22427a] rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 cursor-pointer text-left"
                 >
-                  <option value="">Select preference</option>
-                  <option value="Morning">Morning (9AM - 12PM)</option>
-                  <option value="Afternoon">Afternoon (12PM - 4PM)</option>
-                  <option value="Evening">Evening (4PM - 8PM)</option>
-                  <option value="Night">Night (8PM - 11PM)</option>
+                  <option value="" className="bg-[#0d1b3e] text-white">Select preference</option>
+                  <option value="Morning" className="bg-[#0d1b3e] text-white">Morning (9AM - 12PM)</option>
+                  <option value="Afternoon" className="bg-[#0d1b3e] text-white">Afternoon (12PM - 4PM)</option>
+                  <option value="Evening" className="bg-[#0d1b3e] text-white">Evening (4PM - 8PM)</option>
+                  <option value="Night" className="bg-[#0d1b3e] text-white">Night (8PM - 11PM)</option>
                 </select>
               </div>
             </div>
             </form>
-            <div className="flex gap-2 p-4 pt-4 border-t border-white/10 flex-shrink-0 bg-slate-900/95">
+            <div className="flex gap-2 p-4 pt-4 border-t border-[#1e3d70]/40 flex-shrink-0 bg-[#0b1426]/98">
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => setShowNewApplicantModal(false)}
-                className="flex-1 py-2 px-4 border-2 border-white/20 hover:bg-white/10 text-white font-semibold transition-all duration-200 text-sm"
+                className="flex-1 py-2 px-4 border-[#22427a] text-gray-300 bg-[#132547]/40 hover:bg-[#1b345f] hover:text-white font-semibold transition-all duration-200 text-sm"
               >
                 Cancel
               </Button>
