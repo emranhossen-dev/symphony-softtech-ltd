@@ -71,21 +71,21 @@ export default function HomeworkDetailPage() {
     switch (status) {
       case 'PENDING':
         return (
-          <div className="flex items-center gap-1 px-2 py-1 bg-orange-100 text-orange-800 rounded-full text-xs font-medium">
+          <div className="flex items-center gap-1 px-2 py-1 bg-orange-500/15 text-orange-400 border border-orange-500/30 rounded-full text-xs font-medium w-fit">
             <Clock className="w-3 h-3" />
             Pending
           </div>
         );
       case 'APPROVED':
         return (
-          <div className="flex items-center gap-1 px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium">
+          <div className="flex items-center gap-1 px-2 py-1 bg-green-500/15 text-green-400 border border-green-500/30 rounded-full text-xs font-medium w-fit">
             <CheckCircle className="w-3 h-3" />
             Approved
           </div>
         );
       case 'REJECTED':
         return (
-          <div className="flex items-center gap-1 px-2 py-1 bg-red-100 text-red-800 rounded-full text-xs font-medium">
+          <div className="flex items-center gap-1 px-2 py-1 bg-red-500/15 text-red-400 border border-red-500/30 rounded-full text-xs font-medium w-fit">
             <XCircle className="w-3 h-3" />
             Rejected
           </div>

@@ -260,17 +260,17 @@ export default function MentorDashboard() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'APPROVED': return 'bg-green-100 text-green-800';
-      case 'REJECTED': return 'bg-red-100 text-red-800';
-      case 'NEEDS_REVISION': return 'bg-orange-100 text-orange-800';
-      case 'SUBMITTED': return 'bg-blue-100 text-blue-800';
-      case 'UNDER_REVIEW': return 'bg-purple-100 text-purple-800';
-      case 'LIVE': return 'bg-red-100 text-red-800';
-      case 'ENDED': return 'bg-gray-500/20 text-gray-300';
-      case 'PRESENT': return 'bg-green-100 text-green-800';
-      case 'ABSENT': return 'bg-red-100 text-red-800';
-      case 'LATE': return 'bg-yellow-100 text-yellow-800';
-      default: return 'bg-gray-500/20 text-gray-300';
+      case 'APPROVED': return 'bg-green-500/15 text-green-400 border border-green-500/20';
+      case 'REJECTED': return 'bg-red-500/15 text-red-400 border border-red-500/20';
+      case 'NEEDS_REVISION': return 'bg-orange-500/15 text-orange-400 border border-orange-500/20';
+      case 'SUBMITTED': return 'bg-blue-500/15 text-blue-400 border border-blue-500/20';
+      case 'UNDER_REVIEW': return 'bg-purple-500/15 text-purple-400 border border-purple-500/20';
+      case 'LIVE': return 'bg-red-500/15 text-red-400 border border-red-500/20';
+      case 'ENDED': return 'bg-gray-500/15 text-gray-400 border border-gray-500/20';
+      case 'PRESENT': return 'bg-green-500/15 text-green-400 border border-green-500/20';
+      case 'ABSENT': return 'bg-red-500/15 text-red-400 border border-red-500/20';
+      case 'LATE': return 'bg-yellow-500/15 text-yellow-400 border border-yellow-500/20';
+      default: return 'bg-gray-500/15 text-gray-400 border border-gray-500/20';
     }
   };
 
@@ -390,7 +390,7 @@ export default function MentorDashboard() {
                 onClick={() => setActiveTab(tab.id as any)}
                 className={`flex items-center px-6 py-3 border-b-2 font-medium text-sm ${
                   activeTab === tab.id
-                    ? 'border-blue-500 text-blue-600'
+                    ? 'border-blue-500 text-blue-400 font-semibold'
                     : 'border-transparent text-gray-400 hover:text-white hover:border-white/30'
                 }`}
               >
