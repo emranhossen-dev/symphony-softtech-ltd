@@ -29,9 +29,13 @@ export async function POST(
       return NextResponse.json({ error: 'Invalid status. Use APPROVED or REJECTED' }, { status: 400 });
     }
 
-    // Find submission with its course info
-    const existingSubmission = await (prisma as any).homeworkSubmission.findFirst({
-      where: { id: submissionId }
+    // Find submission with student and module info for notification
+    const existingSubmission = await prisma.homeworkSubmission.findFirst({
+      where: { id: submissionId },
+      include: {
+        module: { select: { title: true } },
+        course: { select: { title: true } }
+      }
     });
 
     if (!existingSubmission) {
@@ -39,7 +43,7 @@ export async function POST(
     }
 
     // Get the course to check mentor
-    const course = await (prisma as any).course.findFirst({
+    const course = await prisma.course.findFirst({
       where: { id: existingSubmission.courseId, mentorId: user.id }
     });
 
@@ -64,6 +68,22 @@ export async function POST(
     
     await prisma.$executeRawUnsafe(updateQuery);
 
+    // Send notification to student
+    const moduleName = existingSubmission.module?.title || 'your homework';
+    const courseName = existingSubmission.course?.title || 'your course';
+    const isApproved = status === 'APPROVED';
+
+    await prisma.notification.create({
+      data: {
+        userId: existingSubmission.userId,
+        type: isApproved ? 'HOMEWORK_APPROVED' : 'HOMEWORK_REJECTED',
+        title: isApproved ? '🎉 Homework Approved!' : '❌ Homework Needs Revision',
+        message: isApproved
+          ? `Your homework for "${moduleName}" in "${courseName}" has been approved!${marksValue !== null ? ` Marks: ${marksValue}.` : ''} ${feedback ? `Feedback: ${feedback}` : 'Great work!'}`
+          : `Your homework for "${moduleName}" in "${courseName}" was reviewed.${feedback ? ` Feedback: ${feedback}` : ' Please revise and resubmit.'}`
+      }
+    });
+
     return NextResponse.json({
       success: true,
       message: 'Homework graded successfully'
@@ -82,3 +102,4 @@ export async function POST(
     );
   }
 }
+

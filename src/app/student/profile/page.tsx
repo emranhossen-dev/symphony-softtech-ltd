@@ -1,803 +1,907 @@
 "use client";
 
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
-import { Badge } from '@/components/ui/Badge';
-import { 
-  User, 
-  Mail, 
-  Phone, 
-  Calendar, 
-  MapPin, 
-  BookOpen, 
-  Award, 
+import { useState, useEffect, useCallback } from 'react';
+import {
+  User,
+  Mail,
+  Phone,
+  Calendar,
+  BookOpen,
+  Award,
   TrendingUp,
-  Camera,
   Edit,
   Save,
   X,
   Lock,
   Bell,
-  Globe,
   Shield,
   Download,
-  Upload,
   CheckCircle,
   AlertCircle,
   Eye,
   EyeOff,
-  Settings
+  Settings,
+  Loader2,
+  RefreshCw,
+  Star,
 } from 'lucide-react';
+
+/* ------------------------------------------------------------------ */
+/*  Types                                                               */
+/* ------------------------------------------------------------------ */
+
+interface Enrollment {
+  id: string;
+  courseName: string;
+  courseId: string | null;
+  status: string;
+  joinedAt: string;
+}
+
+interface RecentCert {
+  id: string;
+  courseName: string;
+  issuedAt: string;
+  verificationId: string;
+  certificateUrl: string;
+}
 
 interface StudentProfile {
   id: string;
-  firstName: string;
-  lastName: string;
+  name: string;
   email: string;
   phone: string;
-  dateOfBirth: string;
-  address: string;
-  city: string;
-  country: string;
-  bio: string;
-  avatar?: string;
+  role: string;
+  isActive: boolean;
   joinDate: string;
-  lastLogin: string;
   totalCourses: number;
   completedCourses: number;
   certificates: number;
   totalPoints: number;
   currentLevel: string;
-  preferences: {
-    emailNotifications: boolean;
-    pushNotifications: boolean;
-    language: string;
-    timezone: string;
-  };
+  enrollments: Enrollment[];
+  recentCertificates: RecentCert[];
 }
 
+type Tab = 'overview' | 'education' | 'achievements' | 'settings';
+
+/* ------------------------------------------------------------------ */
+/*  Component                                                           */
+/* ------------------------------------------------------------------ */
+
 export default function StudentProfile() {
-  const [profile, setProfile] = useState<StudentProfile>({
-    id: '1',
-    firstName: 'Alex',
-    lastName: 'Thompson',
-    email: 'alex.thompson@example.com',
-    phone: '+1 (555) 123-4567',
-    dateOfBirth: '1995-06-15',
-    address: '123 Main Street',
-    city: 'San Francisco',
-    country: 'United States',
-    bio: 'Passionate learner focused on web development and data science. Always eager to expand my knowledge and skills.',
-    joinDate: '2023-01-15',
-    lastLogin: new Date().toISOString(),
-    totalCourses: 12,
-    completedCourses: 3,
-    certificates: 2,
-    totalPoints: 1250,
-    currentLevel: 'Intermediate',
-    preferences: {
-      emailNotifications: true,
-      pushNotifications: true,
-      language: 'English',
-      timezone: 'PST'
-    }
-  });
+  const [profile, setProfile] = useState<StudentProfile | null>(null);
+  const [loadError, setLoadError] = useState('');
+  const [isPageLoading, setIsPageLoading] = useState(true);
 
   const [isEditing, setIsEditing] = useState(false);
-  const [activeTab, setActiveTab] = useState('overview');
-  const [editedProfile, setEditedProfile] = useState(profile);
-  const [isLoading, setIsLoading] = useState(false);
-  const [saveMessage, setSaveMessage] = useState('');
-  
-  // Password form states
+  const [editName, setEditName] = useState('');
+  const [editPhone, setEditPhone] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveError, setSaveError] = useState('');
+  const [saveSuccess, setSaveSuccess] = useState('');
+
+  const [activeTab, setActiveTab] = useState<Tab>('overview');
+
   const [showPasswordForm, setShowPasswordForm] = useState(false);
-  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
-  const [showNewPassword, setShowNewPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  
+  const [showCurrentPw, setShowCurrentPw] = useState(false);
+  const [showNewPw, setShowNewPw] = useState(false);
+  const [showConfirmPw, setShowConfirmPw] = useState(false);
   const [passwordData, setPasswordData] = useState({
     currentPassword: '',
     newPassword: '',
-    confirmPassword: ''
+    confirmPassword: '',
   });
+  const [pwError, setPwError] = useState('');
+  const [pwSuccess, setPwSuccess] = useState('');
+  const [isChangingPw, setIsChangingPw] = useState(false);
 
+  /* ---- Load profile ---- */
+  const loadProfile = useCallback(async () => {
+    setIsPageLoading(true);
+    setLoadError('');
+    try {
+      const res = await fetch('/api/student/profile');
+      const data = await res.json();
+      if (!res.ok) { setLoadError(data.error || 'Failed to load profile'); return; }
+      setProfile(data.profile);
+    } catch {
+      setLoadError('Network error — could not load your profile.');
+    } finally {
+      setIsPageLoading(false);
+    }
+  }, []);
+
+  useEffect(() => { loadProfile(); }, [loadProfile]);
+
+  /* ---- Edit handlers ---- */
   const handleEdit = () => {
-    setEditedProfile(profile);
+    if (!profile) return;
+    setEditName(profile.name);
+    setEditPhone(profile.phone);
+    setSaveError(''); setSaveSuccess('');
     setIsEditing(true);
-    setSaveMessage('');
   };
+
+  const handleCancel = () => { setIsEditing(false); setSaveError(''); };
 
   const handleSave = async () => {
-    setIsLoading(true);
-    
-    // Simulate API call
-    setTimeout(() => {
-      setProfile(editedProfile);
+    if (!editName.trim()) { setSaveError('Name cannot be empty.'); return; }
+    setIsSaving(true); setSaveError(''); setSaveSuccess('');
+    try {
+      const res = await fetch('/api/student/profile', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: editName.trim(), phone: editPhone.trim() }),
+      });
+      const data = await res.json();
+      if (!res.ok) { setSaveError(data.error || 'Failed to save profile'); return; }
+      await loadProfile();
       setIsEditing(false);
-      setIsLoading(false);
-      setSaveMessage('Profile updated successfully!');
-      setTimeout(() => setSaveMessage(''), 3000);
-    }, 1000);
+      setSaveSuccess('Profile updated successfully!');
+      setTimeout(() => setSaveSuccess(''), 4000);
+    } catch {
+      setSaveError('Network error — could not save profile.');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
-  const handleCancel = () => {
-    setEditedProfile(profile);
-    setIsEditing(false);
-  };
-
-  const handleInputChange = (field: keyof StudentProfile, value: any) => {
-    setEditedProfile(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  };
-
-  const handlePreferenceChange = (field: string, value: any) => {
-    setEditedProfile(prev => ({
-      ...prev,
-      preferences: {
-        ...prev.preferences,
-        [field]: value
-      }
-    }));
-  };
-
-  const handlePasswordChange = (e: React.FormEvent) => {
+  /* ---- Password handler ---- */
+  const handlePasswordChange = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Basic validation
-    if (passwordData.newPassword !== passwordData.confirmPassword) {
-      alert('New passwords do not match!');
-      return;
+    setPwError(''); setPwSuccess('');
+    const { currentPassword, newPassword, confirmPassword } = passwordData;
+    if (!currentPassword) { setPwError('Please enter your current password.'); return; }
+    if (!newPassword) { setPwError('Please enter a new password.'); return; }
+    if (newPassword.length < 8) { setPwError('New password must be at least 8 characters.'); return; }
+    if (newPassword !== confirmPassword) { setPwError('New passwords do not match.'); return; }
+    if (newPassword === currentPassword) { setPwError('New password must differ from your current password.'); return; }
+    setIsChangingPw(true);
+    try {
+      const res = await fetch('/api/student/change-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ currentPassword, newPassword, confirmPassword }),
+      });
+      const data = await res.json();
+      if (!res.ok) { setPwError(data.error || 'Failed to change password.'); return; }
+      setPwSuccess('Password changed successfully!');
+      setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
+      setShowPasswordForm(false);
+      setTimeout(() => setPwSuccess(''), 5000);
+    } catch {
+      setPwError('Network error — could not change password.');
+    } finally {
+      setIsChangingPw(false);
     }
-    
-    if (passwordData.newPassword.length < 6) {
-      alert('Password must be at least 6 characters long!');
-      return;
-    }
-    
-    console.log('Password change requested:', {
-      currentPassword: passwordData.currentPassword,
-      newPassword: passwordData.newPassword
-    });
-    
-    // TODO: Implement actual password change logic
-    alert('Password changed successfully!');
-    
-    // Reset form
-    setPasswordData({
-      currentPassword: '',
-      newPassword: '',
-      confirmPassword: ''
-    });
-    setShowPasswordForm(false);
   };
 
-  const tabs = [
+  /* ---- Helpers ---- */
+  const getInitials = (name: string) =>
+    name.split(' ').slice(0, 2).map((n) => n[0]?.toUpperCase() ?? '').join('');
+
+  const getPasswordStrength = (pw: string) => {
+    const checks = [pw.length >= 8, /[A-Z]/.test(pw), /[0-9]/.test(pw), /[^A-Za-z0-9]/.test(pw)];
+    return checks.filter(Boolean).length;
+  };
+
+  const strengthLabel = ['', 'Weak', 'Fair', 'Good', 'Strong'];
+  const strengthColors = ['', 'bg-red-500', 'bg-orange-400', 'bg-yellow-400', 'bg-green-500'];
+
+  const tabs: { id: Tab; label: string; icon: React.ElementType }[] = [
     { id: 'overview', label: 'Overview', icon: User },
     { id: 'education', label: 'Education', icon: BookOpen },
     { id: 'achievements', label: 'Achievements', icon: Award },
     { id: 'settings', label: 'Settings', icon: Settings },
   ];
 
+  const completionRate = profile && profile.totalCourses > 0
+    ? Math.round((profile.completedCourses / profile.totalCourses) * 100)
+    : 0;
+
+  /* ---- Loading state ---- */
+  if (isPageLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="w-10 h-10 animate-spin text-blue-400" />
+          <p className="text-blue-200 text-sm font-medium">Loading your profile…</p>
+        </div>
+      </div>
+    );
+  }
+
+  /* ---- Error state ---- */
+  if (loadError || !profile) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-6">
+        <div className="bg-[#1a1f4c]/60 border border-blue-500/20 rounded-2xl p-8 max-w-md w-full text-center backdrop-blur-sm">
+          <AlertCircle className="w-12 h-12 text-red-400 mx-auto mb-4" />
+          <h2 className="text-xl font-semibold text-white mb-2">Could not load profile</h2>
+          <p className="text-blue-200 text-sm mb-6">{loadError || 'Unknown error'}</p>
+          <button
+            onClick={loadProfile}
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-medium rounded-xl transition-all shadow-lg shadow-blue-500/20"
+          >
+            <RefreshCw className="w-4 h-4" /> Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  /* ================================================================ */
+  /*  RENDER                                                            */
+  /* ================================================================ */
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6">
-      <div className="max-w-6xl mx-auto">
-        {/* Header */}
-        <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <div className="relative">
-                <div className="w-20 h-20 bg-gradient-to-br from-green-400 to-emerald-600 rounded-full flex items-center justify-center">
-                  <span className="text-white text-2xl font-bold">
-                    {profile.firstName[0]}{profile.lastName[0]}
-                  </span>
-                </div>
-                <button className="absolute bottom-0 right-0 w-6 h-6 bg-green-600 rounded-full flex items-center justify-center text-white hover:bg-green-700 transition-colors">
-                  <Camera className="w-3 h-3" />
-                </button>
+    <div className="space-y-6">
+
+      {/* ── Global success toast ── */}
+      {(saveSuccess || pwSuccess) && (
+        <div className="p-3 bg-green-500/15 border border-green-500/30 rounded-xl flex items-center gap-3">
+          <CheckCircle className="w-5 h-5 text-green-400 shrink-0" />
+          <span className="text-green-300 text-sm font-medium">{saveSuccess || pwSuccess}</span>
+        </div>
+      )}
+
+      {/* ════════════════════════════════════════════════════════════ */}
+      {/* HERO HEADER                                                  */}
+      {/* ════════════════════════════════════════════════════════════ */}
+      <div className="bg-gradient-to-r from-[#1a1f4c] to-[#0d1b3e] border border-blue-500/20 rounded-2xl p-6 sm:p-8 shadow-xl">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
+          {/* Avatar + info */}
+          <div className="flex items-center gap-5">
+            {/* Avatar */}
+            <div className="relative shrink-0">
+              <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/30">
+                <span className="text-white text-2xl font-bold">{getInitials(profile.name)}</span>
               </div>
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">
-                  {profile.firstName} {profile.lastName}
-                </h1>
-                <p className="text-gray-500">{profile.email}</p>
-                <div className="flex items-center space-x-2 mt-2">
-                  <Badge className="bg-green-100 text-green-700 border-green-200">
-                    {profile.currentLevel}
-                  </Badge>
-                  <Badge className="bg-blue-100 text-blue-700 border-blue-200">
-                    {profile.totalPoints} Points
-                  </Badge>
-                </div>
-              </div>
+              {/* Online dot */}
+              <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 border-2 border-[#0d1b3e] rounded-full" />
             </div>
-            <div className="flex space-x-3">
-              {!isEditing ? (
-                <Button
-                  onClick={handleEdit}
-                  className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white"
-                >
-                  <Edit className="w-4 h-4 mr-2" />
-                  Edit Profile
-                </Button>
+
+            {/* Name + email + badges */}
+            <div>
+              {isEditing ? (
+                <input
+                  type="text"
+                  value={editName}
+                  onChange={(e) => setEditName(e.target.value)}
+                  className="text-2xl font-bold text-white bg-transparent border-b-2 border-blue-400 outline-none w-full mb-1"
+                  placeholder="Full Name"
+                  autoFocus
+                />
               ) : (
-                <>
-                  <Button
-                    onClick={handleSave}
-                    disabled={isLoading}
-                    className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white"
-                  >
-                    {isLoading ? (
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
-                    ) : (
-                      <Save className="w-4 h-4 mr-2" />
-                    )}
-                    Save
-                  </Button>
-                  <Button
-                    onClick={handleCancel}
-                    variant="outline"
-                    className="border-gray-300 text-gray-700 hover:bg-gray-50"
-                  >
-                    <X className="w-4 h-4 mr-2" />
-                    Cancel
-                  </Button>
-                </>
+                <h1 className="text-2xl font-bold text-white">{profile.name}</h1>
               )}
+              <p className="text-blue-300 text-sm mt-0.5">{profile.email}</p>
+              <div className="flex flex-wrap gap-2 mt-2">
+                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-500/20 text-blue-300 border border-blue-500/30">
+                  <Star className="w-3 h-3" /> {profile.currentLevel}
+                </span>
+                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                  {profile.totalPoints} pts
+                </span>
+                <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium border ${
+                  profile.isActive
+                    ? 'bg-green-500/20 text-green-300 border-green-500/30'
+                    : 'bg-red-500/20 text-red-300 border-red-500/30'
+                }`}>
+                  {profile.isActive ? '● Active' : '● Inactive'}
+                </span>
+              </div>
             </div>
           </div>
-          
-          {saveMessage && (
-            <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg flex items-center">
-              <CheckCircle className="w-5 h-5 text-green-600 mr-2" />
-              <span className="text-green-700">{saveMessage}</span>
+
+          {/* Edit / Save / Cancel */}
+          <div className="flex gap-2 shrink-0">
+            {!isEditing ? (
+              <button
+                onClick={handleEdit}
+                className="inline-flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium rounded-xl transition-all shadow-lg shadow-blue-500/20"
+              >
+                <Edit className="w-4 h-4" /> Edit Profile
+              </button>
+            ) : (
+              <>
+                <button
+                  onClick={handleSave}
+                  disabled={isSaving}
+                  className="inline-flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium rounded-xl transition-all shadow-lg shadow-blue-500/20 disabled:opacity-60"
+                >
+                  {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                  Save
+                </button>
+                <button
+                  onClick={handleCancel}
+                  className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#0a0e27]/60 hover:bg-[#0a0e27] text-blue-200 text-sm font-medium rounded-xl border border-blue-500/30 transition-all"
+                >
+                  <X className="w-4 h-4" /> Cancel
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* Edit save error */}
+        {saveError && isEditing && (
+          <div className="mt-4 p-3 bg-red-500/15 border border-red-500/30 rounded-xl flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 text-red-400 shrink-0" />
+            <span className="text-red-300 text-sm">{saveError}</span>
+          </div>
+        )}
+
+        {/* Quick stat pills row */}
+        <div className="grid grid-cols-3 gap-3 mt-6">
+          {[
+            { label: 'Enrolled', value: profile.totalCourses, color: 'text-blue-300' },
+            { label: 'Completed', value: profile.completedCourses, color: 'text-green-300' },
+            { label: 'Certificates', value: profile.certificates, color: 'text-yellow-300' },
+          ].map(({ label, value, color }) => (
+            <div key={label} className="bg-[#0a0e27]/50 border border-blue-500/20 rounded-xl p-3 text-center">
+              <p className={`text-xl font-bold ${color}`}>{value}</p>
+              <p className="text-xs text-blue-400 mt-0.5">{label}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* ════════════════════════════════════════════════════════════ */}
+      {/* TABS                                                         */}
+      {/* ════════════════════════════════════════════════════════════ */}
+      <div className="bg-[#1a1f4c]/50 border border-blue-500/20 rounded-2xl p-1.5 backdrop-blur-sm">
+        <div className="flex flex-wrap gap-1">
+          {tabs.map(({ id, label, icon: Icon }) => (
+            <button
+              key={id}
+              onClick={() => setActiveTab(id)}
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
+                activeTab === id
+                  ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30'
+                  : 'text-blue-300 hover:bg-blue-500/10 hover:text-white'
+              }`}
+            >
+              <Icon className="w-4 h-4" />
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* ════════════════════════════════════════════════════════════ */}
+      {/* MAIN GRID                                                    */}
+      {/* ════════════════════════════════════════════════════════════ */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        {/* ── Left / Main column ── */}
+        <div className="lg:col-span-2 space-y-6">
+
+          {/* ─────────── OVERVIEW ─────────── */}
+          {activeTab === 'overview' && (
+            <>
+              {/* Personal Info card */}
+              <div className="bg-[#1a1f4c]/50 border border-blue-500/20 rounded-2xl backdrop-blur-sm overflow-hidden">
+                <div className="px-6 py-4 border-b border-blue-500/20 bg-[#0a0e27]/40">
+                  <h2 className="text-base font-semibold text-white flex items-center gap-2">
+                    <User className="w-4 h-4 text-blue-400" /> Personal Information
+                  </h2>
+                </div>
+                <div className="p-6 space-y-5">
+                  {/* Full name */}
+                  <div>
+                    <label className="block text-xs font-medium text-blue-400 uppercase tracking-wider mb-1.5">
+                      Full Name
+                    </label>
+                    <p className="text-white font-medium">{profile.name}</p>
+                  </div>
+
+                  {/* Email */}
+                  <div>
+                    <label className="block text-xs font-medium text-blue-400 uppercase tracking-wider mb-1.5">
+                      Email Address
+                    </label>
+                    <p className="text-white flex items-center gap-2">
+                      <Mail className="w-4 h-4 text-blue-400" />
+                      {profile.email}
+                      <span className="text-xs text-blue-500 ml-1">(cannot be changed)</span>
+                    </p>
+                  </div>
+
+                  {/* Phone — editable */}
+                  <div>
+                    <label className="block text-xs font-medium text-blue-400 uppercase tracking-wider mb-1.5">
+                      Phone Number
+                    </label>
+                    {isEditing ? (
+                      <input
+                        type="tel"
+                        value={editPhone}
+                        onChange={(e) => setEditPhone(e.target.value)}
+                        className="w-full px-4 py-2.5 bg-[#0a0e27]/60 border border-blue-500/30 rounded-xl text-white placeholder-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/60 text-sm transition-all"
+                        placeholder="+880 17xx xxx xxxx"
+                      />
+                    ) : (
+                      <p className="text-white flex items-center gap-2">
+                        <Phone className="w-4 h-4 text-blue-400" />
+                        {profile.phone || <span className="text-blue-500 italic">Not provided</span>}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Member since */}
+                  <div>
+                    <label className="block text-xs font-medium text-blue-400 uppercase tracking-wider mb-1.5">
+                      Member Since
+                    </label>
+                    <p className="text-white flex items-center gap-2">
+                      <Calendar className="w-4 h-4 text-blue-400" />
+                      {new Date(profile.joinDate).toLocaleDateString('en-US', {
+                        year: 'numeric', month: 'long', day: 'numeric',
+                      })}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Security card */}
+              <div className="bg-[#1a1f4c]/50 border border-blue-500/20 rounded-2xl backdrop-blur-sm overflow-hidden">
+                <div className="px-6 py-4 border-b border-blue-500/20 bg-[#0a0e27]/40">
+                  <h2 className="text-base font-semibold text-white flex items-center gap-2">
+                    <Lock className="w-4 h-4 text-blue-400" /> Security Settings
+                  </h2>
+                </div>
+                <div className="p-6">
+                  <div className="flex items-center justify-between mb-5">
+                    <div>
+                      <p className="text-white font-medium text-sm">Password</p>
+                      <p className="text-blue-400 text-xs mt-0.5">Keep your account safe with a strong password.</p>
+                    </div>
+                    <button
+                      onClick={() => {
+                        setShowPasswordForm(!showPasswordForm);
+                        setPwError(''); setPwSuccess('');
+                        setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
+                      }}
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-[#0a0e27]/60 hover:bg-[#0a0e27] text-blue-300 hover:text-white text-sm font-medium rounded-xl border border-blue-500/30 transition-all"
+                    >
+                      <Lock className="w-3.5 h-3.5" />
+                      {showPasswordForm ? 'Cancel' : 'Change Password'}
+                    </button>
+                  </div>
+
+                  {/* pw success above form */}
+                  {pwSuccess && !showPasswordForm && (
+                    <div className="p-3 bg-green-500/15 border border-green-500/30 rounded-xl flex items-center gap-2 mb-4">
+                      <CheckCircle className="w-4 h-4 text-green-400 shrink-0" />
+                      <span className="text-green-300 text-sm">{pwSuccess}</span>
+                    </div>
+                  )}
+
+                  {showPasswordForm && (
+                    <form onSubmit={handlePasswordChange} className="space-y-4 border-t border-blue-500/20 pt-5">
+                      {/* Current pw */}
+                      <div>
+                        <label className="block text-xs font-medium text-blue-400 uppercase tracking-wider mb-1.5">
+                          Current Password
+                        </label>
+                        <div className="relative">
+                          <input
+                            type={showCurrentPw ? 'text' : 'password'}
+                            value={passwordData.currentPassword}
+                            onChange={(e) => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
+                            className="w-full px-4 py-2.5 pr-10 bg-[#0a0e27]/60 border border-blue-500/30 rounded-xl text-white placeholder-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/60 text-sm transition-all"
+                            placeholder="Enter current password"
+                            required
+                            autoComplete="current-password"
+                          />
+                          <button type="button" onClick={() => setShowCurrentPw(!showCurrentPw)}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-blue-400 hover:text-white transition-colors">
+                            {showCurrentPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* New pw */}
+                      <div>
+                        <label className="block text-xs font-medium text-blue-400 uppercase tracking-wider mb-1.5">
+                          New Password
+                        </label>
+                        <div className="relative">
+                          <input
+                            type={showNewPw ? 'text' : 'password'}
+                            value={passwordData.newPassword}
+                            onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
+                            className="w-full px-4 py-2.5 pr-10 bg-[#0a0e27]/60 border border-blue-500/30 rounded-xl text-white placeholder-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/60 text-sm transition-all"
+                            placeholder="At least 8 characters"
+                            required
+                            autoComplete="new-password"
+                          />
+                          <button type="button" onClick={() => setShowNewPw(!showNewPw)}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-blue-400 hover:text-white transition-colors">
+                            {showNewPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                          </button>
+                        </div>
+                        {/* Strength bar */}
+                        {passwordData.newPassword && (() => {
+                          const s = getPasswordStrength(passwordData.newPassword);
+                          return (
+                            <div className="mt-2 flex items-center gap-2">
+                              <div className="flex gap-1 flex-1">
+                                {[1, 2, 3, 4].map((l) => (
+                                  <div key={l} className={`h-1 flex-1 rounded-full transition-colors ${l <= s ? strengthColors[s] : 'bg-blue-500/20'}`} />
+                                ))}
+                              </div>
+                              <span className="text-xs text-blue-400">{strengthLabel[s]}</span>
+                            </div>
+                          );
+                        })()}
+                      </div>
+
+                      {/* Confirm pw */}
+                      <div>
+                        <label className="block text-xs font-medium text-blue-400 uppercase tracking-wider mb-1.5">
+                          Confirm New Password
+                        </label>
+                        <div className="relative">
+                          <input
+                            type={showConfirmPw ? 'text' : 'password'}
+                            value={passwordData.confirmPassword}
+                            onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
+                            className={`w-full px-4 py-2.5 pr-10 bg-[#0a0e27]/60 border rounded-xl text-white placeholder-blue-500 focus:outline-none focus:ring-2 focus:border-blue-500/60 text-sm transition-all ${
+                              passwordData.confirmPassword && passwordData.confirmPassword !== passwordData.newPassword
+                                ? 'border-red-500/50 focus:ring-red-500/30'
+                                : 'border-blue-500/30 focus:ring-blue-500/50'
+                            }`}
+                            placeholder="Re-enter new password"
+                            required
+                            autoComplete="new-password"
+                          />
+                          <button type="button" onClick={() => setShowConfirmPw(!showConfirmPw)}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-blue-400 hover:text-white transition-colors">
+                            {showConfirmPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                          </button>
+                        </div>
+                        {passwordData.confirmPassword && passwordData.confirmPassword !== passwordData.newPassword && (
+                          <p className="text-xs text-red-400 mt-1">Passwords do not match</p>
+                        )}
+                      </div>
+
+                      {/* Error */}
+                      {pwError && (
+                        <div className="p-3 bg-red-500/15 border border-red-500/30 rounded-xl flex items-center gap-2">
+                          <AlertCircle className="w-4 h-4 text-red-400 shrink-0" />
+                          <span className="text-red-300 text-sm">{pwError}</span>
+                        </div>
+                      )}
+
+                      <div className="flex justify-end gap-3 pt-1">
+                        <button
+                          type="button"
+                          onClick={() => { setShowPasswordForm(false); setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' }); setPwError(''); }}
+                          className="px-4 py-2 text-blue-300 bg-[#0a0e27]/60 hover:bg-[#0a0e27] rounded-xl border border-blue-500/30 transition-all text-sm"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          type="submit"
+                          disabled={isChangingPw}
+                          className="inline-flex items-center gap-2 px-5 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-sm font-medium transition-all shadow-lg shadow-blue-500/20 disabled:opacity-60"
+                        >
+                          {isChangingPw && <Loader2 className="w-4 h-4 animate-spin" />}
+                          Update Password
+                        </button>
+                      </div>
+                    </form>
+                  )}
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* ─────────── EDUCATION ─────────── */}
+          {activeTab === 'education' && (
+            <div className="bg-[#1a1f4c]/50 border border-blue-500/20 rounded-2xl backdrop-blur-sm overflow-hidden">
+              <div className="px-6 py-4 border-b border-blue-500/20 bg-[#0a0e27]/40">
+                <h2 className="text-base font-semibold text-white flex items-center gap-2">
+                  <BookOpen className="w-4 h-4 text-blue-400" /> Education Progress
+                </h2>
+              </div>
+              <div className="p-6 space-y-6">
+                {/* Stats row */}
+                <div className="grid grid-cols-3 gap-4">
+                  {[
+                    { label: 'Total Enrolled', value: profile.totalCourses, color: 'text-blue-300', bg: 'bg-blue-500/10 border-blue-500/20' },
+                    { label: 'Completed', value: profile.completedCourses, color: 'text-green-300', bg: 'bg-green-500/10 border-green-500/20' },
+                    { label: 'Certificates', value: profile.certificates, color: 'text-yellow-300', bg: 'bg-yellow-500/10 border-yellow-500/20' },
+                  ].map(({ label, value, color, bg }) => (
+                    <div key={label} className={`${bg} border rounded-xl p-4 text-center`}>
+                      <div className={`text-3xl font-bold ${color}`}>{value}</div>
+                      <div className="text-xs text-blue-400 mt-1">{label}</div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Progress bar */}
+                {profile.totalCourses > 0 && (
+                  <div>
+                    <div className="flex justify-between text-sm mb-2">
+                      <span className="text-blue-300">Overall Completion</span>
+                      <span className="font-semibold text-green-300">{completionRate}%</span>
+                    </div>
+                    <div className="w-full bg-blue-500/10 border border-blue-500/20 rounded-full h-2.5">
+                      <div
+                        className="bg-gradient-to-r from-blue-500 to-emerald-500 h-2.5 rounded-full transition-all duration-700"
+                        style={{ width: `${completionRate}%` }}
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* Enrollments list */}
+                <div>
+                  <h3 className="text-sm font-semibold text-blue-200 mb-3 uppercase tracking-wider">My Enrollments</h3>
+                  {profile.enrollments.length === 0 ? (
+                    <div className="text-center py-10 text-blue-500">
+                      <BookOpen className="w-10 h-10 mx-auto text-blue-500/30 mb-3" />
+                      <p className="text-sm">You haven't enrolled in any courses yet.</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {profile.enrollments.map((enrollment) => (
+                        <div key={enrollment.id}
+                          className="flex items-center justify-between p-4 bg-[#0a0e27]/50 border border-blue-500/20 rounded-xl hover:border-blue-500/40 transition-all">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-blue-500/20 border border-blue-500/30 rounded-xl flex items-center justify-center shrink-0">
+                              <BookOpen className="w-5 h-5 text-blue-400" />
+                            </div>
+                            <div>
+                              <h4 className="text-sm font-medium text-white">{enrollment.courseName}</h4>
+                              <p className="text-xs text-blue-400">
+                                Enrolled {new Date(enrollment.joinedAt).toLocaleDateString()}
+                              </p>
+                            </div>
+                          </div>
+                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${
+                            enrollment.status === 'ADMITTED'
+                              ? 'bg-green-500/20 text-green-300 border-green-500/30'
+                              : enrollment.status === 'REJECTED'
+                              ? 'bg-red-500/20 text-red-300 border-red-500/30'
+                              : 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30'
+                          }`}>
+                            {enrollment.status}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ─────────── ACHIEVEMENTS ─────────── */}
+          {activeTab === 'achievements' && (
+            <div className="bg-[#1a1f4c]/50 border border-blue-500/20 rounded-2xl backdrop-blur-sm overflow-hidden">
+              <div className="px-6 py-4 border-b border-blue-500/20 bg-[#0a0e27]/40">
+                <h2 className="text-base font-semibold text-white flex items-center gap-2">
+                  <Award className="w-4 h-4 text-blue-400" /> Achievements &amp; Certificates
+                </h2>
+              </div>
+              <div className="p-6 space-y-6">
+                {/* Level banner */}
+                <div className="bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border border-yellow-500/30 rounded-2xl p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="text-xl font-bold text-white mb-1">
+                        Level: <span className="text-yellow-300">{profile.currentLevel}</span>
+                      </h3>
+                      <p className="text-yellow-200/70 text-sm mb-4">Keep learning to earn more points!</p>
+                      <div className="flex items-center gap-6">
+                        <div>
+                          <p className="text-yellow-300/70 text-xs uppercase tracking-wider">Total Points</p>
+                          <p className="text-2xl font-bold text-yellow-300">{profile.totalPoints}</p>
+                        </div>
+                        <div>
+                          <p className="text-yellow-300/70 text-xs uppercase tracking-wider">Certificates</p>
+                          <p className="text-2xl font-bold text-yellow-300">{profile.certificates}</p>
+                        </div>
+                      </div>
+                    </div>
+                    <TrendingUp className="w-16 h-16 text-yellow-400/30" />
+                  </div>
+                </div>
+
+                {/* Certificates */}
+                <div>
+                  <h3 className="text-sm font-semibold text-blue-200 mb-3 uppercase tracking-wider">Your Certificates</h3>
+                  {profile.recentCertificates.length === 0 ? (
+                    <div className="text-center py-10">
+                      <Award className="w-10 h-10 mx-auto text-blue-500/30 mb-3" />
+                      <p className="text-sm text-blue-400">No certificates yet. Complete a course to earn one!</p>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {profile.recentCertificates.map((cert) => (
+                        <div key={cert.id}
+                          className="bg-[#0a0e27]/50 border border-blue-500/20 rounded-xl p-4 hover:border-blue-500/40 transition-all">
+                          <div className="flex items-start justify-between gap-3">
+                            <div className="flex items-center gap-3">
+                              <div className="w-12 h-12 bg-blue-500/20 border border-blue-500/30 rounded-xl flex items-center justify-center shrink-0">
+                                <Award className="w-6 h-6 text-blue-400" />
+                              </div>
+                              <div>
+                                <h4 className="text-sm font-medium text-white">{cert.courseName}</h4>
+                                <p className="text-xs text-blue-400 mt-0.5">
+                                  Issued {new Date(cert.issuedAt).toLocaleDateString()}
+                                </p>
+                                <p className="text-xs text-blue-500/60 font-mono mt-0.5">
+                                  #{cert.verificationId.slice(0, 8)}
+                                </p>
+                              </div>
+                            </div>
+                            <a href={cert.certificateUrl} target="_blank" rel="noreferrer" className="shrink-0">
+                              <button className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-500/10 hover:bg-blue-500/20 text-blue-300 hover:text-white text-xs font-medium rounded-lg border border-blue-500/30 transition-all">
+                                <Download className="w-3.5 h-3.5" /> Download
+                              </button>
+                            </a>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ─────────── SETTINGS ─────────── */}
+          {activeTab === 'settings' && (
+            <div className="bg-[#1a1f4c]/50 border border-blue-500/20 rounded-2xl backdrop-blur-sm overflow-hidden">
+              <div className="px-6 py-4 border-b border-blue-500/20 bg-[#0a0e27]/40">
+                <h2 className="text-base font-semibold text-white flex items-center gap-2">
+                  <Settings className="w-4 h-4 text-blue-400" /> Account Settings
+                </h2>
+              </div>
+              <div className="p-6 space-y-4">
+                {/* Account status */}
+                <div className="flex items-center justify-between p-4 bg-[#0a0e27]/50 border border-blue-500/20 rounded-xl">
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 bg-green-500/20 border border-green-500/30 rounded-xl flex items-center justify-center">
+                      <Shield className="w-4 h-4 text-green-400" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-white">Account Status</p>
+                      <p className="text-xs text-blue-400 mt-0.5">Your account is currently {profile.isActive ? 'active' : 'inactive'}.</p>
+                    </div>
+                  </div>
+                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${
+                    profile.isActive
+                      ? 'bg-green-500/20 text-green-300 border-green-500/30'
+                      : 'bg-red-500/20 text-red-300 border-red-500/30'
+                  }`}>
+                    {profile.isActive ? 'Active' : 'Inactive'}
+                  </span>
+                </div>
+
+                {/* Role */}
+                <div className="flex items-center justify-between p-4 bg-[#0a0e27]/50 border border-blue-500/20 rounded-xl">
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 bg-blue-500/20 border border-blue-500/30 rounded-xl flex items-center justify-center">
+                      <User className="w-4 h-4 text-blue-400" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-white">Account Role</p>
+                      <p className="text-xs text-blue-400 mt-0.5">Your assigned role in the platform.</p>
+                    </div>
+                  </div>
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-500/20 text-blue-300 border border-blue-500/30">
+                    {profile.role}
+                  </span>
+                </div>
+
+                {/* Notifications */}
+                <div className="flex items-start gap-3 p-4 bg-blue-500/10 border border-blue-500/20 rounded-xl">
+                  <div className="w-9 h-9 bg-blue-500/20 border border-blue-500/30 rounded-xl flex items-center justify-center shrink-0">
+                    <Bell className="w-4 h-4 text-blue-400" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-white">Notifications</p>
+                    <p className="text-xs text-blue-400 mt-0.5 leading-relaxed">
+                      You receive email notifications for course updates, homework feedback, and certificate issuance.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Change password shortcut */}
+                <div className="flex items-center justify-between p-4 bg-[#0a0e27]/50 border border-blue-500/20 rounded-xl">
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 bg-purple-500/20 border border-purple-500/30 rounded-xl flex items-center justify-center">
+                      <Lock className="w-4 h-4 text-purple-400" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-white">Password</p>
+                      <p className="text-xs text-blue-400 mt-0.5">Change your account password securely.</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => { setActiveTab('overview'); setTimeout(() => setShowPasswordForm(true), 100); }}
+                    className="text-sm text-blue-400 hover:text-white font-medium transition-colors"
+                  >
+                    Change →
+                  </button>
+                </div>
+              </div>
             </div>
           )}
         </div>
 
-        {/* Tabs */}
-        <div className="bg-white rounded-2xl shadow-lg p-2 mb-6">
-          <div className="flex space-x-2">
-            {tabs.map((tab) => {
-              const Icon = tab.icon;
-              return (
+        {/* ── Sidebar column ── */}
+        <div className="space-y-6">
+          {/* Quick Stats card */}
+          <div className="bg-[#1a1f4c]/50 border border-blue-500/20 rounded-2xl backdrop-blur-sm overflow-hidden">
+            <div className="px-6 py-4 border-b border-blue-500/20 bg-[#0a0e27]/40">
+              <h2 className="text-base font-semibold text-white">Quick Stats</h2>
+            </div>
+            <div className="p-6 space-y-4">
+              {[
+                { label: 'Member Since', value: new Date(profile.joinDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }), color: 'text-white' },
+                { label: 'Total Points', value: profile.totalPoints, color: 'text-green-300' },
+                { label: 'Completion Rate', value: `${completionRate}%`, color: 'text-blue-300' },
+                { label: 'Courses Enrolled', value: profile.totalCourses, color: 'text-white' },
+                { label: 'Certificates', value: profile.certificates, color: 'text-yellow-300' },
+              ].map(({ label, value, color }) => (
+                <div key={label} className="flex items-center justify-between">
+                  <span className="text-sm text-blue-400">{label}</span>
+                  <span className={`text-sm font-semibold ${color}`}>{value}</span>
+                </div>
+              ))}
+
+              {/* Mini progress bar */}
+              {profile.totalCourses > 0 && (
+                <div className="pt-2 border-t border-blue-500/20">
+                  <div className="w-full bg-blue-500/10 border border-blue-500/20 rounded-full h-2">
+                    <div
+                      className="bg-gradient-to-r from-blue-500 to-emerald-500 h-2 rounded-full"
+                      style={{ width: `${completionRate}%` }}
+                    />
+                  </div>
+                  <p className="text-xs text-blue-500 mt-1 text-right">{completionRate}% complete</p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Account snapshot card */}
+          <div className="bg-[#1a1f4c]/50 border border-blue-500/20 rounded-2xl backdrop-blur-sm overflow-hidden">
+            <div className="px-6 py-4 border-b border-blue-500/20 bg-[#0a0e27]/40">
+              <h2 className="text-base font-semibold text-white">Account</h2>
+            </div>
+            <div className="p-6 space-y-3">
+              <div className="flex items-center gap-2 text-sm text-blue-300">
+                <Mail className="w-4 h-4 text-blue-500 shrink-0" />
+                <span className="truncate">{profile.email}</span>
+              </div>
+              {profile.phone && (
+                <div className="flex items-center gap-2 text-sm text-blue-300">
+                  <Phone className="w-4 h-4 text-blue-500 shrink-0" />
+                  <span>{profile.phone}</span>
+                </div>
+              )}
+              <div className="flex items-center gap-2 text-sm text-blue-300">
+                <Shield className="w-4 h-4 text-blue-500 shrink-0" />
+                <span>Role: {profile.role}</span>
+              </div>
+              <div className="pt-3 border-t border-blue-500/20">
                 <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center space-x-2 px-4 py-2 rounded-xl transition-all duration-200 ${
-                    activeTab === tab.id
-                      ? 'bg-gradient-to-r from-green-600 to-emerald-600 text-white'
-                      : 'text-gray-600 hover:bg-gray-100'
-                  }`}
+                  onClick={handleEdit}
+                  disabled={isEditing}
+                  className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium rounded-xl transition-all shadow-lg shadow-blue-500/20 disabled:opacity-50"
                 >
-                  <Icon className="w-4 h-4" />
-                  <span className="font-medium">{tab.label}</span>
+                  <Edit className="w-4 h-4" /> Edit Profile
                 </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Tab Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Main Content */}
-          <div className="lg:col-span-2 space-y-6">
-            {activeTab === 'overview' && (
-              <>
-                {/* Personal Information */}
-                <Card className="bg-white border-0 shadow-lg rounded-2xl">
-                  <CardHeader className="pb-4">
-                    <CardTitle className="text-lg font-semibold text-gray-900 flex items-center">
-                      <User className="w-5 h-5 mr-2 text-green-600" />
-                      Personal Information
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">First Name</label>
-                        {isEditing ? (
-                          <input
-                            type="text"
-                            value={editedProfile.firstName}
-                            onChange={(e) => handleInputChange('firstName', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                          />
-                        ) : (
-                          <p className="text-gray-900">{profile.firstName}</p>
-                        )}
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
-                        {isEditing ? (
-                          <input
-                            type="text"
-                            value={editedProfile.lastName}
-                            onChange={(e) => handleInputChange('lastName', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                          />
-                        ) : (
-                          <p className="text-gray-900">{profile.lastName}</p>
-                        )}
-                      </div>
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                      {isEditing ? (
-                        <input
-                          type="email"
-                          value={editedProfile.email}
-                          onChange={(e) => handleInputChange('email', e.target.value)}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                        />
-                      ) : (
-                        <p className="text-gray-900 flex items-center">
-                          <Mail className="w-4 h-4 mr-2 text-gray-400" />
-                          {profile.email}
-                        </p>
-                      )}
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
-                      {isEditing ? (
-                        <input
-                          type="tel"
-                          value={editedProfile.phone}
-                          onChange={(e) => handleInputChange('phone', e.target.value)}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                        />
-                      ) : (
-                        <p className="text-gray-900 flex items-center">
-                          <Phone className="w-4 h-4 mr-2 text-gray-400" />
-                          {profile.phone}
-                        </p>
-                      )}
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Bio</label>
-                      {isEditing ? (
-                        <textarea
-                          value={editedProfile.bio}
-                          onChange={(e) => handleInputChange('bio', e.target.value)}
-                          rows={3}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                        />
-                      ) : (
-                        <p className="text-gray-900">{profile.bio}</p>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Location Information */}
-                <Card className="bg-white border-0 shadow-lg rounded-2xl">
-                  <CardHeader className="pb-4">
-                    <CardTitle className="text-lg font-semibold text-gray-900 flex items-center">
-                      <MapPin className="w-5 h-5 mr-2 text-green-600" />
-                      Location Information
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
-                      {isEditing ? (
-                        <input
-                          type="text"
-                          value={editedProfile.address}
-                          onChange={(e) => handleInputChange('address', e.target.value)}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                        />
-                      ) : (
-                        <p className="text-gray-900">{profile.address}</p>
-                      )}
-                    </div>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">City</label>
-                        {isEditing ? (
-                          <input
-                            type="text"
-                            value={editedProfile.city}
-                            onChange={(e) => handleInputChange('city', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                          />
-                        ) : (
-                          <p className="text-gray-900">{profile.city}</p>
-                        )}
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Country</label>
-                        {isEditing ? (
-                          <input
-                            type="text"
-                            value={editedProfile.country}
-                            onChange={(e) => handleInputChange('country', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                          />
-                        ) : (
-                          <p className="text-gray-900">{profile.country}</p>
-                        )}
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Change Password Section */}
-                <Card className="bg-white border-0 shadow-lg rounded-2xl">
-                  <CardHeader className="pb-4">
-                    <CardTitle className="text-lg font-semibold text-gray-900 flex items-center">
-                      <Lock className="w-5 h-5 mr-2 text-green-600" />
-                      Security Settings
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex items-center justify-between mb-6">
-                      <div>
-                        <p className="font-medium text-gray-900">Password</p>
-                        <p className="text-sm text-gray-500">Last changed 3 months ago</p>
-                      </div>
-                      <button
-                        onClick={() => setShowPasswordForm(!showPasswordForm)}
-                        className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
-                      >
-                        <Lock className="w-4 h-4" />
-                        Change Password
-                      </button>
-                    </div>
-
-                    {showPasswordForm && (
-                      <form onSubmit={handlePasswordChange} className="space-y-4 border-t pt-4">
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Current Password
-                          </label>
-                          <div className="relative">
-                            <input
-                              type={showCurrentPassword ? 'text' : 'password'}
-                              value={passwordData.currentPassword}
-                              onChange={(e) => setPasswordData({...passwordData, currentPassword: e.target.value})}
-                              className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                              placeholder="Enter current password"
-                              required
-                            />
-                            <button
-                              type="button"
-                              onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                            >
-                              {showCurrentPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                            </button>
-                          </div>
-                        </div>
-
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
-                            New Password
-                          </label>
-                          <div className="relative">
-                            <input
-                              type={showNewPassword ? 'text' : 'password'}
-                              value={passwordData.newPassword}
-                              onChange={(e) => setPasswordData({...passwordData, newPassword: e.target.value})}
-                              className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                              placeholder="Enter new password"
-                              required
-                              minLength={6}
-                            />
-                            <button
-                              type="button"
-                              onClick={() => setShowNewPassword(!showNewPassword)}
-                              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                            >
-                              {showNewPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                            </button>
-                          </div>
-                          <p className="text-xs text-gray-500 mt-1">Password must be at least 6 characters long</p>
-                        </div>
-
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Confirm New Password
-                          </label>
-                          <div className="relative">
-                            <input
-                              type={showConfirmPassword ? 'text' : 'password'}
-                              value={passwordData.confirmPassword}
-                              onChange={(e) => setPasswordData({...passwordData, confirmPassword: e.target.value})}
-                              className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                              placeholder="Confirm new password"
-                              required
-                              minLength={6}
-                            />
-                            <button
-                              type="button"
-                              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                            >
-                              {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                            </button>
-                          </div>
-                        </div>
-
-                        <div className="flex justify-end gap-3 pt-4">
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setShowPasswordForm(false);
-                              setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
-                            }}
-                            className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-                          >
-                            Cancel
-                          </button>
-                          <button
-                            type="submit"
-                            className="px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg hover:from-green-700 hover:to-emerald-700 transition-colors"
-                          >
-                            Update Password
-                          </button>
-                        </div>
-                      </form>
-                    )}
-                  </CardContent>
-                </Card>
-              </>
-            )}
-
-            {activeTab === 'education' && (
-              <Card className="bg-white border-0 shadow-lg rounded-2xl">
-                <CardHeader className="pb-4">
-                  <CardTitle className="text-lg font-semibold text-gray-900 flex items-center">
-                    <BookOpen className="w-5 h-5 mr-2 text-green-600" />
-                    Education Progress
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <div className="text-center p-4 bg-blue-50 rounded-xl">
-                        <div className="text-3xl font-bold text-blue-600">{profile.totalCourses}</div>
-                        <div className="text-sm text-gray-600">Total Courses</div>
-                      </div>
-                      <div className="text-center p-4 bg-green-50 rounded-xl">
-                        <div className="text-3xl font-bold text-green-600">{profile.completedCourses}</div>
-                        <div className="text-sm text-gray-600">Completed</div>
-                      </div>
-                      <div className="text-center p-4 bg-purple-50 rounded-xl">
-                        <div className="text-3xl font-bold text-purple-600">{profile.certificates}</div>
-                        <div className="text-sm text-gray-600">Certificates</div>
-                      </div>
-                    </div>
-                    
-                    <div>
-                      <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Courses</h3>
-                      <div className="space-y-3">
-                        {['Web Development Basics', 'Advanced React Development', 'Data Science Fundamentals'].map((course, index) => (
-                          <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
-                            <div className="flex items-center">
-                              <div className="w-10 h-10 bg-gradient-to-br from-green-400 to-emerald-600 rounded-lg flex items-center justify-center mr-3">
-                                <BookOpen className="w-5 h-5 text-white" />
-                              </div>
-                              <div>
-                                <h4 className="font-medium text-gray-900">{course}</h4>
-                                <p className="text-sm text-gray-500">Progress: {index === 0 ? 75 : index === 1 ? 45 : 20}%</p>
-                              </div>
-                            </div>
-                            <Button variant="outline" size="sm">
-                              Continue
-                            </Button>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            {activeTab === 'achievements' && (
-              <Card className="bg-white border-0 shadow-lg rounded-2xl">
-                <CardHeader className="pb-4">
-                  <CardTitle className="text-lg font-semibold text-gray-900 flex items-center">
-                    <Award className="w-5 h-5 mr-2 text-green-600" />
-                    Achievements & Certificates
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-6">
-                    <div className="bg-gradient-to-r from-yellow-400 to-orange-500 p-6 rounded-xl text-white">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <h3 className="text-xl font-bold mb-2">Current Level: {profile.currentLevel}</h3>
-                          <p className="text-yellow-100 mb-4">You're doing great! Keep learning to reach the next level.</p>
-                          <div className="flex items-center space-x-6">
-                            <div>
-                              <p className="text-yellow-100 text-sm">Total Points</p>
-                              <p className="text-2xl font-bold">{profile.totalPoints}</p>
-                            </div>
-                            <div>
-                              <p className="text-yellow-100 text-sm">Next Level</p>
-                              <p className="text-2xl font-bold">Advanced</p>
-                            </div>
-                          </div>
-                        </div>
-                        <TrendingUp className="w-16 h-16 text-white opacity-50" />
-                      </div>
-                    </div>
-                    
-                    <div>
-                      <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Certificates</h3>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {['Web Development Basics', 'JavaScript Fundamentals'].map((cert, index) => (
-                          <div key={index} className="border border-gray-200 rounded-xl p-4 hover:shadow-md transition-shadow">
-                            <div className="flex items-start justify-between">
-                              <div className="flex items-center">
-                                <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg flex items-center justify-center mr-3">
-                                  <Award className="w-6 h-6 text-white" />
-                                </div>
-                                <div>
-                                  <h4 className="font-medium text-gray-900">{cert}</h4>
-                                  <p className="text-sm text-gray-500">Completed on {new Date(Date.now() - (index + 1) * 7 * 24 * 60 * 60 * 1000).toLocaleDateString()}</p>
-                                </div>
-                              </div>
-                              <Button variant="outline" size="sm">
-                                <Download className="w-4 h-4 mr-1" />
-                                Download
-                              </Button>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            {activeTab === 'settings' && (
-              <Card className="bg-white border-0 shadow-lg rounded-2xl">
-                <CardHeader className="pb-4">
-                  <CardTitle className="text-lg font-semibold text-gray-900 flex items-center">
-                    <Settings className="w-5 h-5 mr-2 text-green-600" />
-                    Settings & Preferences
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <div>
-                    <h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center">
-                      <Bell className="w-5 h-5 mr-2 text-gray-600" />
-                      Notifications
-                    </h3>
-                    <div className="space-y-3">
-                      <label className="flex items-center justify-between p-3 bg-gray-50 rounded-lg cursor-pointer">
-                        <div className="flex items-center">
-                          <Mail className="w-4 h-4 mr-3 text-gray-600" />
-                          <div>
-                            <p className="font-medium text-gray-900">Email Notifications</p>
-                            <p className="text-sm text-gray-500">Receive updates about your courses</p>
-                          </div>
-                        </div>
-                        <input
-                          type="checkbox"
-                          checked={editedProfile.preferences.emailNotifications}
-                          onChange={(e) => handlePreferenceChange('emailNotifications', e.target.checked)}
-                          className="w-5 h-5 text-green-600 rounded focus:ring-green-500"
-                        />
-                      </label>
-                      
-                      <label className="flex items-center justify-between p-3 bg-gray-50 rounded-lg cursor-pointer">
-                        <div className="flex items-center">
-                          <Bell className="w-4 h-4 mr-3 text-gray-600" />
-                          <div>
-                            <p className="font-medium text-gray-900">Push Notifications</p>
-                            <p className="text-sm text-gray-500">Get instant updates on your device</p>
-                          </div>
-                        </div>
-                        <input
-                          type="checkbox"
-                          checked={editedProfile.preferences.pushNotifications}
-                          onChange={(e) => handlePreferenceChange('pushNotifications', e.target.checked)}
-                          className="w-5 h-5 text-green-600 rounded focus:ring-green-500"
-                        />
-                      </label>
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center">
-                      <Globe className="w-5 h-5 mr-2 text-gray-600" />
-                      Regional Settings
-                    </h3>
-                    <div className="space-y-3">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Language</label>
-                        <select
-                          value={editedProfile.preferences.language}
-                          onChange={(e) => handlePreferenceChange('language', e.target.value)}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                        >
-                          <option>English</option>
-                          <option>Spanish</option>
-                          <option>French</option>
-                          <option>German</option>
-                        </select>
-                      </div>
-                      
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Timezone</label>
-                        <select
-                          value={editedProfile.preferences.timezone}
-                          onChange={(e) => handlePreferenceChange('timezone', e.target.value)}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                        >
-                          <option>PST</option>
-                          <option>EST</option>
-                          <option>CST</option>
-                          <option>MST</option>
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-          </div>
-
-          {/* Sidebar */}
-          <div className="space-y-6">
-            {/* Quick Stats */}
-            <Card className="bg-white border-0 shadow-lg rounded-2xl">
-              <CardHeader className="pb-4">
-                <CardTitle className="text-lg font-semibold text-gray-900">Quick Stats</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Member Since</span>
-                  <span className="text-sm font-medium text-gray-900">
-                    {new Date(profile.joinDate).toLocaleDateString()}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Last Login</span>
-                  <span className="text-sm font-medium text-gray-900">
-                    {new Date(profile.lastLogin).toLocaleDateString()}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Completion Rate</span>
-                  <span className="text-sm font-medium text-green-600">
-                    {Math.round((profile.completedCourses / profile.totalCourses) * 100)}%
-                  </span>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Actions */}
-            <Card className="bg-white border-0 shadow-lg rounded-2xl">
-              <CardHeader className="pb-4">
-                <CardTitle className="text-lg font-semibold text-gray-900">Quick Actions</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <Button variant="outline" className="w-full justify-start">
-                  <Download className="w-4 h-4 mr-2" />
-                  Download All Certificates
-                </Button>
-                <Button variant="outline" className="w-full justify-start">
-                  <Upload className="w-4 h-4 mr-2" />
-                  Export Profile Data
-                </Button>
-                <Button variant="outline" className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50">
-                  <AlertCircle className="w-4 h-4 mr-2" />
-                  Delete Account
-                </Button>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </div>
         </div>
       </div>

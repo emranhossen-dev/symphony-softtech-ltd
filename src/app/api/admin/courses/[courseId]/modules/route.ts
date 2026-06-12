@@ -175,6 +175,27 @@ export async function POST(
         }
       });
 
+      // Notify all enrolled students about the new module
+      const enrollments = await prisma.enrollment.findMany({
+        where: { courseId, enrollmentStatus: 'ADMITTED' },
+        select: { userId: true }
+      });
+
+      const enrolledUserIds = enrollments
+        .map(e => e.userId)
+        .filter((id): id is string => id !== null);
+
+      if (enrolledUserIds.length > 0) {
+        await prisma.notification.createMany({
+          data: enrolledUserIds.map(userId => ({
+            userId,
+            type: 'MODULE_UNLOCKED' as const,
+            title: '📚 New Module Available!',
+            message: `A new module "${title}" has been added to your course. Check it out now!`
+          }))
+        });
+      }
+
       return NextResponse.json({
         success: true,
         module,
