@@ -54,6 +54,7 @@ export async function GET(request: NextRequest) {
         role: user.role,
         phone: user.phone,
         isActive: user.isActive,
+        avatar: (user as any).avatar,
         permissions
       }
     });

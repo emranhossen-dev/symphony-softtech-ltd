@@ -84,21 +84,21 @@ export default function NotificationBell() {
   const getNotificationIcon = (type: string) => {
     switch (type) {
       case 'ENROLLMENT_APPROVED':
-        return <CheckCircle className="w-4 h-4 text-green-600" />;
+        return <CheckCircle className="w-4 h-4 text-green-400" />;
       case 'HOMEWORK_APPROVED':
-        return <CheckCircle className="w-4 h-4 text-green-600" />;
+        return <CheckCircle className="w-4 h-4 text-green-400" />;
       case 'HOMEWORK_REJECTED':
-        return <XCircle className="w-4 h-4 text-red-600" />;
+        return <XCircle className="w-4 h-4 text-red-400" />;
       case 'MODULE_UNLOCKED':
-        return <BookOpen className="w-4 h-4 text-blue-600" />;
+        return <BookOpen className="w-4 h-4 text-blue-400" />;
       case 'ATTENDANCE_MARKED':
-        return <Calendar className="w-4 h-4 text-orange-600" />;
+        return <Calendar className="w-4 h-4 text-orange-400" />;
       case 'COURSE_COMPLETED':
-        return <Award className="w-4 h-4 text-purple-600" />;
+        return <Award className="w-4 h-4 text-purple-400" />;
       case 'CERTIFICATE_AVAILABLE':
-        return <Award className="w-4 h-4 text-green-600" />;
+        return <Award className="w-4 h-4 text-green-400" />;
       default:
-        return <Bell className="w-4 h-4 text-gray-600" />;
+        return <Bell className="w-4 h-4 text-gray-400" />;
     }
   };
 
@@ -118,7 +118,7 @@ export default function NotificationBell() {
       {/* Bell Icon */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="relative p-2 text-gray-600 hover:text-gray-900 transition-colors"
+        className="relative p-2 text-white hover:text-purple-300 bg-slate-800 hover:bg-slate-700 rounded-lg transition-colors border border-slate-700 flex items-center justify-center w-10 h-10 flex-shrink-0"
       >
         <Bell className="w-5 h-5" />
         {unreadCount > 0 && (
@@ -130,14 +130,14 @@ export default function NotificationBell() {
 
       {/* Dropdown */}
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+        <div className="absolute right-0 mt-2 w-[calc(100vw-24px)] sm:w-80 bg-[#0d1b3e] border border-purple-500/30 rounded-xl shadow-2xl z-50 overflow-hidden">
           {/* Header */}
-          <div className="flex items-center justify-between p-4 border-b border-gray-200">
-            <h3 className="font-semibold text-gray-900">Notifications</h3>
+          <div className="flex items-center justify-between p-4 border-b border-purple-500/20 bg-[#0a0e27]/40">
+            <h3 className="font-semibold text-white">Notifications</h3>
             {unreadCount > 0 && (
               <button
                 onClick={markAllAsRead}
-                className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                className="text-sm text-blue-400 hover:text-blue-300 font-medium transition-colors"
               >
                 Mark all as read
               </button>
@@ -145,18 +145,18 @@ export default function NotificationBell() {
           </div>
 
           {/* Notifications List */}
-          <div className="max-h-96 overflow-y-auto">
+          <div className="max-h-96 overflow-y-auto divide-y divide-purple-500/10">
             {notifications.length === 0 ? (
-              <div className="p-8 text-center text-gray-500">
-                <Bell className="w-8 h-8 mx-auto mb-2 text-gray-400" />
+              <div className="p-8 text-center text-gray-400">
+                <Bell className="w-8 h-8 mx-auto mb-2 text-gray-500" />
                 <p>No notifications yet</p>
               </div>
             ) : (
               notifications.map((notification) => (
                 <div
                   key={notification.id}
-                  className={`p-4 border-b border-gray-100 hover:bg-gray-50 transition-colors ${
-                    !notification.isRead ? 'bg-blue-50' : ''
+                  className={`p-4 hover:bg-slate-800/50 transition-colors ${
+                    !notification.isRead ? 'bg-blue-500/10' : ''
                   }`}
                 >
                   <div className="flex items-start gap-3">
@@ -166,20 +166,20 @@ export default function NotificationBell() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
-                          <p className="text-sm font-medium text-gray-900">
+                          <p className="text-sm font-medium text-white">
                             {notification.title}
                           </p>
-                          <p className="text-sm text-gray-600 mt-1">
+                          <p className="text-sm text-gray-300 mt-1">
                             {notification.message}
                           </p>
-                          <p className="text-xs text-gray-500 mt-2">
+                          <p className="text-xs text-gray-400 mt-2">
                             {formatTimeAgo(notification.createdAt)}
                           </p>
                         </div>
                         {!notification.isRead && (
                           <button
                             onClick={() => markAsRead([notification.id])}
-                            className="flex-shrink-0 ml-2 p-1 text-gray-400 hover:text-gray-600"
+                            className="flex-shrink-0 ml-2 p-1 text-gray-400 hover:text-white transition-colors"
                             title="Mark as read"
                           >
                             <Check className="w-4 h-4" />
@@ -195,10 +195,10 @@ export default function NotificationBell() {
 
           {/* Footer */}
           {notifications.length > 0 && (
-            <div className="p-3 border-t border-gray-200 text-center">
+            <div className="p-3 border-t border-purple-500/20 text-center bg-[#0a0e27]/40">
               <button
                 onClick={() => setIsOpen(false)}
-                className="text-sm text-gray-600 hover:text-gray-900"
+                className="text-sm text-gray-300 hover:text-white transition-colors"
               >
                 Close
               </button>

@@ -130,6 +130,7 @@ export async function getUserFromToken(token: string) {
       role: true,
       phone: true,
       isActive: true,
+      avatar: true,
       createdAt: true,
     },
   });

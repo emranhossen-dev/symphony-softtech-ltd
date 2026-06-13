@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { Menu, X, LogOut, User, ChevronDown, Settings, Award, BookOpen } from "lucide-react";
 import NotificationBell from "@/components/NotificationBell";
 import Link from "next/link";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface StudentHeaderProps {
   onSidebarToggle: () => void;
@@ -11,6 +12,7 @@ interface StudentHeaderProps {
 }
 
 const StudentHeader = ({ onSidebarToggle, sidebarOpen }: StudentHeaderProps) => {
+  const { user } = useAuth();
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -75,19 +77,24 @@ const StudentHeader = ({ onSidebarToggle, sidebarOpen }: StudentHeaderProps) => 
             <div className="relative" ref={dropdownRef}>
               <button 
                 onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
-                className="flex items-center space-x-1 sm:space-x-2 p-1.5 sm:p-2 rounded-lg bg-slate-700 text-white hover:bg-slate-600 transition-all duration-200 border border-slate-600"
+                className="flex items-center space-x-2 p-1.5 rounded-lg bg-slate-800 text-white hover:bg-slate-700 hover:text-purple-300 transition-all duration-200 border border-slate-700 h-10 px-3 flex-shrink-0"
               >
-                <div className="w-6 h-6 sm:w-8 sm:h-8 bg-purple-500/20 rounded-full flex items-center justify-center border border-purple-500/30">
-                  <User className="w-3 h-3 sm:w-5 sm:h-5 text-purple-400" />
+                <div className="w-7 h-7 bg-purple-500/20 rounded-full flex items-center justify-center border border-purple-500/30 overflow-hidden flex-shrink-0">
+                  {user?.avatar ? (
+                    <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
+                  ) : (
+                    <User className="w-4 h-4 text-purple-400" />
+                  )}
                 </div>
-                <ChevronDown className={`w-3 h-3 sm:w-4 sm:h-4 transition-transform duration-200 ${profileDropdownOpen ? 'rotate-180' : ''}`} />
+                <span className="hidden md:inline text-xs font-semibold max-w-[120px] truncate">{user?.name || 'Student'}</span>
+                <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${profileDropdownOpen ? 'rotate-180' : ''}`} />
               </button>
               
               {/* Dropdown menu */}
               <div className={`absolute right-0 mt-2 w-48 sm:w-56 bg-[#0d1b3e] border border-purple-500/30 rounded-xl shadow-2xl py-2 z-50 transition-all duration-200 ${profileDropdownOpen ? 'opacity-100 translate-y-0 visible' : 'opacity-0 -translate-y-2 invisible'}`}>
                 <div className="px-3 sm:px-4 py-2 sm:py-3 border-b border-purple-500/20">
-                  <p className="text-xs sm:text-sm font-semibold text-white">Student User</p>
-                  <p className="text-xs text-gray-400 truncate">student@example.com</p>
+                  <p className="text-xs sm:text-sm font-semibold text-white truncate">{user?.name || 'Student User'}</p>
+                  <p className="text-xs text-gray-400 truncate">{user?.email || 'student@example.com'}</p>
                 </div>
                 
                 <Link href="/student/dashboard" className="flex items-center px-3 sm:px-4 py-2 text-xs sm:text-sm text-gray-300 hover:bg-slate-800/80 hover:text-white transition-colors">

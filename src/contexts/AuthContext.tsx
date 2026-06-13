@@ -9,6 +9,7 @@ interface User {
   name: string;
   role: 'ADMIN' | 'EMPLOYEE' | 'MENTOR' | 'STUDENT';
   phone?: string;
+  avatar?: string;
   permissions?: string[];
 }
 
@@ -21,6 +22,7 @@ interface AuthContextType {
   hasRole: (role: string) => boolean;
   hasAnyRole: (roles: string[]) => boolean;
   hasPermission: (permission: string) => boolean;
+  checkAuth: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -140,7 +142,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     hasRole,
     hasAnyRole,
     hasPermission,
-  }), [user, loading, login, logout, hasRole, hasAnyRole, hasPermission]);
+    checkAuth,
+  }), [user, loading, login, logout, hasRole, hasAnyRole, hasPermission, checkAuth]);
 
   return (
     <AuthContext.Provider value={value}>

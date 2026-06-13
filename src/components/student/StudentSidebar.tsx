@@ -20,6 +20,7 @@ import {
   Circle,
   Clock
 } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 import OnlineClassModal from "./OnlineClassModal";
 
 interface StudentSidebarItem {
@@ -48,6 +49,7 @@ interface StudentSidebarProps {
 
 const StudentSidebar = ({ isOpen = true, onClose }: StudentSidebarProps) => {
   const pathname = usePathname();
+  const { user } = useAuth();
   const [currentTime, setCurrentTime] = useState(new Date());
   const [mounted, setMounted] = useState(false);
   const [showOnlineClassModal, setShowOnlineClassModal] = useState(false);
@@ -63,6 +65,9 @@ const StudentSidebar = ({ isOpen = true, onClose }: StudentSidebarProps) => {
   const handleJoinOnlineClass = () => {
     setShowOnlineClassModal(true);
   };
+
+  const getInitials = (name: string) =>
+    name.split(' ').slice(0, 2).map((n) => n[0]?.toUpperCase() ?? '').join('');
 
   return (
     <>
@@ -82,15 +87,19 @@ const StudentSidebar = ({ isOpen = true, onClose }: StudentSidebarProps) => {
       `}>
         {/* Sidebar Header */}
         <div className="flex items-center justify-between h-20 px-6 border-b border-purple-500/30">
-          <div className="flex items-center">
-            <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
-              <span className="text-white font-bold text-lg">ST</span>
+          <Link href="/" className="flex items-center space-x-3 group">
+            <div className="relative">
+              <img
+                src="/Logo.jpeg"
+                alt="Symphony Institute of Technology"
+                className="h-11 w-auto object-contain rounded-lg shadow-lg bg-white p-0.5"
+              />
             </div>
-            <div className="ml-3">
-              <h2 className="text-xl font-bold text-white">Student Panel</h2>
-              <p className="text-xs text-gray-400">Symphony Institute</p>
+            <div>
+              <h2 className="text-sm font-bold text-white leading-tight group-hover:text-purple-300 transition-colors">Symphony Institute</h2>
+              <p className="text-[10px] text-gray-400 font-medium tracking-wide">of Technology</p>
             </div>
-          </div>
+          </Link>
           <button
             onClick={onClose}
             className="lg:hidden p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 transition-colors"
@@ -200,12 +209,16 @@ const StudentSidebar = ({ isOpen = true, onClose }: StudentSidebarProps) => {
           </div>
           
           <div className="flex items-center mt-4">
-            <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl flex items-center justify-center">
-              <span className="text-white font-bold text-sm">ST</span>
+            <div className="w-10 h-10 bg-purple-500/20 rounded-xl flex items-center justify-center border border-purple-500/30 overflow-hidden shrink-0">
+              {user?.avatar ? (
+                <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
+              ) : (
+                <span className="text-white font-bold text-sm">{user?.name ? getInitials(user.name) : 'ST'}</span>
+              )}
             </div>
-            <div className="ml-3">
-              <p className="text-sm font-medium text-white">Student Portal</p>
-              <p className="text-xs text-gray-400">Version 2.0</p>
+            <div className="ml-3 min-w-0 flex-1">
+              <p className="text-sm font-medium text-white truncate">{user?.name || 'Student Portal'}</p>
+              <p className="text-xs text-gray-400 truncate">{user?.email || 'Version 2.0'}</p>
             </div>
           </div>
         </div>

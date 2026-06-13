@@ -55,6 +55,7 @@ export async function GET(request: NextRequest) {
         role: user.role,
         isActive: user.isActive,
         joinDate: user.createdAt,
+        avatar: user.avatar || '',
         totalCourses,
         completedCourses: certificates.length,
         certificates: certificates.length,
@@ -99,7 +100,7 @@ export async function PATCH(request: NextRequest) {
     const user = await getUserFromToken(token);
     const body = await request.json();
 
-    const { name, phone } = body;
+    const { name, phone, avatar } = body;
 
     if (!name || typeof name !== 'string' || name.trim().length < 2) {
       return NextResponse.json({ error: 'Name must be at least 2 characters' }, { status: 400 });
@@ -110,6 +111,7 @@ export async function PATCH(request: NextRequest) {
       data: {
         name: name.trim(),
         phone: phone?.trim() || null,
+        avatar: avatar !== undefined ? avatar : undefined,
       },
       select: {
         id: true,
@@ -118,6 +120,7 @@ export async function PATCH(request: NextRequest) {
         phone: true,
         role: true,
         isActive: true,
+        avatar: true,
         createdAt: true,
       },
     });

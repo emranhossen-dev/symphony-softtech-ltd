@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import {
   User,
   Mail,
@@ -24,7 +24,9 @@ import {
   Loader2,
   RefreshCw,
   Star,
+  Camera,
 } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                               */
@@ -54,6 +56,7 @@ interface StudentProfile {
   role: string;
   isActive: boolean;
   joinDate: string;
+  avatar?: string;
   totalCourses: number;
   completedCourses: number;
   certificates: number;
@@ -70,6 +73,7 @@ type Tab = 'overview' | 'education' | 'achievements' | 'settings';
 /* ------------------------------------------------------------------ */
 
 export default function StudentProfile() {
+  const { checkAuth } = useAuth();
   const [profile, setProfile] = useState<StudentProfile | null>(null);
   const [loadError, setLoadError] = useState('');
   const [isPageLoading, setIsPageLoading] = useState(true);
@@ -96,6 +100,11 @@ export default function StudentProfile() {
   const [pwSuccess, setPwSuccess] = useState('');
   const [isChangingPw, setIsChangingPw] = useState(false);
 
+  // File upload state
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadError, setUploadError] = useState('');
+
   /* ---- Load profile ---- */
   const loadProfile = useCallback(async () => {
     setIsPageLoading(true);
@@ -113,6 +122,69 @@ export default function StudentProfile() {
   }, []);
 
   useEffect(() => { loadProfile(); }, [loadProfile]);
+
+  /* ---- Photo Upload Handlers ---- */
+  const triggerFileInput = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 10 * 1024 * 1024) {
+      setUploadError('File size must be less than 10MB.');
+      return;
+    }
+
+    setIsUploading(true);
+    setUploadError('');
+    setSaveSuccess('');
+
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      // Upload file to local server uploads directory
+      const uploadRes = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+      const uploadData = await uploadRes.json();
+
+      if (!uploadRes.ok) {
+        throw new Error(uploadData.error || 'Failed to upload image.');
+      }
+
+      const fileUrl = uploadData.url;
+
+      // Update backend user profile
+      const updateRes = await fetch('/api/student/profile', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: profile?.name || '',
+          phone: profile?.phone || '',
+          avatar: fileUrl,
+        }),
+      });
+      const updateData = await updateRes.json();
+
+      if (!updateRes.ok) {
+        throw new Error(updateData.error || 'Failed to update profile photo.');
+      }
+
+      await loadProfile();
+      await checkAuth();
+
+      setSaveSuccess('Profile picture updated successfully!');
+      setTimeout(() => setSaveSuccess(''), 4000);
+    } catch (err: any) {
+      setUploadError(err.message || 'An error occurred during file upload.');
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   /* ---- Edit handlers ---- */
   const handleEdit = () => {
@@ -254,9 +326,39 @@ export default function StudentProfile() {
           <div className="flex items-center gap-5">
             {/* Avatar */}
             <div className="relative shrink-0">
-              <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/30">
-                <span className="text-white text-2xl font-bold">{getInitials(profile.name)}</span>
+              <div
+                onClick={triggerFileInput}
+                className="w-20 h-20 bg-[#1e293b] rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/30 overflow-hidden relative cursor-pointer group border border-slate-700 hover:border-blue-500 transition-colors"
+              >
+                {isUploading ? (
+                  <div className="absolute inset-0 bg-black/60 flex items-center justify-center z-10">
+                    <Loader2 className="w-6 h-6 animate-spin text-white" />
+                  </div>
+                ) : null}
+                {profile.avatar ? (
+                  <img
+                    src={profile.avatar}
+                    alt={profile.name}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
+                    <span className="text-white text-2xl font-bold">{getInitials(profile.name)}</span>
+                  </div>
+                )}
+                {/* Hover overlay */}
+                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center text-white text-[10px] font-semibold">
+                  <Camera className="w-5 h-5 mb-0.5" />
+                  <span>Change</span>
+                </div>
               </div>
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileChange}
+                accept="image/*"
+                className="hidden"
+              />
               {/* Online dot */}
               <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 border-2 border-[#0d1b3e] rounded-full" />
             </div>
@@ -329,6 +431,14 @@ export default function StudentProfile() {
           <div className="mt-4 p-3 bg-red-500/15 border border-red-500/30 rounded-xl flex items-center gap-2">
             <AlertCircle className="w-4 h-4 text-red-400 shrink-0" />
             <span className="text-red-300 text-sm">{saveError}</span>
+          </div>
+        )}
+
+        {/* Upload error */}
+        {uploadError && (
+          <div className="mt-4 p-3 bg-red-500/15 border border-red-500/30 rounded-xl flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 text-red-400 shrink-0" />
+            <span className="text-red-300 text-sm">{uploadError}</span>
           </div>
         )}
 
