@@ -18,13 +18,13 @@ export async function POST(request: NextRequest) {
     // Create notifications for all enrolled students
     const notifications = await Promise.all(
       studentIds.map((studentId: string) =>
-        (prisma as any).notification.create({
+        prisma.notification.create({
           data: {
-            type: 'LIVE_CLASS',
+            type: 'LIVE_CLASS_STARTED',
             title: 'Live Class Started!',
             message: `Your live class "${className}" for "${courseName}" has started. Join now!`,
-            studentId,
-            actionUrl: meetingLink || `/live-classes?join=${classId}`,
+            userId: studentId,
+            actionUrl: meetingLink || `/student/online-classes`,
             metadata: {
               courseName,
               className,
@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
               classId,
               meetingLink
             },
-            read: false
+            isRead: false
           }
         })
       )
@@ -42,10 +42,10 @@ export async function POST(request: NextRequest) {
     await Promise.all(
       studentIds.map((studentId: string) =>
         sendRealTimeNotification(studentId, {
-          type: 'LIVE_CLASS',
+          type: 'LIVE_CLASS_STARTED',
           title: 'Live Class Started!',
           message: `Your live class "${className}" for "${courseName}" has started. Join now!`,
-          actionUrl: meetingLink || `/live-classes?join=${classId}`,
+          actionUrl: meetingLink || `/student/online-classes`,
           metadata: {
             courseName,
             className,
@@ -64,11 +64,11 @@ export async function POST(request: NextRequest) {
         type: n.type,
         title: n.title,
         message: n.message,
-        studentId: n.studentId,
-        read: n.read,
+        userId: n.userId,
+        isRead: n.isRead,
         createdAt: n.createdAt.toISOString(),
         actionUrl: n.actionUrl,
-        metadata: n.metadata
+        metadata: n.metadata as any
       })),
       count: notifications.length
     });

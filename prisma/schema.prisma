@@ -198,8 +198,10 @@ model AttendanceSession {
   courseId    String
   mentorId    String
   sessionDate DateTime     @default(now())
+  endTime     DateTime?
   title       String?
   description String?
+  meetingLink String?
   isActive    Boolean      @default(true)
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
@@ -233,6 +235,7 @@ model Notification {
   title     String
   message   String
   isRead    Boolean          @default(false)
+  actionUrl String?
   metadata  Json?
   createdAt DateTime         @default(now())
   updatedAt DateTime         @updatedAt
@@ -483,6 +486,7 @@ enum NotificationType {
   ATTENDANCE_MARKED
   COURSE_COMPLETED
   CERTIFICATE_AVAILABLE
+  LIVE_CLASS_STARTED
 }
 
 model PasswordResetToken {

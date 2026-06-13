@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { 
   BookOpen, 
@@ -49,6 +49,7 @@ interface StudentSidebarProps {
 
 const StudentSidebar = ({ isOpen = true, onClose }: StudentSidebarProps) => {
   const pathname = usePathname();
+  const router = useRouter();
   const { user } = useAuth();
   const [currentTime, setCurrentTime] = useState(new Date());
   const [mounted, setMounted] = useState(false);
@@ -63,7 +64,8 @@ const StudentSidebar = ({ isOpen = true, onClose }: StudentSidebarProps) => {
   }, []);
 
   const handleJoinOnlineClass = () => {
-    setShowOnlineClassModal(true);
+    router.push('/student/online-classes');
+    if (onClose) onClose();
   };
 
   const getInitials = (name: string) =>

@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Bell, Check, CheckCircle, XCircle, Award, Lock, Calendar, BookOpen } from 'lucide-react';
+import { Bell, Check, CheckCircle, XCircle, Award, Lock, Calendar, BookOpen, Video } from 'lucide-react';
+import Link from 'next/link';
 
 interface Notification {
   id: string;
@@ -9,6 +10,7 @@ interface Notification {
   title: string;
   message: string;
   isRead: boolean;
+  actionUrl?: string;
   createdAt: string;
   metadata?: Record<string, any>;
 }
@@ -105,6 +107,8 @@ export default function NotificationBell() {
         return <Award className="w-4 h-4 text-purple-400" />;
       case 'CERTIFICATE_AVAILABLE':
         return <Award className="w-4 h-4 text-green-400" />;
+      case 'LIVE_CLASS_STARTED':
+        return <Video className="w-4 h-4 text-red-400 animate-pulse" />;
       default:
         return <Bell className="w-4 h-4 text-gray-400" />;
     }
@@ -174,9 +178,17 @@ export default function NotificationBell() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
-                          <p className="text-sm font-medium text-white">
-                            {notification.title}
-                          </p>
+                          {notification.actionUrl ? (
+                            <Link href={notification.actionUrl} onClick={() => { setIsOpen(false); markAsRead([notification.id]); }}>
+                              <p className="text-sm font-medium text-white hover:text-purple-300 transition-colors cursor-pointer">
+                                {notification.title}
+                              </p>
+                            </Link>
+                          ) : (
+                            <p className="text-sm font-medium text-white">
+                              {notification.title}
+                            </p>
+                          )}
                           <p className="text-sm text-gray-300 mt-1">
                             {notification.message}
                           </p>

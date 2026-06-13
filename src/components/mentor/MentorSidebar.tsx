@@ -27,6 +27,7 @@ interface MentorSidebarItem {
 const mentorSidebarItems: MentorSidebarItem[] = [
   { name: "Dashboard", href: "/mentor", icon: <Home className="w-5 h-5" /> },
   { name: "Courses", href: "/mentor/courses", icon: <BookOpen className="w-5 h-5" /> },
+  { name: "Live Classes", href: "/mentor/live-classes", icon: <Video className="w-5 h-5" /> },
   { name: "Homework", href: "/mentor/homework", icon: <FileText className="w-5 h-5" /> },
   { name: "Certificates", href: "/mentor/certificates", icon: <Award className="w-5 h-5" /> },
   { name: "Attendance", href: "/mentor/attendance", icon: <Calendar className="w-5 h-5" /> },
