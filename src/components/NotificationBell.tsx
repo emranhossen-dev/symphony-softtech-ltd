@@ -23,6 +23,11 @@ export default function NotificationBell() {
   useEffect(() => {
     fetchNotifications();
     
+    // Poll for notifications every 10 seconds to keep it real-time
+    const interval = setInterval(() => {
+      fetchNotifications();
+    }, 10000);
+    
     // Close dropdown when clicking outside
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -31,7 +36,10 @@ export default function NotificationBell() {
     };
 
     document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
   }, []);
 
   const fetchNotifications = async () => {
@@ -118,11 +126,11 @@ export default function NotificationBell() {
       {/* Bell Icon */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="relative p-2 text-white hover:text-purple-300 bg-slate-800 hover:bg-slate-700 rounded-lg transition-colors border border-slate-700 flex items-center justify-center w-10 h-10 flex-shrink-0"
+        className="relative p-2 text-white hover:text-purple-300 bg-slate-800 hover:bg-slate-700 rounded-lg transition-colors border border-slate-700 flex items-center justify-center w-12 h-10 flex-shrink-0"
       >
         <Bell className="w-5 h-5" />
         {unreadCount > 0 && (
-          <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+          <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center border border-slate-900 shadow-md z-10">
             {unreadCount > 9 ? '9+' : unreadCount}
           </span>
         )}
@@ -130,7 +138,7 @@ export default function NotificationBell() {
 
       {/* Dropdown */}
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-[calc(100vw-24px)] sm:w-80 bg-[#0d1b3e] border border-purple-500/30 rounded-xl shadow-2xl z-50 overflow-hidden">
+        <div className="absolute right-0 mt-2 w-[480px] max-w-[calc(100vw-24px)] bg-[#0d1b3e] border border-purple-500/30 rounded-xl shadow-2xl z-50 overflow-hidden">
           {/* Header */}
           <div className="flex items-center justify-between p-4 border-b border-purple-500/20 bg-[#0a0e27]/40">
             <h3 className="font-semibold text-white">Notifications</h3>
