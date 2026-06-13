@@ -55,13 +55,100 @@ const StudentSidebar = ({ isOpen = true, onClose }: StudentSidebarProps) => {
   const [mounted, setMounted] = useState(false);
   const [showOnlineClassModal, setShowOnlineClassModal] = useState(false);
 
+  // Live classes states
+  const [activeSession, setActiveSession] = useState<any>(null);
+  const [nextUpcomingSession, setNextUpcomingSession] = useState<any>(null);
+  const [countdownText, setCountdownText] = useState<string>("");
+
+  const fetchLiveClasses = async () => {
+    try {
+      const res = await fetch('/api/student/online-classes');
+      const data = await res.json();
+      if (data.success && data.classes) {
+        const classes = data.classes;
+        
+        // Find active live class
+        const active = classes.find((c: any) => c.isActive);
+        setActiveSession(active || null);
+        
+        // Find nearest upcoming live class
+        const now = new Date();
+        const upcoming = classes
+          .filter((c: any) => !c.isActive && new Date(c.scheduledAt) > now)
+          .sort((a: any, b: any) => new Date(a.scheduledAt).getTime() - new Date(b.scheduledAt).getTime());
+        
+        setNextUpcomingSession(upcoming[0] || null);
+      }
+    } catch (err) {
+      console.error("Error fetching live classes for sidebar banner:", err);
+    }
+  };
+
   useEffect(() => {
     setMounted(true);
+    
+    // Initial fetch
+    fetchLiveClasses();
+    
+    // Poll for live classes list every 15 seconds to keep it sync
+    const liveClassesPollInterval = setInterval(() => {
+      fetchLiveClasses();
+    }, 15000);
+    
     const timer = setInterval(() => {
       setCurrentTime(new Date());
     }, 1000);
-    return () => clearInterval(timer);
+    
+    return () => {
+      clearInterval(liveClassesPollInterval);
+      clearInterval(timer);
+    };
   }, []);
+
+  // Update countdown text dynamically
+  useEffect(() => {
+    if (activeSession) {
+      setCountdownText("Live now!");
+      return;
+    }
+    
+    if (!nextUpcomingSession) {
+      setCountdownText("");
+      return;
+    }
+    
+    const updateCountdown = () => {
+      const now = new Date().getTime();
+      const eventTime = new Date(nextUpcomingSession.scheduledAt).getTime();
+      const diffMs = eventTime - now;
+      
+      if (diffMs <= 0) {
+        setCountdownText("Starting now");
+        return;
+      }
+      
+      const diffMins = Math.floor(diffMs / (1000 * 60));
+      const diffHrs = Math.floor(diffMs / (1000 * 60 * 60));
+      
+      if (diffMins < 1) {
+        const diffSecs = Math.floor((diffMs % (1000 * 60)) / 1000);
+        setCountdownText(`Starts in ${diffSecs}s`);
+      } else if (diffMins < 60) {
+        setCountdownText(`Starts in ${diffMins} mins`);
+      } else if (diffHrs < 24) {
+        const remainingMins = diffMins % 60;
+        setCountdownText(`Starts in ${diffHrs}h ${remainingMins}m`);
+      } else {
+        const eventDate = new Date(nextUpcomingSession.scheduledAt);
+        setCountdownText(`Starts: ${eventDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} at ${eventDate.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}`);
+      }
+    };
+    
+    updateCountdown();
+    const countdownInterval = setInterval(updateCountdown, 1000);
+    
+    return () => clearInterval(countdownInterval);
+  }, [activeSession, nextUpcomingSession]);
 
   const handleJoinOnlineClass = () => {
     router.push('/student/online-classes');
@@ -113,23 +200,41 @@ const StudentSidebar = ({ isOpen = true, onClose }: StudentSidebarProps) => {
         </div>
 
         {/* Online Class Banner */}
-        <div className="mx-4 mt-6 p-4 bg-gradient-to-r from-red-500 to-pink-500 rounded-xl shadow-lg">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <Circle className="w-3 h-3 text-white animate-pulse mr-2" />
-              <div>
-                <p className="text-white font-semibold text-sm">Live Class</p>
-                <p className="text-red-100 text-xs">Starting in 15 mins</p>
+        {(activeSession || nextUpcomingSession) && (
+          <div className={`mx-4 mt-6 p-4 rounded-xl shadow-lg border transition-all duration-300 ${
+            activeSession 
+              ? 'bg-gradient-to-r from-red-500 via-pink-600 to-red-600 border-red-400/30 text-white animate-pulse-slow' 
+              : 'bg-gradient-to-r from-[#1e1b4b]/80 to-[#111827]/80 border-purple-500/30 text-gray-200 hover:border-purple-500/50'
+          }`}>
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center min-w-0 flex-1">
+                {activeSession ? (
+                  <Circle className="w-2.5 h-2.5 text-white animate-pulse mr-2.5 shrink-0" />
+                ) : (
+                  <Clock className="w-3.5 h-3.5 text-purple-400 mr-2.5 shrink-0" />
+                )}
+                <div className="min-w-0 flex-1">
+                  <p className="font-bold text-xs sm:text-sm truncate">
+                    {activeSession ? activeSession.title : nextUpcomingSession.title}
+                  </p>
+                  <p className={`text-[10px] sm:text-xs truncate ${activeSession ? 'text-red-100 font-medium' : 'text-purple-300'}`}>
+                    {countdownText}
+                  </p>
+                </div>
               </div>
+              <button 
+                onClick={handleJoinOnlineClass}
+                className={`px-3 py-1 rounded-lg text-xs font-bold shadow-sm transition-all duration-200 shrink-0 ${
+                  activeSession 
+                    ? 'bg-white text-red-600 hover:bg-red-50' 
+                    : 'bg-purple-600/30 hover:bg-purple-600/50 text-purple-200 hover:text-white border border-purple-500/30'
+                }`}
+              >
+                {activeSession ? 'Join' : 'View'}
+              </button>
             </div>
-            <button 
-              onClick={handleJoinOnlineClass}
-              className="bg-white/20 backdrop-blur-sm px-3 py-1 rounded-lg text-white text-xs font-medium hover:bg-white/30 transition-colors"
-            >
-              Join
-            </button>
           </div>
-        </div>
+        )}
 
         {/* Navigation */}
         <nav className="flex-1 px-4 py-6 space-y-2">

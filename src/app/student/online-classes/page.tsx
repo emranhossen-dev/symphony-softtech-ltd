@@ -49,6 +49,13 @@ export default function OnlineClassesPage() {
 
   useEffect(() => {
     fetchClasses();
+
+    // Poll live classes every 10 seconds to make it real-time
+    const interval = setInterval(() => {
+      fetchClasses();
+    }, 10000);
+
+    return () => clearInterval(interval);
   }, [fetchClasses]);
 
   const handleJoinClass = async (session: LiveClass) => {
