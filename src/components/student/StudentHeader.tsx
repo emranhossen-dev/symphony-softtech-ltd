@@ -40,7 +40,7 @@ const StudentHeader = ({ onSidebarToggle, sidebarOpen }: StudentHeaderProps) => 
           <div className="flex items-center">
             <button
               onClick={onSidebarToggle}
-              className="lg:hidden p-2 rounded-md text-white hover:bg-green-700 transition-colors"
+              className="lg:hidden p-2 rounded-md text-white hover:bg-purple-700 transition-colors"
             >
               {sidebarOpen ? (
                 <X className="w-5 h-5 sm:w-6 sm:h-6" />
@@ -49,12 +49,12 @@ const StudentHeader = ({ onSidebarToggle, sidebarOpen }: StudentHeaderProps) => 
               )}
             </button>
             <div className="hidden sm:flex items-center ml-2 sm:ml-4">
-              <div className="w-7 h-7 sm:w-8 sm:h-8 bg-white rounded-lg flex items-center justify-center mr-2 sm:mr-3">
-                <span className="text-green-600 font-bold text-xs sm:text-sm">ST</span>
+              <div className="w-7 h-7 sm:w-8 sm:h-8 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-lg flex items-center justify-center mr-2 sm:mr-3 shadow-md">
+                <span className="text-white font-bold text-xs sm:text-sm">ST</span>
               </div>
               <div>
                 <h1 className="text-lg sm:text-xl font-bold text-white">Student Dashboard</h1>
-                <p className="text-xs text-green-100 hidden sm:block">Symphony Institute of Technology</p>
+                <p className="text-xs text-purple-100 hidden sm:block">Symphony Institute of Technology</p>
               </div>
             </div>
           </div>
@@ -77,48 +77,48 @@ const StudentHeader = ({ onSidebarToggle, sidebarOpen }: StudentHeaderProps) => 
                 onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
                 className="flex items-center space-x-1 sm:space-x-2 p-1.5 sm:p-2 rounded-lg bg-slate-700 text-white hover:bg-slate-600 transition-all duration-200 border border-slate-600"
               >
-                <div className="w-6 h-6 sm:w-8 sm:h-8 bg-white rounded-full flex items-center justify-center">
-                  <User className="w-3 h-3 sm:w-5 sm:h-5 text-green-600" />
+                <div className="w-6 h-6 sm:w-8 sm:h-8 bg-purple-500/20 rounded-full flex items-center justify-center border border-purple-500/30">
+                  <User className="w-3 h-3 sm:w-5 sm:h-5 text-purple-400" />
                 </div>
                 <ChevronDown className={`w-3 h-3 sm:w-4 sm:h-4 transition-transform duration-200 ${profileDropdownOpen ? 'rotate-180' : ''}`} />
               </button>
               
               {/* Dropdown menu */}
-              <div className={`absolute right-0 mt-2 w-48 sm:w-56 bg-white rounded-xl shadow-xl py-2 z-50 border border-gray-100 transition-all duration-200 ${profileDropdownOpen ? 'opacity-100 translate-y-0 visible' : 'opacity-0 -translate-y-2 invisible'}`}>
-                <div className="px-3 sm:px-4 py-2 sm:py-3 border-b border-gray-100">
-                  <p className="text-xs sm:text-sm font-semibold text-gray-900">Student User</p>
-                  <p className="text-xs text-gray-500 truncate">student@example.com</p>
+              <div className={`absolute right-0 mt-2 w-48 sm:w-56 bg-[#0d1b3e] border border-purple-500/30 rounded-xl shadow-2xl py-2 z-50 transition-all duration-200 ${profileDropdownOpen ? 'opacity-100 translate-y-0 visible' : 'opacity-0 -translate-y-2 invisible'}`}>
+                <div className="px-3 sm:px-4 py-2 sm:py-3 border-b border-purple-500/20">
+                  <p className="text-xs sm:text-sm font-semibold text-white">Student User</p>
+                  <p className="text-xs text-gray-400 truncate">student@example.com</p>
                 </div>
                 
-                <Link href="/student/dashboard" className="flex items-center px-3 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 hover:bg-green-50 transition-colors">
+                <Link href="/student/dashboard" className="flex items-center px-3 sm:px-4 py-2 text-xs sm:text-sm text-gray-300 hover:bg-slate-800/80 hover:text-white transition-colors">
                   <BookOpen className="w-3 h-3 sm:w-4 sm:h-4 mr-2 sm:mr-3 text-gray-400" />
                   Dashboard
                 </Link>
                 
-                <Link href="/student/profile" className="flex items-center px-3 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 hover:bg-green-50 transition-colors">
+                <Link href="/student/profile" className="flex items-center px-3 sm:px-4 py-2 text-xs sm:text-sm text-gray-300 hover:bg-slate-800/80 hover:text-white transition-colors">
                   <User className="w-3 h-3 sm:w-4 sm:h-4 mr-2 sm:mr-3 text-gray-400" />
                   My Profile
                 </Link>
                 
-                <Link href="/student/courses" className="flex items-center px-3 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 hover:bg-green-50 transition-colors">
+                <Link href="/student/courses" className="flex items-center px-3 sm:px-4 py-2 text-xs sm:text-sm text-gray-300 hover:bg-slate-800/80 hover:text-white transition-colors">
                   <BookOpen className="w-3 h-3 sm:w-4 sm:h-4 mr-2 sm:mr-3 text-gray-400" />
                   My Courses
                 </Link>
                 
-                <Link href="/student/certificates" className="flex items-center px-3 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 hover:bg-green-50 transition-colors">
+                <Link href="/student/certificates" className="flex items-center px-3 sm:px-4 py-2 text-xs sm:text-sm text-gray-300 hover:bg-slate-800/80 hover:text-white transition-colors">
                   <Award className="w-3 h-3 sm:w-4 sm:h-4 mr-2 sm:mr-3 text-gray-400" />
                   Certificates
                 </Link>
                 
-                <Link href="/student/settings" className="flex items-center px-3 sm:px-4 py-2 text-xs sm:text-sm text-gray-700 hover:bg-green-50 transition-colors">
+                <Link href="/student/settings" className="flex items-center px-3 sm:px-4 py-2 text-xs sm:text-sm text-gray-300 hover:bg-slate-800/80 hover:text-white transition-colors">
                   <Settings className="w-3 h-3 sm:w-4 sm:h-4 mr-2 sm:mr-3 text-gray-400" />
                   Settings
                 </Link>
                 
-                <div className="border-t border-gray-100 mt-2 pt-2">
+                <div className="border-t border-purple-500/20 mt-2 pt-2">
                   <button 
                     onClick={handleLogout}
-                    className="w-full flex items-center px-3 sm:px-4 py-2 text-xs sm:text-sm text-red-600 hover:bg-red-50 transition-colors"
+                    className="w-full flex items-center px-3 sm:px-4 py-2 text-xs sm:text-sm text-red-400 hover:bg-red-500/20 transition-colors"
                   >
                     <LogOut className="w-3 h-3 sm:w-4 sm:h-4 mr-2 sm:mr-3" />
                     Logout

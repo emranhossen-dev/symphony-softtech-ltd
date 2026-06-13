@@ -743,3 +743,160 @@ export async function testEmailConnection(): Promise<{ success: boolean; error?:
     };
   }
 }
+
+interface HomeworkGradedEmailData {
+  to: string;
+  fullName: string;
+  homeworkTitle: string;
+  courseName: string;
+  status: 'APPROVED' | 'REJECTED';
+  marks: number | null;
+  feedback: string | null;
+}
+
+export async function sendHomeworkGradedEmail(data: HomeworkGradedEmailData): Promise<{ success: boolean; error?: string }> {
+  try {
+    const transporter = createTransporter();
+    const isApproved = data.status === 'APPROVED';
+
+    const mailOptions = {
+      from: process.env.EMAIL_FROM || '"Symphony Institute of Technology" <noreply@symphony.edu>',
+      to: data.to,
+      subject: isApproved 
+        ? `🎉 Homework Approved: ${data.homeworkTitle}` 
+        : `❌ Homework Needs Revision: ${data.homeworkTitle}`,
+      html: `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Homework Evaluation Results</title>
+          <style>
+            body {
+              font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+              line-height: 1.6;
+              color: #333;
+              max-width: 600px;
+              margin: 0 auto;
+              padding: 20px;
+            }
+            .container {
+              background: linear-gradient(135deg, #1a1f4c 0%, #0d1b3e 100%);
+              border-radius: 10px;
+              padding: 30px;
+              color: white;
+            }
+            .content {
+              background: white;
+              border-radius: 10px;
+              padding: 30px;
+              margin-top: 20px;
+              color: #333;
+              border: 1px solid #e2e8f0;
+            }
+            .header {
+              text-align: center;
+              margin-bottom: 20px;
+            }
+            .header h1 {
+              margin: 0;
+              font-size: 24px;
+              color: white;
+            }
+            .welcome {
+              font-size: 16px;
+              margin-bottom: 20px;
+            }
+            .result-card {
+              padding: 20px;
+              border-radius: 8px;
+              margin: 20px 0;
+              border-left: 4px solid ${isApproved ? '#10b981' : '#ef4444'};
+              background: ${isApproved ? '#f0fdf4' : '#fef2f2'};
+            }
+            .result-card h3 {
+              margin: 0 0 10px 0;
+              color: ${isApproved ? '#047857' : '#b91c1c'};
+              font-size: 18px;
+            }
+            .details-list {
+              margin: 15px 0;
+              padding: 0;
+              list-style: none;
+            }
+            .details-list li {
+              margin-bottom: 8px;
+            }
+            .details-list strong {
+              color: #4a5568;
+            }
+            .feedback-box {
+              background: #f7fafc;
+              border: 1px solid #edf2f7;
+              padding: 15px;
+              border-radius: 6px;
+              margin-top: 15px;
+              font-style: italic;
+              color: #4a5568;
+            }
+            .footer {
+              text-align: center;
+              margin-top: 30px;
+              padding-top: 20px;
+              border-top: 1px solid #edf2f7;
+              color: #718096;
+              font-size: 12px;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h1>🎓 Symphony Institute of Technology</h1>
+            </div>
+          </div>
+          
+          <div class="content">
+            <div class="welcome">
+              <p>Dear <strong>${data.fullName}</strong>,</p>
+              <p>Your mentor has reviewed your homework submission for the course <strong>${data.courseName}</strong>.</p>
+            </div>
+
+            <div class="result-card">
+              <h3>${isApproved ? '🎉 Homework Approved!' : '❌ Homework Revision Required'}</h3>
+              <ul class="details-list">
+                <li><strong>Assignment:</strong> ${data.homeworkTitle}</li>
+                <li><strong>Status:</strong> ${isApproved ? 'Approved' : 'Needs Revision / Rejected'}</li>
+                ${data.marks !== null ? `<li><strong>Marks Awarded:</strong> <span style="font-size: 16px; font-weight: bold; color: ${isApproved ? '#059669' : '#dc2626'}">${data.marks} / 100</span></li>` : ''}
+              </ul>
+              
+              <div class="feedback-box">
+                <strong>Mentor Feedback:</strong>
+                <p style="margin: 5px 0 0 0;">${data.feedback || (isApproved ? 'Great job! Keep up the good work.' : 'Please review the comments and resubmit your assignment.')}</p>
+              </div>
+            </div>
+
+            <p style="font-size: 14px; color: #4a5568;">You can view the full details and grades on your student learning platform.</p>
+
+            <div class="footer">
+              <p>This is an automated notification. Please do not reply to this email.</p>
+              <p>© ${new Date().getFullYear()} Symphony Institute of Technology. All rights reserved.</p>
+            </div>
+          </div>
+        </body>
+        </html>
+      `,
+    };
+
+    const info = await transporter.sendMail(mailOptions);
+    console.log('Homework graded email sent successfully:', info.messageId);
+    return { success: true };
+  } catch (error) {
+    console.error('Error sending homework graded email:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to send homework graded email'
+    };
+  }
+}

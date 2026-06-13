@@ -34,7 +34,8 @@ export async function POST(
       where: { id: submissionId },
       include: {
         module: { select: { title: true } },
-        course: { select: { title: true } }
+        course: { select: { title: true } },
+        user: { select: { name: true, email: true } }
       }
     });
 
@@ -83,6 +84,24 @@ export async function POST(
           : `Your homework for "${moduleName}" in "${courseName}" was reviewed.${feedback ? ` Feedback: ${feedback}` : ' Please revise and resubmit.'}`
       }
     });
+
+    // Send email notification to student
+    if (existingSubmission.user?.email) {
+      try {
+        const { sendHomeworkGradedEmail } = await import('@/lib/email');
+        await sendHomeworkGradedEmail({
+          to: existingSubmission.user.email,
+          fullName: existingSubmission.user.name || 'Student',
+          homeworkTitle: moduleName,
+          courseName: courseName,
+          status: status as 'APPROVED' | 'REJECTED',
+          marks: marksValue,
+          feedback: feedback || null
+        });
+      } catch (emailError) {
+        console.error('Failed to send homework graded email:', emailError);
+      }
+    }
 
     return NextResponse.json({
       success: true,

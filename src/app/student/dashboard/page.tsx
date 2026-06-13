@@ -197,19 +197,19 @@ export default function StudentDashboard() {
 
   const getNotificationColor = (type: string) => {
     switch (type) {
-      case 'ANNOUNCEMENT': return 'bg-blue-100 text-blue-600';
-      case 'REMINDER': return 'bg-yellow-100 text-yellow-600';
-      case 'GRADE': return 'bg-green-100 text-green-600';
-      case 'ASSIGNMENT': return 'bg-purple-100 text-purple-600';
-      case 'LIVE_CLASS': return 'bg-red-100 text-red-600';
-      default: return 'bg-gray-100 text-gray-600';
+      case 'ANNOUNCEMENT': return 'bg-blue-500/20 text-blue-300 border border-blue-500/30';
+      case 'REMINDER': return 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/30';
+      case 'GRADE': return 'bg-green-500/20 text-green-300 border border-green-500/30';
+      case 'ASSIGNMENT': return 'bg-purple-500/20 text-purple-300 border border-purple-500/30';
+      case 'LIVE_CLASS': return 'bg-red-500/20 text-red-300 border border-red-500/30';
+      default: return 'bg-gray-500/20 text-gray-300 border border-gray-500/30';
     }
   };
 
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500"></div>
       </div>
     );
   }
@@ -297,15 +297,15 @@ export default function StudentDashboard() {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Welcome, {userName}!</h1>
-          <p className="text-gray-600 mt-1">Track your learning progress and upcoming activities</p>
+          <h1 className="text-3xl font-bold text-white">Welcome, {userName}!</h1>
+          <p className="text-gray-300 mt-1">Track your learning progress and upcoming activities</p>
         </div>
         <div className="relative">
           <button
             onClick={() => setShowNotifications(!showNotifications)}
-            className="relative p-2 bg-white rounded-lg shadow hover:shadow-md transition-shadow"
+            className="relative p-2 bg-slate-800 border border-slate-700 rounded-lg shadow hover:bg-slate-700 transition-colors"
           >
-            <Bell className="w-6 h-6 text-gray-600" />
+            <Bell className="w-6 h-6 text-white" />
             {stats.unreadNotifications > 0 && (
               <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                 {stats.unreadNotifications}
@@ -317,85 +317,85 @@ export default function StudentDashboard() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-6">
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">Total Courses</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.totalCourses}</p>
-            </div>
-            <BookOpen className="w-8 h-8 text-blue-600" />
+        <div className="glass-card p-6 flex items-center justify-between">
+          <div>
+            <p className="text-sm font-medium text-gray-300">Total Courses</p>
+            <p className="text-3xl font-bold text-white mt-1">{stats.totalCourses}</p>
+          </div>
+          <div className="w-12 h-12 bg-blue-500/20 rounded-xl flex items-center justify-center border border-blue-500/30">
+            <BookOpen className="w-6 h-6 text-blue-400" />
           </div>
         </div>
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">Completed</p>
-              <p className="text-2xl font-bold text-green-600">{stats.completedCourses}</p>
-            </div>
-            <CheckCircle className="w-8 h-8 text-green-600" />
+        <div className="glass-card p-6 flex items-center justify-between">
+          <div>
+            <p className="text-sm font-medium text-gray-300">Completed</p>
+            <p className="text-3xl font-bold text-green-400 mt-1">{stats.completedCourses}</p>
+          </div>
+          <div className="w-12 h-12 bg-green-500/20 rounded-xl flex items-center justify-center border border-green-500/30">
+            <CheckCircle className="w-6 h-6 text-green-400" />
           </div>
         </div>
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">Learning Hours</p>
-              <p className="text-2xl font-bold text-purple-600">{stats.totalHours}</p>
-            </div>
-            <Clock className="w-8 h-8 text-purple-600" />
+        <div className="glass-card p-6 flex items-center justify-between">
+          <div>
+            <p className="text-sm font-medium text-gray-300">Learning Hours</p>
+            <p className="text-3xl font-bold text-purple-400 mt-1">{stats.totalHours}</p>
+          </div>
+          <div className="w-12 h-12 bg-purple-500/20 rounded-xl flex items-center justify-center border border-purple-500/30">
+            <Clock className="w-6 h-6 text-purple-400" />
           </div>
         </div>
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">Avg Progress</p>
-              <p className="text-2xl font-bold text-yellow-600">{stats.averageProgress}%</p>
-            </div>
-            <TrendingUp className="w-8 h-8 text-yellow-600" />
+        <div className="glass-card p-6 flex items-center justify-between">
+          <div>
+            <p className="text-sm font-medium text-gray-300">Avg Progress</p>
+            <p className="text-2xl font-bold text-yellow-400 mt-1">{stats.averageProgress}%</p>
+          </div>
+          <div className="w-12 h-12 bg-yellow-500/20 rounded-xl flex items-center justify-center border border-yellow-500/30">
+            <TrendingUp className="w-6 h-6 text-yellow-400" />
           </div>
         </div>
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">Upcoming</p>
-              <p className="text-2xl font-bold text-red-600">{stats.upcomingClasses}</p>
-            </div>
-            <Calendar className="w-8 h-8 text-red-600" />
+        <div className="glass-card p-6 flex items-center justify-between">
+          <div>
+            <p className="text-sm font-medium text-gray-300">Upcoming</p>
+            <p className="text-3xl font-bold text-red-400 mt-1">{stats.upcomingClasses}</p>
+          </div>
+          <div className="w-12 h-12 bg-red-500/20 rounded-xl flex items-center justify-center border border-red-500/30">
+            <Calendar className="w-6 h-6 text-red-400" />
           </div>
         </div>
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">Achievements</p>
-              <p className="text-2xl font-bold text-indigo-600">12</p>
-            </div>
-            <Award className="w-8 h-8 text-indigo-600" />
+        <div className="glass-card p-6 flex items-center justify-between">
+          <div>
+            <p className="text-sm font-medium text-gray-300">Achievements</p>
+            <p className="text-2xl font-bold text-indigo-400 mt-1">12</p>
+          </div>
+          <div className="w-12 h-12 bg-indigo-500/20 rounded-xl flex items-center justify-center border border-indigo-500/30">
+            <Award className="w-6 h-6 text-indigo-400" />
           </div>
         </div>
       </div>
 
       {/* Notifications Dropdown */}
       {showNotifications && (
-        <div className="absolute right-0 top-16 w-96 bg-white rounded-lg shadow-lg z-50 max-h-96 overflow-hidden">
-          <div className="p-4 border-b border-gray-200">
+        <div className="absolute right-0 top-16 w-96 bg-[#0d1b3e] border border-purple-500/30 rounded-xl shadow-2xl z-50 max-h-96 overflow-hidden">
+          <div className="p-4 border-b border-purple-500/20">
             <div className="flex justify-between items-center">
-              <h3 className="font-semibold text-gray-900">Notifications</h3>
+              <h3 className="font-semibold text-white">Notifications</h3>
               {stats.unreadNotifications > 0 && (
                 <button
                   onClick={markAllNotificationsAsRead}
-                  className="text-sm text-blue-600 hover:text-blue-800"
+                  className="text-sm text-blue-400 hover:text-blue-300 transition-colors"
                 >
                   Mark all as read
                 </button>
               )}
             </div>
           </div>
-          <div className="max-h-80 overflow-y-auto">
+          <div className="max-h-80 overflow-y-auto divide-y divide-purple-500/10">
             {notifications.length > 0 ? (
               notifications.slice(0, 10).map((notification) => (
                 <div
                   key={notification.id}
-                  className={`p-4 border-b border-gray-100 hover:bg-gray-50 cursor-pointer ${
-                    !notification.read ? 'bg-blue-50' : ''
+                  className={`p-4 hover:bg-slate-800/50 cursor-pointer transition-colors ${
+                    !notification.read ? 'bg-blue-500/10' : ''
                   }`}
                   onClick={() => markNotificationAsRead(notification.id)}
                 >
@@ -404,9 +404,9 @@ export default function StudentDashboard() {
                       {getNotificationIcon(notification.type)}
                     </div>
                     <div className="flex-1">
-                      <h4 className="font-medium text-gray-900 text-sm">{notification.title}</h4>
-                      <p className="text-sm text-gray-600 mt-1">{notification.message}</p>
-                      <p className="text-xs text-gray-500 mt-2">
+                      <h4 className="font-medium text-white text-sm">{notification.title}</h4>
+                      <p className="text-sm text-gray-300 mt-1">{notification.message}</p>
+                      <p className="text-xs text-gray-400 mt-2">
                         {new Date(notification.createdAt).toLocaleString()}
                       </p>
                     </div>
@@ -414,8 +414,8 @@ export default function StudentDashboard() {
                 </div>
               ))
             ) : (
-              <div className="p-8 text-center text-gray-500">
-                <Bell className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+              <div className="p-8 text-center text-gray-400">
+                <Bell className="w-12 h-12 mx-auto mb-4 text-gray-500" />
                 <p>No notifications yet</p>
               </div>
             )}
@@ -426,7 +426,7 @@ export default function StudentDashboard() {
       {/* Enrolled Courses */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="lg:col-span-2">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Enrolled Courses</h2>
+          <h2 className="text-xl font-bold text-white mb-4">Enrolled Courses</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {enrolledCourses.map((course) => (
               <EnhancedCourseCard
@@ -439,30 +439,30 @@ export default function StudentDashboard() {
         </div>
       </div>
 
-            {/* Recent Activity */}
+      {/* Recent Activity */}
       <div>
-        <h2 className="text-xl font-bold text-gray-900 mb-4">Recent Activity</h2>
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-          <div className="divide-y divide-gray-200">
+        <h2 className="text-xl font-bold text-white mb-4">Recent Activity</h2>
+        <div className="glass-card overflow-hidden">
+          <div className="divide-y divide-purple-500/10">
             {enrolledCourses.slice(0, 5).map((course) => (
-              <div key={course.id} className="p-6">
+              <div key={course.id} className="p-6 hover:bg-slate-800/20 transition-colors">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                      <BookOpen className="w-5 h-5 text-blue-600" />
+                    <div className="w-10 h-10 bg-blue-500/10 border border-blue-500/20 text-blue-400 rounded-full flex items-center justify-center">
+                      <BookOpen className="w-5 h-5 text-blue-400" />
                     </div>
                     <div>
-                      <h3 className="font-medium text-gray-900">{course.title}</h3>
-                      <p className="text-sm text-gray-600">
+                      <h3 className="font-semibold text-white">{course.title}</h3>
+                      <p className="text-sm text-gray-400">
                         Last accessed {new Date(course.lastAccessed).toLocaleDateString()}
                       </p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <div className="text-sm text-gray-600">
+                    <div className="text-sm text-gray-300">
                       {course.progress}% complete
                     </div>
-                    <div className="w-16 bg-gray-200 rounded-full h-2">
+                    <div className="w-16 bg-slate-700 rounded-full h-2 overflow-hidden">
                       <div
                         className={`h-2 rounded-full ${getProgressColor(course.progress)}`}
                         style={{ width: `${course.progress}%` }}

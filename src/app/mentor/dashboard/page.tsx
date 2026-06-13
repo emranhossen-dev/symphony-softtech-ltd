@@ -160,12 +160,13 @@ export default function MentorDashboard() {
     if (!selectedSubmission) return;
 
     try {
-      const response = await fetch('/api/mentor/homework/review', {
+      const response = await fetch(`/api/mentor/homework/${selectedSubmission.id}/grade`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          submissionId: selectedSubmission.id,
-          ...reviewData
+          status: reviewData.status,
+          feedback: reviewData.feedback,
+          marks: reviewData.grade
         })
       });
 
