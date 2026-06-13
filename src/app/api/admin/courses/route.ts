@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
     const user = await getAuthenticatedUser();
     console.log('✅ Authenticated user:', user.email, 'Role:', user.role);
     
-    if (user.role !== 'ADMIN') {
+    if (user.role !== 'ADMIN' && user.role !== 'EMPLOYEE') {
       return NextResponse.json(
         { success: false, error: 'Admin access required' },
         { status: 403 }
@@ -461,7 +461,7 @@ export async function PUT(request: NextRequest) {
     const user = await getAuthenticatedUser();
     console.log('✅ Authenticated user for update:', user.email, 'Role:', user.role);
     
-    if (user.role !== 'ADMIN') {
+    if (user.role !== 'ADMIN' && user.role !== 'EMPLOYEE') {
       return NextResponse.json(
         { success: false, error: 'Admin access required to update courses' },
         { status: 403 }

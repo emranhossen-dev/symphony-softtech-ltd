@@ -27,7 +27,7 @@ export async function GET(
 
       const user = verifyToken(token);
       
-      if (user.role !== 'ADMIN') {
+      if (user.role !== 'ADMIN' && user.role !== 'EMPLOYEE') {
         return NextResponse.json(
           { error: 'Access denied' },
           { status: 403 }
