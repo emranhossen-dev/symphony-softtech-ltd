@@ -4,7 +4,7 @@ import { verifyToken, AuthError } from '@/lib/auth';
 
 export const runtime = 'nodejs';
 
-export async function GET(request: NextRequest, { params }: { params: { quizId: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ quizId: string }> }) {
   try {
     const token = request.cookies.get('auth-token')?.value;
     if (!token) {
@@ -16,10 +16,10 @@ export async function GET(request: NextRequest, { params }: { params: { quizId: 
       return NextResponse.json({ error: 'Student access required' }, { status: 403 });
     }
 
-    const { quizId } = params;
+    const { quizId } = await params;
 
     // Fetch quiz with questions but DO NOT send correct answers
-    const quiz = await prisma.quiz.findUnique({
+    const quiz = await prisma.quiz.findFirst({
       where: { id: quizId, isActive: true },
       include: {
         questions: {
@@ -62,7 +62,7 @@ export async function GET(request: NextRequest, { params }: { params: { quizId: 
   }
 }
 
-export async function POST(request: NextRequest, { params }: { params: { quizId: string } }) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ quizId: string }> }) {
   try {
     const token = request.cookies.get('auth-token')?.value;
     if (!token) {
@@ -74,7 +74,7 @@ export async function POST(request: NextRequest, { params }: { params: { quizId:
       return NextResponse.json({ error: 'Student access required' }, { status: 403 });
     }
 
-    const { quizId } = params;
+    const { quizId } = await params;
     const { answers } = await request.json(); // Record<questionId, selectedOption>
 
     if (!answers || typeof answers !== 'object') {

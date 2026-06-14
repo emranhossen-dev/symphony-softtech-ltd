@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import Link from "next/link";
 import { ArrowLeft, Users, FileQuestion, Calendar, CheckCircle, XCircle } from "lucide-react";
 
@@ -28,14 +28,15 @@ interface QuizDetails {
   createdAt: string;
 }
 
-export default function QuizResultsPage({ params }: { params: { quizId: string } }) {
+export default function QuizResultsPage({ params }: { params: Promise<{ quizId: string }> }) {
+  const { quizId } = use(params);
   const [quiz, setQuiz] = useState<QuizDetails | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchQuizDetails = async () => {
       try {
-        const response = await fetch(`/api/mentor/quizzes/${params.quizId}`);
+        const response = await fetch(`/api/mentor/quizzes/${quizId}`);
         if (response.ok) {
           const data = await response.json();
           if (data.success) {
@@ -50,7 +51,7 @@ export default function QuizResultsPage({ params }: { params: { quizId: string }
     };
 
     fetchQuizDetails();
-  }, [params.quizId]);
+  }, [quizId]);
 
   if (loading) {
     return (

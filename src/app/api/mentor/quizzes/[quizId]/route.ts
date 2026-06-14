@@ -3,10 +3,10 @@ import { prisma } from '@/lib/prisma';
 import { requireRole } from '@/lib/security';
 
 export const GET = requireRole(['MENTOR'])(
-  async (request: NextRequest, { params }: { params: { quizId: string } }) => {
+  async (request: NextRequest, { params }: { params: Promise<{ quizId: string }> }) => {
     try {
       const user = (request as any).user;
-      const { quizId } = params;
+      const { quizId } = await params;
 
       const quiz = await prisma.quiz.findUnique({
         where: { id: quizId },

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, CheckCircle, XCircle, AlertCircle, HelpCircle, Trophy } from "lucide-react";
@@ -29,8 +29,9 @@ interface ResultDetail {
   isCorrect: boolean;
 }
 
-export default function StudentQuizAttendPage({ params }: { params: { quizId: string } }) {
+export default function StudentQuizAttendPage({ params }: { params: Promise<{ quizId: string }> }) {
   const router = useRouter();
+  const { quizId } = use(params);
   const [quiz, setQuiz] = useState<QuizData | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -53,7 +54,7 @@ export default function StudentQuizAttendPage({ params }: { params: { quizId: st
 
   const fetchQuiz = async () => {
     try {
-      const response = await fetch(`/api/student/quizzes/${params.quizId}`);
+      const response = await fetch(`/api/student/quizzes/${quizId}`);
       const data = await response.json();
       if (data.success) {
         if (data.quiz.hasAttempted) {
@@ -91,7 +92,7 @@ export default function StudentQuizAttendPage({ params }: { params: { quizId: st
 
     setSubmitting(true);
     try {
-      const response = await fetch(`/api/student/quizzes/${params.quizId}/submit`, {
+      const response = await fetch(`/api/student/quizzes/${quizId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ answers })
