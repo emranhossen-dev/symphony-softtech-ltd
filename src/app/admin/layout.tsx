@@ -74,7 +74,9 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           
           {/* Loading Text */}
           <div className="text-center space-y-3">
-            <h2 className="text-3xl font-bold text-white">Admin Panel</h2>
+            <h2 className="text-3xl font-bold text-white">
+              {user?.role === 'EMPLOYEE' ? 'Employee Panel' : 'Admin Panel'}
+            </h2>
             <p className="text-purple-200">Loading your dashboard...</p>
           </div>
           

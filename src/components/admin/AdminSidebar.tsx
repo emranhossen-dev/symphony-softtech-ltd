@@ -45,7 +45,8 @@ import {
   User,
   Phone,
   MessageCircle,
-  Quote
+  Quote,
+  Briefcase
 } from 'lucide-react';
 
 interface MenuItem {
@@ -556,15 +557,29 @@ const AdminSidebar = ({ isOpen, onClose, isMobile, isCollapsed = false, onToggle
         {/* Logo */}
         <div className={`flex items-center gap-3 p-6 border-b border-gray-800/50 ${isCollapsed ? 'justify-center' : ''}`}>
           <div className={`relative ${isCollapsed ? '' : ''}`}>
-            <div className="w-12 h-12 bg-gradient-to-br from-green-500 via-green-600 to-emerald-600 rounded-2xl flex items-center justify-center shadow-lg shadow-green-500/30 group-hover:shadow-green-500/50 transition-shadow duration-300">
-              <Award className="w-7 h-7 text-white" />
-            </div>
-            <div className="absolute -inset-1 bg-gradient-to-r from-green-500 to-emerald-600 rounded-2xl opacity-20 blur-md animate-pulse"></div>
+            {user?.role === 'EMPLOYEE' ? (
+              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/30 transition-shadow duration-300">
+                <Briefcase className="w-7 h-7 text-white" />
+              </div>
+            ) : (
+              <div className="w-12 h-12 bg-gradient-to-br from-green-500 via-green-600 to-emerald-600 rounded-2xl flex items-center justify-center shadow-lg shadow-green-500/30 transition-shadow duration-300">
+                <Award className="w-7 h-7 text-white" />
+              </div>
+            )}
+            <div className={`absolute -inset-1 rounded-2xl opacity-20 blur-md animate-pulse ${
+              user?.role === 'EMPLOYEE'
+                ? 'bg-gradient-to-r from-blue-500 to-indigo-600'
+                : 'bg-gradient-to-r from-green-500 to-emerald-600'
+            }`}></div>
           </div>
           {!isCollapsed && (
             <div className="animate-in slide-in-from-left-2 duration-300">
-              <h1 className="text-white font-bold text-lg bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">Admin Panel</h1>
-              <p className="text-gray-500 text-xs">Management System</p>
+              <h1 className="text-white font-bold text-lg bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+                {user?.role === 'EMPLOYEE' ? 'Employee Panel' : 'Admin Panel'}
+              </h1>
+              <p className="text-gray-500 text-xs">
+                {user?.role === 'EMPLOYEE' ? 'Staff Workspace' : 'Management System'}
+              </p>
             </div>
           )}
           
@@ -584,7 +599,7 @@ const AdminSidebar = ({ isOpen, onClose, isMobile, isCollapsed = false, onToggle
           )}
         </div>
 
-        </div>
+      </div>
 
       {/* Quick Stats */}
       {!isCollapsed && (
@@ -777,7 +792,11 @@ const AdminSidebar = ({ isOpen, onClose, isMobile, isCollapsed = false, onToggle
       {!isCollapsed && userProfile && (
         <div className="flex-shrink-0 border-t border-gray-800/50 p-4 bg-gradient-to-t from-gray-950 to-gray-900 animate-in slide-in-from-left-2 duration-300">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center shadow-lg shadow-purple-500/30">
+            <div className={`w-10 h-10 rounded-xl flex items-center justify-center shadow-lg ${
+              user?.role === 'EMPLOYEE'
+                ? 'bg-gradient-to-br from-blue-500 to-indigo-600 shadow-blue-500/30'
+                : 'bg-gradient-to-br from-purple-500 to-pink-500 shadow-purple-500/30'
+            }`}>
               {userProfile.avatar ? (
                 <img src={userProfile.avatar} alt={userProfile.name} className="w-full h-full rounded-xl object-cover" />
               ) : (
@@ -788,6 +807,13 @@ const AdminSidebar = ({ isOpen, onClose, isMobile, isCollapsed = false, onToggle
               <p className="text-sm font-semibold text-white truncate">{userProfile.name}</p>
               <p className="text-xs text-gray-500 truncate">{userProfile.email}</p>
             </div>
+            <span className={`text-xs px-2 py-0.5 rounded-full font-medium flex-shrink-0 ${
+              user?.role === 'EMPLOYEE'
+                ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
+                : 'bg-green-500/20 text-green-400 border border-green-500/30'
+            }`}>
+              {user?.role === 'EMPLOYEE' ? 'Staff' : 'Admin'}
+            </span>
           </div>
         </div>
       )}

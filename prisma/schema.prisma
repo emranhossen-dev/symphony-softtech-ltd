@@ -33,6 +33,8 @@ model User {
   callRecords         CallRecord[]
   userPermissions     UserPermission[]
   notes               Note[]
+  createdQuizzes      Quiz[]
+  quizAttempts        QuizAttempt[]
 
   @@map("users")
 }
@@ -110,6 +112,7 @@ model Course {
   moduleProgress      ModuleProgress[]
   modules             Module[]
   notes               Note[]
+  quizzes             Quiz[]
 
   @@map("courses")
 }
@@ -514,4 +517,51 @@ model Note {
   module    Module?  @relation(fields: [moduleId], references: [id], onDelete: Cascade)
 
   @@map("notes")
+}
+
+model Quiz {
+  id          String        @id @default(cuid())
+  title       String
+  description String?
+  courseId    String
+  mentorId    String
+  isActive    Boolean       @default(true)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  questions   Question[]
+  attempts    QuizAttempt[]
+
+  course      Course        @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  mentor      User          @relation(fields: [mentorId], references: [id])
+
+  @@map("quizzes")
+}
+
+model Question {
+  id          String   @id @default(cuid())
+  quizId      String
+  text        String
+  options     String[]
+  correctAns  String
+  order       Int      @default(0)
+
+  quiz        Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+
+  @@map("questions")
+}
+
+model QuizAttempt {
+  id          String   @id @default(cuid())
+  quizId      String
+  studentId   String
+  score       Int
+  totalMarks  Int
+  answers     Json
+  submittedAt DateTime @default(now())
+
+  quiz        Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  student     User     @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@map("quiz_attempts")
 }

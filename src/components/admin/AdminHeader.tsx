@@ -189,13 +189,24 @@ const AdminHeader = ({ onSidebarToggle, sidebarOpen, sidebarCollapsed = false, u
                   {/* Profile Header */}
                   <div className="px-4 py-3 border-b border-gray-700">
                     <div className="flex items-center space-x-3">
-                      <div className="w-8 h-8 bg-gradient-to-br from-green-600 to-orange-500 rounded-full flex items-center justify-center">
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                        user?.role === 'EMPLOYEE'
+                          ? 'bg-gradient-to-br from-blue-500 to-indigo-600'
+                          : 'bg-gradient-to-br from-green-600 to-orange-500'
+                      }`}>
                         <span className="text-white font-bold text-xs">
-                          {(user?.name || 'Admin').charAt(0).toUpperCase()}
+                          {(user?.name || 'A').charAt(0).toUpperCase()}
                         </span>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-white truncate max-w-[140px]">{user?.name || 'Admin'}</p>
+                        <span className={`text-xs px-1.5 py-0.5 rounded font-medium ${
+                          user?.role === 'EMPLOYEE'
+                            ? 'bg-blue-500/20 text-blue-400'
+                            : 'bg-green-500/20 text-green-400'
+                        }`}>
+                          {user?.role === 'EMPLOYEE' ? 'Employee' : 'Admin'}
+                        </span>
                       </div>
                     </div>
                   </div>

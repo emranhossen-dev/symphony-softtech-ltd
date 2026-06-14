@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
         redirectUrl = '/mentor/dashboard'
         break
       case 'EMPLOYEE':
-        redirectUrl = '/employee'
+        redirectUrl = '/admin/dashboard'
         break
     }
 

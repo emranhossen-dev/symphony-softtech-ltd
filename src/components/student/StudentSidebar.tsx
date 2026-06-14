@@ -38,6 +38,7 @@ const studentSidebarItems: StudentSidebarItem[] = [
   { name: "Homework", href: "/student/homework", icon: <FileText className="w-5 h-5" /> },
   { name: "All Notes", href: "/student/notes", icon: <FileText className="w-5 h-5" /> },
   { name: "Certificates", href: "/student/certificates", icon: <Download className="w-5 h-5" /> },
+  { name: "Quiz", href: "/student/quiz", icon: <FileText className="w-5 h-5" /> },
   { name: "Notifications", href: "/student/notifications", icon: <Bell className="w-5 h-5" />, badge: "3" },
   { name: "Profile", href: "/student/profile", icon: <User className="w-5 h-5" /> },
 ];
