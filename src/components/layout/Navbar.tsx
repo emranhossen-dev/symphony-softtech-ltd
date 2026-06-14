@@ -4,8 +4,6 @@ import { useState, useEffect } from "react";
 import { Menu, X, User, LogIn, ChevronDown, BookOpen, Users, Phone, GraduationCap, Sparkles, Star } from "lucide-react";
 import { usePathname } from "next/navigation";
 import Link from 'next/link';
-import ThemeToggler from "@/components/ThemeToggler";
-
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -178,7 +176,6 @@ const Navbar = () => {
 
           {/* Premium Action Buttons */}
           <div className="hidden xl:flex items-center space-x-4">
-            <ThemeToggler />
             <Link
               href="/login"
               className="group flex items-center space-x-3 px-6 py-3 text-sm font-bold text-white border-2 border-slate-500 rounded-xl hover:border-white hover:bg-slate-700 transition-all duration-300 transform hover:scale-105 hover:-translate-y-1"
@@ -259,10 +256,6 @@ const Navbar = () => {
               ))}
 
               <div className="pt-6 mt-6 border-t border-purple-600">
-                <div className="flex items-center justify-between mb-4 px-4">
-                  <span className="text-sm font-medium text-gray-400">Theme</span>
-                  <ThemeToggler />
-                </div>
                 <Link
                   href="/login"
                   onClick={() => setIsMenuOpen(false)}
