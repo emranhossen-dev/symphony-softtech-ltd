@@ -58,7 +58,7 @@ const MentorSidebar = ({ isOpen = true, onClose }: MentorSidebarProps) => {
         fixed inset-y-0 left-0 z-50 w-64 sm:w-72 bg-gradient-to-b from-[#0a0e27] via-[#1a1f4c] to-[#0d1b3e] transform transition-transform duration-300 ease-in-out
         ${isOpen ? 'translate-x-0' : '-translate-x-full'}
         lg:relative lg:translate-x-0 lg:inset-y-0 lg:left-0
-        border-r border-purple-500/30
+        border-r border-purple-500/30 flex flex-col
       `}>
         {/* Sidebar Header */}
         <div className="flex items-center justify-between h-20 px-6 border-b border-purple-500/30">
@@ -82,7 +82,7 @@ const MentorSidebar = ({ isOpen = true, onClose }: MentorSidebarProps) => {
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 px-4 py-6 space-y-2">
+        <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
           {mentorSidebarItems.map((item) => {
             const isActive = pathname === item.href || (item.href !== "/mentor" && pathname.startsWith(item.href));
             

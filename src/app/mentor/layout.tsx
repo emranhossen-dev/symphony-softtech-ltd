@@ -27,7 +27,7 @@ const MentorLayout = ({ children }: MentorLayoutProps) => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0a0e27] via-[#1a1f4c] to-[#0d1b3e] flex text-white">
+    <div className="h-screen overflow-hidden bg-gradient-to-br from-[#0a0e27] via-[#1a1f4c] to-[#0d1b3e] flex text-white">
       {/* Sidebar */}
       <MentorSidebar
         isOpen={sidebarOpen}
