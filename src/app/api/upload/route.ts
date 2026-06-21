@@ -2,9 +2,30 @@ import { NextRequest, NextResponse } from 'next/server';
 import { writeFile, mkdir } from 'fs/promises';
 import { join } from 'path';
 import { existsSync } from 'fs';
+import { getUserFromToken } from '@/lib/auth';
 
 export async function POST(request: NextRequest) {
   try {
+    // Authentication check
+    const token = request.headers.get('Authorization')?.replace('Bearer ', '') ||
+      request.cookies.get('auth-token')?.value;
+
+    if (!token) {
+      return NextResponse.json(
+        { error: 'Authentication required' },
+        { status: 401 }
+      );
+    }
+
+    try {
+      await getUserFromToken(token);
+    } catch {
+      return NextResponse.json(
+        { error: 'Invalid or expired token' },
+        { status: 401 }
+      );
+    }
+
     const formData = await request.formData();
     const file = formData.get('file') as File;
 

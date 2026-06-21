@@ -52,22 +52,20 @@ export async function POST(
       return NextResponse.json({ error: 'Access denied - not your course' }, { status: 403 });
     }
 
-    // Update using raw SQL to avoid Prisma issues
-    const reviewedAt = new Date().toISOString();
-    const safeFeedback = feedback ? feedback.replace(/'/g, "''") : null;
+    // Update using Prisma's parameterized query to prevent SQL injection
+    const reviewedAt = new Date();
     const marksValue = marks !== undefined && marks !== '' ? parseInt(marks) : null;
     
-    const updateQuery = `
-      UPDATE homework_submissions 
-      SET status = '${status}', 
-          feedback = ${safeFeedback ? `'${safeFeedback}'` : 'NULL'}, 
-          marks = ${marksValue !== null ? marksValue : 'NULL'}, 
-          "mentorId" = '${user.id}', 
-          "reviewedAt" = '${reviewedAt}'
-      WHERE id = '${submissionId}'
-    `;
-    
-    await prisma.$executeRawUnsafe(updateQuery);
+    await prisma.homeworkSubmission.update({
+      where: { id: submissionId },
+      data: {
+        status,
+        feedback: feedback || null,
+        marks: marksValue,
+        mentorId: user.id,
+        reviewedAt,
+      },
+    });
 
     // Send notification to student
     const moduleName = existingSubmission.module?.title || 'your homework';
@@ -111,12 +109,7 @@ export async function POST(
   } catch (error: any) {
     console.error('GRADING ERROR:', error);
     return NextResponse.json(
-      { 
-        error: error.message || 'Failed to grade homework',
-        code: error.code,
-        meta: error.meta,
-        stack: error.stack
-      },
+      { error: 'Failed to grade homework' },
       { status: 500 }
     );
   }

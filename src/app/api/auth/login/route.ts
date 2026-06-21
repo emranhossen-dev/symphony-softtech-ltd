@@ -69,9 +69,7 @@ export async function POST(request: NextRequest) {
       redirect: redirectUrl
     })
 
-    console.log('🔐 LOGIN - Setting auth token cookie...');
-    console.log('🔐 LOGIN - Token length:', token.length);
-    console.log('🔐 LOGIN - Token preview:', token.substring(0, 20) + '...');
+
 
     // Clear old cookie if exists
     response.cookies.set("auth-token", '', {
@@ -93,8 +91,7 @@ export async function POST(request: NextRequest) {
       domain: process.env.NODE_ENV === 'production' ? undefined : 'localhost'
     })
 
-    console.log('🔐 LOGIN - Cookie set in response');
-    console.log('🔐 LOGIN - Response headers being sent:', Object.fromEntries(response.headers.entries()));
+
 
     return response
 

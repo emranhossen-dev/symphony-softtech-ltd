@@ -280,12 +280,12 @@ export default function CategoryEnrollmentPage() {
 
   // Auth utility function
 const getAuthToken = () => {
-  let token = localStorage.getItem('auth_token');
+  const token = localStorage.getItem('auth_token') ||
+    document.cookie.split(';').find(c => c.trim().startsWith('auth-token='))?.split('=')[1];
   
-  // If no token, set the default admin token
   if (!token) {
-    token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtbWZlZDlkeDAwMDdiOGN5cHJ5ZTM1enciLCJlbWFpbCI6ImZhaXlhei5zdW1vbkBnbWFpbC5jb20iLCJuYW1lIjoiRmFpeWF6IFN1bW9uIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzcyODY0NjY0LCJleHAiOjE3NzM0Njk0NjR9.0Ic89Ld8ImFtSQWMeEyBvAaIxQQHjgOT3zHQKhjdVbA';
-    localStorage.setItem('auth_token', token);
+    window.location.href = '/login';
+    return '';
   }
   
   return token;

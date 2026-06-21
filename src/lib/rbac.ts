@@ -219,13 +219,21 @@ export const ROLE_PERMISSIONS = {
   ]
 };
 
-// JWT Secret key
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
+// JWT Secret key - must be set in environment variables
+const JWT_SECRET = process.env.JWT_SECRET;
+
+if (!JWT_SECRET) {
+  console.error('FATAL: JWT_SECRET environment variable is not set');
+}
 
 // Verify JWT token
 export async function verifyToken(token: string) {
+  if (!JWT_SECRET) {
+    console.error('JWT_SECRET is not configured');
+    return null;
+  }
   try {
-    const payload = jwt.verify(token, process.env.JWT_SECRET || 'fallback-secret') as any;
+    const payload = jwt.verify(token, JWT_SECRET) as any;
     return payload;
   } catch (error) {
     console.error('JWT verification error:', error);

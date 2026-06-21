@@ -12,19 +12,13 @@ export async function GET(request: NextRequest) {
     const headerToken = request.headers.get('Authorization')?.replace('Bearer ', '');
     const token = cookieToken || headerToken;
 
-    console.log('🔐 /api/auth/me - Token sources:');
-    console.log('  - Cookie (auth-token):', !!cookieToken);
-    console.log('  - Header:', !!headerToken);
-
     if (!token) {
-      console.log('❌ No token found');
       return NextResponse.json(
         { error: 'No token provided' },
         { status: 401 }
       );
     }
 
-    console.log('✅ Token found, verifying...');
     const user = await getUserFromToken(token);
 
     // Fetch user permissions if not admin
@@ -60,7 +54,6 @@ export async function GET(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('❌ /api/auth/me - Error:', error);
     return NextResponse.json(
       { error: 'Invalid or expired token' },
       { status: 401 }
