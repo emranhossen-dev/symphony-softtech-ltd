@@ -2,41 +2,20 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { AuthError, verifyToken, hasRole, createStudentUser } from '@/lib/auth';
 import { sendAdmissionEmail } from '@/lib/email';
+import { authenticateRequestLight, handleApiError } from '@/lib/api-utils';
+import { parsePagination, buildPaginationMeta } from '@/lib/pagination';
 
 // GET all enrollments with filtering and pagination
 export async function GET(request: NextRequest) {
   try {
-    // Try both Authorization header and cookie
-    const rawAuthHeader = request.headers.get('Authorization')?.replace('Bearer ', '');
-    const authHeader = rawAuthHeader && rawAuthHeader !== 'null' && rawAuthHeader !== 'undefined' ? rawAuthHeader : null;
-    const cookieToken = request.cookies.get('auth-token')?.value;
-    
-    const token = authHeader || cookieToken;
-    
-    if (!token) {
-      console.log('No token found in header or cookies');
-      return NextResponse.json(
-        { success: false, error: 'Authentication required' },
-        { status: 401 }
-      );
-    }
+    const auth = authenticateRequestLight(request, ['ADMIN', 'EMPLOYEE']);
+    if (!auth.success) return auth.response;
 
-    const payload = verifyToken(token);
-    if (!hasRole(payload.role, 'ADMIN') && !hasRole(payload.role, 'EMPLOYEE')) {
-      console.log('Insufficient permissions for role:', payload.role);
-      return NextResponse.json(
-        { success: false, error: 'Insufficient permissions' },
-        { status: 403 }
-      );
-    }
-
+    const { page, limit, skip } = parsePagination(request);
     const { searchParams } = new URL(request.url);
     const status = searchParams.get('status');
     const category = searchParams.get('category');
     const search = searchParams.get('search');
-    const page = parseInt(searchParams.get('page') || '1');
-    const limit = parseInt(searchParams.get('limit') || '10');
-    const skip = (page - 1) * limit;
 
     const where: any = {};
 

@@ -1,19 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getAuthenticatedUser } from '@/lib/auth';
-
-// Helper function to generate slug from title
-function generateSlug(title: string): string {
-  const baseSlug = title
-    .toLowerCase()
-    .replace(/[^\p{L}\p{N}\s-]/gu, '')
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-')
-    .replace(/^-|-$/g, '');
-  
-  const timestamp = Date.now().toString(36);
-  return `${baseSlug || 'course'}-${timestamp}`;
-}
+import { generateSlug } from '@/lib/slug';
+import { parsePagination, buildPaginationMeta } from '@/lib/pagination';
 
 // GET /api/admin/courses - Get all courses with filters
 export async function GET(request: NextRequest) {
@@ -38,13 +27,11 @@ export async function GET(request: NextRequest) {
     );
   }
   
+  const { page, limit, skip } = parsePagination(request);
   const { searchParams } = new URL(request.url);
-  const page = parseInt(searchParams.get('page') || '1');
-  const limit = parseInt(searchParams.get('limit') || '10');
   const search = searchParams.get('search') || '';
   const category = searchParams.get('category') || '';
   const isActive = searchParams.get('isActive');
-  const skip = (page - 1) * limit;
 
   console.log('Query params:', { page, limit, search, category, isActive });
 
@@ -104,12 +91,7 @@ export async function GET(request: NextRequest) {
         regularPrice: course.price, // Map price to regularPrice for admin panel
         enrollmentCount: course._count.enrollments
       })),
-      pagination: {
-        page,
-        limit,
-        total,
-        pages: Math.ceil(total / limit)
-      }
+      pagination: buildPaginationMeta(total, { page, limit, skip })
     });
   } catch (error) {
     console.error('Database error in admin courses:', error);

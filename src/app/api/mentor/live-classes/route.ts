@@ -1,28 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { verifyToken, AuthError } from '@/lib/auth';
+import { authenticateRequestLight, handleApiError, successResponse } from '@/lib/api-utils';
 
 export const runtime = 'nodejs';
 
 // GET /api/mentor/live-classes — fetch all live sessions for mentor's courses
 export async function GET(request: NextRequest) {
   try {
-    const token = request.headers.get('Authorization')?.replace('Bearer ', '') ||
-                  request.cookies.get('auth-token')?.value;
+    const auth = authenticateRequestLight(request, ['MENTOR']);
+    if (!auth.success) return auth.response;
 
-    if (!token) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
-    }
-
-    const user = verifyToken(token);
-    if (!user || user.role !== 'MENTOR') {
-      return NextResponse.json({ error: 'Mentor access required' }, { status: 403 });
-    }
-
-    // Fetch live sessions for mentor's courses
     const sessions = await prisma.attendanceSession.findMany({
       where: {
-        mentorId: user.id
+        mentorId: auth.payload.id
       },
       include: {
         course: {
@@ -49,33 +39,17 @@ export async function GET(request: NextRequest) {
       meetingLink: session.meetingLink || ''
     }));
 
-    return NextResponse.json({
-      success: true,
-      classes
-    });
+    return successResponse({ classes });
   } catch (error) {
-    if (error instanceof AuthError) {
-      return NextResponse.json({ error: error.message }, { status: error.statusCode });
-    }
-    console.error('Error fetching live classes for mentor:', error);
-    return NextResponse.json({ error: 'Failed to fetch live classes' }, { status: 500 });
+    return handleApiError(error, 'fetch live classes');
   }
 }
 
 // POST /api/mentor/live-classes — create/schedule a live class
 export async function POST(request: NextRequest) {
   try {
-    const token = request.headers.get('Authorization')?.replace('Bearer ', '') ||
-                  request.cookies.get('auth-token')?.value;
-
-    if (!token) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
-    }
-
-    const user = verifyToken(token);
-    if (!user || user.role !== 'MENTOR') {
-      return NextResponse.json({ error: 'Mentor access required' }, { status: 403 });
-    }
+    const auth = authenticateRequestLight(request, ['MENTOR']);
+    if (!auth.success) return auth.response;
 
     const body = await request.json();
     const { courseId, title, description, sessionDate, duration, meetingLink } = body;
@@ -88,7 +62,7 @@ export async function POST(request: NextRequest) {
     const course = await prisma.course.findFirst({
       where: {
         id: courseId,
-        mentorId: user.id
+        mentorId: auth.payload.id
       }
     });
 
@@ -104,7 +78,7 @@ export async function POST(request: NextRequest) {
     const session = await prisma.attendanceSession.create({
       data: {
         courseId,
-        mentorId: user.id,
+        mentorId: auth.payload.id,
         sessionDate: start,
         endTime: end,
         title: title.trim(),
@@ -114,34 +88,20 @@ export async function POST(request: NextRequest) {
       }
     });
 
-    return NextResponse.json({
-      success: true,
+    return successResponse({
       message: 'Live session scheduled successfully',
       session
     });
   } catch (error) {
-    if (error instanceof AuthError) {
-      return NextResponse.json({ error: error.message }, { status: error.statusCode });
-    }
-    console.error('Error creating live class:', error);
-    return NextResponse.json({ error: 'Failed to schedule live class' }, { status: 500 });
+    return handleApiError(error, 'schedule live class');
   }
 }
 
 // PATCH /api/mentor/live-classes — start or stop a live class
 export async function PATCH(request: NextRequest) {
   try {
-    const token = request.headers.get('Authorization')?.replace('Bearer ', '') ||
-                  request.cookies.get('auth-token')?.value;
-
-    if (!token) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
-    }
-
-    const user = verifyToken(token);
-    if (!user || user.role !== 'MENTOR') {
-      return NextResponse.json({ error: 'Mentor access required' }, { status: 403 });
-    }
+    const auth = authenticateRequestLight(request, ['MENTOR']);
+    if (!auth.success) return auth.response;
 
     const { sessionId, isActive } = await request.json();
 
@@ -156,21 +116,19 @@ export async function PATCH(request: NextRequest) {
       }
     });
 
-    if (!session || session.mentorId !== user.id) {
+    if (!session || session.mentorId !== auth.payload.id) {
       return NextResponse.json({ error: 'Live session not found or access denied' }, { status: 404 });
     }
 
-    // Update session state
     const updated = await prisma.attendanceSession.update({
       where: { id: sessionId },
       data: {
         isActive,
-        // If starting, set start date to now
         sessionDate: isActive ? new Date() : undefined
       }
     });
 
-    // If session is being started, trigger notifications to all admitted students in the course
+    // If session is being started, trigger notifications to all admitted students
     if (isActive) {
       const enrollments = await prisma.enrollment.findMany({
         where: {
@@ -200,35 +158,20 @@ export async function PATCH(request: NextRequest) {
       }
     }
 
-    return NextResponse.json({
-      success: true,
+    return successResponse({
       message: isActive ? 'Session started successfully' : 'Session ended successfully',
       session: updated
     });
-
   } catch (error) {
-    if (error instanceof AuthError) {
-      return NextResponse.json({ error: error.message }, { status: error.statusCode });
-    }
-    console.error('Error starting/stopping live session:', error);
-    return NextResponse.json({ error: 'Failed to update live class state' }, { status: 500 });
+    return handleApiError(error, 'update live class state');
   }
 }
 
 // DELETE /api/mentor/live-classes — delete/cancel live class
 export async function DELETE(request: NextRequest) {
   try {
-    const token = request.headers.get('Authorization')?.replace('Bearer ', '') ||
-                  request.cookies.get('auth-token')?.value;
-
-    if (!token) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
-    }
-
-    const user = verifyToken(token);
-    if (!user || user.role !== 'MENTOR') {
-      return NextResponse.json({ error: 'Mentor access required' }, { status: 403 });
-    }
+    const auth = authenticateRequestLight(request, ['MENTOR']);
+    if (!auth.success) return auth.response;
 
     const { searchParams } = new URL(request.url);
     const sessionId = searchParams.get('id');
@@ -241,7 +184,7 @@ export async function DELETE(request: NextRequest) {
       where: { id: sessionId }
     });
 
-    if (!session || session.mentorId !== user.id) {
+    if (!session || session.mentorId !== auth.payload.id) {
       return NextResponse.json({ error: 'Live session not found or access denied' }, { status: 404 });
     }
 
@@ -249,15 +192,8 @@ export async function DELETE(request: NextRequest) {
       where: { id: sessionId }
     });
 
-    return NextResponse.json({
-      success: true,
-      message: 'Live class session cancelled successfully'
-    });
+    return successResponse({ message: 'Live class session cancelled successfully' });
   } catch (error) {
-    if (error instanceof AuthError) {
-      return NextResponse.json({ error: error.message }, { status: error.statusCode });
-    }
-    console.error('Error deleting live session:', error);
-    return NextResponse.json({ error: 'Failed to delete live class' }, { status: 500 });
+    return handleApiError(error, 'delete live class');
   }
 }

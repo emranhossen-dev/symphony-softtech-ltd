@@ -1,21 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyToken } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { authenticateRequestLight, handleApiError, successResponse } from '@/lib/api-utils';
 
 // GET - Fetch all pending certificate requests (students who completed all homework)
 export async function GET(request: NextRequest) {
   try {
-    const token = request.cookies.get('auth-token')?.value;
-
-    if (!token) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const user = verifyToken(token);
-
-    if (user.role !== 'MENTOR' && user.role !== 'ADMIN') {
-      return NextResponse.json({ error: 'Access denied' }, { status: 403 });
-    }
+    const auth = authenticateRequestLight(request, ['MENTOR', 'ADMIN']);
+    if (!auth.success) return auth.response;
 
     // Fetch already issued certificates
     const issuedCertificates = await prisma.certificate.findMany({
@@ -28,7 +19,7 @@ export async function GET(request: NextRequest) {
 
     // Find all courses this mentor is assigned to
     const mentorCourses = await prisma.course.findMany({
-      where: { mentorId: user.id },
+      where: { mentorId: auth.payload.id },
       include: {
         modules: true,
         enrollments: {
@@ -74,7 +65,6 @@ export async function GET(request: NextRequest) {
         const allSubmitted = homeworkModules.every(m => studentSubmissions.has(m.id));
 
         if (allSubmitted) {
-          // Find the latest submission date
           const studentSubs = course.homeworkSubmissions
             .filter(s => s.userId === studentId)
             .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
@@ -91,35 +81,17 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    return NextResponse.json({
-      success: true,
-      pendingRequests,
-      issuedCertificates
-    });
-
+    return successResponse({ pendingRequests, issuedCertificates });
   } catch (error) {
-    console.error('Error fetching certificate requests:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch certificate requests' },
-      { status: 500 }
-    );
+    return handleApiError(error, 'fetch certificate requests');
   }
 }
 
 // POST - Issue a certificate to a student
 export async function POST(request: NextRequest) {
   try {
-    const token = request.cookies.get('auth-token')?.value;
-
-    if (!token) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const user = verifyToken(token);
-
-    if (user.role !== 'MENTOR' && user.role !== 'ADMIN') {
-      return NextResponse.json({ error: 'Access denied' }, { status: 403 });
-    }
+    const auth = authenticateRequestLight(request, ['MENTOR', 'ADMIN']);
+    if (!auth.success) return auth.response;
 
     const { studentId, courseId } = await request.json();
 
@@ -161,17 +133,11 @@ export async function POST(request: NextRequest) {
       }
     });
 
-    return NextResponse.json({
-      success: true,
+    return successResponse({
       certificate,
       message: 'Certificate issued successfully'
     });
-
   } catch (error) {
-    console.error('Error issuing certificate:', error);
-    return NextResponse.json(
-      { error: 'Failed to issue certificate' },
-      { status: 500 }
-    );
+    return handleApiError(error, 'issue certificate');
   }
 }

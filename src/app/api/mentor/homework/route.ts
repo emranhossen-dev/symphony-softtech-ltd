@@ -1,37 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { authenticateRequest, handleApiError, successResponse } from '@/lib/api-utils';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
   try {
-    // Get mentor ID from auth token
-    const token = request.headers.get('Authorization')?.replace('Bearer ', '') ||
-                  request.cookies.get('auth-token')?.value;
+    const auth = await authenticateRequest(request, ['MENTOR']);
+    if (!auth.success) return auth.response;
 
-    if (!token) {
-      return NextResponse.json(
-        { error: 'Authentication required' },
-        { status: 401 }
-      );
-    }
-
-    // Get user from token
-    const { getUserFromToken } = await import('@/lib/auth');
-    const user = await getUserFromToken(token);
-
-    if (!user || user.role !== 'MENTOR') {
-      return NextResponse.json(
-        { error: 'Mentor access required' },
-        { status: 403 }
-      );
-    }
-
-    // Fetch homework submissions for courses where this mentor is assigned
     const submissions = await (prisma as any).homeworkSubmission.findMany({
       where: {
         course: {
-          mentorId: user.id
+          mentorId: auth.user.id
         }
       },
       include: {
@@ -63,7 +44,6 @@ export async function GET(request: NextRequest) {
       }
     });
 
-    // Transform data to match expected format
     const transformedSubmissions = submissions.map((submission: any) => ({
       id: submission.id,
       homeworkId: `hw-${submission.moduleId}`,
@@ -95,12 +75,6 @@ export async function GET(request: NextRequest) {
       }
     });
   } catch (error) {
-    console.error('Error fetching homework submissions:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch homework submissions' },
-      { status: 500 }
-    );
-  } finally {
-    await prisma.$disconnect();
+    return handleApiError(error, 'fetch homework submissions');
   }
 }

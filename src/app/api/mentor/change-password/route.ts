@@ -1,29 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getUserFromToken, comparePassword, hashPassword, AuthError } from '@/lib/auth';
+import { comparePassword, hashPassword, AuthError } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { authenticateRequest, handleApiError, successResponse } from '@/lib/api-utils';
 
 export const runtime = 'nodejs';
 
 // POST /api/mentor/change-password
 export async function POST(request: NextRequest) {
   try {
-    const cookieToken = request.cookies.get('auth-token')?.value;
-    const headerToken = request.headers.get('Authorization')?.replace('Bearer ', '');
-    const token = cookieToken || headerToken;
-
-    if (!token) {
-      return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
-    }
-
-    const user = await getUserFromToken(token);
-    if (!user || user.role !== 'MENTOR') {
-      return NextResponse.json({ error: 'Mentor access required' }, { status: 403 });
-    }
+    const auth = await authenticateRequest(request, ['MENTOR']);
+    if (!auth.success) return auth.response;
 
     const body = await request.json();
     const { currentPassword, newPassword, confirmPassword } = body;
 
-    // Validate required fields
     if (!currentPassword || !newPassword || !confirmPassword) {
       return NextResponse.json({ error: 'All fields are required' }, { status: 400 });
     }
@@ -48,7 +38,7 @@ export async function POST(request: NextRequest) {
 
     // Fetch full user record with password
     const fullUser = await prisma.user.findUnique({
-      where: { id: user.id },
+      where: { id: auth.user.id },
       select: { id: true, password: true },
     });
 
@@ -69,14 +59,11 @@ export async function POST(request: NextRequest) {
       data: { password: hashedPassword },
     });
 
-    return NextResponse.json({ success: true, message: 'Password changed successfully' });
-  } catch (err) {
-    if (err instanceof AuthError) {
-      return NextResponse.json({ error: err.message }, { status: err.statusCode });
+    return successResponse({ message: 'Password changed successfully' });
+  } catch (error) {
+    if (error instanceof AuthError) {
+      return NextResponse.json({ error: error.message }, { status: error.statusCode });
     }
-    console.error('Mentor change password error:', err);
-    return NextResponse.json({ error: 'Failed to change password' }, { status: 500 });
-  } finally {
-    await prisma.$disconnect();
+    return handleApiError(error, 'change password');
   }
 }

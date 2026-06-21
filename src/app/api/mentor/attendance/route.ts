@@ -1,29 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { authenticateRequest, handleApiError, successResponse } from '@/lib/api-utils';
 
 export async function GET(request: NextRequest) {
   try {
-    // Get mentor ID from auth token
-    const token = request.headers.get('Authorization')?.replace('Bearer ', '') ||
-                  request.cookies.get('auth-token')?.value;
-
-    if (!token) {
-      return NextResponse.json(
-        { error: 'Authentication required' },
-        { status: 401 }
-      );
-    }
-
-    // Get user from token
-    const { getUserFromToken } = await import('@/lib/auth');
-    const user = await getUserFromToken(token);
-
-    if (!user || user.role !== 'MENTOR') {
-      return NextResponse.json(
-        { error: 'Mentor access required' },
-        { status: 403 }
-      );
-    }
+    const auth = await authenticateRequest(request, ['MENTOR']);
+    if (!auth.success) return auth.response;
 
     const courseId = request.nextUrl.searchParams.get('courseId');
     const date = request.nextUrl.searchParams.get('date');
@@ -31,7 +13,7 @@ export async function GET(request: NextRequest) {
     const whereClause: any = {
       session: {
         course: {
-          mentorId: user.id
+          mentorId: auth.user.id
         }
       }
     };
@@ -53,7 +35,6 @@ export async function GET(request: NextRequest) {
       };
     }
 
-    // Fetch attendance records from database for mentor's courses
     const attendances = await prisma.attendance.findMany({
       where: whereClause,
       include: {
@@ -80,7 +61,6 @@ export async function GET(request: NextRequest) {
       }
     });
 
-    // Transform data to match expected format
     const formattedRecords = attendances.map((att: any) => ({
       id: att.id,
       studentId: att.studentId,
@@ -88,25 +68,16 @@ export async function GET(request: NextRequest) {
       courseId: att.session.courseId,
       courseName: att.session.course.title,
       date: att.session.sessionDate.toISOString().split('T')[0],
-      status: att.status, // 'PRESENT' or 'ABSENT'
+      status: att.status,
       checkInTime: att.markedAt ? new Date(att.markedAt).toTimeString().slice(0, 5) : undefined,
-      notes: att.status === 'PRESENT' && new Date(att.markedAt).getTime() > new Date(att.session.sessionDate).getTime() + 15 * 60 * 1000 
-        ? 'Late arrival' 
+      notes: att.status === 'PRESENT' && new Date(att.markedAt).getTime() > new Date(att.session.sessionDate).getTime() + 15 * 60 * 1000
+        ? 'Late arrival'
         : undefined
     }));
 
-    return NextResponse.json({
-      success: true,
-      records: formattedRecords
-    });
+    return successResponse({ records: formattedRecords });
   } catch (error) {
-    console.error('Error fetching attendance records:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch attendance records' },
-      { status: 500 }
-    );
-  } finally {
-    await prisma.$disconnect();
+    return handleApiError(error, 'fetch attendance records');
   }
 }
 
@@ -121,27 +92,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get mentor ID from auth token
-    const token = request.headers.get('Authorization')?.replace('Bearer ', '') ||
-                  request.cookies.get('auth-token')?.value;
-
-    if (!token) {
-      return NextResponse.json(
-        { error: 'Authentication required' },
-        { status: 401 }
-      );
-    }
-
-    // Get user from token
-    const { getUserFromToken } = await import('@/lib/auth');
-    const user = await getUserFromToken(token);
-
-    if (!user || user.role !== 'MENTOR') {
-      return NextResponse.json(
-        { error: 'Mentor access required' },
-        { status: 403 }
-      );
-    }
+    const auth = await authenticateRequest(request, ['MENTOR']);
+    if (!auth.success) return auth.response;
 
     const { createAttendanceMarkedNotification } = await import('@/lib/notifications');
     const updatedRecords: any[] = [];
@@ -164,14 +116,14 @@ export async function POST(request: NextRequest) {
     for (const key of Object.keys(groups)) {
       const group = groups[key];
       const targetDate = new Date(group.date);
-      
+
       const startOfDay = new Date(targetDate);
       startOfDay.setHours(0, 0, 0, 0);
-      
+
       const endOfDay = new Date(targetDate);
       endOfDay.setHours(23, 59, 59, 999);
 
-      // 1. Find or create the attendance session for this date & course
+      // Find or create the attendance session for this date & course
       let session = await prisma.attendanceSession.findFirst({
         where: {
           courseId: group.courseId,
@@ -186,7 +138,7 @@ export async function POST(request: NextRequest) {
         session = await prisma.attendanceSession.create({
           data: {
             courseId: group.courseId,
-            mentorId: user.id,
+            mentorId: auth.user.id,
             sessionDate: new Date(group.date),
             title: `Session on ${group.date}`,
             description: `Attendance taken on ${group.date}`
@@ -194,12 +146,11 @@ export async function POST(request: NextRequest) {
         });
       }
 
-      // 2. Upsert attendance record for each student in the group
+      // Upsert attendance record for each student in the group
       for (const record of group.records) {
-        // Map LATE to PRESENT to respect the Prisma Enum limits
         const dbStatus = record.status === 'LATE' ? 'PRESENT' : record.status;
         if (dbStatus !== 'PRESENT' && dbStatus !== 'ABSENT') {
-          continue; // Ignore invalid status values
+          continue;
         }
 
         const attendance = await prisma.attendance.upsert({
@@ -211,18 +162,18 @@ export async function POST(request: NextRequest) {
           },
           update: {
             status: dbStatus,
-            markedBy: user.id,
+            markedBy: auth.user.id,
             updatedAt: new Date()
           },
           create: {
             sessionId: session.id,
             studentId: record.studentId,
             status: dbStatus,
-            markedBy: user.id
+            markedBy: auth.user.id
           }
         });
 
-        // 3. Send notification to student in background
+        // Send notification to student in background
         try {
           await createAttendanceMarkedNotification(
             record.studentId,
@@ -238,17 +189,8 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    return NextResponse.json({
-      success: true,
-      records: updatedRecords
-    });
+    return successResponse({ records: updatedRecords });
   } catch (error) {
-    console.error('Error marking attendance:', error);
-    return NextResponse.json(
-      { error: 'Failed to mark attendance' },
-      { status: 500 }
-    );
-  } finally {
-    await prisma.$disconnect();
+    return handleApiError(error, 'mark attendance');
   }
 }
