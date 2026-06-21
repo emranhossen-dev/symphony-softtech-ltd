@@ -114,8 +114,6 @@ export async function POST(
       { 
         error: error.message || 'Failed to grade homework',
         code: error.code,
-        meta: error.meta,
-        stack: error.stack
       },
       { status: 500 }
     );

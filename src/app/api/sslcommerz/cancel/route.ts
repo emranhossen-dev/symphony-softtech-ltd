@@ -25,7 +25,11 @@ export async function GET(request: NextRequest) {
           })
         });
       } catch (updateError) {
-        console.error('Error updating enrollment cancellation:', updateError);
+        console.error('Failed to update enrollment after payment cancellation — enrollment status may be stale:', {
+          error: updateError instanceof Error ? updateError.message : updateError,
+          enrollmentId: value_a,
+          transactionId: tran_id,
+        });
       }
     }
 

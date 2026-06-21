@@ -54,17 +54,31 @@ export async function GET(request: NextRequest) {
           });
 
           if (updateResponse.ok) {
-            // Redirect to success page
             return NextResponse.redirect(`${process.env.NEXT_PUBLIC_URL || 'http://localhost:3000'}/payment/success?enrollment=${value_a}`);
+          } else {
+            const errorBody = await updateResponse.text();
+            console.error('Enrollment update returned non-OK status after successful payment:', {
+              status: updateResponse.status,
+              body: errorBody,
+              enrollmentId: value_a,
+              transactionId: tran_id,
+            });
+            return NextResponse.redirect(`${process.env.NEXT_PUBLIC_URL || 'http://localhost:3000'}/payment/success?enrollment=${value_a}&update_warning=true`);
           }
         } catch (updateError) {
-          console.error('Error updating enrollment:', updateError);
+          console.error('Failed to update enrollment after successful payment — enrollment may be out of sync:', {
+            error: updateError instanceof Error ? updateError.message : updateError,
+            enrollmentId: value_a,
+            transactionId: tran_id,
+          });
+          return NextResponse.redirect(`${process.env.NEXT_PUBLIC_URL || 'http://localhost:3000'}/payment/success?enrollment=${value_a}&update_warning=true`);
         }
       }
     }
 
-    // Redirect to success page even if update fails (for user experience)
-    return NextResponse.redirect(`${process.env.NEXT_PUBLIC_URL || 'http://localhost:3000'}/payment/success?enrollment=${value_a}`);
+    // Payment status was not VALID/VALIDATED — treat as unsuccessful
+    console.warn('SSLCommerz callback received with non-valid status:', { status, tran_id, enrollmentId: value_a });
+    return NextResponse.redirect(`${process.env.NEXT_PUBLIC_URL || 'http://localhost:3000'}/payment/failed?enrollment=${value_a}`);
 
   } catch (error) {
     console.error('SSLCommerz Success Handler Error:', error);

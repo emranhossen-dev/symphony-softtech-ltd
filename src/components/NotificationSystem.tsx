@@ -54,10 +54,14 @@ export default function NotificationSystem() {
   const fetchNotifications = async () => {
     try {
       const response = await fetch('/api/notifications');
+      if (!response.ok) {
+        throw new Error(`Failed to fetch notifications (status ${response.status})`);
+      }
       const data = await response.json();
       setNotifications(data.notifications || []);
     } catch (error) {
       console.error('Error fetching notifications:', error);
+      toast.error('Failed to load notifications');
     } finally {
       setLoading(false);
     }
@@ -66,6 +70,9 @@ export default function NotificationSystem() {
   const fetchStats = async () => {
     try {
       const response = await fetch('/api/notifications/stats');
+      if (!response.ok) {
+        throw new Error(`Failed to fetch stats (status ${response.status})`);
+      }
       const data = await response.json();
       setStats(data.stats);
     } catch (error) {
@@ -89,6 +96,7 @@ export default function NotificationSystem() {
       }
     } catch (error) {
       console.error('Error marking notification as read:', error);
+      toast.error('Failed to update notification');
     }
   };
 
@@ -105,6 +113,7 @@ export default function NotificationSystem() {
       }
     } catch (error) {
       console.error('Error marking all notifications as read:', error);
+      toast.error('Failed to mark all as read');
     }
   };
 
@@ -123,6 +132,7 @@ export default function NotificationSystem() {
       }
     } catch (error) {
       console.error('Error deleting notification:', error);
+      toast.error('Failed to delete notification');
     }
   };
 
@@ -141,6 +151,7 @@ export default function NotificationSystem() {
       }
     } catch (error) {
       console.error('Error archiving notification:', error);
+      toast.error('Failed to archive notification');
     }
   };
 

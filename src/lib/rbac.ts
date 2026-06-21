@@ -222,14 +222,16 @@ export const ROLE_PERMISSIONS = {
 // JWT Secret key
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
-// Verify JWT token
+// Verify JWT token — throws on failure so callers must handle the error
+// rather than silently proceeding with a null user.
 export async function verifyToken(token: string) {
   try {
     const payload = jwt.verify(token, process.env.JWT_SECRET || 'fallback-secret') as any;
     return payload;
   } catch (error) {
-    console.error('JWT verification error:', error);
-    return null;
+    const message = error instanceof Error ? error.message : 'Unknown JWT error';
+    console.error('JWT verification failed:', message);
+    throw new Error(`Token verification failed: ${message}`);
   }
 }
 
