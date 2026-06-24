@@ -1,22 +1,13 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { authenticateRequest, handleApiError, successResponse } from '@/lib/api-utils';
 
 export async function GET(request: NextRequest) {
   try {
-    const token =
-      request.headers.get('Authorization')?.replace('Bearer ', '') ||
-      request.cookies.get('auth-token')?.value;
+    const auth = await authenticateRequest(request, ['MENTOR']);
+    if (!auth.success) return auth.response;
 
-    if (!token) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
-    }
-
-    const { getUserFromToken } = await import('@/lib/auth');
-    const user = await getUserFromToken(token);
-
-    if (!user || user.role !== 'MENTOR') {
-      return NextResponse.json({ error: 'Mentor access required' }, { status: 403 });
-    }
+    const user = auth.user;
 
     // Count courses this mentor is assigned to
     const courseCount = await (prisma as any).course.count({
@@ -47,13 +38,12 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    return NextResponse.json({
-      success: true,
+    return successResponse({
       profile: {
         id: user.id,
         name: user.name,
         email: user.email,
-        phone: user.phone || '',
+        phone: (user as any).phone || '',
         role: user.role,
         joinDate: (user as any).createdAt
           ? new Date((user as any).createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
@@ -68,35 +58,20 @@ export async function GET(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error('Error fetching mentor profile:', error);
-    return NextResponse.json({ error: 'Failed to fetch profile' }, { status: 500 });
-  } finally {
-    await prisma.$disconnect();
+    return handleApiError(error, 'fetch profile');
   }
 }
 
 export async function PATCH(request: NextRequest) {
   try {
-    const token =
-      request.headers.get('Authorization')?.replace('Bearer ', '') ||
-      request.cookies.get('auth-token')?.value;
-
-    if (!token) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
-    }
-
-    const { getUserFromToken } = await import('@/lib/auth');
-    const user = await getUserFromToken(token);
-
-    if (!user || user.role !== 'MENTOR') {
-      return NextResponse.json({ error: 'Mentor access required' }, { status: 403 });
-    }
+    const auth = await authenticateRequest(request, ['MENTOR']);
+    if (!auth.success) return auth.response;
 
     const body = await request.json();
     const { name, phone } = body;
 
     const updated = await (prisma as any).user.update({
-      where: { id: user.id },
+      where: { id: auth.user.id },
       data: {
         ...(name && { name }),
         ...(phone !== undefined && { phone }),
@@ -112,11 +87,8 @@ export async function PATCH(request: NextRequest) {
       },
     });
 
-    return NextResponse.json({ success: true, profile: updated });
+    return successResponse({ profile: updated });
   } catch (error) {
-    console.error('Error updating mentor profile:', error);
-    return NextResponse.json({ error: 'Failed to update profile' }, { status: 500 });
-  } finally {
-    await prisma.$disconnect();
+    return handleApiError(error, 'update profile');
   }
 }

@@ -1,31 +1,16 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { verifyToken, hasRole } from '@/lib/auth';
+import { NextRequest } from 'next/server';
+import { authenticateRequestLight, handleApiError, successResponse } from '@/lib/api-utils';
 
 export async function GET(request: NextRequest) {
   try {
-    // Verify authentication
-    const token = request.headers.get('Authorization')?.replace('Bearer ', '');
-    if (!token) {
-      return NextResponse.json(
-        { error: 'Authentication required' },
-        { status: 401 }
-      );
-    }
+    const auth = authenticateRequestLight(request, ['ADMIN', 'EMPLOYEE']);
+    if (!auth.success) return auth.response;
 
-    const payload = verifyToken(token);
-    if (!hasRole(payload.role, 'ADMIN')) {
-      return NextResponse.json(
-        { error: 'Admin access required' },
-        { status: 403 }
-      );
-    }
-
-    // Mock user profile data
     const userProfile = {
-      id: payload.id,
-      name: payload.name || 'Admin User',
-      email: payload.email || 'admin@example.com',
-      role: payload.role,
+      id: auth.payload.id,
+      name: auth.payload.name || 'Admin User',
+      email: auth.payload.email || 'admin@example.com',
+      role: auth.payload.role,
       avatar: null,
       phone: null,
       createdAt: new Date().toISOString(),
@@ -39,16 +24,8 @@ export async function GET(request: NextRequest) {
       ]
     };
 
-    return NextResponse.json({
-      success: true,
-      user: userProfile
-    });
-
+    return successResponse({ user: userProfile });
   } catch (error) {
-    console.error('Error fetching user profile:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch user profile' },
-      { status: 500 }
-    );
+    return handleApiError(error, 'fetch user profile');
   }
 }

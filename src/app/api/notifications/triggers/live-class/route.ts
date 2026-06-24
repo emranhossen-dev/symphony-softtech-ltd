@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-
-
+import { sendRealTimeNotification } from '@/lib/realtime';
+import { handleApiError, successResponse } from '@/lib/api-utils';
 
 // Trigger notification for live class start
 export async function POST(request: NextRequest) {
@@ -57,8 +57,7 @@ export async function POST(request: NextRequest) {
       )
     );
 
-    return NextResponse.json({
-      success: true,
+    return successResponse({
       notifications: notifications.map(n => ({
         id: n.id,
         type: n.type,
@@ -73,29 +72,6 @@ export async function POST(request: NextRequest) {
       count: notifications.length
     });
   } catch (error) {
-    console.error('Error creating live class notifications:', error);
-    return NextResponse.json(
-      { error: 'Failed to create live class notifications' },
-      { status: 500 }
-    );
-  } finally {
-    await prisma.$disconnect();
-  }
-}
-
-// Helper function to send real-time notifications
-async function sendRealTimeNotification(studentId: string, notificationData: any) {
-  // In a real application, this would connect to a WebSocket server
-  // and send the notification to the specific student
-  console.log(`Sending notification to student ${studentId}:`, notificationData);
-  
-  // Mock WebSocket implementation
-  const ws = new WebSocket('ws://localhost:3001/notifications');
-  if (ws.readyState === WebSocket.OPEN) {
-    ws.send(JSON.stringify({
-      type: 'NOTIFICATION',
-      studentId,
-      data: notificationData
-    }));
+    return handleApiError(error, 'create live class notifications');
   }
 }

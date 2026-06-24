@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-
-
+import { sendRealTimeNotification } from '@/lib/realtime';
+import { handleApiError, successResponse } from '@/lib/api-utils';
 
 // Trigger notification for homework approval
 export async function POST(request: NextRequest) {
@@ -15,7 +15,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create homework approval notification
     const notification = await (prisma as any).notification.create({
       data: {
         type: 'HOMEWORK',
@@ -34,7 +33,6 @@ export async function POST(request: NextRequest) {
       }
     });
 
-    // Send real-time notification via WebSocket
     await sendRealTimeNotification(studentId, {
       type: 'HOMEWORK',
       title: notification.title,
@@ -43,8 +41,7 @@ export async function POST(request: NextRequest) {
       metadata: notification.metadata
     });
 
-    return NextResponse.json({
-      success: true,
+    return successResponse({
       notification: {
         id: notification.id,
         type: notification.type,
@@ -58,29 +55,6 @@ export async function POST(request: NextRequest) {
       }
     });
   } catch (error) {
-    console.error('Error creating homework notification:', error);
-    return NextResponse.json(
-      { error: 'Failed to create homework notification' },
-      { status: 500 }
-    );
-  } finally {
-    await prisma.$disconnect();
-  }
-}
-
-// Helper function to send real-time notifications
-async function sendRealTimeNotification(studentId: string, notificationData: any) {
-  // In a real application, this would connect to a WebSocket server
-  // and send the notification to the specific student
-  console.log(`Sending notification to student ${studentId}:`, notificationData);
-  
-  // Mock WebSocket implementation
-  const ws = new WebSocket('ws://localhost:3001/notifications');
-  if (ws.readyState === WebSocket.OPEN) {
-    ws.send(JSON.stringify({
-      type: 'NOTIFICATION',
-      studentId,
-      data: notificationData
-    }));
+    return handleApiError(error, 'create homework notification');
   }
 }
