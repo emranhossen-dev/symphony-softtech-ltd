@@ -59,9 +59,12 @@ export async function GET(request: NextRequest) {
     }
 
     if (category) {
-      // For now, use the category string directly since we're moving away from enums
-      where.category = category;
-      console.log('Category filter applied:', where.category);
+      // Use case-insensitive comparison for category
+      where.category = {
+        equals: category,
+        mode: 'insensitive'
+      };
+      console.log('Category filter applied (case-insensitive):', where.category);
     }
 
     if (isActive !== null && isActive !== undefined) {
@@ -237,6 +240,24 @@ export async function GET(request: NextRequest) {
 
 // POST /api/admin/courses - Create new course with context-aware category assignment
 export async function POST(request: NextRequest) {
+  // Check authentication
+  let user;
+  try {
+    user = await getAuthenticatedUser();
+    if (user.role !== 'ADMIN' && user.role !== 'EMPLOYEE') {
+      return NextResponse.json(
+        { success: false, error: 'Admin access required' },
+        { status: 403 }
+      );
+    }
+  } catch (error) {
+    console.error('❌ Authentication failed in POST:', error);
+    return NextResponse.json(
+      { success: false, error: 'Please login to access this resource' },
+      { status: 401 }
+    );
+  }
+
   const {
     title,
     slug,
@@ -259,16 +280,29 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // Validate category
-  const validCategories = ['GOVERNMENT', 'ONLINE', 'OFFLINE', 'RECORDED'];
-  if (!validCategories.includes(categoryId)) {
+  // Find category in DB dynamically by id or slug
+  const categoryRecord = await prisma.category.findFirst({
+    where: {
+      OR: [
+        { id: categoryId },
+        { slug: categoryId.toLowerCase() },
+        { slug: categoryId }
+      ]
+    }
+  });
+
+  if (!categoryRecord) {
     return NextResponse.json(
-      { success: false, error: `Invalid category: ${categoryId}. Valid categories: ${validCategories.join(', ')}` },
+      { success: false, error: `Invalid category: ${categoryId}. Please create the category first.` },
       { status: 400 }
     );
   }
 
   const resolvedPrice = Number(offerPrice || regularPrice || price || 0);
+  const resolvedOriginalPrice = regularPrice ? Number(regularPrice) : resolvedPrice;
+  const resolvedDiscountPercent = (regularPrice && offerPrice && Number(regularPrice) > Number(offerPrice))
+    ? Math.round(((Number(regularPrice) - Number(offerPrice)) / Number(regularPrice)) * 100)
+    : 0;
 
   try {
     // Check if slug already exists
@@ -284,31 +318,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get current admin user (in real app, this would come from auth)
-    let createdBy = 'admin-user-id'; // Mock admin ID
-    
-    try {
-      // Try to find an existing admin user
-      const adminUser = await prisma.user.findFirst({
-        where: { role: 'ADMIN' }
-      });
-      
-      if (adminUser) {
-        createdBy = adminUser.id;
-      } else {
-        // If no admin exists, use the mentor we created as fallback
-        const mentorUser = await prisma.user.findFirst({
-          where: { role: 'MENTOR' }
-        });
-        
-        if (mentorUser) {
-          createdBy = mentorUser.id;
-        }
-      }
-    } catch (error) {
-      // If user table doesn't exist or other error, continue with mock ID
-      console.log('User lookup failed, using mock ID:', error);
-    }
+    const createdBy = user.id;
 
     // Create the course with auto-assigned category
     const course = await prisma.course.create({
@@ -318,10 +328,13 @@ export async function POST(request: NextRequest) {
         description,
         shortDescription,
         price: Number.isFinite(resolvedPrice) ? resolvedPrice : 0,
+        originalPrice: Number.isFinite(resolvedOriginalPrice) ? resolvedOriginalPrice : 0,
+        discountPercent: Number.isFinite(resolvedDiscountPercent) ? resolvedDiscountPercent : 0,
         duration,
         thumbnail,
         mentorId: mentorId || null,
-        category: categoryId, // Use string directly instead of enum
+        categoryId: categoryRecord.id,
+        category: categoryRecord.slug.toUpperCase(),
         createdBy,
         isActive: true
       },
@@ -346,7 +359,7 @@ export async function POST(request: NextRequest) {
       };
 
       // Category-specific demo content
-      switch (categoryId) {
+      switch (categoryRecord.slug.toUpperCase()) {
         case 'GOVERNMENT':
           demoModuleData = {
             title: `🏛️ ${course.title} - Government Job Preparation`,
@@ -403,17 +416,17 @@ export async function POST(request: NextRequest) {
         }
       });
       
-      console.log('Demo module created successfully:', { moduleId: demoModule.id, courseId: course.id, category: categoryId });
+      console.log('Demo module created successfully:', { moduleId: demoModule.id, courseId: course.id, category: categoryRecord.slug.toUpperCase() });
     } catch (moduleError) {
       console.error('Error creating demo module:', moduleError);
       // Continue even if demo module creation fails
     }
 
-    console.log('Course created successfully:', { courseId: course.id, title, category: categoryId });
+    console.log('Course created successfully:', { courseId: course.id, title, category: categoryRecord.slug.toUpperCase() });
 
     return NextResponse.json({
       success: true,
-      message: `Course created successfully in ${categoryId} category with demo module`,
+      message: `Course created successfully in ${categoryRecord.name} category with demo module`,
       course,
       hasDemoModule: true
     });
@@ -431,7 +444,7 @@ export async function POST(request: NextRequest) {
       duration,
       thumbnail,
       mentorId: mentorId || null,
-      category: categoryId,
+      category: categoryRecord ? categoryRecord.slug.toUpperCase() : (categoryId || 'ONLINE'),
       createdBy: 'admin-user-id',
       isActive: true,
       createdAt: new Date().toISOString(),
@@ -445,9 +458,9 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: `Course created successfully in ${categoryId} category with demo module (mock data)`,
+      message: `Course created successfully in ${categoryRecord ? categoryRecord.name : (categoryId || 'ONLINE')} category with demo module (mock data)`,
       course: mockCourse,
-            hasDemoModule: true
+      hasDemoModule: true
     });
   }
 }
@@ -480,6 +493,7 @@ export async function PUT(request: NextRequest) {
       thumbnail,
       mentorId,
       categoryId,
+      category,
       isActive
     } = await request.json();
 
@@ -492,7 +506,33 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    // Validate required fields
+    // 1. If it's a status-only update (like from toggleCourseStatus), allow it without other fields
+    if (isActive !== undefined && title === undefined && description === undefined) {
+      const updatedCourse = await prisma.course.update({
+        where: { id },
+        data: { isActive },
+        include: {
+          mentor: {
+            select: { id: true, name: true, email: true }
+          },
+          _count: {
+            select: { enrollments: true, modules: true }
+          }
+        }
+      });
+
+      return NextResponse.json({
+        success: true,
+        message: 'Course status updated successfully',
+        course: {
+          ...updatedCourse,
+          regularPrice: updatedCourse.price,
+          enrollmentCount: updatedCourse._count.enrollments
+        }
+      });
+    }
+
+    // 2. Otherwise, validate required fields for a full update
     if (!title || !description) {
       return NextResponse.json(
         { success: false, error: 'Title and description are required' },
@@ -500,12 +540,26 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    // Get category name if categoryId is provided
-    let categoryName = 'ONLINE';
-    if (categoryId) {
-      const category = await prisma.category.findUnique({ where: { id: categoryId } });
-      categoryName = category?.name || 'ONLINE';
+    // Resolve category name and id dynamically if provided
+    let categoryRecord = null;
+    const catIdentifier = categoryId || category;
+    if (catIdentifier) {
+      categoryRecord = await prisma.category.findFirst({
+        where: {
+          OR: [
+            { id: catIdentifier },
+            { slug: catIdentifier.toLowerCase() },
+            { slug: catIdentifier }
+          ]
+        }
+      });
     }
+
+    const resolvedPrice = Number(offerPrice || regularPrice || price || 0);
+    const resolvedOriginalPrice = regularPrice ? Number(regularPrice) : resolvedPrice;
+    const resolvedDiscountPercent = (regularPrice && offerPrice && Number(regularPrice) > Number(offerPrice))
+      ? Math.round(((Number(regularPrice) - Number(offerPrice)) / Number(regularPrice)) * 100)
+      : 0;
 
     // Update the course
     const updatedCourse = await prisma.course.update({
@@ -514,12 +568,16 @@ export async function PUT(request: NextRequest) {
         title,
         description,
         shortDescription,
-        price: Number(offerPrice || regularPrice || price || 0),
+        price: Number.isFinite(resolvedPrice) ? resolvedPrice : 0,
+        originalPrice: Number.isFinite(resolvedOriginalPrice) ? resolvedOriginalPrice : 0,
+        discountPercent: Number.isFinite(resolvedDiscountPercent) ? resolvedDiscountPercent : 0,
         duration,
         thumbnail,
         mentorId: mentorId || null,
-        categoryId: categoryId || null,
-        category: categoryName,
+        ...(categoryRecord ? {
+          categoryId: categoryRecord.id,
+          category: categoryRecord.slug.toUpperCase()
+        } : {}),
         isActive: isActive !== undefined ? isActive : true
       },
       include: {

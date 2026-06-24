@@ -86,6 +86,8 @@ export async function GET(request: NextRequest) {
       thumbnail: course.thumbnail || '',
       category: course.category,
       price: course.price || 0,
+      originalPrice: course.originalPrice,
+      discountPercent: course.discountPercent,
       duration: course.duration || '',
       level: (course as any).level || 'Beginner',
       isActive: course.isActive,

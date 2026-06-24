@@ -189,8 +189,8 @@ const CourseCard = ({
           <div className="flex items-center justify-between">
             <div>
               <span className="text-lg sm:text-xl font-bold text-blue-400">{formatPrice(price)}</span>
-              {originalPrice && (
-                <span className="text-sm text-gray-500 line-through ml-2">{originalPrice}</span>
+              {originalPrice && Number(originalPrice) > Number(price) && (
+                <span className="text-sm text-gray-500 line-through ml-2">{formatPrice(originalPrice)}</span>
               )}
             </div>
             <button 

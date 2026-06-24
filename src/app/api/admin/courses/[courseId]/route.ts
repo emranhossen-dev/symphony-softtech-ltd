@@ -118,6 +118,8 @@ export async function PUT(
       description,
       shortDescription,
       price,
+      regularPrice,
+      offerPrice,
       duration,
       thumbnail,
       mentorId,
@@ -144,13 +146,25 @@ export async function PUT(
       );
     }
 
+    const resolvedPrice = price !== undefined || regularPrice !== undefined || offerPrice !== undefined
+      ? Number(offerPrice || regularPrice || price || 0)
+      : undefined;
+    const resolvedOriginalPrice = regularPrice !== undefined ? Number(regularPrice) : undefined;
+    const resolvedDiscountPercent = (regularPrice !== undefined && offerPrice !== undefined)
+      ? (Number(regularPrice) > Number(offerPrice)
+          ? Math.round(((Number(regularPrice) - Number(offerPrice)) / Number(regularPrice)) * 100)
+          : 0)
+      : undefined;
+
     const updatedCourse = await prisma.course.update({
       where: { id: existingCourse.id },
       data: {
         ...(title && { title }),
         ...(description && { description }),
         ...(shortDescription !== undefined && { shortDescription }),
-        ...(price !== undefined && { price: parseFloat(price.toString()) }),
+        ...(resolvedPrice !== undefined && { price: resolvedPrice }),
+        ...(resolvedOriginalPrice !== undefined && { originalPrice: resolvedOriginalPrice }),
+        ...(resolvedDiscountPercent !== undefined && { discountPercent: resolvedDiscountPercent }),
         ...(duration !== undefined && { duration }),
         ...(thumbnail !== undefined && { thumbnail }),
         ...(mentorId !== undefined && { mentorId: mentorId || null }),

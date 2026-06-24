@@ -15,6 +15,8 @@ interface Course {
   thumbnail?: string;
   category: string;
   price: number;
+  originalPrice?: number;
+  discountPercent?: number;
   duration: string;
   level: string;
   isActive: boolean;
@@ -395,10 +397,20 @@ export default function CoursesPage() {
                       </div>
 
                       <div className="flex items-center justify-between mt-auto">
-                        <div>
+                        <div className="flex items-baseline gap-2 flex-wrap">
                           <span className="text-2xl font-bold text-blue-400">
                             {formatBDT(course.price)}
                           </span>
+                          {course.originalPrice && course.originalPrice > course.price && (
+                            <>
+                              <span className="text-sm text-gray-500 line-through">
+                                {formatBDT(course.originalPrice)}
+                              </span>
+                              <span className="text-xs text-red-400 font-bold">
+                                {course.discountPercent || Math.round(((course.originalPrice - course.price) / course.originalPrice) * 100)}% OFF
+                              </span>
+                            </>
+                          )}
                         </div>
                         <button className="glass-button px-4 py-2 rounded-lg text-blue-400 border border-blue-500/50 hover:border-blue-400 transition-colors">
                           View Course

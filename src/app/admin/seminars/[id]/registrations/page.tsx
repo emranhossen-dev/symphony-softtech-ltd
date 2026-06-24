@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo, useRef } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
@@ -197,7 +197,7 @@ export default function SeminarRegistrationsPage() {
   };
 
   const getCallStatusIcon = (callStatus?: string) => {
-    const icons: Record<string, JSX.Element> = {
+    const icons: Record<string, React.ReactNode> = {
       NOT_CALLED: <PhoneOff className="w-3 h-3" />,
       SCHEDULED: <Calendar className="w-3 h-3" />,
       COMPLETED: <CheckSquare className="w-3 h-3" />,
@@ -221,7 +221,7 @@ export default function SeminarRegistrationsPage() {
   };
 
   const getStatusIcon = (status: string) => {
-    const icons: Record<string, JSX.Element> = {
+    const icons: Record<string, React.JSX.Element> = {
       NEW_APPLICANT: <Sparkles className="w-3 h-3" />,
       FIRST_TIME_APPLIED: <Star className="w-3 h-3" />,
       CALLED: <PhoneCall className="w-3 h-3" />,

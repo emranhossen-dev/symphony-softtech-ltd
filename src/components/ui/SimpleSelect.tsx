@@ -88,15 +88,11 @@ const SimpleSelectContent: React.FC<SimpleSelectContentProps> = ({ children, cla
   
   return (
     <div 
-      className={`absolute top-full left-0 right-0 mt-1 max-h-60 overflow-auto rounded-md border border-gray-200 bg-white shadow-lg transition-all duration-200 ${
+      className={`absolute top-full left-0 right-0 mt-1 max-h-60 overflow-auto rounded-md border border-gray-200 bg-white dark:bg-gray-950 dark:border-gray-800 shadow-lg transition-all duration-200 ${
         open ? 'opacity-100 visible' : 'opacity-0 invisible'
       } ${className}`}
       style={{ 
-        zIndex: 9999,
-        backgroundColor: 'white',
-        border: '1px solid #d1d5db',
-        borderRadius: '0.375rem',
-        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)'
+        zIndex: 9999
       }}
     >
       {children}
@@ -115,7 +111,7 @@ const SimpleSelectItem: React.FC<SimpleSelectItemProps> = ({ value, children, on
 
   return (
     <div
-      className={`relative flex w-full cursor-pointer select-none items-center rounded-sm py-2 pl-3 pr-2 text-sm text-gray-800 outline-none hover:bg-green-50 focus:bg-green-50 transition-colors duration-150 ${className}`}
+      className={`relative flex w-full cursor-pointer select-none items-center rounded-sm py-2 pl-3 pr-2 text-sm text-gray-800 dark:text-gray-200 outline-none hover:bg-green-50 dark:hover:bg-green-950/30 focus:bg-green-50 dark:focus:bg-green-950/30 transition-colors duration-150 ${className}`}
       onClick={handleClick}
       onMouseDown={(e) => e.preventDefault()}
     >

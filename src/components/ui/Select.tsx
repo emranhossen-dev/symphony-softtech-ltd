@@ -47,7 +47,7 @@ const Select = React.forwardRef<
           isOpen,
           setIsOpen,
           ...(child.props as any),
-          children: cloneChildren(child.props.children)
+          children: cloneChildren((child.props as any).children)
         });
       }
 

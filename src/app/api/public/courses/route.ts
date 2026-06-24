@@ -102,6 +102,8 @@ export async function GET(request: NextRequest) {
       shortDescription: course.shortDescription || '',
       thumbnail: course.thumbnail || '',
       price: course.price || 0,
+      originalPrice: course.originalPrice,
+      discountPercent: course.discountPercent,
       duration: course.duration || '',
       level: 'Beginner', // Default level
       mentor: course.mentor?.name || 'Unknown',

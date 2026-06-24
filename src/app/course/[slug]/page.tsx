@@ -999,7 +999,7 @@ const CourseDetailPage = () => {
                   
                   {/* Minimal Pricing Section */}
                   <div className="p-6">
-                    {/* Price row with 3 items */}
+                    {/* Price row with dynamic discount display */}
                     <div className="flex items-center justify-between mb-4">
                       <div>
                         <div className="text-sm text-gray-400 mb-1">Current Price</div>
@@ -1007,18 +1007,22 @@ const CourseDetailPage = () => {
                           ৳{course.price.toLocaleString()}
                         </div>
                       </div>
-                      <div className="text-right">
-                        <div className="text-sm text-gray-400 mb-1">Original Price</div>
-                        <div className="text-xl font-semibold text-white/50">
-                          <s>৳{course.originalPrice ? course.originalPrice.toLocaleString() : (course.price * 1.5).toLocaleString()}</s>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-sm text-gray-400 mb-1">Discount</div>
-                        <div className="text-xl font-bold text-red-400">
-                          {course.discountPercent ? `${course.discountPercent}% OFF` : '33% OFF'}
-                        </div>
-                      </div>
+                      {course.originalPrice && course.originalPrice > course.price ? (
+                        <>
+                          <div className="text-right">
+                            <div className="text-sm text-gray-400 mb-1">Original Price</div>
+                            <div className="text-xl font-semibold text-white/50">
+                              <s>৳{course.originalPrice.toLocaleString()}</s>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <div className="text-sm text-gray-400 mb-1">Discount</div>
+                            <div className="text-xl font-bold text-red-400">
+                              {course.discountPercent || Math.round(((course.originalPrice - course.price) / course.originalPrice) * 100)}% OFF
+                            </div>
+                          </div>
+                        </>
+                      ) : null}
                     </div>
                     
                     <Button

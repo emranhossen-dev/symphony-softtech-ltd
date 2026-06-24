@@ -19,7 +19,8 @@ import {
   ToggleRight,
   Plus,
   X,
-  Check
+  Check,
+  Tag
 } from 'lucide-react';
 
 interface Course {
@@ -62,6 +63,8 @@ interface CourseFormData {
   description: string;
   shortDescription: string;
   price: number;
+  regularPrice: number;
+  offerPrice: number;
   duration: string;
   thumbnail: string;
   mentorId: string;
@@ -82,6 +85,8 @@ const EditCoursePage = () => {
     description: '',
     shortDescription: '',
     price: 0,
+    regularPrice: 0,
+    offerPrice: 0,
     duration: '',
     thumbnail: '',
     mentorId: '',
@@ -136,6 +141,8 @@ const EditCoursePage = () => {
           description: course.description,
           shortDescription: course.shortDescription || '',
           price: course.price,
+          regularPrice: course.originalPrice || course.price || 0,
+          offerPrice: course.originalPrice ? course.price : 0,
           duration: course.duration || '',
           thumbnail: course.thumbnail || '',
           mentorId: course.mentorId || '',
@@ -227,6 +234,52 @@ const EditCoursePage = () => {
       toast.error('Network error. Please try again.');
     } finally {
       setSaving(false);
+    }
+  };
+
+  const [uploadingImage, setUploadingImage] = useState(false);
+
+  const handleThumbnailUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    const file = files[0];
+
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      toast.error('Please select a valid image file');
+      return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error('File size must be less than 10MB');
+      return;
+    }
+
+    setUploadingImage(true);
+    const toastId = toast.loading('Uploading image...');
+
+    try {
+      const formDataUpload = new FormData();
+      formDataUpload.append('file', file);
+
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        body: formDataUpload,
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setFormData(prev => ({ ...prev, thumbnail: data.url }));
+        toast.success('Thumbnail uploaded successfully', { id: toastId });
+      } else {
+        const err = await response.json();
+        toast.error(err.error || 'Upload failed', { id: toastId });
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error('Upload failed', { id: toastId });
+    } finally {
+      setUploadingImage(false);
     }
   };
 
@@ -336,16 +389,61 @@ const EditCoursePage = () => {
               />
             </div>
 
-            <div>
-              <label className="block text-sm font-semibold text-white mb-2">Price (BDT)</label>
-              <Input
-                type="number"
-                value={formData.price}
-                onChange={(e) => handleInputChange('price', parseFloat(e.target.value) || 0)}
-                placeholder="10000"
-                className="bg-gray-700 border-gray-600 text-white"
-              />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-semibold text-white mb-2">Regular Price (BDT)</label>
+                <Input
+                  type="number"
+                  value={formData.regularPrice}
+                  onChange={(e) => handleInputChange('regularPrice', parseFloat(e.target.value) || 0)}
+                  placeholder="13000"
+                  className="bg-gray-700 border-gray-600 text-white"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-white mb-2">Offer Price (BDT)</label>
+                <Input
+                  type="number"
+                  value={formData.offerPrice}
+                  onChange={(e) => handleInputChange('offerPrice', parseFloat(e.target.value) || 0)}
+                  placeholder="10000"
+                  className="bg-gray-700 border-gray-600 text-white"
+                />
+              </div>
             </div>
+
+            {/* Price Preview */}
+            {(formData.regularPrice > 0 || formData.offerPrice > 0) && (
+              <div className="bg-gradient-to-r from-blue-900/20 to-green-900/20 rounded-xl p-4 border border-blue-800">
+                <p className="text-xs font-medium text-gray-400 mb-2">Price Preview:</p>
+                <div className="flex items-center gap-3">
+                  {formData.regularPrice > 0 && formData.offerPrice > 0 && formData.regularPrice > formData.offerPrice ? (
+                    <>
+                      <span className="text-xl font-bold text-gray-400 line-through">
+                        ৳{formData.regularPrice.toLocaleString()}
+                      </span>
+                      <span className="text-2xl font-bold text-green-400">
+                        ৳{formData.offerPrice.toLocaleString()}
+                      </span>
+                      <span className="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                        {Math.round(((formData.regularPrice - formData.offerPrice) / formData.regularPrice) * 100)}% OFF
+                      </span>
+                    </>
+                  ) : formData.offerPrice > 0 ? (
+                    <span className="text-2xl font-bold text-green-400">
+                      ৳{formData.offerPrice.toLocaleString()}
+                    </span>
+                  ) : formData.regularPrice > 0 ? (
+                    <span className="text-2xl font-bold text-white">
+                      ৳{formData.regularPrice.toLocaleString()}
+                    </span>
+                  ) : (
+                    <span className="text-gray-400">Enter price to see preview</span>
+                  )}
+                </div>
+              </div>
+            )}
 
             <div>
               <label className="block text-sm font-semibold text-white mb-2">Duration</label>
@@ -356,6 +454,53 @@ const EditCoursePage = () => {
                 className="bg-gray-700 border-gray-600 text-white"
               />
             </div>
+          </div>
+        </div>
+
+        {/* Course Thumbnail Section */}
+        <div className="bg-gray-800 rounded-2xl shadow-xl border border-gray-700 p-8 space-y-6">
+          <div>
+            <h2 className="text-xl font-bold text-white mb-2 flex items-center gap-2">
+              <ImageIcon className="w-6 h-6 text-gray-400" />
+              Course Thumbnail
+            </h2>
+            <p className="text-sm text-gray-400">Update the course cover image</p>
+          </div>
+
+          <div className="space-y-4">
+            {formData.thumbnail ? (
+              <div className="relative w-full h-64 border border-gray-600 rounded-xl overflow-hidden">
+                <img 
+                  src={formData.thumbnail} 
+                  alt="Course Thumbnail" 
+                  className="w-full h-full object-cover"
+                />
+                <button
+                  type="button"
+                  onClick={() => handleInputChange('thumbnail', '')}
+                  className="absolute top-3 right-3 bg-red-500 hover:bg-red-600 text-white p-2 rounded-lg transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            ) : (
+              <div 
+                onClick={() => document.getElementById('edit-thumbnail-file')?.click()}
+                className="border-2 border-dashed border-gray-600 hover:border-gray-500 rounded-xl p-8 text-center cursor-pointer transition-all"
+              >
+                <Upload className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                <p className="text-gray-400 mb-2">Click to upload thumbnail image</p>
+                <p className="text-sm text-gray-500">PNG, JPG, GIF up to 10MB</p>
+              </div>
+            )}
+            
+            <input
+              type="file"
+              id="edit-thumbnail-file"
+              accept="image/*"
+              onChange={handleThumbnailUpload}
+              className="hidden"
+            />
           </div>
         </div>
 

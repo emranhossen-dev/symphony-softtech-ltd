@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Clock, Users, Calendar, MapPin, TrendingUp, Award, CheckCircle, Loader2, Star, Zap, ArrowRight, Play, BookOpen, Target, Sparkles, ChevronRight, Monitor, Video, Globe, Building, Heart, Flame, Rocket, Brain, Lightbulb, Code, Palette, Music, Camera, PenTool } from "lucide-react";
 import { FeaturesConfig, getFeaturesConfig } from '@/lib/config';
@@ -84,7 +84,7 @@ const CategorySection = () => {
   };
 
   const getCategoryIcon = (iconName: string) => {
-    const icons: { [key: string]: JSX.Element } = {
+    const icons: { [key: string]: React.JSX.Element } = {
       clock: <Clock className="w-6 h-6" />,
       users: <Users className="w-6 h-6" />,
       calendar: <Calendar className="w-6 h-6" />,

@@ -11,7 +11,8 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      categories: categories
+      categories: categories,
+      data: categories
     });
 
   } catch (error) {

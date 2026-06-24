@@ -27,7 +27,7 @@ export default function EnhancedVideoPlayer({
   
   const videoRef = useRef<HTMLVideoElement>(null);
   const progressBarRef = useRef<HTMLDivElement>(null);
-  const controlsTimeoutRef = useRef<NodeJS.Timeout>();
+  const controlsTimeoutRef = useRef<any>(null);
 
   useEffect(() => {
     const video = videoRef.current;
