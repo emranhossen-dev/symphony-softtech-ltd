@@ -300,11 +300,6 @@ export async function PATCH(request: NextRequest) {
 
   } catch (error: any) {
     console.error('Error updating enrollment:', error);
-    console.error('Error details:', {
-      message: error.message,
-      stack: error.stack,
-      name: error.name
-    });
     
     if (error instanceof AuthError) {
       return NextResponse.json(
@@ -314,7 +309,7 @@ export async function PATCH(request: NextRequest) {
     }
     
     return NextResponse.json(
-      { success: false, error: error.message || 'Failed to update enrollment' },
+      { success: false, error: 'Failed to update enrollment' },
       { status: 500 }
     );
   }
@@ -472,11 +467,6 @@ export async function PUT(request: NextRequest) {
 
   } catch (error: any) {
     console.error('Error updating enrollment:', error);
-    console.error('Error details:', {
-      message: error.message,
-      stack: error.stack,
-      name: error.name
-    });
     
     if (error instanceof AuthError) {
       return NextResponse.json(
@@ -486,7 +476,7 @@ export async function PUT(request: NextRequest) {
     }
     
     return NextResponse.json(
-      { success: false, error: error.message || 'Failed to update enrollment' },
+      { success: false, error: 'Failed to update enrollment' },
       { status: 500 }
     );
   }

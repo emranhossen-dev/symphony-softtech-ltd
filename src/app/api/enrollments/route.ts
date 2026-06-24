@@ -238,14 +238,11 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Enrollment error details:', {
       message: error instanceof Error ? error.message : 'Unknown error',
-      stack: error instanceof Error ? error.stack : 'No stack trace',
-      body: request.body
     });
     return NextResponse.json(
       { 
         success: false,
-        error: 'Failed to enroll in course. Please try again.',
-        details: error instanceof Error ? error.message : 'Unknown error'
+        error: 'Failed to enroll in course. Please try again.'
       },
       { status: 500 }
     );

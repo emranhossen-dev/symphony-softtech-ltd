@@ -131,7 +131,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
           const smtpConfigured = process.env.SMTP_USER && process.env.SMTP_PASS;
           if (!smtpConfigured) {
             console.log('[ADMISSION] SMTP not configured. Skipping email. Set SMTP_USER and SMTP_PASS in .env file.');
-            console.log('[ADMISSION] Student login credentials - Email:', currentEnrollment.email, '| Password:', tempPassword || '(user creation failed)');
+            console.log('[ADMISSION] SMTP not configured. Student account created for:', currentEnrollment.email);
           } else if (tempPassword) {
             try {
               emailResult = await sendAdmissionEmail({

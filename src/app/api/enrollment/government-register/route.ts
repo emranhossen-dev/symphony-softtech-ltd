@@ -145,23 +145,9 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Government enrollment error:', error);
     
-    let errorMessage = 'Unknown error occurred';
-    let errorStack = undefined;
-    
-    if (error instanceof Error) {
-      errorMessage = error.message;
-      errorStack = error.stack;
-    } else if (typeof error === 'string') {
-      errorMessage = error;
-    }
-    
-    console.error('Error details:', errorMessage);
-    console.error('Error stack:', errorStack);
-    
     return NextResponse.json({
       success: false,
-      error: 'Failed to register for government course',
-      details: errorMessage
+      error: 'Failed to register for government course'
     }, { status: 500 });
   }
 }

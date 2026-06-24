@@ -1,11 +1,25 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { getUserFromToken } from '@/lib/auth';
 
 export async function PUT(
-  request: Request,
+  request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    // Authentication check - only admins can update testimonials
+    const token = request.headers.get('Authorization')?.replace('Bearer ', '') ||
+      request.cookies.get('auth-token')?.value;
+
+    if (!token) {
+      return NextResponse.json({ success: false, error: 'Authentication required' }, { status: 401 });
+    }
+
+    const user = await getUserFromToken(token);
+    if (!user || user.role !== 'ADMIN') {
+      return NextResponse.json({ success: false, error: 'Admin access required' }, { status: 403 });
+    }
+
     const { id } = await params;
     const body = await request.json();
     const {
@@ -62,10 +76,23 @@ export async function PUT(
 }
 
 export async function DELETE(
-  request: Request,
+  request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    // Authentication check - only admins can delete testimonials
+    const token = request.headers.get('Authorization')?.replace('Bearer ', '') ||
+      request.cookies.get('auth-token')?.value;
+
+    if (!token) {
+      return NextResponse.json({ success: false, error: 'Authentication required' }, { status: 401 });
+    }
+
+    const user = await getUserFromToken(token);
+    if (!user || user.role !== 'ADMIN') {
+      return NextResponse.json({ success: false, error: 'Admin access required' }, { status: 403 });
+    }
+
     const { id } = await params;
     await prisma.testimonial.delete({
       where: {

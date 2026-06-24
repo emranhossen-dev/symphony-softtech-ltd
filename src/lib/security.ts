@@ -245,9 +245,12 @@ export function sanitizeVideoUrl(url: string): string {
 
 // Generate secure tokens
 export function generateSecureToken(payload: any): string {
+  if (!process.env.JWT_SECRET) {
+    throw new Error('JWT_SECRET environment variable is not configured');
+  }
   const header = Buffer.from(JSON.stringify({ alg: 'HS256', typ: 'JWT' })).toString('base64');
   const payload64 = Buffer.from(JSON.stringify(payload)).toString('base64');
-  const signature = crypto.createHmac('sha256', process.env.JWT_SECRET || 'fallback-secret')
+  const signature = crypto.createHmac('sha256', process.env.JWT_SECRET)
     .update(`${header}.${payload64}`)
     .digest('base64');
   
@@ -264,7 +267,10 @@ export function verifySecureToken(token: string): any {
     const payload = Buffer.from(parts[1], 'base64').toString();
     const signature = parts[2];
     
-    const expectedSignature = crypto.createHmac('sha256', process.env.JWT_SECRET || 'fallback-secret')
+    if (!process.env.JWT_SECRET) {
+      throw new Error('JWT_SECRET environment variable is not configured');
+    }
+    const expectedSignature = crypto.createHmac('sha256', process.env.JWT_SECRET)
       .update(`${header}.${payload}`)
       .digest('base64');
     

@@ -1,5 +1,6 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { getUserFromToken } from '@/lib/auth';
 
 export async function GET() {
   try {
@@ -28,8 +29,21 @@ export async function GET() {
   }
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
+    // Authentication check - only admins can create testimonials
+    const token = request.headers.get('Authorization')?.replace('Bearer ', '') ||
+      request.cookies.get('auth-token')?.value;
+
+    if (!token) {
+      return NextResponse.json({ success: false, error: 'Authentication required' }, { status: 401 });
+    }
+
+    const user = await getUserFromToken(token);
+    if (!user || user.role !== 'ADMIN') {
+      return NextResponse.json({ success: false, error: 'Admin access required' }, { status: 403 });
+    }
+
     const body = await request.json();
     const {
       name,

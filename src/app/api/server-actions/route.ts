@@ -1,11 +1,34 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { getUserFromToken } from '@/lib/auth';
 
+async function authenticateAdmin(request: NextRequest) {
+  const token = request.headers.get('Authorization')?.replace('Bearer ', '') ||
+    request.cookies.get('auth-token')?.value;
 
+  if (!token) {
+    return null;
+  }
+
+  try {
+    const user = await getUserFromToken(token);
+    if (!user || (user.role !== 'ADMIN' && user.role !== 'EMPLOYEE')) {
+      return null;
+    }
+    return user;
+  } catch {
+    return null;
+  }
+}
 
 // GET - Server actions for data fetching
 export async function GET(request: NextRequest) {
   try {
+    const user = await authenticateAdmin(request);
+    if (!user) {
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+    }
+
     const { searchParams } = new URL(request.url);
     const action = searchParams.get('action');
     const query = searchParams.get('query');
@@ -108,6 +131,11 @@ export async function GET(request: NextRequest) {
 // POST - Server actions for batch operations
 export async function POST(request: NextRequest) {
   try {
+    const user = await authenticateAdmin(request);
+    if (!user) {
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+    }
+
     const { action, items } = await request.json();
 
     switch (action) {
@@ -184,6 +212,11 @@ export async function POST(request: NextRequest) {
 // PUT - Server actions for updates
 export async function PUT(request: NextRequest) {
   try {
+    const user = await authenticateAdmin(request);
+    if (!user) {
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+    }
+
     const { action, data } = await request.json();
 
     switch (action) {
@@ -218,6 +251,11 @@ export async function PUT(request: NextRequest) {
 // DELETE - Server actions for deletions
 export async function DELETE(request: NextRequest) {
   try {
+    const user = await authenticateAdmin(request);
+    if (!user) {
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+    }
+
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
 
