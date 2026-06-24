@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { MessageCircle, Phone, Mail, User, Clock, Check, CheckCheck, Reply, ExternalLink } from 'lucide-react';
 import { generateWhatsAppLink } from '@/lib/whatsapp';
+import toast from 'react-hot-toast';
 
 interface WhatsAppMessage {
   id: string;
@@ -35,6 +36,7 @@ const WhatsAppMessages = () => {
       }
     } catch (error) {
       console.error('Error fetching messages:', error);
+      toast.error('Failed to load messages');
     } finally {
       setLoading(false);
     }
@@ -58,6 +60,7 @@ const WhatsAppMessages = () => {
       }
     } catch (error) {
       console.error('Error marking messages as read:', error);
+      toast.error('Failed to mark messages as read');
     }
   };
 

@@ -126,7 +126,7 @@ const LiveChatWidget = ({ children }: { children?: React.ReactNode }) => {
             });
           }
         } catch (error) {
-          console.error('Error polling for messages:', error);
+          console.error('Live chat poll failed:', error instanceof Error ? error.message : error);
         }
       }, 3000); // Poll every 3 seconds
       
@@ -167,6 +167,7 @@ const LiveChatWidget = ({ children }: { children?: React.ReactNode }) => {
       });
     } catch (error) {
       console.error('Error sending join message:', error);
+      toast.error('Could not connect to live chat');
     }
   };
 
@@ -200,6 +201,7 @@ const LiveChatWidget = ({ children }: { children?: React.ReactNode }) => {
       });
     } catch (error) {
       console.error('Error sending message to backend:', error);
+      toast.error('Message failed to send');
     }
   };
 

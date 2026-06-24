@@ -237,10 +237,11 @@ export function sanitizeVideoUrl(url: string): string {
       return sanitizedUrl;
     }
   } catch (error) {
-    console.error('Invalid URL:', error);
+    console.error('Invalid URL provided to sanitizeVideoUrl:', error instanceof Error ? error.message : error);
   }
   
-  return ''; // Return empty string for invalid URLs
+  // URL is either unparseable or not from an allowed domain
+  return '';
 }
 
 // Generate secure tokens
@@ -271,7 +272,8 @@ export function verifySecureToken(token: string): any {
     if (signature !== expectedSignature) return null;
     
     return JSON.parse(payload);
-  } catch {
+  } catch (error) {
+    console.error('Secure token verification failed:', error instanceof Error ? error.message : error);
     return null;
   }
 }

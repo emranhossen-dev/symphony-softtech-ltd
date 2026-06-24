@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { handleApiError } from '@/lib/error-handler';
 
 
 
@@ -97,11 +98,7 @@ export async function GET(request: NextRequest) {
       }
     });
   } catch (error) {
-    console.error('Server action GET error:', error);
-    return NextResponse.json(
-      { error: 'Failed to perform server action' },
-      { status: 500 }
-    );
+    return handleApiError(error, request);
   }
 }
 
@@ -173,11 +170,7 @@ export async function POST(request: NextRequest) {
         );
     }
   } catch (error) {
-    console.error('Server action POST error:', error);
-    return NextResponse.json(
-      { error: 'Failed to perform server action' },
-      { status: 500 }
-    );
+    return handleApiError(error, request);
   }
 }
 
@@ -207,11 +200,7 @@ export async function PUT(request: NextRequest) {
         );
     }
   } catch (error) {
-    console.error('Server action PUT error:', error);
-    return NextResponse.json(
-      { error: 'Failed to perform server action' },
-      { status: 500 }
-    );
+    return handleApiError(error, request);
   }
 }
 
@@ -238,10 +227,6 @@ export async function DELETE(request: NextRequest) {
       message: 'Item deleted successfully'
     });
   } catch (error) {
-    console.error('Server action DELETE error:', error);
-    return NextResponse.json(
-      { error: 'Failed to perform server action' },
-      { status: 500 }
-    );
+    return handleApiError(error, request);
   }
 }

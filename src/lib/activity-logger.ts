@@ -53,7 +53,9 @@ export async function logActivity(data: ActivityLogData) {
     });
   } catch (error) {
     console.error('Failed to log activity:', error);
-    // Don't throw error to avoid breaking main flow
+    // Non-critical: don't throw to avoid breaking the main flow,
+    // but return null so callers can detect the failure if needed.
+    return null;
   }
 }
 
@@ -107,7 +109,11 @@ export async function getUserActivityLogs(
     });
   } catch (error) {
     console.error('Failed to get user activity logs:', error);
-    return [];
+    throw new Error(
+      `Failed to retrieve activity logs for user ${userId}: ${
+        error instanceof Error ? error.message : 'Unknown error'
+      }`
+    );
   }
 }
 
@@ -145,7 +151,11 @@ export async function getSystemActivityLogs(
     });
   } catch (error) {
     console.error('Failed to get system activity logs:', error);
-    return [];
+    throw new Error(
+      `Failed to retrieve system activity logs: ${
+        error instanceof Error ? error.message : 'Unknown error'
+      }`
+    );
   }
 }
 

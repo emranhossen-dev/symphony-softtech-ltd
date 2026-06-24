@@ -17,16 +17,20 @@ export async function GET(request: NextRequest) {
 
   } catch (error) {
     console.error('Error fetching WhatsApp messages:', error);
-    return NextResponse.json({
-      success: true,
-      messages: [],
-      pagination: {
-        page: 1,
-        limit: 50,
-        total: 0,
-        pages: 0,
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'Failed to fetch messages',
+        messages: [],
+        pagination: {
+          page: 1,
+          limit: 50,
+          total: 0,
+          pages: 0,
+        },
       },
-    });
+      { status: 500 }
+    );
   }
 }
 
